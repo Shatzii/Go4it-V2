@@ -1,143 +1,47 @@
-import type { Metadata } from 'next';
+'use client';
+
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { AppProvider } from '@/components/providers/AppProviders';
-import { WebSocketProvider } from '@/components/realtime/WebSocketProvider';
-import { ErrorBoundaryEnhanced } from '@/components/error/ErrorBoundaryEnhanced';
-import { PerformanceMonitor } from '@/components/performance/PerformanceMonitor';
-import { MobileNavigation } from '@/components/mobile/MobileNavigation';
-import { ServiceWorkerRegistration } from '@/components/pwa/ServiceWorkerRegistration';
-import { GlobalSearch } from '@/components/search/GlobalSearch';
-import { NotificationSystem } from '@/components/notifications/NotificationSystem';
-import { AccessibilityEnhancements } from '@/components/accessibility/AccessibilityEnhancements';
-import ClientOnly from '@/components/ClientOnly';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'Go4It Sports - Elite Athletic Development Platform',
-  description: 'Comprehensive sports analytics platform for neurodivergent student athletes',
-  keywords: 'sports analytics, athletic development, neurodivergent athletes, ADHD-friendly',
-  authors: [{ name: 'Go4It Sports Team' }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000'),
-  alternates: {
-    canonical: '/',
-  },
-  openGraph: {
-    title: 'Go4It Sports - Elite Athletic Development Platform',
-    description: 'Comprehensive sports analytics platform for neurodivergent student athletes',
-    url: '/',
-    siteName: 'Go4It Sports',
-    images: [
-      { url: '/og-image.png', width: 1200, height: 630, alt: 'Go4It Sports' },
-    ],
-    locale: 'en_US',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Go4It Sports - Elite Athletic Development Platform',
-    description: 'Comprehensive sports analytics platform for neurodivergent student athletes',
-    images: ['/og-image.png'],
-  },
-};
-
-export function generateViewport() {
-  return {
-    width: 'device-width',
-    initialScale: 1,
-    themeColor: '#0f172a',
-  };
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
+        <title>Go4It Sports - Elite Athletic Development Platform</title>
+        <meta name="description" content="Comprehensive sports analytics platform for neurodivergent student athletes" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.ico" />
-        {/* JSON-LD: Organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'Go4It Sports',
-              url: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000').replace(/\/$/, ''),
-              logo: '/og-image.png',
-              sameAs: [
-                'https://twitter.com/go4itsports',
-              ],
-            }),
-          }}
-        />
       </head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
-        <ErrorBoundaryEnhanced>
-          <AppProvider>
-            <WebSocketProvider>
-              <ServiceWorkerRegistration />
-              
-              {/* Global Navigation Bar */}
-              <nav className="fixed top-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="flex items-center justify-between h-16">
-                    <div className="flex items-center gap-6">
-                      <div className="text-xl font-bold text-white">
-                        Go4It Sports
-                      </div>
-                      <div className="hidden md:flex items-center gap-6">
-                        <a href="/starpath" className="text-slate-300 hover:text-white transition-colors flex items-center gap-2 font-medium">
-                          <span className="text-yellow-400">⭐</span>
-                          StarPath Hub
-                        </a>
-                        <a href="/gar-upload" className="text-slate-300 hover:text-white transition-colors">
-                          Get GAR Score
-                        </a>
-                        <a href="/challenges" className="text-slate-300 hover:text-white transition-colors">
-                          Challenges
-                        </a>
-                        <a href="/ai-football-coach" className="text-slate-300 hover:text-white transition-colors">
-                          AI Coach
-                        </a>
-                        <a href="/navigation" className="text-slate-300 hover:text-white transition-colors">
-                          Features
-                        </a>
-                        <a href="/pricing" className="text-slate-300 hover:text-white transition-colors">
-                          Pricing
-                        </a>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <ClientOnly>
-                        <GlobalSearch />
-                        <NotificationSystem />
-                      </ClientOnly>
-                    </div>
-                  </div>
-                </div>
-              </nav>
-
-              {/* Main Content */}
-              <div className="pt-16">
-                <ClientOnly>
-                  {children}
-                </ClientOnly>
+        {/* Simplified nav */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <a
+                href="/"
+                className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
+              >
+                Go4It Sports
+              </a>
+              <div className="hidden md:flex items-center gap-6">
+                <a href="/dashboard" className="text-slate-300 hover:text-white transition-colors">Dashboard</a>
+                <a href="/recruiting-hub" className="text-slate-300 hover:text-white transition-colors">Recruiting</a>
+                <a href="/academy" className="text-slate-300 hover:text-white transition-colors">Academy</a>
               </div>
-
-              <ClientOnly>
-                <MobileNavigation />
-                <PerformanceMonitor />
-                <AccessibilityEnhancements />
-              </ClientOnly>
-            </WebSocketProvider>
-          </AppProvider>
-        </ErrorBoundaryEnhanced>
+            </div>
+          </div>
+        </nav>
+        
+        {/* Main Content */}
+        <div className="pt-16">{children}</div>
+        
+        {/* Footer */}
+        <footer className="w-full text-center py-6 text-slate-400 text-xs border-t border-slate-800 mt-12">
+          <a href="/privacy" className="hover:underline mx-2">Privacy Policy</a> | 
+          <a href="/terms" className="hover:underline mx-2">Terms of Service</a>
+        </footer>
       </body>
     </html>
   );

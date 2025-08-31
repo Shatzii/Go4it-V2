@@ -6,10 +6,19 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { QuickLinks } from '@/components/dashboard/quick-links';
 import { ClassCreator } from '@/components/dashboard/class-creator';
-import { 
-  BookOpen, Users, Brain, Calendar, 
-  MessageCircle, TrendingUp, Trophy, Star,
-  GraduationCap, FileText, Clock, Target
+import {
+  BookOpen,
+  Users,
+  Brain,
+  Calendar,
+  MessageCircle,
+  TrendingUp,
+  Trophy,
+  Star,
+  GraduationCap,
+  FileText,
+  Clock,
+  Target,
 } from 'lucide-react';
 
 export default function SecondaryTeacherDashboard() {
@@ -52,9 +61,12 @@ export default function SecondaryTeacherDashboard() {
             { name: 'Algebra II Honors', students: 22, level: 'Honors', progress: 92 },
             { name: 'Pre-Calculus', students: 24, level: 'Standard', progress: 78 },
             { name: 'Statistics AP', students: 16, level: 'AP', progress: 88 },
-            { name: 'Geometry', students: 20, level: 'Standard', progress: 83 }
+            { name: 'Geometry', students: 20, level: 'Standard', progress: 83 },
           ].map((classData, index) => (
-            <Card key={index} className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border-indigo-500">
+            <Card
+              key={index}
+              className="bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border-indigo-500"
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-indigo-400">
                   <BookOpen className="w-5 h-5" />

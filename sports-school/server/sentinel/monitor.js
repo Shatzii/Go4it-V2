@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Security System - Monitor
- * 
+ *
  * This is the main monitoring component of the Sentinel 4.5 security system.
  * It provides real-time monitoring of system activities, logs security events,
  * and manages the security dashboard.
@@ -41,78 +41,70 @@ class SecurityMonitor {
       attacksBlocked: 0,
       lastScan: null,
       systemLoad: 0,
-      memoryUsage: 0
+      memoryUsage: 0,
     };
-    
+
     this.updateSystemStats();
-    
+
     // Update system stats every minute
     setInterval(() => this.updateSystemStats(), 60000);
-    
+
     console.log(`[Sentinel] Security monitor initialized at ${new Date().toISOString()}`);
     this.logSecurityEvent('system', 'Sentinel security monitor started');
   }
-  
+
   updateSystemStats() {
     const load = os.loadavg();
     const totalMem = os.totalmem();
     const freeMem = os.freemem();
-    
+
     this.stats.systemLoad = load[0];
     this.stats.memoryUsage = ((totalMem - freeMem) / totalMem) * 100;
     this.stats.lastScan = new Date().toISOString();
   }
-  
+
   logSecurityEvent(category, message, details = {}) {
     const timestamp = new Date().toISOString();
     const event = {
       timestamp,
       category,
       message,
-      details
+      details,
     };
-    
+
     this.stats.eventsLogged++;
-    
+
     // Write to security log file
-    fs.appendFileSync(
-      SECURITY_LOG_FILE,
-      JSON.stringify(event) + '\n',
-      { flag: 'a+' }
-    );
-    
+    fs.appendFileSync(SECURITY_LOG_FILE, JSON.stringify(event) + '\n', { flag: 'a+' });
+
     // If this is a high-priority event, log it as an alert
     if (details.priority === 'high') {
       this.logAlert(category, message, details);
     }
-    
+
     // Log to console if level is appropriate
     if (LOG_LEVEL === 'debug' || details.priority === 'high') {
       console.log(`[Sentinel] ${timestamp} - ${category}: ${message}`);
     }
   }
-  
+
   logAlert(category, message, details = {}) {
     const timestamp = new Date().toISOString();
     const alert = {
       timestamp,
       category,
       message,
-      details
+      details,
     };
-    
+
     this.stats.alertsTriggered++;
-    
+
     // Write to alerts log file
-    fs.appendFileSync(
-      ALERTS_LOG_FILE,
-      JSON.stringify(alert) + '\n',
-      { flag: 'a+' }
-    );
-    
+    fs.appendFileSync(ALERTS_LOG_FILE, JSON.stringify(alert) + '\n', { flag: 'a+' });
+
     console.log(`[Sentinel-ALERT] ${timestamp} - ${category}: ${message}`);
   }
-  
+
   logAudit(userId, action, resource, details = {}) {
     const timestamp = new Date().toISOString();
     const audit = {
@@ -120,83 +112,82 @@ class SecurityMonitor {
       userId,
       action,
       resource,
-      details
+      details,
     };
-    
+
     // Write to audit log file
-    fs.appendFileSync(
-      AUDIT_LOG_FILE,
-      JSON.stringify(audit) + '\n',
-      { flag: 'a+' }
-    );
-    
+    fs.appendFileSync(AUDIT_LOG_FILE, JSON.stringify(audit) + '\n', { flag: 'a+' });
+
     if (LOG_LEVEL === 'debug') {
       console.log(`[Sentinel-AUDIT] ${timestamp} - User ${userId}: ${action} ${resource}`);
     }
   }
-  
+
   getSecurityLogs(limit = 100) {
     try {
       if (!fs.existsSync(SECURITY_LOG_FILE)) {
         return [];
       }
-      
-      const logs = fs.readFileSync(SECURITY_LOG_FILE, 'utf8')
+
+      const logs = fs
+        .readFileSync(SECURITY_LOG_FILE, 'utf8')
         .split('\n')
-        .filter(line => line.trim() !== '')
-        .map(line => JSON.parse(line))
+        .filter((line) => line.trim() !== '')
+        .map((line) => JSON.parse(line))
         .slice(-limit);
-      
+
       return logs;
     } catch (error) {
       console.error('Error reading security logs:', error);
       return [];
     }
   }
-  
+
   getAlertLogs(limit = 100) {
     try {
       if (!fs.existsSync(ALERTS_LOG_FILE)) {
         return [];
       }
-      
-      const logs = fs.readFileSync(ALERTS_LOG_FILE, 'utf8')
+
+      const logs = fs
+        .readFileSync(ALERTS_LOG_FILE, 'utf8')
         .split('\n')
-        .filter(line => line.trim() !== '')
-        .map(line => JSON.parse(line))
+        .filter((line) => line.trim() !== '')
+        .map((line) => JSON.parse(line))
         .slice(-limit);
-      
+
       return logs;
     } catch (error) {
       console.error('Error reading alert logs:', error);
       return [];
     }
   }
-  
+
   getAuditLogs(limit = 100) {
     try {
       if (!fs.existsSync(AUDIT_LOG_FILE)) {
         return [];
       }
-      
-      const logs = fs.readFileSync(AUDIT_LOG_FILE, 'utf8')
+
+      const logs = fs
+        .readFileSync(AUDIT_LOG_FILE, 'utf8')
         .split('\n')
-        .filter(line => line.trim() !== '')
-        .map(line => JSON.parse(line))
+        .filter((line) => line.trim() !== '')
+        .map((line) => JSON.parse(line))
         .slice(-limit);
-      
+
       return logs;
     } catch (error) {
       console.error('Error reading audit logs:', error);
       return [];
     }
   }
-  
+
   getStatus() {
     return {
       status: 'active',
       uptime: Math.floor((Date.now() - this.stats.startTime) / 1000),
-      stats: this.stats
+      stats: this.stats,
     };
   }
 }
@@ -227,11 +218,11 @@ app.get('/api/logs/audit', (req, res) => {
 // Log security event endpoint
 app.post('/api/log/security', (req, res) => {
   const { category, message, details } = req.body;
-  
+
   if (!category || !message) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
-  
+
   monitor.logSecurityEvent(category, message, details || {});
   res.json({ success: true });
 });
@@ -239,11 +230,11 @@ app.post('/api/log/security', (req, res) => {
 // Log audit event endpoint
 app.post('/api/log/audit', (req, res) => {
   const { userId, action, resource, details } = req.body;
-  
+
   if (!userId || !action || !resource) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
-  
+
   monitor.logAudit(userId, action, resource, details || {});
   res.json({ success: true });
 });

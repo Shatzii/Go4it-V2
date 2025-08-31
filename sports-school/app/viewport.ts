@@ -1,4 +1,4 @@
-import { Viewport } from 'next'
+import { Viewport } from 'next';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -7,6 +7,6 @@ export const viewport: Viewport = {
   userScalable: false,
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#000000' }
-  ]
-}
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
+};

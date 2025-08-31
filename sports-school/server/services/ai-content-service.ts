@@ -1,24 +1,24 @@
 /**
  * AI Content Generation Service
- * 
+ *
  * This service handles the generation of personalized educational content
- * based on learning profiles and content rules. It implements tiered 
+ * based on learning profiles and content rules. It implements tiered
  * content generation capabilities based on the user's subscription level.
  */
 
 import Anthropic from '@anthropic-ai/sdk';
-import { 
-  ContentRules, 
-  ContentFormat, 
-  ContentComplexity, 
+import {
+  ContentRules,
+  ContentFormat,
+  ContentComplexity,
   ContentPace,
-  PresentationStyle
+  PresentationStyle,
 } from './content-rules-service';
-import { 
-  LearningProfile, 
-  LearningStyle, 
-  Neurotype, 
-  AdaptationLevel 
+import {
+  LearningProfile,
+  LearningStyle,
+  Neurotype,
+  AdaptationLevel,
 } from './learning-profile-service';
 
 // Initialize Anthropic client
@@ -36,22 +36,22 @@ export const TIER_LIMITS = {
     maxRequests: 50,
     allowDeepResearch: false,
     allowMultimodal: false,
-    allowComplexContent: false
+    allowComplexContent: false,
   },
   standard: {
     maxTokens: 4000,
     maxRequests: 500,
     allowDeepResearch: false,
     allowMultimodal: true,
-    allowComplexContent: true
+    allowComplexContent: true,
   },
   premium: {
     maxTokens: 10000,
     maxRequests: 10000, // Effectively unlimited
     allowDeepResearch: true,
     allowMultimodal: true,
-    allowComplexContent: true
-  }
+    allowComplexContent: true,
+  },
 };
 
 /**
@@ -118,52 +118,48 @@ export async function generateContent(
     topic: string;
     learningObjectives: string[];
     tier: string;
-  }
+  },
 ): Promise<GeneratedContent> {
   try {
     // Retrieve curriculum standards for the subject and grade level
     const curriculumStandards = await getCurriculumStandards(
       contentRequest.subject,
-      contentRequest.gradeLevel
+      contentRequest.gradeLevel,
     );
-    
+
     // Apply tier limits
     const tierKey = contentRequest.tier.toLowerCase() as keyof typeof TIER_LIMITS;
     const tierLimits = TIER_LIMITS[tierKey] || TIER_LIMITS.basic;
-    
+
     // Generate the content prompt based on profile, rules, and request
     const { prompt, systemPrompt } = generateContentPrompt(
       profile,
       contentRules,
       contentRequest,
       curriculumStandards,
-      tierLimits
+      tierLimits,
     );
-    
+
     // Generate content using AI
-    const content = await generateAIContent(
-      prompt,
-      systemPrompt,
-      tierLimits
-    );
-    
+    const content = await generateAIContent(prompt, systemPrompt, tierLimits);
+
     // Process and structure the generated content
     const structuredContent = processGeneratedContent(
       content,
       contentRequest,
       profile,
       contentRules,
-      tierLimits
+      tierLimits,
     );
-    
+
     // If deep research is allowed and requested, add research sources
     if (tierLimits.allowDeepResearch && contentRequest.tier === 'premium') {
       structuredContent.deepResearchSources = await performDeepResearch(
         contentRequest.topic,
-        contentRequest.subject
+        contentRequest.subject,
       );
     }
-    
+
     return structuredContent;
   } catch (error) {
     console.error('Error generating content:', error);
@@ -179,11 +175,11 @@ export async function generateContent(
  */
 async function getCurriculumStandards(
   subject: string,
-  gradeLevel: string
+  gradeLevel: string,
 ): Promise<CurriculumStandards | null> {
   // In a real implementation, this would fetch standards from a database
   // This is a placeholder implementation
-  
+
   return {
     subject,
     gradeLevel,
@@ -193,18 +189,18 @@ async function getCurriculumStandards(
         description: `Understanding core concepts in ${subject} at grade ${gradeLevel}`,
         objectives: [
           `Demonstrate understanding of key ${subject} concepts appropriate for grade ${gradeLevel}`,
-          `Apply ${subject} knowledge to solve grade-appropriate problems`
-        ]
+          `Apply ${subject} knowledge to solve grade-appropriate problems`,
+        ],
       },
       {
         id: `${subject}-${gradeLevel}-2`,
         description: `Critical thinking in ${subject} at grade ${gradeLevel}`,
         objectives: [
           `Analyze ${subject} scenarios using critical thinking skills`,
-          `Evaluate different approaches to solving ${subject} problems`
-        ]
-      }
-    ]
+          `Evaluate different approaches to solving ${subject} problems`,
+        ],
+      },
+    ],
   };
 }
 
@@ -229,7 +225,7 @@ function generateContentPrompt(
     tier: string;
   },
   curriculumStandards: CurriculumStandards | null,
-  tierLimits: typeof TIER_LIMITS.basic
+  tierLimits: typeof TIER_LIMITS.basic,
 ): { prompt: string; systemPrompt: string } {
   // System prompt provides guidelines for the AI about how to generate content
   const systemPrompt = `You are an expert educational content creator specializing in creating personalized learning materials for neurodivergent students. 
@@ -261,7 +257,7 @@ NEUROTYPE: ${profile.neurotype}
 ADAPTATION LEVEL: ${profile.adaptationLevel}
 
 LEARNING OBJECTIVES:
-${contentRequest.learningObjectives.map(obj => `- ${obj}`).join('\n')}
+${contentRequest.learningObjectives.map((obj) => `- ${obj}`).join('\n')}
 
 `;
 
@@ -269,10 +265,13 @@ ${contentRequest.learningObjectives.map(obj => `- ${obj}`).join('\n')}
   if (curriculumStandards) {
     prompt += `
 CURRICULUM STANDARDS:
-${curriculumStandards.standards.map(std => 
-  `- ${std.id}: ${std.description}
-    ${std.objectives.map(obj => `  - ${obj}`).join('\n')}`
-).join('\n')}
+${curriculumStandards.standards
+  .map(
+    (std) =>
+      `- ${std.id}: ${std.description}
+    ${std.objectives.map((obj) => `  - ${obj}`).join('\n')}`,
+  )
+  .join('\n')}
 `;
   }
 
@@ -355,7 +354,7 @@ For Dyslexia:
 - Include audio companions when possible
 `;
       break;
-      
+
     case Neurotype.ADHD:
       prompt += `
 For ADHD:
@@ -368,7 +367,7 @@ For ADHD:
 - Include interactive elements when possible
 `;
       break;
-      
+
     case Neurotype.AUTISM_SPECTRUM:
       prompt += `
 For Autism Spectrum:
@@ -381,7 +380,7 @@ For Autism Spectrum:
 - Use clear transitions between topics
 `;
       break;
-      
+
     default:
       prompt += `
 Standard Adaptations:
@@ -408,7 +407,7 @@ TIER-SPECIFIC REQUIREMENTS (${contentRequest.tier}):
 - Incorporate deep research insights when appropriate
 `;
       break;
-      
+
     case 'standard':
       prompt += `
 - Create balanced, well-rounded content
@@ -417,7 +416,7 @@ TIER-SPECIFIC REQUIREMENTS (${contentRequest.tier}):
 - Make content engaging and interactive when possible
 `;
       break;
-      
+
     case 'basic':
       prompt += `
 - Focus on core educational content
@@ -454,25 +453,23 @@ Format the content to be directly usable in an educational setting, with appropr
 async function generateAIContent(
   prompt: string,
   systemPrompt: string,
-  tierLimits: typeof TIER_LIMITS.basic
+  tierLimits: typeof TIER_LIMITS.basic,
 ): Promise<string> {
   try {
     // Use different max tokens based on tier
     const maxTokens = tierLimits.maxTokens;
-    
+
     // Generate content using Anthropic Claude
     const response = await anthropic.messages.create({
-      model: "claude-3-7-sonnet-20250219",
+      model: 'claude-3-7-sonnet-20250219',
       max_tokens: maxTokens,
       system: systemPrompt,
-      messages: [
-        { role: "user", content: prompt }
-      ]
+      messages: [{ role: 'user', content: prompt }],
     });
-    
+
     // Extract the generated content
     const content = response.content[0].text;
-    
+
     return content;
   } catch (error) {
     console.error('Error generating AI content:', error);
@@ -501,26 +498,26 @@ function processGeneratedContent(
   },
   profile: LearningProfile,
   contentRules: ContentRules,
-  tierLimits: typeof TIER_LIMITS.basic
+  tierLimits: typeof TIER_LIMITS.basic,
 ): GeneratedContent {
   // Extract title from content (assuming first line is the title)
   const lines = content.split('\n');
   let title = lines[0].replace(/^#\s*/, '');
-  
+
   if (!title || title.length < 3) {
     title = `${contentRequest.topic} - ${contentRequest.subject} (Grade ${contentRequest.gradeLevel})`;
   }
-  
+
   // Generate content ID
   const contentId = `content-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  
+
   // Extract sections from content
   // This is a simple implementation - in a real system, this would be more sophisticated
   const sections = extractContentSections(content, contentRules.primaryFormat);
-  
+
   // Compile adaptations applied
   const adaptations = compileAdaptations(contentRules, profile);
-  
+
   // Create the structured content
   const structuredContent: GeneratedContent = {
     contentId,
@@ -537,10 +534,10 @@ function processGeneratedContent(
       tier: contentRequest.tier,
       targetNeurotype: profile.neurotype,
       primaryLearningStyle: profile.primaryStyle,
-      curriculumStandards: contentRequest.learningObjectives
-    }
+      curriculumStandards: contentRequest.learningObjectives,
+    },
   };
-  
+
   return structuredContent;
 }
 
@@ -552,14 +549,19 @@ function processGeneratedContent(
  */
 function extractContentSections(
   content: string,
-  primaryFormat: ContentFormat
+  primaryFormat: ContentFormat,
 ): GeneratedContent['sections'] {
   const sections: GeneratedContent['sections'] = [];
-  
+
   // Split content by headers (lines starting with #)
   const lines = content.split('\n');
-  let currentSection: { title: string; content: string; format: ContentFormat; adaptations: string[] } | null = null;
-  
+  let currentSection: {
+    title: string;
+    content: string;
+    format: ContentFormat;
+    adaptations: string[];
+  } | null = null;
+
   for (const line of lines) {
     // Check if line is a header (starts with # or ##)
     if (line.match(/^#{1,3}\s+/)) {
@@ -567,32 +569,35 @@ function extractContentSections(
       if (currentSection) {
         sections.push(currentSection);
       }
-      
+
       // Create a new section
       const title = line.replace(/^#{1,3}\s+/, '');
       currentSection = {
         title,
         content: '',
         format: primaryFormat,
-        adaptations: []
+        adaptations: [],
       };
-      
+
       // Determine format based on section title
-      if (title.toLowerCase().includes('visual') || 
-          title.toLowerCase().includes('diagram') || 
-          title.toLowerCase().includes('chart')) {
+      if (
+        title.toLowerCase().includes('visual') ||
+        title.toLowerCase().includes('diagram') ||
+        title.toLowerCase().includes('chart')
+      ) {
         currentSection.format = ContentFormat.VISUAL;
-      } else if (title.toLowerCase().includes('audio') || 
-                 title.toLowerCase().includes('listen')) {
+      } else if (title.toLowerCase().includes('audio') || title.toLowerCase().includes('listen')) {
         currentSection.format = ContentFormat.AUDIO;
       } else if (title.toLowerCase().includes('video')) {
         currentSection.format = ContentFormat.VIDEO;
-      } else if (title.toLowerCase().includes('activity') || 
-                 title.toLowerCase().includes('exercise') || 
-                 title.toLowerCase().includes('interactive')) {
+      } else if (
+        title.toLowerCase().includes('activity') ||
+        title.toLowerCase().includes('exercise') ||
+        title.toLowerCase().includes('interactive')
+      ) {
         currentSection.format = ContentFormat.INTERACTIVE;
       }
-    } 
+    }
     // If not a header and we have a current section, add to its content
     else if (currentSection) {
       currentSection.content += line + '\n';
@@ -603,26 +608,26 @@ function extractContentSections(
         title: 'Introduction',
         content: line + '\n',
         format: primaryFormat,
-        adaptations: []
+        adaptations: [],
       };
     }
   }
-  
+
   // Add the last section if it exists
   if (currentSection) {
     sections.push(currentSection);
   }
-  
+
   // If no sections were created, create a default section with all content
   if (sections.length === 0) {
     sections.push({
       title: 'Content',
       content,
       format: primaryFormat,
-      adaptations: []
+      adaptations: [],
     });
   }
-  
+
   return sections;
 }
 
@@ -632,12 +637,9 @@ function extractContentSections(
  * @param profile Learning profile
  * @returns Array of adaptation descriptions
  */
-function compileAdaptations(
-  contentRules: ContentRules,
-  profile: LearningProfile
-): string[] {
+function compileAdaptations(contentRules: ContentRules, profile: LearningProfile): string[] {
   const adaptations: string[] = [];
-  
+
   // Text adaptations
   if (contentRules.textAdaptations.font !== 'standard') {
     adaptations.push(`Using ${contentRules.textAdaptations.font} font`);
@@ -657,7 +659,7 @@ function compileAdaptations(
   if (contentRules.textAdaptations.useReadingGuides) {
     adaptations.push('Including reading guides');
   }
-  
+
   // Visual adaptations
   if (contentRules.visualAdaptations.useDiagrams) {
     adaptations.push('Including explanatory diagrams');
@@ -677,7 +679,7 @@ function compileAdaptations(
   if (contentRules.visualAdaptations.visualSchedules) {
     adaptations.push('Including visual schedules');
   }
-  
+
   // Audio adaptations
   if (contentRules.audioAdaptations.provideAudioVersions) {
     adaptations.push('Providing audio versions of content');
@@ -688,7 +690,7 @@ function compileAdaptations(
   if (contentRules.audioAdaptations.emphasizeKeyInformation) {
     adaptations.push('Emphasizing key information in audio');
   }
-  
+
   // Interactive adaptations
   if (contentRules.interactiveAdaptations.requireHandsOn) {
     adaptations.push('Including hands-on activities');
@@ -702,7 +704,7 @@ function compileAdaptations(
   if (contentRules.interactiveAdaptations.provideSimulations) {
     adaptations.push('Including interactive simulations');
   }
-  
+
   // Organizational adaptations
   if (contentRules.organizationalAdaptations.chunkInformation) {
     adaptations.push('Content chunked into manageable sections');
@@ -716,7 +718,7 @@ function compileAdaptations(
   if (contentRules.organizationalAdaptations.breakComplexTasks) {
     adaptations.push('Complex tasks broken into steps');
   }
-  
+
   // Focus adaptations
   if (contentRules.focusAdaptations.minimizeDistractingElements) {
     adaptations.push('Minimizing distracting elements');
@@ -730,7 +732,7 @@ function compileAdaptations(
   if (contentRules.focusAdaptations.emphasizeImportantContent) {
     adaptations.push('Emphasizing important content');
   }
-  
+
   // Neurotype-specific adaptations
   switch (profile.neurotype) {
     case Neurotype.DYSLEXIA:
@@ -743,7 +745,7 @@ function compileAdaptations(
       adaptations.push('Autism-friendly structure and organization');
       break;
   }
-  
+
   // Learning style adaptations
   switch (profile.primaryStyle) {
     case LearningStyle.VISUAL:
@@ -759,7 +761,7 @@ function compileAdaptations(
       adaptations.push('Reading/writing learning style emphasis');
       break;
   }
-  
+
   return adaptations;
 }
 
@@ -771,25 +773,23 @@ function compileAdaptations(
  */
 async function performDeepResearch(
   topic: string,
-  subject: string
+  subject: string,
 ): Promise<GeneratedContent['deepResearchSources']> {
   try {
     // In a premium implementation, this would make API calls to external research sources
     // This is a placeholder implementation
-    
+
     const researchPrompt = `Provide 3-5 high-quality educational resources related to "${topic}" in the subject of "${subject}" that would be valuable for creating comprehensive educational content. For each resource, provide a title, URL, and brief explanation of its relevance.`;
-    
+
     const response = await anthropic.messages.create({
-      model: "claude-3-7-sonnet-20250219",
+      model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1000,
-      messages: [
-        { role: "user", content: researchPrompt }
-      ]
+      messages: [{ role: 'user', content: researchPrompt }],
     });
-    
+
     // Extract the research sources from the response
     const sources = extractResearchSources(response.content[0].text);
-    
+
     return sources;
   } catch (error) {
     console.error('Error performing deep research:', error);
@@ -804,33 +804,33 @@ async function performDeepResearch(
  */
 function extractResearchSources(responseText: string): GeneratedContent['deepResearchSources'] {
   const sources: GeneratedContent['deepResearchSources'] = [];
-  
+
   // Split the response into lines
   const lines = responseText.split('\n');
-  
+
   let currentSource: {
     title: string;
     url: string;
     relevance: string;
   } | null = null;
-  
+
   for (const line of lines) {
     // Look for lines that might contain a title (typically numbered or bullet points)
     const titleMatch = line.match(/^\d+\.\s+(.+)/) || line.match(/^[\*\-]\s+(.+)/);
-    
+
     if (titleMatch) {
       // If we have a current source, add it to the array
       if (currentSource && currentSource.title && currentSource.url) {
         sources.push(currentSource);
       }
-      
+
       // Create a new source with the title
       currentSource = {
         title: titleMatch[1],
         url: '',
-        relevance: ''
+        relevance: '',
       };
-    } 
+    }
     // Look for URLs
     else if (currentSource && line.includes('http')) {
       const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
@@ -847,12 +847,12 @@ function extractResearchSources(responseText: string): GeneratedContent['deepRes
       }
     }
   }
-  
+
   // Add the last source if it exists
   if (currentSource && currentSource.title && currentSource.url) {
     sources.push(currentSource);
   }
-  
+
   return sources;
 }
 
@@ -864,7 +864,7 @@ function extractResearchSources(responseText: string): GeneratedContent['deepRes
  */
 export async function hasReachedContentGenerationLimit(
   userId: number,
-  tier: string
+  tier: string,
 ): Promise<boolean> {
   try {
     // In a real implementation, this would check a database for usage statistics

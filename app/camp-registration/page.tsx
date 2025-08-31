@@ -1,12 +1,22 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { MapPin, Calendar, Users, Shield, Trophy, CheckCircle, Star, ArrowRight, User } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
+import {
+  MapPin,
+  Calendar,
+  Users,
+  Shield,
+  Trophy,
+  CheckCircle,
+  Star,
+  ArrowRight,
+  User,
+} from 'lucide-react';
 
 export default function CampRegistrationPage() {
-  const [selectedCamp, setSelectedCamp] = useState('')
-  const [currentUser, setCurrentUser] = useState(null)
-  const [isNewUser, setIsNewUser] = useState(false)
+  const [selectedCamp, setSelectedCamp] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isNewUser, setIsNewUser] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -24,29 +34,31 @@ export default function CampRegistrationPage() {
     actionNetworkOptIn: true,
     createAccount: false,
     username: '',
-    password: ''
-  })
+    password: '',
+  });
 
   // Check if user is logged in
   useEffect(() => {
     fetch('/api/auth/me')
-      .then(res => res.ok ? res.json() : null)
-      .then(user => {
+      .then((res) => (res.ok ? res.json() : null))
+      .then((user) => {
         if (user) {
-          setCurrentUser(user)
+          setCurrentUser(user);
           // Pre-fill form with user data
-          setFormData(prev => ({
+          setFormData((prev) => ({
             ...prev,
             firstName: user.firstName || '',
             lastName: user.lastName || '',
             email: user.email || '',
-            dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
-            position: user.position || ''
-          }))
+            dateOfBirth: user.dateOfBirth
+              ? new Date(user.dateOfBirth).toISOString().split('T')[0]
+              : '',
+            position: user.position || '',
+          }));
         }
       })
-      .catch(() => {}) // Ignore errors, user not logged in
-  }, [])
+      .catch(() => {}); // Ignore errors, user not logged in
+  }, []);
 
   const camps = [
     {
@@ -55,23 +67,24 @@ export default function CampRegistrationPage() {
       location: 'Merida, Mexico',
       dates: 'July 15-20, 2025',
       price: '$899',
-      description: 'Elite football training in beautiful Merida with professional coaches and GAR analysis'
+      description:
+        'Elite football training in beautiful Merida with professional coaches and GAR analysis',
     },
     {
       id: 'merida-winter-2025',
       name: 'Merida Winter Skills Camp',
-      location: 'Merida, Mexico', 
+      location: 'Merida, Mexico',
       dates: 'December 20-23, 2025',
       price: '$699',
-      description: 'Intensive skills development camp with personalized coaching'
-    }
-  ]
+      description: 'Intensive skills development camp with personalized coaching',
+    },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    const selectedCampData = camps.find(c => c.id === selectedCamp)
-    if (!selectedCampData) return
+    e.preventDefault();
+
+    const selectedCampData = camps.find((c) => c.id === selectedCamp);
+    if (!selectedCampData) return;
 
     // If user wants to create account or is not logged in, redirect to registration
     if (formData.createAccount || !currentUser) {
@@ -79,17 +92,17 @@ export default function CampRegistrationPage() {
         ...formData,
         campId: selectedCamp,
         campName: selectedCampData.name,
-        campPrice: selectedCampData.price
-      }
-      
+        campPrice: selectedCampData.price,
+      };
+
       // Store camp registration data in sessionStorage
-      sessionStorage.setItem('campRegistration', JSON.stringify(registrationData))
-      
+      sessionStorage.setItem('campRegistration', JSON.stringify(registrationData));
+
       // Redirect to registration with camp context
-      window.location.href = `/register?camp=${selectedCamp}&redirect=camp-registration`
-      return
+      window.location.href = `/register?camp=${selectedCamp}&redirect=camp-registration`;
+      return;
     }
-    
+
     const registrationData = {
       campId: selectedCamp,
       campName: selectedCampData.name,
@@ -112,32 +125,34 @@ export default function CampRegistrationPage() {
       registrationFee: parseFloat(selectedCampData.price.replace('$', '')),
       createAccount: !currentUser && formData.createAccount,
       username: formData.username,
-      password: formData.password
-    }
+      password: formData.password,
+    };
 
     try {
       const response = await fetch('/api/camp-registration', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(registrationData)
-      })
+        body: JSON.stringify(registrationData),
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (response.ok) {
-        alert(`Registration submitted successfully! ${result.accountCreated ? 'Your Go4It account has been created. ' : ''}You will receive a confirmation email shortly.`)
+        alert(
+          `Registration submitted successfully! ${result.accountCreated ? 'Your Go4It account has been created. ' : ''}You will receive a confirmation email shortly.`,
+        );
         // Redirect to user dashboard or confirmation page
         if (result.accountCreated) {
-          window.location.href = '/dashboard'
+          window.location.href = '/dashboard';
         }
       } else {
-        alert(result.error || 'Registration failed. Please try again.')
+        alert(result.error || 'Registration failed. Please try again.');
       }
     } catch (error) {
-      console.error('Registration error:', error)
-      alert('Registration failed. Please try again.')
+      console.error('Registration error:', error);
+      alert('Registration failed. Please try again.');
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -155,13 +170,13 @@ export default function CampRegistrationPage() {
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
               <h2 className="text-2xl font-semibold mb-4 text-white">Select Your Camp</h2>
-              
+
               {camps.map((camp) => (
-                <div 
+                <div
                   key={camp.id}
                   className={`p-4 rounded-lg border cursor-pointer transition-all mb-4 ${
-                    selectedCamp === camp.id 
-                      ? 'border-blue-500 bg-blue-900/20' 
+                    selectedCamp === camp.id
+                      ? 'border-blue-500 bg-blue-900/20'
                       : 'border-slate-600 hover:border-slate-500'
                   }`}
                   onClick={() => setSelectedCamp(camp.id)}
@@ -170,7 +185,7 @@ export default function CampRegistrationPage() {
                     <h3 className="font-semibold text-white">{camp.name}</h3>
                     <span className="text-blue-400 font-bold">{camp.price}</span>
                   </div>
-                  
+
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center text-slate-300">
                       <MapPin className="w-4 h-4 mr-2" />
@@ -181,7 +196,7 @@ export default function CampRegistrationPage() {
                       {camp.dates}
                     </div>
                   </div>
-                  
+
                   <p className="text-slate-400 text-sm mt-3">{camp.description}</p>
                 </div>
               ))}
@@ -190,7 +205,7 @@ export default function CampRegistrationPage() {
             {/* Benefits */}
             <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
               <h3 className="text-xl font-semibold mb-4 text-white">Included Benefits</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-400 mr-3" />
@@ -220,7 +235,7 @@ export default function CampRegistrationPage() {
           <div className="lg:col-span-2">
             <div className="bg-slate-800 p-8 rounded-xl border border-slate-700">
               <h2 className="text-2xl font-semibold mb-6 text-white">Registration Form</h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Personal Information */}
                 <div className="grid md:grid-cols-2 gap-4">
@@ -232,7 +247,7 @@ export default function CampRegistrationPage() {
                       type="text"
                       required
                       value={formData.firstName}
-                      onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                       className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                     />
                   </div>
@@ -244,7 +259,7 @@ export default function CampRegistrationPage() {
                       type="text"
                       required
                       value={formData.lastName}
-                      onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                       className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                     />
                   </div>
@@ -252,26 +267,22 @@ export default function CampRegistrationPage() {
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Email *
-                    </label>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Email *</label>
                     <input
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-2">
-                      Phone *
-                    </label>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Phone *</label>
                     <input
                       type="tel"
                       required
                       value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                     />
                   </div>
@@ -285,15 +296,17 @@ export default function CampRegistrationPage() {
                     type="date"
                     required
                     value={formData.dateOfBirth}
-                    onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                     className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                   />
                 </div>
 
                 {/* Parent/Guardian Information */}
                 <div className="border-t border-slate-600 pt-6">
-                  <h3 className="text-lg font-semibold mb-4 text-white">Parent/Guardian Information</h3>
-                  
+                  <h3 className="text-lg font-semibold mb-4 text-white">
+                    Parent/Guardian Information
+                  </h3>
+
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -303,7 +316,7 @@ export default function CampRegistrationPage() {
                         type="text"
                         required
                         value={formData.parentName}
-                        onChange={(e) => setFormData({...formData, parentName: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, parentName: e.target.value })}
                         className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                       />
                     </div>
@@ -315,7 +328,7 @@ export default function CampRegistrationPage() {
                         type="email"
                         required
                         value={formData.parentEmail}
-                        onChange={(e) => setFormData({...formData, parentEmail: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, parentEmail: e.target.value })}
                         className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                       />
                     </div>
@@ -330,7 +343,9 @@ export default function CampRegistrationPage() {
                         type="text"
                         required
                         value={formData.emergencyContact}
-                        onChange={(e) => setFormData({...formData, emergencyContact: e.target.value})}
+                        onChange={(e) =>
+                          setFormData({ ...formData, emergencyContact: e.target.value })
+                        }
                         className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                       />
                     </div>
@@ -342,7 +357,9 @@ export default function CampRegistrationPage() {
                         type="tel"
                         required
                         value={formData.emergencyPhone}
-                        onChange={(e) => setFormData({...formData, emergencyPhone: e.target.value})}
+                        onChange={(e) =>
+                          setFormData({ ...formData, emergencyPhone: e.target.value })
+                        }
                         className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                       />
                     </div>
@@ -352,7 +369,7 @@ export default function CampRegistrationPage() {
                 {/* Football Information */}
                 <div className="border-t border-slate-600 pt-6">
                   <h3 className="text-lg font-semibold mb-4 text-white">Football Information</h3>
-                  
+
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -360,7 +377,7 @@ export default function CampRegistrationPage() {
                       </label>
                       <select
                         value={formData.position}
-                        onChange={(e) => setFormData({...formData, position: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, position: e.target.value })}
                         className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                       >
                         <option value="">Select Position</option>
@@ -382,7 +399,7 @@ export default function CampRegistrationPage() {
                       </label>
                       <select
                         value={formData.experience}
-                        onChange={(e) => setFormData({...formData, experience: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                         className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                       >
                         <option value="">Select Experience</option>
@@ -398,26 +415,29 @@ export default function CampRegistrationPage() {
                 {!currentUser && (
                   <div className="border-t border-slate-600 pt-6">
                     <h3 className="text-lg font-semibold mb-4 text-white">Go4It Membership</h3>
-                    
+
                     <div className="p-4 bg-blue-900/20 border border-blue-700 rounded-lg mb-4">
                       <div className="flex items-center mb-3">
                         <User className="w-5 h-5 text-blue-400 mr-2" />
                         <span className="font-semibold text-blue-400">Create Go4It Account</span>
                       </div>
                       <p className="text-sm text-slate-300 mb-4">
-                        Join Go4It to access exclusive features, track your progress, and connect with coaches and recruiters.
+                        Join Go4It to access exclusive features, track your progress, and connect
+                        with coaches and recruiters.
                       </p>
-                      
+
                       <div className="flex items-center mb-4">
                         <input
                           type="checkbox"
                           checked={formData.createAccount}
-                          onChange={(e) => setFormData({...formData, createAccount: e.target.checked})}
+                          onChange={(e) =>
+                            setFormData({ ...formData, createAccount: e.target.checked })
+                          }
                           className="mr-3"
                         />
                         <span className="text-white">Create Go4It account (recommended)</span>
                       </div>
-                      
+
                       {formData.createAccount && (
                         <div className="grid md:grid-cols-2 gap-4">
                           <div>
@@ -428,7 +448,9 @@ export default function CampRegistrationPage() {
                               type="text"
                               required={formData.createAccount}
                               value={formData.username}
-                              onChange={(e) => setFormData({...formData, username: e.target.value})}
+                              onChange={(e) =>
+                                setFormData({ ...formData, username: e.target.value })
+                              }
                               className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                             />
                           </div>
@@ -440,7 +462,9 @@ export default function CampRegistrationPage() {
                               type="password"
                               required={formData.createAccount}
                               value={formData.password}
-                              onChange={(e) => setFormData({...formData, password: e.target.value})}
+                              onChange={(e) =>
+                                setFormData({ ...formData, password: e.target.value })
+                              }
                               className="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:border-blue-500 focus:outline-none"
                             />
                           </div>
@@ -453,18 +477,22 @@ export default function CampRegistrationPage() {
                 {/* Add-ons and Benefits */}
                 <div className="border-t border-slate-600 pt-6">
                   <h3 className="text-lg font-semibold mb-4 text-white">Included Benefits</h3>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center p-4 bg-green-900/20 border border-green-700 rounded-lg">
                       <input
                         type="checkbox"
                         checked={formData.garAnalysis}
-                        onChange={(e) => setFormData({...formData, garAnalysis: e.target.checked})}
+                        onChange={(e) =>
+                          setFormData({ ...formData, garAnalysis: e.target.checked })
+                        }
                         className="mr-3"
                       />
                       <div>
                         <div className="font-semibold text-green-400">GAR Analysis ($49 value)</div>
-                        <div className="text-sm text-slate-300">Professional video analysis with Growth and Ability Rating</div>
+                        <div className="text-sm text-slate-300">
+                          Professional video analysis with Growth and Ability Rating
+                        </div>
                       </div>
                     </div>
 
@@ -472,12 +500,18 @@ export default function CampRegistrationPage() {
                       <input
                         type="checkbox"
                         checked={formData.usaFootballMembership}
-                        onChange={(e) => setFormData({...formData, usaFootballMembership: e.target.checked})}
+                        onChange={(e) =>
+                          setFormData({ ...formData, usaFootballMembership: e.target.checked })
+                        }
                         className="mr-3"
                       />
                       <div>
-                        <div className="font-semibold text-blue-400">USA Football Membership & Insurance</div>
-                        <div className="text-sm text-slate-300">Official membership with comprehensive insurance coverage</div>
+                        <div className="font-semibold text-blue-400">
+                          USA Football Membership & Insurance
+                        </div>
+                        <div className="text-sm text-slate-300">
+                          Official membership with comprehensive insurance coverage
+                        </div>
                       </div>
                     </div>
 
@@ -485,12 +519,16 @@ export default function CampRegistrationPage() {
                       <input
                         type="checkbox"
                         checked={formData.actionNetworkOptIn}
-                        onChange={(e) => setFormData({...formData, actionNetworkOptIn: e.target.checked})}
+                        onChange={(e) =>
+                          setFormData({ ...formData, actionNetworkOptIn: e.target.checked })
+                        }
                         className="mr-3"
                       />
                       <div>
                         <div className="font-semibold text-white">Join Action Network</div>
-                        <div className="text-sm text-slate-300">Receive camp updates and football opportunities</div>
+                        <div className="text-sm text-slate-300">
+                          Receive camp updates and football opportunities
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -506,7 +544,7 @@ export default function CampRegistrationPage() {
                     Complete Registration
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </button>
-                  
+
                   {!selectedCamp && (
                     <p className="text-red-400 text-sm mt-2">Please select a camp to continue</p>
                   )}
@@ -517,5 +555,5 @@ export default function CampRegistrationPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

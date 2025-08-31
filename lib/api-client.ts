@@ -18,11 +18,11 @@ class ApiClient {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
-    
+
     if (this.token) {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
-    
+
     return headers;
   }
 
@@ -37,7 +37,7 @@ class ApiClient {
     };
 
     const response = await fetch(url, config);
-    
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Network error' }));
       throw new Error(error.error || `HTTP ${response.status}`);
@@ -52,12 +52,12 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-    
+
     this.token = response.token;
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth-token', response.token);
     }
-    
+
     return response;
   }
 
@@ -75,12 +75,12 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(userData),
     });
-    
+
     this.token = response.token;
     if (typeof window !== 'undefined') {
       localStorage.setItem('auth-token', response.token);
     }
-    
+
     return response;
   }
 
@@ -133,7 +133,7 @@ class ApiClient {
     const params = new URLSearchParams();
     if (sport) params.append('sport', sport);
     params.append('limit', limit.toString());
-    
+
     return this.request<any[]>(`/api/rankings?${params}`);
   }
 
@@ -142,7 +142,7 @@ class ApiClient {
     const params = new URLSearchParams();
     if (sport) params.append('sport', sport);
     params.append('minGAR', minGAR.toString());
-    
+
     return this.request<any[]>(`/api/verified-athletes?${params}`);
   }
 
@@ -271,7 +271,7 @@ class ApiClient {
     params.append('sport', sport);
     params.append('academicLevel', academicLevel);
     if (location) params.append('location', location);
-    
+
     return this.request<any[]>(`/api/recruiting/recommendations?${params}`);
   }
 

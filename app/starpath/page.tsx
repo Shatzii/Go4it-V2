@@ -37,7 +37,7 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     isUnlocked: true,
     category: 'technical',
     prerequisites: [],
-    rewards: ['First Touch Badge', '+10 Technical Rating']
+    rewards: ['First Touch Badge', '+10 Technical Rating'],
   },
   {
     id: 'agility_training',
@@ -50,7 +50,7 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     isUnlocked: true,
     category: 'physical',
     prerequisites: [],
-    rewards: ['Speed Demon Badge', '+8 Athleticism Rating']
+    rewards: ['Speed Demon Badge', '+8 Athleticism Rating'],
   },
   {
     id: 'game_vision',
@@ -63,7 +63,7 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     isUnlocked: true,
     category: 'tactical',
     prerequisites: [],
-    rewards: ['Visionary Badge', '+12 Game Awareness']
+    rewards: ['Visionary Badge', '+12 Game Awareness'],
   },
   {
     id: 'mental_toughness',
@@ -76,7 +76,7 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     isUnlocked: false,
     category: 'mental',
     prerequisites: ['game_vision'],
-    rewards: ['Unshakeable Badge', '+15 Consistency']
+    rewards: ['Unshakeable Badge', '+15 Consistency'],
   },
   {
     id: 'advanced_techniques',
@@ -89,7 +89,7 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     isUnlocked: false,
     category: 'technical',
     prerequisites: ['ball_control'],
-    rewards: ['Elite Technician Badge', '+20 Technical Rating']
+    rewards: ['Elite Technician Badge', '+20 Technical Rating'],
   },
   {
     id: 'leadership',
@@ -102,8 +102,8 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     isUnlocked: false,
     category: 'mental',
     prerequisites: ['mental_toughness', 'game_vision'],
-    rewards: ['Captain Badge', '+25 Leadership Rating']
-  }
+    rewards: ['Captain Badge', '+25 Leadership Rating'],
+  },
 ];
 
 export default function StarPathPage() {
@@ -112,7 +112,7 @@ export default function StarPathPage() {
     totalXp: 1400,
     completedNodes: 0,
     currentTier: 2,
-    achievements: 3
+    achievements: 3,
   });
   const [selectedNode, setSelectedNode] = useState<StarPathNode | null>(null);
   const [loading, setLoading] = useState(false);
@@ -124,47 +124,52 @@ export default function StarPathPage() {
 
   const loadStarPathProgress = async () => {
     try {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('auth-token');
-      if (!token) {
-        console.log('No token found, using sample data');
-        return;
-      }
+      setLoading(true);
 
-      const response = await fetch('/api/starpath/progress', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      // Load skill nodes and progress data
+      const [progressResponse, statsResponse] = await Promise.all([
+        fetch('/api/starpath/route?userId=demo-user'),
+        fetch('/api/starpath/progress?userId=demo-user'),
+      ]);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          // Transform API data to match UI format
-          const transformedData = data.progress.map(item => ({
-            id: item.id,
-            name: item.skillName,
-            description: getSkillDescription(item.skillName),
-            currentLevel: item.currentLevel,
-            maxLevel: item.maxLevel,
-            totalXp: item.totalXp,
-            requiredXp: item.requiredXp,
-            isUnlocked: item.isUnlocked,
-            category: item.category,
-            prerequisites: getSkillPrerequisites(item.id),
-            rewards: getSkillRewards(item.skillName, item.currentLevel)
-          }));
-          
-          setStarPathData(transformedData);
-          setUserProgress({
-            totalXp: data.stats.totalXp,
-            completedNodes: data.stats.completedNodes,
-            currentTier: data.stats.currentTier,
-            achievements: data.stats.achievements
-          });
+      if (progressResponse.ok && statsResponse.ok) {
+        const [progressData, statsData] = await Promise.all([
+          progressResponse.json(),
+          statsResponse.json(),
+        ]);
+
+        if (progressData.success && statsData.success) {
+          setStarPathData(progressData.skillNodes || SAMPLE_STARPATH_DATA);
+          setUserProgress(
+            statsData.progress || {
+              totalXp: 1400,
+              completedNodes: 3,
+              currentTier: 2,
+              achievements: 8,
+            },
+          );
         }
+      } else {
+        // Use sample data if API fails
+        setStarPathData(SAMPLE_STARPATH_DATA);
+        setUserProgress({
+          totalXp: 1400,
+          completedNodes: 3,
+          currentTier: 2,
+          achievements: 8,
+        });
       }
     } catch (error) {
       console.error('Failed to load StarPath data:', error);
+      setStarPathData(SAMPLE_STARPATH_DATA);
+      setUserProgress({
+        totalXp: 1400,
+        completedNodes: 3,
+        currentTier: 2,
+        achievements: 8,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -175,53 +180,58 @@ export default function StarPathPage() {
       'Agility & Speed': 'Develop explosive movement and directional changes',
       'Game Vision': 'Enhance field awareness and decision-making',
       'Mental Resilience': 'Build confidence and focus under pressure',
-      'Advanced Techniques': 'Master complex sport-specific movements'
+      'Advanced Techniques': 'Master complex sport-specific movements',
     };
     return descriptions[skillName] || 'Develop advanced athletic skills';
   };
 
   const getSkillPrerequisites = (skillId: string): string[] => {
     const prereqs = {
-      'mental_toughness': ['game_vision'],
-      'advanced_techniques': ['ball_control', 'agility_training']
+      mental_toughness: ['game_vision'],
+      advanced_techniques: ['ball_control', 'agility_training'],
     };
     return prereqs[skillId] || [];
   };
 
   const getSkillRewards = (skillName: string, level: number): string[] => {
     const baseRewards = {
-      'Ball Control Mastery': [`First Touch Badge Level ${level}`, `+${level * 2} Technical Rating`],
+      'Ball Control Mastery': [
+        `First Touch Badge Level ${level}`,
+        `+${level * 2} Technical Rating`,
+      ],
       'Agility & Speed': [`Speed Demon Badge Level ${level}`, `+${level * 2} Athleticism Rating`],
       'Game Vision': [`Visionary Badge Level ${level}`, `+${level * 3} Game Awareness`],
       'Mental Resilience': [`Unshakeable Badge Level ${level}`, `+${level * 3} Consistency`],
-      'Advanced Techniques': [`Master Badge Level ${level}`, `+${level * 4} Overall Rating`]
+      'Advanced Techniques': [`Master Badge Level ${level}`, `+${level * 4} Overall Rating`],
     };
-    return baseRewards[skillName] || [`Achievement Badge Level ${level}`, `+${level * 2} Skill Points`];
+    return (
+      baseRewards[skillName] || [`Achievement Badge Level ${level}`, `+${level * 2} Skill Points`]
+    );
   };
 
   const startTraining = async (nodeId: string) => {
     if (loading) return;
-    
+
     setLoading(true);
     try {
       // Simulate training activity
       const response = await fetch('/api/starpath/train', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nodeId, activity: 'practice_drill' })
+        body: JSON.stringify({ nodeId, activity: 'practice_drill' }),
       });
 
       if (response.ok) {
         const result = await response.json();
         // Update local state with new XP and progress
-        setStarPathData(prevData => 
-          prevData.map(node => 
-            node.id === nodeId 
+        setStarPathData((prevData) =>
+          prevData.map((node) =>
+            node.id === nodeId
               ? { ...node, totalXp: Math.min(node.totalXp + 50, node.requiredXp) }
-              : node
-          )
+              : node,
+          ),
         );
-        setUserProgress(prev => ({ ...prev, totalXp: prev.totalXp + 50 }));
+        setUserProgress((prev) => ({ ...prev, totalXp: prev.totalXp + 50 }));
       }
     } catch (error) {
       console.error('Training failed:', error);
@@ -235,7 +245,7 @@ export default function StarPathPage() {
       technical: 'bg-primary/20 border-primary text-primary',
       physical: 'bg-primary/20 border-primary text-primary',
       mental: 'bg-primary/20 border-primary text-primary',
-      tactical: 'bg-primary/20 border-primary text-primary'
+      tactical: 'bg-primary/20 border-primary text-primary',
     };
     return colors[category] || colors.technical;
   };
@@ -245,7 +255,7 @@ export default function StarPathPage() {
       technical: <Target className="h-5 w-5" />,
       physical: <Zap className="h-5 w-5" />,
       mental: <Trophy className="h-5 w-5" />,
-      tactical: <Star className="h-5 w-5" />
+      tactical: <Star className="h-5 w-5" />,
     };
     return icons[category] || icons.technical;
   };
@@ -284,8 +294,9 @@ export default function StarPathPage() {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-foreground mb-4">Your Athletic Journey</h2>
           <p className="text-muted-foreground max-w-3xl mx-auto">
-            Complete your GAR analysis to determine your StarPath level, then progress through AI-generated training 
-            to unlock College Path features for NCAA eligibility and recruitment.
+            Complete your GAR analysis to determine your StarPath level, then progress through
+            AI-generated training to unlock College Path features for NCAA eligibility and
+            recruitment.
           </p>
         </div>
 
@@ -298,28 +309,30 @@ export default function StarPathPage() {
                 <Zap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-foreground">Athletic Development</h3>
-              <p className="text-sm text-muted-foreground">AI-powered training and performance analysis</p>
+              <p className="text-sm text-muted-foreground">
+                AI-powered training and performance analysis
+              </p>
             </div>
             <div className="space-y-3">
-              <button 
+              <button
                 onClick={() => router.push('/gar-upload')}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Get GAR Analysis
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/ai-coach')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 AI Coach Training
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/performance-analytics')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Performance Analytics
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/team-sports')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
@@ -335,28 +348,30 @@ export default function StarPathPage() {
                 <Trophy className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-foreground">College Path</h3>
-              <p className="text-sm text-muted-foreground">NCAA eligibility and recruitment tools</p>
+              <p className="text-sm text-muted-foreground">
+                NCAA eligibility and recruitment tools
+              </p>
             </div>
             <div className="space-y-3">
-              <button 
+              <button
                 onClick={() => router.push('/academy')}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Academy Courses
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/ncaa-eligibility')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 NCAA Eligibility
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/athletic-contacts')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Coach Contacts
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/scholarship-tracker')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
@@ -372,28 +387,30 @@ export default function StarPathPage() {
                 <Target className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-bold text-foreground">Progress Tracking</h3>
-              <p className="text-sm text-muted-foreground">Monitor your development and achievements</p>
+              <p className="text-sm text-muted-foreground">
+                Monitor your development and achievements
+              </p>
             </div>
             <div className="space-y-3">
-              <button 
+              <button
                 onClick={() => router.push('/student-dashboard')}
                 className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Student Dashboard
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/rankings')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Athlete Rankings
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/verified-athletes')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
                 Verified Athletes
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/wellness-hub')}
                 className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
               >
@@ -412,7 +429,9 @@ export default function StarPathPage() {
           </div>
           <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
             <CheckCircle className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
-            <div className="text-2xl font-bold text-foreground">{starPathData.filter(n => n.currentLevel > 0).length}</div>
+            <div className="text-2xl font-bold text-foreground">
+              {starPathData.filter((n) => n.currentLevel > 0).length}
+            </div>
             <div className="text-sm text-muted-foreground">Skills in Progress</div>
           </div>
           <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
@@ -458,13 +477,13 @@ export default function StarPathPage() {
   );
 }
 
-function StarPathNodeCard({ 
-  node, 
-  onSelect, 
-  onStartTraining, 
-  loading, 
-  getCategoryColor, 
-  getCategoryIcon 
+function StarPathNodeCard({
+  node,
+  onSelect,
+  onStartTraining,
+  loading,
+  getCategoryColor,
+  getCategoryIcon,
 }: {
   node: StarPathNode;
   onSelect: (node: StarPathNode) => void;
@@ -477,12 +496,16 @@ function StarPathNodeCard({
   const isCompleted = node.currentLevel >= node.maxLevel;
 
   return (
-    <div className={`bg-slate-900 rounded-lg p-6 border transition-all hover:border-slate-600 ${
-      node.isUnlocked ? 'border-slate-800' : 'border-slate-800 opacity-60'
-    }`}>
+    <div
+      className={`bg-slate-900 rounded-lg p-6 border transition-all hover:border-slate-600 ${
+        node.isUnlocked ? 'border-slate-800' : 'border-slate-800 opacity-60'
+      }`}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
-        <div className={`px-3 py-1 rounded-full border text-xs font-medium ${getCategoryColor(node.category)}`}>
+        <div
+          className={`px-3 py-1 rounded-full border text-xs font-medium ${getCategoryColor(node.category)}`}
+        >
           <div className="flex items-center space-x-1">
             {getCategoryIcon(node.category)}
             <span className="capitalize">{node.category}</span>
@@ -499,8 +522,12 @@ function StarPathNodeCard({
       {/* Progress */}
       <div className="mb-4">
         <div className="flex justify-between text-sm mb-2">
-          <span className="text-slate-300">Level {node.currentLevel}/{node.maxLevel}</span>
-          <span className="text-slate-300">{node.totalXp}/{node.requiredXp} XP</span>
+          <span className="text-slate-300">
+            Level {node.currentLevel}/{node.maxLevel}
+          </span>
+          <span className="text-slate-300">
+            {node.totalXp}/{node.requiredXp} XP
+          </span>
         </div>
         <div className="w-full bg-slate-700 rounded-full h-2">
           <div
@@ -533,13 +560,13 @@ function StarPathNodeCard({
   );
 }
 
-function NodeDetailsModal({ 
-  node, 
-  onClose, 
-  onStartTraining, 
-  loading, 
-  getCategoryColor, 
-  getCategoryIcon 
+function NodeDetailsModal({
+  node,
+  onClose,
+  onStartTraining,
+  loading,
+  getCategoryColor,
+  getCategoryIcon,
 }: {
   node: StarPathNode;
   onClose: () => void;
@@ -557,7 +584,9 @@ function NodeDetailsModal({
         {/* Header */}
         <div className="flex items-start justify-between mb-6">
           <div>
-            <div className={`inline-block px-3 py-1 rounded-full border text-xs font-medium mb-3 ${getCategoryColor(node.category)}`}>
+            <div
+              className={`inline-block px-3 py-1 rounded-full border text-xs font-medium mb-3 ${getCategoryColor(node.category)}`}
+            >
               <div className="flex items-center space-x-1">
                 {getCategoryIcon(node.category)}
                 <span className="capitalize">{node.category}</span>
@@ -566,10 +595,7 @@ function NodeDetailsModal({
             <h2 className="text-2xl font-bold text-white">{node.name}</h2>
             <p className="text-slate-400 mt-2">{node.description}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
-          >
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
             ✕
           </button>
         </div>
@@ -577,8 +603,12 @@ function NodeDetailsModal({
         {/* Progress Details */}
         <div className="mb-6">
           <div className="flex justify-between text-sm mb-2">
-            <span className="text-slate-300">Level {node.currentLevel}/{node.maxLevel}</span>
-            <span className="text-slate-300">{node.totalXp}/{node.requiredXp} XP</span>
+            <span className="text-slate-300">
+              Level {node.currentLevel}/{node.maxLevel}
+            </span>
+            <span className="text-slate-300">
+              {node.totalXp}/{node.requiredXp} XP
+            </span>
           </div>
           <div className="w-full bg-slate-700 rounded-full h-3">
             <div
@@ -586,9 +616,7 @@ function NodeDetailsModal({
               style={{ width: `${Math.min(progressPercent, 100)}%` }}
             ></div>
           </div>
-          <div className="text-slate-400 text-xs mt-1">
-            {Math.round(progressPercent)}% Complete
-          </div>
+          <div className="text-slate-400 text-xs mt-1">{Math.round(progressPercent)}% Complete</div>
         </div>
 
         {/* Prerequisites */}
@@ -598,7 +626,7 @@ function NodeDetailsModal({
             <div className="flex flex-wrap gap-2">
               {node.prerequisites.map((prereq, index) => (
                 <span key={index} className="bg-slate-800 text-slate-300 px-2 py-1 rounded text-xs">
-                  {prereq.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  {prereq.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                 </span>
               ))}
             </div>

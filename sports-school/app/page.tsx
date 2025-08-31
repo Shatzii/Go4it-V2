@@ -1,5 +1,18 @@
-import { GraduationCap, Users, BookOpen, Brain, Star, ArrowRight, Globe, Trophy, Shield, Sparkles, Heart, Zap } from 'lucide-react'
-import Link from 'next/link'
+import {
+  GraduationCap,
+  Users,
+  BookOpen,
+  Brain,
+  Star,
+  ArrowRight,
+  Globe,
+  Trophy,
+  Shield,
+  Sparkles,
+  Heart,
+  Zap,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function Page() {
   return (
@@ -37,7 +50,8 @@ export default function Page() {
             Five Specialized Schools, One Mission
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Each school is designed to nurture specific talents and interests, providing personalized education paths for every student's unique potential.
+            Each school is designed to nurture specific talents and interests, providing
+            personalized education paths for every student's unique potential.
           </p>
         </div>
 
@@ -52,7 +66,8 @@ export default function Page() {
                 <h3 className="text-xl font-bold text-gray-900">SuperHero Elementary</h3>
               </div>
               <p className="text-gray-600 mb-4">
-                K-6 students discover their learning superpowers through engaging, gamified education.
+                K-6 students discover their learning superpowers through engaging, gamified
+                education.
               </p>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-semibold text-orange-600">1,500+ Students</span>
@@ -166,7 +181,8 @@ export default function Page() {
             Ready to Begin Your Educational Journey?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Join over 6,950 students who are already discovering their potential at Universal One School.
+            Join over 6,950 students who are already discovering their potential at Universal One
+            School.
           </p>
           <div className="flex justify-center gap-4">
             <Link href="/enrollment">
@@ -198,5 +214,5 @@ export default function Page() {
         </div>
       </div>
     </div>
-  )
+  );
 }

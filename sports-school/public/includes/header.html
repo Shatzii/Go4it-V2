@@ -1,5 +1,5 @@
-<link rel="stylesheet" href="/css/accessibility.css">
-<link rel="stylesheet" href="/css/parent-mode.css">
+<link rel="stylesheet" href="/css/accessibility.css" />
+<link rel="stylesheet" href="/css/parent-mode.css" />
 <script src="/js/accessibility.js"></script>
 <script src="/js/accessibility-panel.js"></script>
 <script src="/js/i18n.js"></script>
@@ -9,42 +9,61 @@
 <header class="site-header">
   <div class="container">
     <a href="/" class="site-logo">
-      <img src="/images/logo.png" alt="ShatziiOS Logo">
+      <img src="/images/logo.png" alt="ShatziiOS Logo" />
       <span>ShatziiOS Schools</span>
       <div class="parent-mode-indicator">
         <i class="fas fa-language parent-icon"></i>
         <span data-i18n="language_selector.parent_mode">Parent Translation Mode</span>
       </div>
     </a>
-    
+
     <button class="menu-toggle" id="menu-toggle">
       <i class="fas fa-bars"></i>
     </button>
-    
+
     <nav class="main-nav" id="main-nav">
       <ul>
         <li><a href="/" data-i18n="common.navigation.home">Home</a></li>
-        
+
         <li class="dropdown">
           <a href="#" class="dropdown-trigger" data-i18n="common.navigation.schools">Our Schools</a>
           <div class="dropdown-content">
             <a href="/primary" data-i18n="common.navigation.primary">K-6 Primary School</a>
             <a href="/secondary" data-i18n="common.navigation.secondary">7-12 Secondary School</a>
-            <a href="/schools/law-school" data-i18n="common.navigation.lawyer_makers">The Lawyer Makers</a>
-            <a href="/language" data-i18n="common.navigation.language_school">Language Learning School</a>
+            <a href="/schools/law-school" data-i18n="common.navigation.lawyer_makers"
+              >The Lawyer Makers</a
+            >
+            <a href="/language" data-i18n="common.navigation.language_school"
+              >Language Learning School</a
+            >
           </div>
         </li>
-        
+
         <li><a href="/curriculum" data-i18n="common.navigation.curriculum">Curriculum</a></li>
-        <li><a href="/course-builder.html" data-i18n="common.navigation.course_builder">Course Builder</a></li>
-        <li><a href="/curriculum-transformer.html" data-i18n="common.navigation.curriculum_transformer">Curriculum Transformer</a></li>
+        <li>
+          <a href="/course-builder.html" data-i18n="common.navigation.course_builder"
+            >Course Builder</a
+          >
+        </li>
+        <li>
+          <a
+            href="/curriculum-transformer.html"
+            data-i18n="common.navigation.curriculum_transformer"
+            >Curriculum Transformer</a
+          >
+        </li>
         <li><a href="/dashboard" data-i18n="common.navigation.dashboard">Dashboard</a></li>
         <li><a href="/settings" data-i18n="common.navigation.settings">Settings</a></li>
         <li><a href="/help" data-i18n="common.navigation.help">Help</a></li>
-        
+
         <!-- Accessibility Keyboard Shortcuts Help -->
         <li>
-          <button class="keyboard-shortcuts-button" aria-label="Accessibility Keyboard Shortcuts" title="Accessibility Keyboard Shortcuts" onclick="toggleShortcutsHelp()">
+          <button
+            class="keyboard-shortcuts-button"
+            aria-label="Accessibility Keyboard Shortcuts"
+            title="Accessibility Keyboard Shortcuts"
+            onclick="toggleShortcutsHelp()"
+          >
             <i class="fas fa-keyboard"></i>
           </button>
         </li>
@@ -71,7 +90,9 @@
         <tbody>
           <tr>
             <td><kbd>Alt</kbd> + <kbd>D</kbd></td>
-            <td data-i18n="common.accessibility.modes.dyslexia_friendly">Toggle Dyslexia-Friendly Mode</td>
+            <td data-i18n="common.accessibility.modes.dyslexia_friendly">
+              Toggle Dyslexia-Friendly Mode
+            </td>
           </tr>
           <tr>
             <td><kbd>Alt</kbd> + <kbd>C</kbd></td>
@@ -83,7 +104,9 @@
           </tr>
           <tr>
             <td><kbd>Alt</kbd> + <kbd>U</kbd></td>
-            <td data-i18n="common.accessibility.modes.autism_friendly">Toggle Autism-Friendly Mode</td>
+            <td data-i18n="common.accessibility.modes.autism_friendly">
+              Toggle Autism-Friendly Mode
+            </td>
           </tr>
           <tr>
             <td><kbd>Alt</kbd> + <kbd>+</kbd></td>
@@ -117,14 +140,14 @@
     const dialog = document.getElementById('keyboard-shortcuts');
     const isHidden = dialog.getAttribute('aria-hidden') === 'true';
     dialog.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
-    
+
     if (isHidden) {
       dialog.style.display = 'flex';
     } else {
       dialog.style.display = 'none';
     }
   }
-  
+
   // Add style for the keyboard shortcuts
   const style = document.createElement('style');
   style.textContent = `
@@ -261,16 +284,16 @@
 
 <script>
   // Mobile menu toggle functionality
-  document.getElementById('menu-toggle').addEventListener('click', function() {
+  document.getElementById('menu-toggle').addEventListener('click', function () {
     document.getElementById('main-nav').classList.toggle('active');
   });
-  
+
   // Close dropdown when clicking outside
-  document.addEventListener('click', function(event) {
+  document.addEventListener('click', function (event) {
     const isClickInside = event.target.closest('.dropdown');
     if (!isClickInside) {
       const dropdowns = document.querySelectorAll('.dropdown-content');
-      dropdowns.forEach(dropdown => {
+      dropdowns.forEach((dropdown) => {
         dropdown.style.display = 'none';
       });
     }

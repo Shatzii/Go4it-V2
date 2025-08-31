@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { 
+import { useState } from 'react';
+import Link from 'next/link';
+import {
   ArrowLeft,
-  MessageCircle, 
-  Send, 
-  Phone, 
-  Video, 
-  Calendar, 
+  MessageCircle,
+  Send,
+  Phone,
+  Video,
+  Calendar,
   Clock,
   User,
   Bell,
@@ -16,33 +16,33 @@ import {
   Filter,
   MoreVertical,
   Paperclip,
-  Smile
-} from 'lucide-react'
+  Smile,
+} from 'lucide-react';
 
 interface Message {
-  id: string
-  sender: 'parent' | 'teacher' | 'admin'
-  senderName: string
-  content: string
-  timestamp: string
-  read: boolean
-  type: 'message' | 'announcement' | 'alert'
-  attachments?: string[]
+  id: string;
+  sender: 'parent' | 'teacher' | 'admin';
+  senderName: string;
+  content: string;
+  timestamp: string;
+  read: boolean;
+  type: 'message' | 'announcement' | 'alert';
+  attachments?: string[];
 }
 
 interface Teacher {
-  id: string
-  name: string
-  subject: string
-  avatar: string
-  online: boolean
-  lastSeen: string
+  id: string;
+  name: string;
+  subject: string;
+  avatar: string;
+  online: boolean;
+  lastSeen: string;
 }
 
 export default function ParentCommunication() {
-  const [selectedConversation, setSelectedConversation] = useState<string>('teacher-1')
-  const [newMessage, setNewMessage] = useState('')
-  const [messageFilter, setMessageFilter] = useState<'all' | 'unread' | 'urgent'>('all')
+  const [selectedConversation, setSelectedConversation] = useState<string>('teacher-1');
+  const [newMessage, setNewMessage] = useState('');
+  const [messageFilter, setMessageFilter] = useState<'all' | 'unread' | 'urgent'>('all');
 
   const teachers: Teacher[] = [
     {
@@ -51,7 +51,7 @@ export default function ParentCommunication() {
       subject: 'Mathematics',
       avatar: '👩‍🏫',
       online: true,
-      lastSeen: 'Online now'
+      lastSeen: 'Online now',
     },
     {
       id: 'teacher-2',
@@ -59,7 +59,7 @@ export default function ParentCommunication() {
       subject: 'Science',
       avatar: '👨‍🏫',
       online: false,
-      lastSeen: '2 hours ago'
+      lastSeen: '2 hours ago',
     },
     {
       id: 'teacher-3',
@@ -67,48 +67,52 @@ export default function ParentCommunication() {
       subject: 'English Language Arts',
       avatar: '👩‍🏫',
       online: true,
-      lastSeen: 'Online now'
-    }
-  ]
+      lastSeen: 'Online now',
+    },
+  ];
 
   const messages: Message[] = [
     {
       id: '1',
       sender: 'teacher',
       senderName: 'Ms. Sarah Johnson',
-      content: 'Emma did excellent work on her math assignment today! She showed great understanding of addition concepts.',
+      content:
+        'Emma did excellent work on her math assignment today! She showed great understanding of addition concepts.',
       timestamp: '2024-07-14T14:30:00Z',
       read: true,
-      type: 'message'
+      type: 'message',
     },
     {
       id: '2',
       sender: 'parent',
       senderName: 'You',
-      content: 'Thank you for the update! We\'ve been practicing at home and I\'m glad to see it\'s helping.',
+      content:
+        "Thank you for the update! We've been practicing at home and I'm glad to see it's helping.",
       timestamp: '2024-07-14T14:45:00Z',
       read: true,
-      type: 'message'
+      type: 'message',
     },
     {
       id: '3',
       sender: 'teacher',
       senderName: 'Ms. Sarah Johnson',
-      content: 'I wanted to let you know that Emma will need to bring her calculator for tomorrow\'s lesson on counting by tens.',
+      content:
+        "I wanted to let you know that Emma will need to bring her calculator for tomorrow's lesson on counting by tens.",
       timestamp: '2024-07-14T15:15:00Z',
       read: false,
-      type: 'message'
+      type: 'message',
     },
     {
       id: '4',
       sender: 'admin',
       senderName: 'School Administration',
-      content: 'Reminder: Parent-Teacher conferences are scheduled for next Friday. Please confirm your appointment time.',
+      content:
+        'Reminder: Parent-Teacher conferences are scheduled for next Friday. Please confirm your appointment time.',
       timestamp: '2024-07-14T16:00:00Z',
       read: false,
-      type: 'announcement'
-    }
-  ]
+      type: 'announcement',
+    },
+  ];
 
   const conversations = [
     {
@@ -117,7 +121,7 @@ export default function ParentCommunication() {
       lastMessage: 'I wanted to let you know that Emma will need...',
       timestamp: '15:15',
       unreadCount: 1,
-      type: 'teacher'
+      type: 'teacher',
     },
     {
       id: 'teacher-2',
@@ -125,7 +129,7 @@ export default function ParentCommunication() {
       lastMessage: 'Great job on the science project!',
       timestamp: '12:30',
       unreadCount: 0,
-      type: 'teacher'
+      type: 'teacher',
     },
     {
       id: 'admin',
@@ -133,30 +137,32 @@ export default function ParentCommunication() {
       lastMessage: 'Reminder: Parent-Teacher conferences...',
       timestamp: '16:00',
       unreadCount: 1,
-      type: 'admin'
-    }
-  ]
+      type: 'admin',
+    },
+  ];
 
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       // Add message logic here
-      setNewMessage('')
+      setNewMessage('');
     }
-  }
+  };
 
   const formatTime = (timestamp: string) => {
-    return new Date(timestamp).toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
-      minute: '2-digit' 
-    })
-  }
+    return new Date(timestamp).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+  };
 
-  const selectedTeacher = teachers.find(t => t.id === selectedConversation)
-  const conversationMessages = messages.filter(m => 
-    selectedConversation === 'teacher-1' ? m.senderName === 'Ms. Sarah Johnson' || m.senderName === 'You' :
-    selectedConversation === 'admin' ? m.senderName === 'School Administration' || m.senderName === 'You' :
-    false
-  )
+  const selectedTeacher = teachers.find((t) => t.id === selectedConversation);
+  const conversationMessages = messages.filter((m) =>
+    selectedConversation === 'teacher-1'
+      ? m.senderName === 'Ms. Sarah Johnson' || m.senderName === 'You'
+      : selectedConversation === 'admin'
+        ? m.senderName === 'School Administration' || m.senderName === 'You'
+        : false,
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -184,7 +190,7 @@ export default function ParentCommunication() {
                     <MoreVertical className="w-4 h-4" />
                   </button>
                 </div>
-                
+
                 <div className="relative mb-4">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                   <input
@@ -216,7 +222,9 @@ export default function ParentCommunication() {
                   <div
                     key={conversation.id}
                     className={`p-4 cursor-pointer hover:bg-gray-50 ${
-                      selectedConversation === conversation.id ? 'bg-blue-50 border-r-2 border-blue-500' : ''
+                      selectedConversation === conversation.id
+                        ? 'bg-blue-50 border-r-2 border-blue-500'
+                        : ''
                     }`}
                     onClick={() => setSelectedConversation(conversation.id)}
                   >
@@ -231,10 +239,14 @@ export default function ParentCommunication() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h3 className="font-medium text-gray-900 truncate">{conversation.name}</h3>
+                          <h3 className="font-medium text-gray-900 truncate">
+                            {conversation.name}
+                          </h3>
                           <span className="text-xs text-gray-500">{conversation.timestamp}</span>
                         </div>
-                        <p className="text-sm text-gray-600 truncate mt-1">{conversation.lastMessage}</p>
+                        <p className="text-sm text-gray-600 truncate mt-1">
+                          {conversation.lastMessage}
+                        </p>
                         {conversation.unreadCount > 0 && (
                           <div className="mt-2 flex justify-end">
                             <span className="bg-blue-500 text-white text-xs rounded-full px-2 py-1">
@@ -266,15 +278,18 @@ export default function ParentCommunication() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900">
-                      {selectedConversation === 'admin' ? 'School Administration' : selectedTeacher?.name}
+                      {selectedConversation === 'admin'
+                        ? 'School Administration'
+                        : selectedTeacher?.name}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {selectedConversation === 'admin' ? 'Official School Communications' : 
-                       `${selectedTeacher?.subject} • ${selectedTeacher?.lastSeen}`}
+                      {selectedConversation === 'admin'
+                        ? 'Official School Communications'
+                        : `${selectedTeacher?.subject} • ${selectedTeacher?.lastSeen}`}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
                     <Phone className="w-5 h-5" />
@@ -300,14 +315,16 @@ export default function ParentCommunication() {
                         message.sender === 'parent'
                           ? 'bg-blue-500 text-white'
                           : message.type === 'announcement'
-                          ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                          : 'bg-gray-100 text-gray-900'
+                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                            : 'bg-gray-100 text-gray-900'
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
-                      <p className={`text-xs mt-1 ${
-                        message.sender === 'parent' ? 'text-blue-100' : 'text-gray-500'
-                      }`}>
+                      <p
+                        className={`text-xs mt-1 ${
+                          message.sender === 'parent' ? 'text-blue-100' : 'text-gray-500'
+                        }`}
+                      >
                         {formatTime(message.timestamp)}
                       </p>
                     </div>
@@ -330,8 +347,8 @@ export default function ParentCommunication() {
                       rows={2}
                       onKeyPress={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault()
-                          handleSendMessage()
+                          e.preventDefault();
+                          handleSendMessage();
                         }
                       }}
                     />
@@ -353,5 +370,5 @@ export default function ParentCommunication() {
         </div>
       </div>
     </div>
-  )
+  );
 }

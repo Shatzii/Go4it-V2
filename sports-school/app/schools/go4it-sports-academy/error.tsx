@@ -23,7 +23,11 @@ export default function Error({
           <Button onClick={() => reset()} className="bg-blue-600 hover:bg-blue-700">
             Try Again
           </Button>
-          <Button onClick={() => window.location.href = '/schools'} variant="outline" className="border-gray-400 text-gray-300">
+          <Button
+            onClick={() => (window.location.href = '/schools')}
+            variant="outline"
+            className="border-gray-400 text-gray-300"
+          >
             Go to Schools
           </Button>
         </div>

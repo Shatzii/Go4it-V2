@@ -1,6 +1,6 @@
 /**
  * Vite Environment Variable Fix
- * 
+ *
  * This module safely processes environment variables without relying on Vite's loadEnv
  * function to avoid the "value.replace is not a function" error.
  */
@@ -22,7 +22,7 @@ export function patchViteLoadEnv() {
     if (fs.existsSync(envPath)) {
       const envContent = fs.readFileSync(envPath, 'utf8');
 
-      envContent.split('\n').forEach(line => {
+      envContent.split('\n').forEach((line) => {
         if (!line || line.trim().startsWith('#')) return;
 
         const equalIndex = line.indexOf('=');

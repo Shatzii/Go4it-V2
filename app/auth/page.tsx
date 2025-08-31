@@ -25,11 +25,13 @@ export default function OptimizedAuthPage() {
     const credentials = {
       email: formData.get('email') as string,
       password: formData.get('password') as string,
-      ...(isLogin ? {} : {
-        username: formData.get('username') as string,
-        firstName: formData.get('firstName') as string,
-        lastName: formData.get('lastName') as string,
-      })
+      ...(isLogin
+        ? {}
+        : {
+            username: formData.get('username') as string,
+            firstName: formData.get('firstName') as string,
+            lastName: formData.get('lastName') as string,
+          }),
     };
 
     try {
@@ -47,10 +49,10 @@ export default function OptimizedAuthPage() {
         if (data.token) {
           AuthClient.setToken(data.token);
         }
-        
+
         setUser(data.user);
         setSuccess(isLogin ? 'Login successful!' : 'Registration successful!');
-        
+
         // Redirect based on user role
         const redirectPath = data.user.role === 'admin' ? '/admin' : '/dashboard';
         setTimeout(() => router.push(redirectPath), 1000);
@@ -70,9 +72,7 @@ export default function OptimizedAuthPage() {
         <div className="max-w-md w-full space-y-8">
           {/* Header */}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-primary neon-text mb-2">
-              Go4It Sports
-            </h1>
+            <h1 className="text-4xl font-bold text-primary neon-text mb-2">Go4It Sports</h1>
             <p className="text-muted-foreground">
               Elite athletic development platform for neurodivergent student athletes
             </p>
@@ -149,9 +149,7 @@ export default function OptimizedAuthPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">
-                      Email
-                    </label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Email</label>
                     <input
                       name="email"
                       type="email"
@@ -165,9 +163,7 @@ export default function OptimizedAuthPage() {
 
               {isLogin ? (
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Email
-                  </label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Email</label>
                   <input
                     name="email"
                     type="email"
@@ -178,9 +174,7 @@ export default function OptimizedAuthPage() {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1">
-                    Username
-                  </label>
+                  <label className="block text-sm font-medium text-foreground mb-1">Username</label>
                   <input
                     name="username"
                     type="text"
@@ -192,9 +186,7 @@ export default function OptimizedAuthPage() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Password
-                </label>
+                <label className="block text-sm font-medium text-foreground mb-1">Password</label>
                 <input
                   name="password"
                   type="password"
@@ -228,13 +220,13 @@ export default function OptimizedAuthPage() {
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                     {isLogin ? 'Signing In...' : 'Creating Account...'}
                   </>
+                ) : isLogin ? (
+                  'Sign In'
                 ) : (
-                  isLogin ? 'Sign In' : 'Create Account'
+                  'Create Account'
                 )}
               </button>
             </form>
-
-
           </div>
         </div>
       </div>

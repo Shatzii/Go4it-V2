@@ -1,6 +1,6 @@
 /**
  * Patched Server Starter (ESM version)
- * 
+ *
  * This script sets environment variables before starting the main server
  * to work around the Vite environment variable issue.
  */
@@ -33,7 +33,7 @@ console.log('API functionality will be accessible, but frontend will not be rend
 
 const serverProcess = spawn('npx', ['tsx', 'server/test-only-server.ts'], {
   stdio: 'inherit',
-  cwd: rootDir
+  cwd: rootDir,
 });
 
 serverProcess.on('error', (err) => {

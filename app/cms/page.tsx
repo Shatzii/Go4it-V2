@@ -1,25 +1,31 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { 
-  FileText, 
-  Edit3, 
-  Trash2, 
-  Eye, 
-  Plus, 
-  Save, 
-  Image, 
-  Video, 
-  Calendar, 
-  Users, 
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  FileText,
+  Edit3,
+  Trash2,
+  Eye,
+  Plus,
+  Save,
+  Image,
+  Video,
+  Calendar,
+  Users,
   Settings,
   Search,
   Filter,
@@ -32,45 +38,45 @@ import {
   Clock,
   CheckCircle,
   XCircle,
-  AlertCircle
-} from 'lucide-react'
+  AlertCircle,
+} from 'lucide-react';
 
 interface ContentItem {
-  id: string
-  title: string
-  type: 'blog' | 'article' | 'announcement' | 'training' | 'news'
-  content: string
-  excerpt: string
-  author: string
-  status: 'draft' | 'published' | 'scheduled'
-  publishDate: string
-  lastModified: string
-  tags: string[]
-  category: string
-  featured: boolean
-  viewCount: number
-  readTime: number
+  id: string;
+  title: string;
+  type: 'blog' | 'article' | 'announcement' | 'training' | 'news';
+  content: string;
+  excerpt: string;
+  author: string;
+  status: 'draft' | 'published' | 'scheduled';
+  publishDate: string;
+  lastModified: string;
+  tags: string[];
+  category: string;
+  featured: boolean;
+  viewCount: number;
+  readTime: number;
 }
 
 interface MediaItem {
-  id: string
-  name: string
-  type: 'image' | 'video' | 'document'
-  url: string
-  size: number
-  uploadDate: string
-  description: string
+  id: string;
+  name: string;
+  type: 'image' | 'video' | 'document';
+  url: string;
+  size: number;
+  uploadDate: string;
+  description: string;
 }
 
 export default function CMSPage() {
-  const [activeTab, setActiveTab] = useState('content')
-  const [content, setContent] = useState<ContentItem[]>([])
-  const [media, setMedia] = useState<MediaItem[]>([])
-  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [filterStatus, setFilterStatus] = useState<string>('all')
-  const [filterType, setFilterType] = useState<string>('all')
+  const [activeTab, setActiveTab] = useState('content');
+  const [content, setContent] = useState<ContentItem[]>([]);
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [selectedContent, setSelectedContent] = useState<ContentItem | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('all');
 
   // Mock data for demonstration
   useEffect(() => {
@@ -89,7 +95,7 @@ export default function CMSPage() {
         category: 'Training',
         featured: true,
         viewCount: 1248,
-        readTime: 8
+        readTime: 8,
       },
       {
         id: '2',
@@ -105,7 +111,7 @@ export default function CMSPage() {
         category: 'Recruitment',
         featured: false,
         viewCount: 892,
-        readTime: 12
+        readTime: 12,
       },
       {
         id: '3',
@@ -121,9 +127,9 @@ export default function CMSPage() {
         category: 'System',
         featured: false,
         viewCount: 0,
-        readTime: 2
-      }
-    ]
+        readTime: 2,
+      },
+    ];
 
     const mockMedia: MediaItem[] = [
       {
@@ -133,7 +139,7 @@ export default function CMSPage() {
         url: '/media/basketball-training-hero.jpg',
         size: 245760,
         uploadDate: '2025-01-10',
-        description: 'Hero image for basketball training article'
+        description: 'Hero image for basketball training article',
       },
       {
         id: '2',
@@ -142,13 +148,13 @@ export default function CMSPage() {
         url: '/media/recruitment-process-video.mp4',
         size: 15728640,
         uploadDate: '2025-01-08',
-        description: 'Video explaining NCAA recruitment process'
-      }
-    ]
+        description: 'Video explaining NCAA recruitment process',
+      },
+    ];
 
-    setContent(mockContent)
-    setMedia(mockMedia)
-  }, [])
+    setContent(mockContent);
+    setMedia(mockMedia);
+  }, []);
 
   const handleCreateNew = () => {
     const newContent: ContentItem = {
@@ -165,68 +171,79 @@ export default function CMSPage() {
       category: 'General',
       featured: false,
       viewCount: 0,
-      readTime: 0
-    }
-    setSelectedContent(newContent)
-    setIsEditing(true)
-  }
+      readTime: 0,
+    };
+    setSelectedContent(newContent);
+    setIsEditing(true);
+  };
 
   const handleSave = () => {
-    if (!selectedContent) return
-    
-    const updatedContent = content.map(item => 
-      item.id === selectedContent.id ? selectedContent : item
-    )
-    
+    if (!selectedContent) return;
+
+    const updatedContent = content.map((item) =>
+      item.id === selectedContent.id ? selectedContent : item,
+    );
+
     // If it's a new item, add it to the list
-    if (!content.find(item => item.id === selectedContent.id)) {
-      updatedContent.push(selectedContent)
+    if (!content.find((item) => item.id === selectedContent.id)) {
+      updatedContent.push(selectedContent);
     }
-    
-    setContent(updatedContent)
-    setIsEditing(false)
-  }
+
+    setContent(updatedContent);
+    setIsEditing(false);
+  };
 
   const handleDelete = (id: string) => {
-    setContent(content.filter(item => item.id !== id))
+    setContent(content.filter((item) => item.id !== id));
     if (selectedContent?.id === id) {
-      setSelectedContent(null)
+      setSelectedContent(null);
     }
-  }
+  };
 
-  const filteredContent = content.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.content.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = filterStatus === 'all' || item.status === filterStatus
-    const matchesType = filterType === 'all' || item.type === filterType
-    
-    return matchesSearch && matchesStatus && matchesType
-  })
+  const filteredContent = content.filter((item) => {
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.content.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || item.status === filterStatus;
+    const matchesType = filterType === 'all' || item.type === filterType;
+
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'published': return 'bg-green-100 text-green-800'
-      case 'draft': return 'bg-yellow-100 text-yellow-800'
-      case 'scheduled': return 'bg-blue-100 text-blue-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'published':
+        return 'bg-green-100 text-green-800';
+      case 'draft':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'scheduled':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'published': return <CheckCircle className="w-4 h-4" />
-      case 'draft': return <AlertCircle className="w-4 h-4" />
-      case 'scheduled': return <Clock className="w-4 h-4" />
-      default: return <XCircle className="w-4 h-4" />
+      case 'published':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'draft':
+        return <AlertCircle className="w-4 h-4" />;
+      case 'scheduled':
+        return <Clock className="w-4 h-4" />;
+      default:
+        return <XCircle className="w-4 h-4" />;
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Content Management System</h1>
-          <p className="text-lg text-muted-foreground">Manage blog posts, articles, announcements, and training resources</p>
+          <p className="text-lg text-muted-foreground">
+            Manage blog posts, articles, announcements, and training resources
+          </p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -307,17 +324,19 @@ export default function CMSPage() {
                     {/* Content List */}
                     <div className="space-y-4">
                       {filteredContent.map((item) => (
-                        <Card key={item.id} className={`cursor-pointer transition-all ${
-                          selectedContent?.id === item.id ? 'ring-2 ring-primary' : ''
-                        }`} onClick={() => setSelectedContent(item)}>
+                        <Card
+                          key={item.id}
+                          className={`cursor-pointer transition-all ${
+                            selectedContent?.id === item.id ? 'ring-2 ring-primary' : ''
+                          }`}
+                          onClick={() => setSelectedContent(item)}
+                        >
                           <CardContent className="p-4">
                             <div className="flex justify-between items-start">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-2">
                                   <h3 className="font-semibold text-foreground">{item.title}</h3>
-                                  {item.featured && (
-                                    <Badge variant="secondary">Featured</Badge>
-                                  )}
+                                  {item.featured && <Badge variant="secondary">Featured</Badge>}
                                 </div>
                                 <p className="text-sm text-muted-foreground mb-3">{item.excerpt}</p>
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -363,9 +382,7 @@ export default function CMSPage() {
                   <Card>
                     <CardHeader>
                       <div className="flex justify-between items-center">
-                        <CardTitle>
-                          {isEditing ? 'Edit Content' : 'Content Details'}
-                        </CardTitle>
+                        <CardTitle>{isEditing ? 'Edit Content' : 'Content Details'}</CardTitle>
                         <div className="flex items-center gap-2">
                           {!isEditing ? (
                             <>
@@ -393,10 +410,7 @@ export default function CMSPage() {
                               >
                                 Cancel
                               </Button>
-                              <Button
-                                size="sm"
-                                onClick={handleSave}
-                              >
+                              <Button size="sm" onClick={handleSave}>
                                 <Save className="w-4 h-4 mr-2" />
                                 Save
                               </Button>
@@ -413,10 +427,12 @@ export default function CMSPage() {
                             <Input
                               id="title"
                               value={selectedContent.title}
-                              onChange={(e) => setSelectedContent({
-                                ...selectedContent,
-                                title: e.target.value
-                              })}
+                              onChange={(e) =>
+                                setSelectedContent({
+                                  ...selectedContent,
+                                  title: e.target.value,
+                                })
+                              }
                             />
                           </div>
                           <div>
@@ -424,10 +440,12 @@ export default function CMSPage() {
                             <Textarea
                               id="excerpt"
                               value={selectedContent.excerpt}
-                              onChange={(e) => setSelectedContent({
-                                ...selectedContent,
-                                excerpt: e.target.value
-                              })}
+                              onChange={(e) =>
+                                setSelectedContent({
+                                  ...selectedContent,
+                                  excerpt: e.target.value,
+                                })
+                              }
                               rows={3}
                             />
                           </div>
@@ -436,10 +454,12 @@ export default function CMSPage() {
                             <Textarea
                               id="content"
                               value={selectedContent.content}
-                              onChange={(e) => setSelectedContent({
-                                ...selectedContent,
-                                content: e.target.value
-                              })}
+                              onChange={(e) =>
+                                setSelectedContent({
+                                  ...selectedContent,
+                                  content: e.target.value,
+                                })
+                              }
                               rows={10}
                             />
                           </div>
@@ -448,10 +468,12 @@ export default function CMSPage() {
                               <Label htmlFor="type">Type</Label>
                               <Select
                                 value={selectedContent.type}
-                                onValueChange={(value) => setSelectedContent({
-                                  ...selectedContent,
-                                  type: value as any
-                                })}
+                                onValueChange={(value) =>
+                                  setSelectedContent({
+                                    ...selectedContent,
+                                    type: value as any,
+                                  })
+                                }
                               >
                                 <SelectTrigger>
                                   <SelectValue />
@@ -469,10 +491,12 @@ export default function CMSPage() {
                               <Label htmlFor="status">Status</Label>
                               <Select
                                 value={selectedContent.status}
-                                onValueChange={(value) => setSelectedContent({
-                                  ...selectedContent,
-                                  status: value as any
-                                })}
+                                onValueChange={(value) =>
+                                  setSelectedContent({
+                                    ...selectedContent,
+                                    status: value as any,
+                                  })
+                                }
                               >
                                 <SelectTrigger>
                                   <SelectValue />
@@ -490,7 +514,9 @@ export default function CMSPage() {
                         <div className="space-y-4">
                           <div>
                             <h3 className="font-semibold mb-2">Content Preview</h3>
-                            <p className="text-sm text-muted-foreground">{selectedContent.excerpt}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {selectedContent.excerpt}
+                            </p>
                           </div>
                           <div>
                             <h4 className="font-medium mb-2">Details</h4>
@@ -504,7 +530,7 @@ export default function CMSPage() {
                           <div>
                             <h4 className="font-medium mb-2">Tags</h4>
                             <div className="flex flex-wrap gap-1">
-                              {selectedContent.tags.map(tag => (
+                              {selectedContent.tags.map((tag) => (
                                 <Badge key={tag} variant="secondary" className="text-xs">
                                   {tag}
                                 </Badge>
@@ -531,9 +557,7 @@ export default function CMSPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Media Library</CardTitle>
-                <CardDescription>
-                  Manage images, videos, and documents
-                </CardDescription>
+                <CardDescription>Manage images, videos, and documents</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8">
@@ -548,9 +572,7 @@ export default function CMSPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Content Analytics</CardTitle>
-                <CardDescription>
-                  Track content performance and engagement
-                </CardDescription>
+                <CardDescription>Track content performance and engagement</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8">
@@ -565,9 +587,7 @@ export default function CMSPage() {
             <Card>
               <CardHeader>
                 <CardTitle>CMS Settings</CardTitle>
-                <CardDescription>
-                  Configure content management preferences
-                </CardDescription>
+                <CardDescription>Configure content management preferences</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8">
@@ -580,5 +600,5 @@ export default function CMSPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

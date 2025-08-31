@@ -31,7 +31,7 @@ export interface VideoAnalysisResult {
  */
 export async function analyzeVideoWithAI(
   videoBuffer: Buffer,
-  options: VideoAnalysisOptions
+  options: VideoAnalysisOptions,
 ): Promise<VideoAnalysisResult> {
   // Mock analysis for development - in production this would use actual AI models
   const mockAnalysis: VideoAnalysisResult = {
@@ -45,19 +45,19 @@ export async function analyzeVideoWithAI(
       sport: options.sport,
       analysisType: options.analysisType,
       videoSize: videoBuffer.length,
-      processingTime: `${Math.random() * 5 + 1}s`
+      processingTime: `${Math.random() * 5 + 1}s`,
     },
     recommendations: [
       'Focus on maintaining form during high-intensity movements',
       'Work on consistency in technique execution',
       'Develop better spatial awareness during gameplay',
-      'Strengthen core stability for better balance'
+      'Strengthen core stability for better balance',
     ],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 
   // Simulate processing time
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return mockAnalysis;
 }
@@ -67,14 +67,14 @@ export async function analyzeVideoWithAI(
  */
 export async function analyzeMultiAngleVideo(
   videos: { buffer: Buffer; angle: string }[],
-  options: Omit<VideoAnalysisOptions, 'cameraAngle'>
+  options: Omit<VideoAnalysisOptions, 'cameraAngle'>,
 ): Promise<{ [angle: string]: VideoAnalysisResult }> {
   const results: { [angle: string]: VideoAnalysisResult } = {};
 
   for (const video of videos) {
     results[video.angle] = await analyzeVideoWithAI(video.buffer, {
       ...options,
-      cameraAngle: video.angle
+      cameraAngle: video.angle,
     });
   }
 

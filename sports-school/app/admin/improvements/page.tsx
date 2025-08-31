@@ -9,18 +9,18 @@ import { MultilingualSupport } from '@/components/integrations/multilingual-supp
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Zap, 
-  Shield, 
-  MessageSquare, 
-  BarChart3, 
-  Languages, 
-  Smartphone, 
-  Brain, 
+import {
+  Zap,
+  Shield,
+  MessageSquare,
+  BarChart3,
+  Languages,
+  Smartphone,
+  Brain,
   Eye,
   CheckCircle,
   Clock,
-  Star
+  Star,
 } from 'lucide-react';
 
 export default function ImprovementsPage() {
@@ -29,47 +29,105 @@ export default function ImprovementsPage() {
       phase: 'Phase 1',
       title: 'Performance & Accessibility',
       items: [
-        { name: 'Bundle Analysis', icon: BarChart3, status: 'implemented', description: 'Analyze and optimize bundle size' },
-        { name: 'Neurodivergent Support', icon: Brain, status: 'implemented', description: 'ADHD, dyslexia, and autism accommodations' },
-        { name: 'PWA Installation', icon: Smartphone, status: 'implemented', description: 'Progressive Web App features' },
-        { name: 'Mobile Optimization', icon: Smartphone, status: 'implemented', description: 'Touch-optimized interface' }
-      ]
+        {
+          name: 'Bundle Analysis',
+          icon: BarChart3,
+          status: 'implemented',
+          description: 'Analyze and optimize bundle size',
+        },
+        {
+          name: 'Neurodivergent Support',
+          icon: Brain,
+          status: 'implemented',
+          description: 'ADHD, dyslexia, and autism accommodations',
+        },
+        {
+          name: 'PWA Installation',
+          icon: Smartphone,
+          status: 'implemented',
+          description: 'Progressive Web App features',
+        },
+        {
+          name: 'Mobile Optimization',
+          icon: Smartphone,
+          status: 'implemented',
+          description: 'Touch-optimized interface',
+        },
+      ],
     },
     {
       phase: 'Phase 2',
       title: 'AI & Security',
       items: [
-        { name: 'Enhanced AI Tutor', icon: Brain, status: 'implemented', description: 'Advanced AI tutoring with voice interaction' },
-        { name: 'Two-Factor Authentication', icon: Shield, status: 'implemented', description: 'Enhanced security with 2FA' },
-        { name: 'Real-time Messaging', icon: MessageSquare, status: 'implemented', description: 'Secure communication system' }
-      ]
+        {
+          name: 'Enhanced AI Tutor',
+          icon: Brain,
+          status: 'implemented',
+          description: 'Advanced AI tutoring with voice interaction',
+        },
+        {
+          name: 'Two-Factor Authentication',
+          icon: Shield,
+          status: 'implemented',
+          description: 'Enhanced security with 2FA',
+        },
+        {
+          name: 'Real-time Messaging',
+          icon: MessageSquare,
+          status: 'implemented',
+          description: 'Secure communication system',
+        },
+      ],
     },
     {
       phase: 'Phase 3',
       title: 'Analytics & Integration',
       items: [
-        { name: 'Learning Analytics', icon: BarChart3, status: 'implemented', description: 'Comprehensive progress tracking' },
-        { name: 'Multilingual Support', icon: Languages, status: 'implemented', description: 'Global language support' },
-        { name: 'Cultural Adaptation', icon: Languages, status: 'implemented', description: 'Localized content and formats' }
-      ]
-    }
+        {
+          name: 'Learning Analytics',
+          icon: BarChart3,
+          status: 'implemented',
+          description: 'Comprehensive progress tracking',
+        },
+        {
+          name: 'Multilingual Support',
+          icon: Languages,
+          status: 'implemented',
+          description: 'Global language support',
+        },
+        {
+          name: 'Cultural Adaptation',
+          icon: Languages,
+          status: 'implemented',
+          description: 'Localized content and formats',
+        },
+      ],
+    },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'implemented': return 'bg-green-100 text-green-800';
-      case 'in-progress': return 'bg-blue-100 text-blue-800';
-      case 'planned': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'implemented':
+        return 'bg-green-100 text-green-800';
+      case 'in-progress':
+        return 'bg-blue-100 text-blue-800';
+      case 'planned':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'implemented': return <CheckCircle className="w-4 h-4" />;
-      case 'in-progress': return <Clock className="w-4 h-4" />;
-      case 'planned': return <Star className="w-4 h-4" />;
-      default: return <Clock className="w-4 h-4" />;
+      case 'implemented':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'in-progress':
+        return <Clock className="w-4 h-4" />;
+      case 'planned':
+        return <Star className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
     }
   };
 
@@ -103,9 +161,7 @@ export default function ImprovementsPage() {
                 <Badge variant="outline">{phase.phase}</Badge>
                 {phase.title}
               </CardTitle>
-              <CardDescription>
-                {phase.items.length} improvements implemented
-              </CardDescription>
+              <CardDescription>{phase.items.length} improvements implemented</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
@@ -189,7 +245,8 @@ export default function ImprovementsPage() {
                 Neurodivergent Support & Accessibility
               </CardTitle>
               <CardDescription>
-                Comprehensive accessibility features for ADHD, dyslexia, autism, and general accessibility needs
+                Comprehensive accessibility features for ADHD, dyslexia, autism, and general
+                accessibility needs
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -223,7 +280,8 @@ export default function ImprovementsPage() {
                 Enhanced AI Tutor
               </CardTitle>
               <CardDescription>
-                Advanced AI tutoring with voice interaction, personalized learning paths, and real-time feedback
+                Advanced AI tutoring with voice interaction, personalized learning paths, and
+                real-time feedback
               </CardDescription>
             </CardHeader>
             <CardContent>

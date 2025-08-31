@@ -6,14 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Target, 
-  Users, 
-  TrendingUp, 
-  MessageSquare, 
-  Mail, 
-  Phone, 
-  Globe, 
+import {
+  Target,
+  Users,
+  TrendingUp,
+  MessageSquare,
+  Mail,
+  Phone,
+  Globe,
   Brain,
   Heart,
   Zap,
@@ -27,7 +27,7 @@ import {
   Share2,
   BarChart3,
   Calendar,
-  MapPin
+  MapPin,
 } from 'lucide-react';
 
 interface MarketingCampaign {
@@ -85,7 +85,10 @@ export default function MarketingDashboard() {
 
   const totalReach = campaigns.reduce((sum, campaign) => sum + campaign.reach, 0);
   const totalConversions = campaigns.reduce((sum, campaign) => sum + campaign.conversions, 0);
-  const averageROI = campaigns.length > 0 ? campaigns.reduce((sum, campaign) => sum + campaign.roi, 0) / campaigns.length : 0;
+  const averageROI =
+    campaigns.length > 0
+      ? campaigns.reduce((sum, campaign) => sum + campaign.roi, 0) / campaigns.length
+      : 0;
 
   if (isLoading) {
     return (
@@ -144,11 +147,15 @@ export default function MarketingDashboard() {
 
           <Card className="bg-purple-600/20 border-purple-500/30">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-300">Active Campaigns</CardTitle>
+              <CardTitle className="text-sm font-medium text-purple-300">
+                Active Campaigns
+              </CardTitle>
               <Target className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-white">{campaigns.filter(c => c.status === 'active').length}</div>
+              <div className="text-2xl font-bold text-white">
+                {campaigns.filter((c) => c.status === 'active').length}
+              </div>
               <p className="text-xs text-purple-300">Across all channels</p>
             </CardContent>
           </Card>
@@ -240,9 +247,7 @@ export default function MarketingDashboard() {
                   <BarChart3 className="h-5 w-5 text-yellow-400" />
                   Multi-Channel Engagement
                 </CardTitle>
-                <CardDescription>
-                  Performance across all marketing channels
-                </CardDescription>
+                <CardDescription>Performance across all marketing channels</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -291,7 +296,9 @@ export default function MarketingDashboard() {
                     <Brain className="h-5 w-5 text-blue-400" />
                     Neurodivergent Learners
                   </CardTitle>
-                  <CardDescription>ADHD, Dyslexia, Autism support focused recruitment</CardDescription>
+                  <CardDescription>
+                    ADHD, Dyslexia, Autism support focused recruitment
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-sm space-y-2">
@@ -311,12 +318,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Facebook Groups</Badge>
-                      <Badge variant="outline" className="text-xs">Reddit Communities</Badge>
-                      <Badge variant="outline" className="text-xs">Educational Blogs</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Facebook Groups
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Reddit Communities
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Educational Blogs
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -346,12 +361,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Academic Forums</Badge>
-                      <Badge variant="outline" className="text-xs">STEM Communities</Badge>
-                      <Badge variant="outline" className="text-xs">Competition Networks</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Academic Forums
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        STEM Communities
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Competition Networks
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -381,12 +404,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">LinkedIn</Badge>
-                      <Badge variant="outline" className="text-xs">Teacher Forums</Badge>
-                      <Badge variant="outline" className="text-xs">Job Boards</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        LinkedIn
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Teacher Forums
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Job Boards
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -435,7 +466,9 @@ export default function MarketingDashboard() {
                     <Trophy className="h-5 w-5 text-yellow-400" />
                     Elite Athletes
                   </CardTitle>
-                  <CardDescription>Multi-platform athlete discovery & viral highlight tracking</CardDescription>
+                  <CardDescription>
+                    Multi-platform athlete discovery & viral highlight tracking
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-sm space-y-2">
@@ -455,15 +488,29 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Recruiting Platforms:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Hudl</Badge>
-                      <Badge variant="outline" className="text-xs">Rivals</Badge>
-                      <Badge variant="outline" className="text-xs">On3</Badge>
-                      <Badge variant="outline" className="text-xs">247Sports</Badge>
-                      <Badge variant="outline" className="text-xs">TikTok</Badge>
-                      <Badge variant="outline" className="text-xs">Instagram</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Hudl
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Rivals
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        On3
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        247Sports
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        TikTok
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Instagram
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -493,12 +540,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Parent Groups</Badge>
-                      <Badge variant="outline" className="text-xs">Sports Forums</Badge>
-                      <Badge variant="outline" className="text-xs">Athletic Events</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Parent Groups
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Sports Forums
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Athletic Events
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -528,12 +583,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Sports Networks</Badge>
-                      <Badge variant="outline" className="text-xs">Coaching Assoc</Badge>
-                      <Badge variant="outline" className="text-xs">LinkedIn</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Sports Networks
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Coaching Assoc
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        LinkedIn
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -541,7 +604,9 @@ export default function MarketingDashboard() {
             <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
                 <CardTitle>Sports Recruitment Intelligence Dashboard</CardTitle>
-                <CardDescription>Multi-platform athlete discovery and viral content tracking</CardDescription>
+                <CardDescription>
+                  Multi-platform athlete discovery and viral content tracking
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
@@ -722,7 +787,9 @@ export default function MarketingDashboard() {
                     <Star className="h-5 w-5 text-purple-400" />
                     Theater Students
                   </CardTitle>
-                  <CardDescription>Drama, musical theater, and performance students</CardDescription>
+                  <CardDescription>
+                    Drama, musical theater, and performance students
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="text-sm space-y-2">
@@ -742,12 +809,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Theater Communities</Badge>
-                      <Badge variant="outline" className="text-xs">TikTok</Badge>
-                      <Badge variant="outline" className="text-xs">YouTube</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Theater Communities
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        TikTok
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        YouTube
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -777,12 +852,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Arts Parent Groups</Badge>
-                      <Badge variant="outline" className="text-xs">Facebook</Badge>
-                      <Badge variant="outline" className="text-xs">Arts Events</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Arts Parent Groups
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Facebook
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Arts Events
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -812,12 +895,20 @@ export default function MarketingDashboard() {
                   <div className="space-y-2">
                     <div className="text-xs text-gray-400">Primary Channels:</div>
                     <div className="flex gap-1 flex-wrap">
-                      <Badge variant="outline" className="text-xs">Theater Networks</Badge>
-                      <Badge variant="outline" className="text-xs">LinkedIn</Badge>
-                      <Badge variant="outline" className="text-xs">Arts Job Boards</Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Theater Networks
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        LinkedIn
+                      </Badge>
+                      <Badge variant="outline" className="text-xs">
+                        Arts Job Boards
+                      </Badge>
                     </div>
                   </div>
-                  <Button size="sm" className="w-full">View Campaign Details</Button>
+                  <Button size="sm" className="w-full">
+                    View Campaign Details
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -825,7 +916,9 @@ export default function MarketingDashboard() {
             <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
                 <CardTitle>Arts Recruitment Performance</CardTitle>
-                <CardDescription>Creative talent acquisition and community engagement</CardDescription>
+                <CardDescription>
+                  Creative talent acquisition and community engagement
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -875,7 +968,9 @@ export default function MarketingDashboard() {
                     <div>• Interactive infographics</div>
                     <div>• Webinar presentations</div>
                   </div>
-                  <Button size="sm" className="w-full">Generate Now</Button>
+                  <Button size="sm" className="w-full">
+                    Generate Now
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -894,7 +989,9 @@ export default function MarketingDashboard() {
                     <div>• Support community posts</div>
                     <div>• Progress tracking demos</div>
                   </div>
-                  <Button size="sm" className="w-full">Generate Now</Button>
+                  <Button size="sm" className="w-full">
+                    Generate Now
+                  </Button>
                 </CardContent>
               </Card>
 
@@ -913,7 +1010,9 @@ export default function MarketingDashboard() {
                     <div>• Athlete success stories</div>
                     <div>• Facility tour content</div>
                   </div>
-                  <Button size="sm" className="w-full">Generate Now</Button>
+                  <Button size="sm" className="w-full">
+                    Generate Now
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -936,9 +1035,12 @@ export default function MarketingDashboard() {
                   <div className="font-semibold text-gray-400 p-2">Fri</div>
                   <div className="font-semibold text-gray-400 p-2">Sat</div>
                   <div className="font-semibold text-gray-400 p-2">Sun</div>
-                  
+
                   {Array.from({ length: 35 }, (_, i) => (
-                    <div key={i} className="p-2 border border-slate-600 rounded text-sm min-h-[60px]">
+                    <div
+                      key={i}
+                      className="p-2 border border-slate-600 rounded text-sm min-h-[60px]"
+                    >
                       {i < 31 && (
                         <div>
                           <div className="font-semibold">{i + 1}</div>
@@ -968,25 +1070,25 @@ export default function MarketingDashboard() {
                       <span className="font-semibold">12,847</span>
                     </div>
                     <Progress value={100} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <span>Information Requests</span>
                       <span className="font-semibold">3,421</span>
                     </div>
                     <Progress value={27} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <span>Campus Tours</span>
                       <span className="font-semibold">856</span>
                     </div>
                     <Progress value={7} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <span>Applications</span>
                       <span className="font-semibold">342</span>
                     </div>
                     <Progress value={3} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <span>Enrollments</span>
                       <span className="font-semibold text-green-400">189</span>
@@ -1011,7 +1113,7 @@ export default function MarketingDashboard() {
                       <span className="font-semibold">45%</span>
                     </div>
                     <Progress value={45} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-green-400" />
@@ -1020,7 +1122,7 @@ export default function MarketingDashboard() {
                       <span className="font-semibold">18%</span>
                     </div>
                     <Progress value={18} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-purple-400" />
@@ -1029,7 +1131,7 @@ export default function MarketingDashboard() {
                       <span className="font-semibold">12%</span>
                     </div>
                     <Progress value={12} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-orange-400" />
@@ -1038,7 +1140,7 @@ export default function MarketingDashboard() {
                       <span className="font-semibold">8%</span>
                     </div>
                     <Progress value={8} className="h-2" />
-                    
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-gray-400" />

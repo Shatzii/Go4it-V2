@@ -1,20 +1,26 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { 
-  Wand2, 
-  Brain, 
-  Image, 
-  FileText, 
-  Video, 
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Wand2,
+  Brain,
+  Image,
+  FileText,
+  Video,
   Volume2,
   Settings,
   Download,
@@ -31,27 +37,27 @@ import {
   Clock,
   Star,
   Check,
-  RefreshCw
-} from 'lucide-react'
+  RefreshCw,
+} from 'lucide-react';
 
 interface ContentRequest {
-  topic: string
-  gradeLevel: string
-  learningStyle: string
-  neurodivergentSupport: string[]
-  contentType: string
-  duration: string
-  difficulty: string
+  topic: string;
+  gradeLevel: string;
+  learningStyle: string;
+  neurodivergentSupport: string[];
+  contentType: string;
+  duration: string;
+  difficulty: string;
 }
 
 interface GeneratedContent {
-  id: string
-  type: string
-  title: string
-  content: string
-  adaptations: string[]
-  estimatedTime: string
-  preview?: string
+  id: string;
+  type: string;
+  title: string;
+  content: string;
+  adaptations: string[];
+  estimatedTime: string;
+  preview?: string;
 }
 
 export default function AIContentGenerator() {
@@ -62,26 +68,34 @@ export default function AIContentGenerator() {
     neurodivergentSupport: [],
     contentType: 'lesson',
     duration: '30',
-    difficulty: 'medium'
-  })
+    difficulty: 'medium',
+  });
 
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([])
-  const [activePreview, setActivePreview] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generatedContent, setGeneratedContent] = useState<GeneratedContent[]>([]);
+  const [activePreview, setActivePreview] = useState<string | null>(null);
 
   const learningStyles = [
     { value: 'visual', label: 'Visual', icon: Eye, color: 'text-blue-600' },
     { value: 'auditory', label: 'Auditory', icon: Volume2, color: 'text-green-600' },
     { value: 'kinesthetic', label: 'Kinesthetic', icon: Heart, color: 'text-red-600' },
-    { value: 'mixed', label: 'Mixed', icon: Target, color: 'text-purple-600' }
-  ]
+    { value: 'mixed', label: 'Mixed', icon: Target, color: 'text-purple-600' },
+  ];
 
   const neurodivergentSupports = [
     { value: 'adhd', label: 'ADHD Support', description: 'Short segments, movement breaks' },
     { value: 'dyslexia', label: 'Dyslexia-Friendly', description: 'Audio support, special fonts' },
-    { value: 'autism', label: 'Autism Accommodations', description: 'Predictable structure, sensory considerations' },
-    { value: 'processing', label: 'Processing Support', description: 'Extra time, simplified instructions' }
-  ]
+    {
+      value: 'autism',
+      label: 'Autism Accommodations',
+      description: 'Predictable structure, sensory considerations',
+    },
+    {
+      value: 'processing',
+      label: 'Processing Support',
+      description: 'Extra time, simplified instructions',
+    },
+  ];
 
   const contentTypes = [
     { value: 'lesson', label: 'Interactive Lesson', icon: BookOpen },
@@ -89,12 +103,12 @@ export default function AIContentGenerator() {
     { value: 'worksheet', label: 'Practice Worksheet', icon: FileText },
     { value: 'game', label: 'Learning Game', icon: Zap },
     { value: 'assessment', label: 'Assessment', icon: Target },
-    { value: 'story', label: 'Educational Story', icon: Heart }
-  ]
+    { value: 'story', label: 'Educational Story', icon: Heart },
+  ];
 
   const generateContent = async () => {
-    setIsGenerating(true)
-    
+    setIsGenerating(true);
+
     // Simulate AI content generation
     setTimeout(() => {
       const newContent: GeneratedContent = {
@@ -102,33 +116,36 @@ export default function AIContentGenerator() {
         type: contentRequest.contentType,
         title: `${contentRequest.topic} - Grade ${contentRequest.gradeLevel} ${contentRequest.learningStyle} Learning`,
         content: `This is an AI-generated ${contentRequest.contentType} about ${contentRequest.topic} specifically designed for ${contentRequest.learningStyle} learners in grade ${contentRequest.gradeLevel}.`,
-        adaptations: contentRequest.neurodivergentSupport.map(support => 
-          neurodivergentSupports.find(s => s.value === support)?.description || support
+        adaptations: contentRequest.neurodivergentSupport.map(
+          (support) =>
+            neurodivergentSupports.find((s) => s.value === support)?.description || support,
         ),
         estimatedTime: `${contentRequest.duration} minutes`,
-        preview: `🎯 ${contentRequest.topic}\n📚 Grade ${contentRequest.gradeLevel}\n👁️ ${contentRequest.learningStyle} Learning\n⏱️ ${contentRequest.duration} minutes`
-      }
-      
-      setGeneratedContent(prev => [newContent, ...prev])
-      setIsGenerating(false)
-    }, 3000)
-  }
+        preview: `🎯 ${contentRequest.topic}\n📚 Grade ${contentRequest.gradeLevel}\n👁️ ${contentRequest.learningStyle} Learning\n⏱️ ${contentRequest.duration} minutes`,
+      };
+
+      setGeneratedContent((prev) => [newContent, ...prev]);
+      setIsGenerating(false);
+    }, 3000);
+  };
 
   const toggleNeurodivergentSupport = (support: string) => {
-    setContentRequest(prev => ({
+    setContentRequest((prev) => ({
       ...prev,
       neurodivergentSupport: prev.neurodivergentSupport.includes(support)
-        ? prev.neurodivergentSupport.filter(s => s !== support)
-        : [...prev.neurodivergentSupport, support]
-    }))
-  }
+        ? prev.neurodivergentSupport.filter((s) => s !== support)
+        : [...prev.neurodivergentSupport, support],
+    }));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">AI Content Generation Studio</h1>
-          <p className="text-gray-600 text-lg">Create personalized educational content powered by advanced AI</p>
+          <p className="text-gray-600 text-lg">
+            Create personalized educational content powered by advanced AI
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -147,11 +164,15 @@ export default function AIContentGenerator() {
               <CardContent className="p-6 space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="topic" className="text-lg font-semibold">What topic would you like to teach?</Label>
+                    <Label htmlFor="topic" className="text-lg font-semibold">
+                      What topic would you like to teach?
+                    </Label>
                     <Input
                       id="topic"
                       value={contentRequest.topic}
-                      onChange={(e) => setContentRequest(prev => ({ ...prev, topic: e.target.value }))}
+                      onChange={(e) =>
+                        setContentRequest((prev) => ({ ...prev, topic: e.target.value }))
+                      }
                       placeholder="e.g., Fractions, Solar System, American Revolution..."
                       className="mt-2 h-12 text-lg"
                     />
@@ -160,9 +181,12 @@ export default function AIContentGenerator() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label className="font-semibold">Grade Level</Label>
-                      <Select value={contentRequest.gradeLevel} onValueChange={(value) => 
-                        setContentRequest(prev => ({ ...prev, gradeLevel: value }))
-                      }>
+                      <Select
+                        value={contentRequest.gradeLevel}
+                        onValueChange={(value) =>
+                          setContentRequest((prev) => ({ ...prev, gradeLevel: value }))
+                        }
+                      >
                         <SelectTrigger className="mt-2">
                           <SelectValue />
                         </SelectTrigger>
@@ -178,9 +202,12 @@ export default function AIContentGenerator() {
 
                     <div>
                       <Label className="font-semibold">Duration</Label>
-                      <Select value={contentRequest.duration} onValueChange={(value) => 
-                        setContentRequest(prev => ({ ...prev, duration: value }))
-                      }>
+                      <Select
+                        value={contentRequest.duration}
+                        onValueChange={(value) =>
+                          setContentRequest((prev) => ({ ...prev, duration: value }))
+                        }
+                      >
                         <SelectTrigger className="mt-2">
                           <SelectValue />
                         </SelectTrigger>
@@ -200,9 +227,13 @@ export default function AIContentGenerator() {
                       {learningStyles.map((style) => (
                         <Button
                           key={style.value}
-                          variant={contentRequest.learningStyle === style.value ? "default" : "outline"}
+                          variant={
+                            contentRequest.learningStyle === style.value ? 'default' : 'outline'
+                          }
                           className="h-16 flex flex-col items-center justify-center space-y-1"
-                          onClick={() => setContentRequest(prev => ({ ...prev, learningStyle: style.value }))}
+                          onClick={() =>
+                            setContentRequest((prev) => ({ ...prev, learningStyle: style.value }))
+                          }
                         >
                           <style.icon className={`w-5 h-5 ${style.color}`} />
                           <span className="text-sm">{style.label}</span>
@@ -217,9 +248,13 @@ export default function AIContentGenerator() {
                       {contentTypes.map((type) => (
                         <Button
                           key={type.value}
-                          variant={contentRequest.contentType === type.value ? "default" : "outline"}
+                          variant={
+                            contentRequest.contentType === type.value ? 'default' : 'outline'
+                          }
                           className="h-16 flex flex-col items-center justify-center space-y-1"
-                          onClick={() => setContentRequest(prev => ({ ...prev, contentType: type.value }))}
+                          onClick={() =>
+                            setContentRequest((prev) => ({ ...prev, contentType: type.value }))
+                          }
                         >
                           <type.icon className="w-5 h-5" />
                           <span className="text-sm">{type.label}</span>
@@ -285,9 +320,7 @@ export default function AIContentGenerator() {
                   <Lightbulb className="w-5 h-5 mr-2 text-yellow-600" />
                   Generated Content
                 </CardTitle>
-                <CardDescription>
-                  Your AI-created educational materials
-                </CardDescription>
+                <CardDescription>Your AI-created educational materials</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {generatedContent.length === 0 ? (
@@ -305,15 +338,21 @@ export default function AIContentGenerator() {
                             <div className="flex-1">
                               <h4 className="font-semibold text-sm">{content.title}</h4>
                               <div className="flex items-center space-x-2 mt-1">
-                                <Badge variant="secondary" className="text-xs">{content.type}</Badge>
-                                <span className="text-xs text-gray-500">{content.estimatedTime}</span>
+                                <Badge variant="secondary" className="text-xs">
+                                  {content.type}
+                                </Badge>
+                                <span className="text-xs text-gray-500">
+                                  {content.estimatedTime}
+                                </span>
                               </div>
                             </div>
                           </div>
-                          
+
                           {content.adaptations.length > 0 && (
                             <div>
-                              <div className="text-xs font-medium text-gray-700 mb-1">Accommodations:</div>
+                              <div className="text-xs font-medium text-gray-700 mb-1">
+                                Accommodations:
+                              </div>
                               <div className="space-y-1">
                                 {content.adaptations.map((adaptation, idx) => (
                                   <Badge key={idx} variant="outline" className="text-xs mr-1">
@@ -357,13 +396,15 @@ export default function AIContentGenerator() {
                   { title: 'Math Word Problems', icon: '🧮', color: 'bg-blue-100' },
                   { title: 'Science Experiments', icon: '🔬', color: 'bg-green-100' },
                   { title: 'Reading Comprehension', icon: '📚', color: 'bg-purple-100' },
-                  { title: 'Creative Writing', icon: '✍️', color: 'bg-orange-100' }
+                  { title: 'Creative Writing', icon: '✍️', color: 'bg-orange-100' },
                 ].map((template, index) => (
                   <Button
                     key={index}
                     variant="ghost"
                     className={`w-full justify-start h-12 ${template.color}`}
-                    onClick={() => setContentRequest(prev => ({ ...prev, topic: template.title }))}
+                    onClick={() =>
+                      setContentRequest((prev) => ({ ...prev, topic: template.title }))
+                    }
                   >
                     <span className="text-lg mr-3">{template.icon}</span>
                     <span className="text-sm">{template.title}</span>
@@ -375,5 +416,5 @@ export default function AIContentGenerator() {
         </div>
       </div>
     </div>
-  )
+  );
 }

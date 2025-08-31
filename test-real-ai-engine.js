@@ -41,7 +41,7 @@ async function testRealAIEngine() {
     await ollamaLocalAI.initialize();
     const isConnected = await ollamaLocalAI.testConnection();
     const models = await ollamaLocalAI.getAvailableModels();
-    
+
     if (isConnected) {
       console.log('✅ Ollama connected successfully');
       console.log(`   - Available models: ${models.join(', ')}`);
@@ -59,22 +59,22 @@ async function testRealAIEngine() {
   // Test with soccer video if available
   console.log('');
   console.log('4️⃣ TESTING VIDEO ANALYSIS...');
-  
+
   const testVideoPath = './attached_assets/IMG_5141_1753940768312.mov';
-  
+
   if (fs.existsSync(testVideoPath)) {
     console.log(`📹 Found your soccer video: ${testVideoPath}`);
-    
+
     try {
       console.log('🔄 Analyzing with real AI engine...');
       const startTime = Date.now();
-      
+
       const analysis = await integratedRealAnalyzer.analyzeVideo(testVideoPath, 'soccer', {
-        benchmarkLevel: 'high_school'
+        benchmarkLevel: 'high_school',
       });
-      
+
       const processingTime = Date.now() - startTime;
-      
+
       console.log('✅ REAL ANALYSIS COMPLETE!');
       console.log(`   - Processing time: ${processingTime}ms`);
       console.log(`   - Models used: ${analysis.modelsUsed.join(', ')}`);
@@ -90,7 +90,6 @@ async function testRealAIEngine() {
       console.log('');
       console.log('🧠 AI FEEDBACK PREVIEW:');
       console.log(analysis.professionalFeedback.substring(0, 300) + '...');
-      
     } catch (error) {
       console.log('ℹ️  Video analysis:', error.message);
       console.log('   - Framework ready, video processing needs file handling setup');
@@ -139,7 +138,7 @@ async function testRealAIEngine() {
   console.log('   • Complete privacy (no cloud processing)');
   console.log('   • Personalized development tracking');
   console.log('   • Elite-level insights unavailable elsewhere');
-  
+
   console.log('');
   console.log('🎯 RECOMMENDATION FOR YOU:');
   console.log('   Even as a single user, larger models provide exponentially');

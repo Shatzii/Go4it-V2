@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import AICurriculumGenerator from '@/components/curriculum/ai-curriculum-generator'
-import { 
-  Brain, 
-  Calendar, 
-  BookOpen, 
-  Users, 
+import { useState } from 'react';
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AICurriculumGenerator from '@/components/curriculum/ai-curriculum-generator';
+import {
+  Brain,
+  Calendar,
+  BookOpen,
+  Users,
   GraduationCap,
   ClipboardList,
   CheckCircle,
@@ -23,38 +23,38 @@ import {
   Star,
   Download,
   Share2,
-  Settings
-} from 'lucide-react'
+  Settings,
+} from 'lucide-react';
 
 export default function TeacherToolsPage() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const features = [
     {
       icon: <Brain className="h-8 w-8 text-blue-500" />,
       title: 'AI Curriculum Generator',
       description: 'Create comprehensive curricula aligned with state standards',
-      benefits: ['Instant generation', 'Standards aligned', 'Customizable']
+      benefits: ['Instant generation', 'Standards aligned', 'Customizable'],
     },
     {
       icon: <ClipboardList className="h-8 w-8 text-green-500" />,
       title: 'Lesson Plan Builder',
       description: 'Generate detailed lesson plans with activities and assessments',
-      benefits: ['Time-saving', 'Professional format', 'Differentiated instruction']
+      benefits: ['Time-saving', 'Professional format', 'Differentiated instruction'],
     },
     {
       icon: <Target className="h-8 w-8 text-purple-500" />,
       title: 'Assessment Tools',
       description: 'Create rubrics, quizzes, and performance assessments',
-      benefits: ['Aligned objectives', 'Multiple formats', 'Auto-grading options']
+      benefits: ['Aligned objectives', 'Multiple formats', 'Auto-grading options'],
     },
     {
       icon: <TrendingUp className="h-8 w-8 text-orange-500" />,
       title: 'Progress Tracking',
       description: 'Monitor student progress and identify learning gaps',
-      benefits: ['Data-driven insights', 'Visual dashboards', 'Parent communication']
-    }
-  ]
+      benefits: ['Data-driven insights', 'Visual dashboards', 'Parent communication'],
+    },
+  ];
 
   const toolCategories = [
     {
@@ -65,9 +65,9 @@ export default function TeacherToolsPage() {
         'Standards Alignment Checker',
         'Scope & Sequence Builder',
         'Cross-curricular Connections',
-        'Pacing Guide Creator'
+        'Pacing Guide Creator',
       ],
-      color: 'bg-blue-50 border-blue-200'
+      color: 'bg-blue-50 border-blue-200',
     },
     {
       category: 'Lesson Planning',
@@ -77,9 +77,9 @@ export default function TeacherToolsPage() {
         'Activity Generator',
         'Resource Finder',
         'Differentiation Strategies',
-        'Technology Integration'
+        'Technology Integration',
       ],
-      color: 'bg-green-50 border-green-200'
+      color: 'bg-green-50 border-green-200',
     },
     {
       category: 'Assessment & Evaluation',
@@ -89,9 +89,9 @@ export default function TeacherToolsPage() {
         'Quiz Builder',
         'Performance Tasks',
         'Portfolio Assessment',
-        'Formative Assessment Tools'
+        'Formative Assessment Tools',
       ],
-      color: 'bg-purple-50 border-purple-200'
+      color: 'bg-purple-50 border-purple-200',
     },
     {
       category: 'Classroom Management',
@@ -101,22 +101,22 @@ export default function TeacherToolsPage() {
         'Seating Chart Creator',
         'Communication Templates',
         'Parent Conference Prep',
-        'IEP/504 Plan Tools'
+        'IEP/504 Plan Tools',
       ],
-      color: 'bg-orange-50 border-orange-200'
-    }
-  ]
+      color: 'bg-orange-50 border-orange-200',
+    },
+  ];
 
   const specializations = [
     'Elementary Education (K-5)',
-    'Middle School (6-8)', 
+    'Middle School (6-8)',
     'High School (9-12)',
     'Special Education',
     'English Language Learners',
     'STEM Education',
     'Arts & Humanities',
-    'Career & Technical Education'
-  ]
+    'Career & Technical Education',
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
@@ -153,8 +153,8 @@ export default function TeacherToolsPage() {
                 <h2 className="text-4xl font-bold text-gray-900">Teacher Independence Suite</h2>
               </div>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Comprehensive curriculum development tools for educators. Create, customize, and implement 
-                professional-grade educational content independently.
+                Comprehensive curriculum development tools for educators. Create, customize, and
+                implement professional-grade educational content independently.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" onClick={() => setActiveTab('generator')} className="px-8">
@@ -176,9 +176,7 @@ export default function TeacherToolsPage() {
                       {feature.icon}
                       {feature.title}
                     </CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
+                    <CardDescription className="text-base">{feature.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
@@ -265,7 +263,11 @@ export default function TeacherToolsPage() {
                         </li>
                       ))}
                     </ul>
-                    <Button className="w-full mt-4" variant="outline" onClick={() => setActiveTab('generator')}>
+                    <Button
+                      className="w-full mt-4"
+                      variant="outline"
+                      onClick={() => setActiveTab('generator')}
+                    >
                       Access Tools
                     </Button>
                   </CardContent>
@@ -330,9 +332,7 @@ export default function TeacherToolsPage() {
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle>Teacher Community</CardTitle>
-                  <CardDescription>
-                    Connect with educators worldwide
-                  </CardDescription>
+                  <CardDescription>Connect with educators worldwide</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="text-sm space-y-1">
@@ -351,9 +351,7 @@ export default function TeacherToolsPage() {
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle>Revenue Sharing</CardTitle>
-                  <CardDescription>
-                    Earn from your curriculum creations
-                  </CardDescription>
+                  <CardDescription>Earn from your curriculum creations</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <ul className="text-sm space-y-1">
@@ -420,5 +418,5 @@ export default function TeacherToolsPage() {
         </div>
       </Tabs>
     </div>
-  )
+  );
 }

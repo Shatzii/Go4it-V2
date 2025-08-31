@@ -1,18 +1,26 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Sparkles, Bot, Brain, GraduationCap, Trophy, 
-  Users, Star, Play, ChevronRight, BookOpen 
-} from 'lucide-react'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Sparkles,
+  Bot,
+  Brain,
+  GraduationCap,
+  Trophy,
+  Users,
+  Star,
+  Play,
+  ChevronRight,
+  BookOpen,
+} from 'lucide-react';
 
 export default function DemoPage() {
-  const [activeDemo, setActiveDemo] = useState('ai-tutor')
+  const [activeDemo, setActiveDemo] = useState('ai-tutor');
 
   const aiFeatures = [
     {
@@ -20,30 +28,30 @@ export default function DemoPage() {
       name: 'AI Personal Tutor',
       icon: <Bot className="h-6 w-6" />,
       description: 'Personalized learning with adaptive AI tutoring',
-      demo: 'Interactive conversation with Dean Wonder for superhero-themed math problems'
+      demo: 'Interactive conversation with Dean Wonder for superhero-themed math problems',
     },
     {
       id: 'ai-analytics',
       name: 'Learning Analytics',
       icon: <Brain className="h-6 w-6" />,
       description: 'Real-time performance insights and pattern recognition',
-      demo: 'Dashboard showing learning progress with neurodivergent adaptations'
+      demo: 'Dashboard showing learning progress with neurodivergent adaptations',
     },
     {
       id: 'vr-classroom',
       name: 'VR Learning Hub',
       icon: <Sparkles className="h-6 w-6" />,
       description: 'Immersive virtual reality educational experiences',
-      demo: 'Virtual theater stage for Stage Prep School performance practice'
+      demo: 'Virtual theater stage for Stage Prep School performance practice',
     },
     {
       id: 'blockchain-achievements',
       name: 'Blockchain Achievements',
       icon: <Trophy className="h-6 w-6" />,
       description: 'Secure, verifiable academic credentials and achievements',
-      demo: 'NFT certificate minting for completed learning milestones'
-    }
-  ]
+      demo: 'NFT certificate minting for completed learning milestones',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900 to-slate-900">
@@ -64,18 +72,28 @@ export default function DemoPage() {
                 </span>
               </h1>
               <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto">
-                Experience the future of education with our revolutionary AI-powered learning platform
+                Experience the future of education with our revolutionary AI-powered learning
+                platform
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Badge variant="secondary" className="text-lg px-4 py-2 bg-cyan-500/20 text-cyan-400">
+                <Badge
+                  variant="secondary"
+                  className="text-lg px-4 py-2 bg-cyan-500/20 text-cyan-400"
+                >
                   <Sparkles className="h-4 w-4 mr-2" />
                   12 Revolutionary Features
                 </Badge>
-                <Badge variant="secondary" className="text-lg px-4 py-2 bg-purple-500/20 text-purple-400">
+                <Badge
+                  variant="secondary"
+                  className="text-lg px-4 py-2 bg-purple-500/20 text-purple-400"
+                >
                   <Users className="h-4 w-4 mr-2" />
                   Neurodivergent Support
                 </Badge>
-                <Badge variant="secondary" className="text-lg px-4 py-2 bg-green-500/20 text-green-400">
+                <Badge
+                  variant="secondary"
+                  className="text-lg px-4 py-2 bg-green-500/20 text-green-400"
+                >
                   <GraduationCap className="h-4 w-4 mr-2" />
                   Texas Charter School
                 </Badge>
@@ -85,7 +103,7 @@ export default function DemoPage() {
         </div>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
@@ -103,8 +121,8 @@ export default function DemoPage() {
             <Tabs value={activeDemo} onValueChange={setActiveDemo} className="w-full">
               <TabsList className="grid w-full grid-cols-4 bg-slate-700">
                 {aiFeatures.map((feature) => (
-                  <TabsTrigger 
-                    key={feature.id} 
+                  <TabsTrigger
+                    key={feature.id}
                     value={feature.id}
                     className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black"
                   >
@@ -137,7 +155,10 @@ export default function DemoPage() {
                             <Play className="h-4 w-4 mr-2" />
                             Start Demo
                           </Button>
-                          <Button variant="outline" className="border-slate-600 text-gray-300 hover:bg-slate-700">
+                          <Button
+                            variant="outline"
+                            className="border-slate-600 text-gray-300 hover:bg-slate-700"
+                          >
                             <BookOpen className="h-4 w-4 mr-2" />
                             Learn More
                           </Button>
@@ -159,39 +180,49 @@ export default function DemoPage() {
               grade: 'K-6',
               theme: 'Cyberpunk/Neon',
               link: '/schools/primary-school',
-              color: 'from-green-500 to-cyan-500'
+              color: 'from-green-500 to-cyan-500',
             },
             {
               name: 'Stage Prep School',
               grade: '7-12',
               theme: 'Theatrical/Purple',
               link: '/schools/secondary-school',
-              color: 'from-purple-500 to-pink-500'
+              color: 'from-purple-500 to-pink-500',
             },
             {
               name: 'Law School',
               grade: 'College',
               theme: 'Professional/Gold',
               link: '/schools/law-school',
-              color: 'from-yellow-500 to-orange-500'
+              color: 'from-yellow-500 to-orange-500',
             },
             {
               name: 'Language Academy',
               grade: 'All Ages',
               theme: 'Cultural/Blue',
               link: '/schools/language-school',
-              color: 'from-blue-500 to-indigo-500'
-            }
+              color: 'from-blue-500 to-indigo-500',
+            },
           ].map((school) => (
-            <Card key={school.name} className="bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-colors cursor-pointer" onClick={() => window.location.href = school.link}>
+            <Card
+              key={school.name}
+              className="bg-slate-800/50 border-slate-700 hover:border-slate-600 transition-colors cursor-pointer"
+              onClick={() => (window.location.href = school.link)}
+            >
               <CardContent className="p-6">
-                <div className={`w-full h-32 rounded-lg bg-gradient-to-br ${school.color} mb-4 flex items-center justify-center`}>
+                <div
+                  className={`w-full h-32 rounded-lg bg-gradient-to-br ${school.color} mb-4 flex items-center justify-center`}
+                >
                   <GraduationCap className="h-12 w-12 text-white" />
                 </div>
                 <h3 className="font-semibold text-white mb-2">{school.name}</h3>
                 <p className="text-sm text-gray-400 mb-1">{school.grade}</p>
                 <p className="text-sm text-gray-500 mb-3">{school.theme}</p>
-                <Button size="sm" variant="outline" className="w-full border-slate-600 text-gray-300 hover:bg-slate-700">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="w-full border-slate-600 text-gray-300 hover:bg-slate-700"
+                >
                   Demo School
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
@@ -203,17 +234,25 @@ export default function DemoPage() {
         {/* Call to Action */}
         <Card className="bg-gradient-to-r from-cyan-600 to-purple-600 border-0">
           <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Ready to Transform Education?
-            </h3>
+            <h3 className="text-2xl font-bold text-white mb-4">Ready to Transform Education?</h3>
             <p className="text-cyan-100 mb-6 max-w-2xl mx-auto">
-              Join the Universal One School revolution and experience the most advanced educational platform ever created
+              Join the Universal One School revolution and experience the most advanced educational
+              platform ever created
             </p>
             <div className="space-x-4">
-              <Button size="lg" variant="secondary" onClick={() => window.location.href = '/enrollment-portal'}>
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => (window.location.href = '/enrollment-portal')}
+              >
                 Start Enrollment
               </Button>
-              <Button size="lg" variant="outline" className="bg-transparent border-white text-white hover:bg-white hover:text-purple-800" onClick={() => window.location.href = '/contact'}>
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-transparent border-white text-white hover:bg-white hover:text-purple-800"
+                onClick={() => (window.location.href = '/contact')}
+              >
                 Schedule Demo
               </Button>
             </div>
@@ -221,5 +260,5 @@ export default function DemoPage() {
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }

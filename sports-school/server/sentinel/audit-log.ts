@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Audit Logging
- * 
+ *
  * This module provides security event logging functions to maintain
  * a comprehensive audit trail of security-related activities.
  */
@@ -15,7 +15,7 @@ enum LogLevel {
   INFO = 'INFO',
   WARN = 'WARN',
   ERROR = 'ERROR',
-  CRITICAL = 'CRITICAL'
+  CRITICAL = 'CRITICAL',
 }
 
 // Ensure log directories exist
@@ -36,31 +36,35 @@ function ensureLogDirectory() {
  * @param level The severity level of the log
  * @param details Optional details to include in the log
  */
-function writeToLog(logFile: string, message: string, level: LogLevel = LogLevel.INFO, details?: any) {
+function writeToLog(
+  logFile: string,
+  message: string,
+  level: LogLevel = LogLevel.INFO,
+  details?: any,
+) {
   ensureLogDirectory();
-  
+
   try {
     const timestamp = new Date().toISOString();
     let logMessage = `${timestamp} - [${level}] ${message}`;
-    
+
     if (details) {
       // For security reasons, we don't log sensitive data
       const safeDetails = { ...details };
-      
+
       // Remove sensitive fields if they exist
       if (safeDetails.password) safeDetails.password = process.env.AUDIT_LOG_MASK || '********';
       if (safeDetails.token) safeDetails.token = '********';
       if (safeDetails.apiKey) safeDetails.apiKey = '********';
       if (safeDetails.secretKey) safeDetails.secretKey = '********';
-      
+
       // Convert object to string
-      const detailsStr = typeof safeDetails === 'object' 
-        ? JSON.stringify(safeDetails)
-        : String(safeDetails);
-      
+      const detailsStr =
+        typeof safeDetails === 'object' ? JSON.stringify(safeDetails) : String(safeDetails);
+
       logMessage += ` | Details: ${detailsStr}`;
     }
-    
+
     fs.appendFileSync(logFile, logMessage + '\n');
   } catch (error) {
     console.error(`Failed to write to log file ${logFile}:`, error);
@@ -103,19 +107,20 @@ export function logErrorEvent(
   user: string = 'unknown',
   ip?: string,
   userAgent?: string,
-  level: LogLevel = LogLevel.ERROR
+  level: LogLevel = LogLevel.ERROR,
 ) {
   const errorMessage = error instanceof Error ? error.message : error;
-  const details = error instanceof Error 
-    ? { 
-        name: error.name, 
-        stack: error.stack,
-        user,
-        ip,
-        userAgent
-      } 
-    : { user, ip, userAgent };
-  
+  const details =
+    error instanceof Error
+      ? {
+          name: error.name,
+          stack: error.stack,
+          user,
+          ip,
+          userAgent,
+        }
+      : { user, ip, userAgent };
+
   writeToLog(ERROR_LOG_FILE, `${message}: ${errorMessage}`, level, details);
 }
 
@@ -131,9 +136,9 @@ export function getRequestIP(req: Request): string {
     // X-Forwarded-For can contain multiple IPs - we want the first one (client IP)
     return xForwardedFor.split(',')[0].trim();
   }
-  
+
   // Fall back to connection remote address
-  return req.ip || (req.connection?.remoteAddress || 'unknown');
+  return req.ip || req.connection?.remoteAddress || 'unknown';
 }
 
 /**
@@ -149,36 +154,28 @@ export function apiAuditMiddleware(req: Request, res: Response, next: NextFuncti
   const path = req.originalUrl || req.url;
   const user = (req as any).user?.username || 'anonymous';
   const userAgent = req.headers['user-agent'] || 'unknown';
-  
+
   // Log the API request
-  logAuditEvent(
-    user,
-    `API Request: ${method} ${path}`,
-    {
-      ip,
-      method,
-      path,
-      userAgent,
-      query: req.query,
-      body: req.body
-    }
-  );
-  
+  logAuditEvent(user, `API Request: ${method} ${path}`, {
+    ip,
+    method,
+    path,
+    userAgent,
+    query: req.query,
+    body: req.body,
+  });
+
   // Log response on finish
   res.on('finish', () => {
     const responseTime = Date.now() - startTime;
-    
+
     // Log the API response
-    logAuditEvent(
-      user,
-      `API Response: ${method} ${path} (${res.statusCode})`,
-      {
-        ip,
-        statusCode: res.statusCode,
-        responseTime: `${responseTime}ms`
-      }
-    );
+    logAuditEvent(user, `API Response: ${method} ${path} (${res.statusCode})`, {
+      ip,
+      statusCode: res.statusCode,
+      responseTime: `${responseTime}ms`,
+    });
   });
-  
+
   next();
 }

@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-  Play, 
-  Download, 
-  Wand2, 
-  Clock, 
-  Video, 
-  CheckCircle, 
+import {
+  Play,
+  Download,
+  Wand2,
+  Clock,
+  Video,
+  CheckCircle,
   AlertCircle,
   Settings,
-  Star
+  Star,
 } from 'lucide-react';
 
 interface HighlightSettings {
@@ -37,7 +37,7 @@ export function HighlightReelGenerator() {
     duration: 60,
     momentTypes: ['goals', 'saves', 'skills', 'assists'],
     musicEnabled: true,
-    transitionStyle: 'fade'
+    transitionStyle: 'fade',
   });
   const [showSettings, setShowSettings] = useState(false);
   const [detectedMoments, setDetectedMoments] = useState<HighlightMoment[]>([]);
@@ -55,11 +55,11 @@ export function HighlightReelGenerator() {
         { step: 50, status: 'Scoring highlights...' },
         { step: 70, status: 'Generating transitions...' },
         { step: 90, status: 'Adding music and effects...' },
-        { step: 100, status: 'Finalizing highlight reel...' }
+        { step: 100, status: 'Finalizing highlight reel...' },
       ];
 
       for (const progressStep of progressSteps) {
-        await new Promise(resolve => setTimeout(resolve, 800));
+        await new Promise((resolve) => setTimeout(resolve, 800));
         setProgress(progressStep.step);
       }
 
@@ -71,7 +71,7 @@ export function HighlightReelGenerator() {
           duration: 3,
           type: 'goal',
           description: 'Amazing goal from 25 yards',
-          confidence: 0.95
+          confidence: 0.95,
         },
         {
           id: '2',
@@ -79,7 +79,7 @@ export function HighlightReelGenerator() {
           duration: 2,
           type: 'skill',
           description: 'Perfect ball control sequence',
-          confidence: 0.88
+          confidence: 0.88,
         },
         {
           id: '3',
@@ -87,7 +87,7 @@ export function HighlightReelGenerator() {
           duration: 4,
           type: 'assist',
           description: 'Brilliant assist setup',
-          confidence: 0.92
+          confidence: 0.92,
         },
         {
           id: '4',
@@ -95,13 +95,12 @@ export function HighlightReelGenerator() {
           duration: 2,
           type: 'save',
           description: 'Outstanding defensive play',
-          confidence: 0.85
-        }
+          confidence: 0.85,
+        },
       ];
 
       setDetectedMoments(mockMoments);
       setGeneratedReel('/api/highlights/generated-reel.mp4');
-      
     } catch (error) {
       console.error('Failed to generate highlight reel:', error);
     } finally {
@@ -110,9 +109,9 @@ export function HighlightReelGenerator() {
   };
 
   const handleSettingChange = (key: keyof HighlightSettings, value: any) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -156,7 +155,7 @@ export function HighlightReelGenerator() {
       {showSettings && (
         <div className="mb-6 p-4 bg-slate-700 rounded-lg">
           <h3 className="text-lg font-semibold text-white mb-4">Generation Settings</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -234,7 +233,7 @@ export function HighlightReelGenerator() {
               <span className="text-sm text-green-400">Ready</span>
             </div>
           </div>
-          
+
           <div className="aspect-video bg-slate-800 rounded-lg flex items-center justify-center mb-4">
             <div className="text-center">
               <Video className="h-12 w-12 text-slate-400 mx-auto mb-2" />
@@ -261,14 +260,20 @@ export function HighlightReelGenerator() {
           <h3 className="text-lg font-semibold text-white mb-4">Detected Highlight Moments</h3>
           <div className="space-y-3">
             {detectedMoments.map((moment) => (
-              <div key={moment.id} className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+              <div
+                key={moment.id}
+                className="flex items-center justify-between p-3 bg-slate-700 rounded-lg"
+              >
                 <div className="flex items-center space-x-3">
                   <span className="text-xl">{getMomentTypeIcon(moment.type)}</span>
                   <div>
                     <p className="text-sm font-medium text-white">{moment.description}</p>
                     <div className="flex items-center space-x-2 text-xs text-slate-400">
                       <Clock className="h-3 w-3" />
-                      <span>{Math.floor(moment.timestamp / 60)}:{(moment.timestamp % 60).toString().padStart(2, '0')}</span>
+                      <span>
+                        {Math.floor(moment.timestamp / 60)}:
+                        {(moment.timestamp % 60).toString().padStart(2, '0')}
+                      </span>
                       <span>•</span>
                       <span>{moment.duration}s</span>
                     </div>

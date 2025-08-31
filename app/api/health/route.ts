@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     // Check database connection
     const dbStatus = await checkDatabaseHealth();
-    
+
     // Check memory usage
     const memoryUsage = process.memoryUsage();
     const memoryUsagePercent = Math.round((memoryUsage.heapUsed / memoryUsage.heapTotal) * 100);
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       memory: {
         used: Math.round(memoryUsage.heapUsed / 1024 / 1024),
         total: Math.round(memoryUsage.heapTotal / 1024 / 1024),
-        usage: `${memoryUsagePercent}%`
+        usage: `${memoryUsagePercent}%`,
       },
       database: dbStatus,
       features: {
@@ -39,13 +39,13 @@ export async function GET(request: NextRequest) {
         garAnalysis: true,
         ncaaEligibility: true,
         recruitment: true,
-        academy: true
+        academy: true,
       },
       security: {
         httpsEnabled: productionConfig.isProduction,
         corsConfigured: true,
-        rateLimitingEnabled: productionConfig.isProduction
-      }
+        rateLimitingEnabled: productionConfig.isProduction,
+      },
     };
 
     // Structured success log (sampled)
@@ -58,52 +58,56 @@ export async function GET(request: NextRequest) {
       });
     }
 
-  const res = NextResponse.json(healthData, { 
+    const res = NextResponse.json(healthData, {
       status: 200,
       headers: {
         'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
+        Pragma: 'no-cache',
+        Expires: '0',
+      },
     });
-  const dur = Date.now() - started;
-  if (dur > 500) logger.warn('health.slow', { durationMs: dur });
-  return res;
-
+    const dur = Date.now() - started;
+    if (dur > 500) logger.warn('health.slow', { durationMs: dur });
+    return res;
   } catch (error) {
     logger.error('health.fail', { err: (error as Error)?.message });
-  try { if (process.env.SENTRY_DSN) Sentry.captureException(error); } catch {}
-    
-    return NextResponse.json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      error: productionConfig.isProduction ? 'Service unavailable' : error.message,
-      environment: process.env.NODE_ENV
-    }, { 
-      status: 503,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate'
-      }
-    });
+    try {
+      if (process.env.SENTRY_DSN) Sentry.captureException(error);
+    } catch {}
+
+    return NextResponse.json(
+      {
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        error: productionConfig.isProduction ? 'Service unavailable' : error.message,
+        environment: process.env.NODE_ENV,
+      },
+      {
+        status: 503,
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+      },
+    );
   }
 }
 
 async function checkDatabaseHealth(): Promise<{ status: string; responseTime?: number }> {
   try {
     const startTime = Date.now();
-    
+
     // Simple database health check - would connect to actual DB in production
     const dbConnected = process.env.DATABASE_URL ? true : false;
-    
+
     const responseTime = Date.now() - startTime;
-    
+
     return {
       status: dbConnected ? 'connected' : 'not_configured',
-      responseTime: responseTime
+      responseTime: responseTime,
     };
   } catch (error) {
     return {
-      status: 'error'
+      status: 'error',
     };
   }
 }

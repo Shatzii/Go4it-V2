@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    
+
     let userId = null;
     let accountCreated = false;
 
@@ -15,14 +15,16 @@ export async function POST(req: NextRequest) {
     if (data.createAccount && data.username && data.password) {
       try {
         // Check if username/email already exists
-        const existingUser = await db.select().from(users)
+        const existingUser = await db
+          .select()
+          .from(users)
           .where(eq(users.email, data.email))
           .limit(1);
 
         if (existingUser.length > 0) {
           return NextResponse.json(
             { error: 'An account with this email already exists. Please log in first.' },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -30,17 +32,20 @@ export async function POST(req: NextRequest) {
         const hashedPassword = await hash(data.password, 12);
 
         // Create new user account
-        const [newUser] = await db.insert(users).values({
-          username: data.username,
-          email: data.email,
-          password: hashedPassword,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          dateOfBirth: new Date(data.dateOfBirth),
-          position: data.position,
-          sport: 'football',
-          role: 'athlete'
-        }).returning();
+        const [newUser] = await db
+          .insert(users)
+          .values({
+            username: data.username,
+            email: data.email,
+            password: hashedPassword,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            dateOfBirth: new Date(data.dateOfBirth),
+            position: data.position,
+            sport: 'football',
+            role: 'athlete',
+          })
+          .returning();
 
         userId = newUser.id;
         accountCreated = true;
@@ -48,7 +53,7 @@ export async function POST(req: NextRequest) {
         console.error('Account creation error:', error);
         return NextResponse.json(
           { error: 'Failed to create account. Please try again.' },
-          { status: 500 }
+          { status: 500 },
         );
       }
     }
@@ -76,12 +81,10 @@ export async function POST(req: NextRequest) {
       actionNetworkOptIn: data.actionNetworkOptIn || true,
       registrationFee: data.registrationFee,
       status: 'pending',
-      paymentStatus: 'pending'
+      paymentStatus: 'pending',
     };
 
-    const [registration] = await db.insert(campRegistrations)
-      .values(registrationData)
-      .returning();
+    const [registration] = await db.insert(campRegistrations).values(registrationData).returning();
 
     // TODO: Integrate with Action Network API
     // This is where you would send the registration to Action Network
@@ -90,7 +93,7 @@ export async function POST(req: NextRequest) {
         // Action Network API integration would go here
         // const actionNetworkResponse = await submitToActionNetwork(registrationData);
         // registration.actionNetworkId = actionNetworkResponse.id;
-        
+
         console.log('Action Network integration needed for:', registration.id);
       } catch (error) {
         console.error('Action Network integration error:', error);
@@ -102,15 +105,11 @@ export async function POST(req: NextRequest) {
       success: true,
       registrationId: registration.id,
       accountCreated,
-      message: 'Registration submitted successfully'
+      message: 'Registration submitted successfully',
     });
-
   } catch (error) {
     console.error('Camp registration error:', error);
-    return NextResponse.json(
-      { error: 'Registration failed. Please try again.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Registration failed. Please try again.' }, { status: 500 });
   }
 }
 
@@ -118,11 +117,11 @@ export async function POST(req: NextRequest) {
 // async function submitToActionNetwork(registrationData: any) {
 //   const actionNetworkAPI = process.env.ACTION_NETWORK_API_KEY;
 //   const actionNetworkUrl = process.env.ACTION_NETWORK_URL;
-//   
+//
 //   if (!actionNetworkAPI || !actionNetworkUrl) {
 //     throw new Error('Action Network credentials not configured');
 //   }
-//   
+//
 //   const response = await fetch(actionNetworkUrl, {
 //     method: 'POST',
 //     headers: {
@@ -141,10 +140,10 @@ export async function POST(req: NextRequest) {
 //       }
 //     })
 //   });
-//   
+//
 //   if (!response.ok) {
 //     throw new Error('Action Network submission failed');
 //   }
-//   
+//
 //   return await response.json();
 // }

@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import { Elements } from '@stripe/react-stripe-js'
-import { 
-  CreditCard, 
-  ArrowLeft, 
-  Calendar, 
-  DollarSign, 
-  Clock, 
+import { useState } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import {
+  CreditCard,
+  ArrowLeft,
+  Calendar,
+  DollarSign,
+  Clock,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react'
-import Link from 'next/link'
+  AlertCircle,
+} from 'lucide-react';
+import Link from 'next/link';
 
 // Initialize Stripe with runtime check to prevent build-time errors
 const getStripePublicKey = () => {
@@ -20,28 +20,27 @@ const getStripePublicKey = () => {
   return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
 };
 
-const stripePromise = typeof window !== 'undefined' 
-  ? loadStripe(getStripePublicKey()) 
-  : Promise.resolve(null);
+const stripePromise =
+  typeof window !== 'undefined' ? loadStripe(getStripePublicKey()) : Promise.resolve(null);
 
 interface PaymentRecord {
-  id: string
-  amount: number
-  description: string
-  status: 'pending' | 'completed' | 'failed'
-  date: string
-  dueDate?: string
-  paymentType: 'tuition' | 'enrollment' | 'activity' | 'materials'
+  id: string;
+  amount: number;
+  description: string;
+  status: 'pending' | 'completed' | 'failed';
+  date: string;
+  dueDate?: string;
+  paymentType: 'tuition' | 'enrollment' | 'activity' | 'materials';
 }
 
 export default function ParentDashboardPayments() {
-  const [selectedStudent, setSelectedStudent] = useState('emma')
-  const [showPaymentForm, setShowPaymentForm] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState('emma');
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   const students = [
     { id: 'emma', name: 'Emma Rodriguez', grade: 'Kindergarten', school: 'SuperHero Elementary' },
-    { id: 'marcus', name: 'Marcus Johnson', grade: '3rd Grade', school: 'SuperHero Elementary' }
-  ]
+    { id: 'marcus', name: 'Marcus Johnson', grade: '3rd Grade', school: 'SuperHero Elementary' },
+  ];
 
   const pendingPayments: PaymentRecord[] = [
     {
@@ -51,7 +50,7 @@ export default function ParentDashboardPayments() {
       status: 'pending',
       date: '2025-01-15',
       dueDate: '2025-01-20',
-      paymentType: 'tuition'
+      paymentType: 'tuition',
     },
     {
       id: 'activity-01',
@@ -60,9 +59,9 @@ export default function ParentDashboardPayments() {
       status: 'pending',
       date: '2025-01-10',
       dueDate: '2025-01-25',
-      paymentType: 'activity'
-    }
-  ]
+      paymentType: 'activity',
+    },
+  ];
 
   const paymentHistory: PaymentRecord[] = [
     {
@@ -71,7 +70,7 @@ export default function ParentDashboardPayments() {
       description: 'December 2024 Tuition - SuperHero Elementary',
       status: 'completed',
       date: '2024-12-15',
-      paymentType: 'tuition'
+      paymentType: 'tuition',
     },
     {
       id: 'enrollment-01',
@@ -79,7 +78,7 @@ export default function ParentDashboardPayments() {
       description: 'Enrollment Fee - SuperHero Elementary',
       status: 'completed',
       date: '2024-08-20',
-      paymentType: 'enrollment'
+      paymentType: 'enrollment',
     },
     {
       id: 'materials-01',
@@ -87,29 +86,37 @@ export default function ParentDashboardPayments() {
       description: 'School Materials Fee',
       status: 'completed',
       date: '2024-08-25',
-      paymentType: 'materials'
-    }
-  ]
+      paymentType: 'materials',
+    },
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'text-green-600 bg-green-50'
-      case 'pending': return 'text-yellow-600 bg-yellow-50'
-      case 'failed': return 'text-red-600 bg-red-50'
-      default: return 'text-gray-600 bg-gray-50'
+      case 'completed':
+        return 'text-green-600 bg-green-50';
+      case 'pending':
+        return 'text-yellow-600 bg-yellow-50';
+      case 'failed':
+        return 'text-red-600 bg-red-50';
+      default:
+        return 'text-gray-600 bg-gray-50';
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckCircle className="w-4 h-4" />
-      case 'pending': return <Clock className="w-4 h-4" />
-      case 'failed': return <AlertCircle className="w-4 h-4" />
-      default: return <Clock className="w-4 h-4" />
+      case 'completed':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'pending':
+        return <Clock className="w-4 h-4" />;
+      case 'failed':
+        return <AlertCircle className="w-4 h-4" />;
+      default:
+        return <Clock className="w-4 h-4" />;
     }
-  }
+  };
 
-  const selectedStudentData = students.find(s => s.id === selectedStudent)
+  const selectedStudentData = students.find((s) => s.id === selectedStudent);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -123,7 +130,7 @@ export default function ParentDashboardPayments() {
             <span className="mx-2">/</span>
             <span className="text-blue-600">Payments</span>
           </nav>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Payment Center</h1>
@@ -155,7 +162,9 @@ export default function ParentDashboardPayments() {
                 }`}
               >
                 <h3 className="font-semibold text-gray-900">{student.name}</h3>
-                <p className="text-sm text-gray-600">{student.grade} • {student.school}</p>
+                <p className="text-sm text-gray-600">
+                  {student.grade} • {student.school}
+                </p>
               </button>
             ))}
           </div>
@@ -170,7 +179,7 @@ export default function ParentDashboardPayments() {
                 {pendingPayments.length} pending
               </span>
             </div>
-            
+
             <div className="space-y-4">
               {pendingPayments.map((payment) => (
                 <div key={payment.id} className="border border-gray-200 rounded-lg p-4">
@@ -183,7 +192,9 @@ export default function ParentDashboardPayments() {
                     </div>
                     <div className="text-right">
                       <p className="text-xl font-bold text-gray-900">${payment.amount}</p>
-                      <div className={`flex items-center gap-1 text-sm px-2 py-1 rounded-full ${getStatusColor(payment.status)}`}>
+                      <div
+                        className={`flex items-center gap-1 text-sm px-2 py-1 rounded-full ${getStatusColor(payment.status)}`}
+                      >
                         {getStatusIcon(payment.status)}
                         <span className="capitalize">{payment.status}</span>
                       </div>
@@ -203,11 +214,9 @@ export default function ParentDashboardPayments() {
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-900">Payment History</h2>
-              <span className="text-sm text-gray-600">
-                {paymentHistory.length} payments
-              </span>
+              <span className="text-sm text-gray-600">{paymentHistory.length} payments</span>
             </div>
-            
+
             <div className="space-y-4">
               {paymentHistory.map((payment) => (
                 <div key={payment.id} className="border border-gray-200 rounded-lg p-4">
@@ -220,7 +229,9 @@ export default function ParentDashboardPayments() {
                     </div>
                     <div className="text-right">
                       <p className="text-xl font-bold text-gray-900">${payment.amount}</p>
-                      <div className={`flex items-center gap-1 text-sm px-2 py-1 rounded-full ${getStatusColor(payment.status)}`}>
+                      <div
+                        className={`flex items-center gap-1 text-sm px-2 py-1 rounded-full ${getStatusColor(payment.status)}`}
+                      >
                         {getStatusIcon(payment.status)}
                         <span className="capitalize">{payment.status}</span>
                       </div>
@@ -235,7 +246,7 @@ export default function ParentDashboardPayments() {
         {/* Payment Summary */}
         <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Payment Summary</h2>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -246,7 +257,7 @@ export default function ParentDashboardPayments() {
               </p>
               <p className="text-sm text-gray-600">Pending</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <CheckCircle className="w-6 h-6 text-green-600" />
@@ -256,7 +267,7 @@ export default function ParentDashboardPayments() {
               </p>
               <p className="text-sm text-gray-600">Paid This Year</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <Calendar className="w-6 h-6 text-blue-600" />
@@ -264,7 +275,7 @@ export default function ParentDashboardPayments() {
               <p className="text-2xl font-bold text-gray-900">Jan 20</p>
               <p className="text-sm text-gray-600">Next Due Date</p>
             </div>
-            
+
             <div className="text-center">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                 <DollarSign className="w-6 h-6 text-purple-600" />
@@ -276,5 +287,5 @@ export default function ParentDashboardPayments() {
         </div>
       </div>
     </div>
-  )
+  );
 }

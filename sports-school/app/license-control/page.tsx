@@ -1,82 +1,82 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface LicenseRecord {
-  id: string
-  studentName: string
-  licenseKey: string
-  licenseType: 'semester' | 'annual' | 'lifetime'
-  engineVersion: string
-  purchaseDate: Date
-  expirationDate: Date
-  isActive: boolean
-  currentActivations: number
-  maxActivations: number
+  id: string;
+  studentName: string;
+  licenseKey: string;
+  licenseType: 'semester' | 'annual' | 'lifetime';
+  engineVersion: string;
+  purchaseDate: Date;
+  expirationDate: Date;
+  isActive: boolean;
+  currentActivations: number;
+  maxActivations: number;
   deviceInfo: {
-    deviceId: string
-    computerName: string
-    lastHeartbeat: Date
-    isOnline: boolean
-  }[]
-  postExpiryAccess: 'limited' | 'basic' | 'full'
-  violationCount: number
+    deviceId: string;
+    computerName: string;
+    lastHeartbeat: Date;
+    isOnline: boolean;
+  }[];
+  postExpiryAccess: 'limited' | 'basic' | 'full';
+  violationCount: number;
 }
 
 interface ControlStats {
-  totalLicenses: number
-  activeLicenses: number
-  expiredLicenses: number
-  violatingLicenses: number
-  onlineDevices: number
-  monthlyRevenue: number
+  totalLicenses: number;
+  activeLicenses: number;
+  expiredLicenses: number;
+  violatingLicenses: number;
+  onlineDevices: number;
+  monthlyRevenue: number;
 }
 
 export default function LicenseControlPage() {
-  const [licenses, setLicenses] = useState<LicenseRecord[]>([])
-  const [stats, setStats] = useState<ControlStats | null>(null)
-  const [selectedFilter, setSelectedFilter] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [licenses, setLicenses] = useState<LicenseRecord[]>([]);
+  const [stats, setStats] = useState<ControlStats | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const licenseTypeLabels = {
     semester: 'Semester (6mo)',
-    annual: 'Annual (12mo)', 
-    lifetime: 'Lifetime'
-  }
+    annual: 'Annual (12mo)',
+    lifetime: 'Lifetime',
+  };
 
   const licenseTypeColors = {
     semester: 'bg-blue-500/20 text-blue-300',
     annual: 'bg-green-500/20 text-green-300',
-    lifetime: 'bg-purple-500/20 text-purple-300'
-  }
+    lifetime: 'bg-purple-500/20 text-purple-300',
+  };
 
   const postExpiryColors = {
     limited: 'bg-red-500/20 text-red-300',
     basic: 'bg-yellow-500/20 text-yellow-300',
-    full: 'bg-green-500/20 text-green-300'
-  }
+    full: 'bg-green-500/20 text-green-300',
+  };
 
   useEffect(() => {
-    fetchLicenseData()
-  }, [])
+    fetchLicenseData();
+  }, []);
 
   const fetchLicenseData = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/license-control')
-      const data = await response.json()
-      setLicenses(data.licenses || mockLicenses)
-      setStats(data.stats || mockStats)
+      const response = await fetch('/api/license-control');
+      const data = await response.json();
+      setLicenses(data.licenses || mockLicenses);
+      setStats(data.stats || mockStats);
     } catch (error) {
-      console.error('Failed to fetch license data:', error)
-      setLicenses(mockLicenses)
-      setStats(mockStats)
+      console.error('Failed to fetch license data:', error);
+      setLicenses(mockLicenses);
+      setStats(mockStats);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const mockStats: ControlStats = {
     totalLicenses: 156,
@@ -84,8 +84,8 @@ export default function LicenseControlPage() {
     expiredLicenses: 22,
     violatingLicenses: 8,
     onlineDevices: 98,
-    monthlyRevenue: 23450
-  }
+    monthlyRevenue: 23450,
+  };
 
   const mockLicenses: LicenseRecord[] = [
     {
@@ -99,14 +99,16 @@ export default function LicenseControlPage() {
       isActive: true,
       currentActivations: 1,
       maxActivations: 1,
-      deviceInfo: [{
-        deviceId: 'WIN-EMMA-LAPTOP-001',
-        computerName: 'Emma-Surface-Pro',
-        lastHeartbeat: new Date('2025-01-23T10:30:00'),
-        isOnline: true
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'WIN-EMMA-LAPTOP-001',
+          computerName: 'Emma-Surface-Pro',
+          lastHeartbeat: new Date('2025-01-23T10:30:00'),
+          isOnline: true,
+        },
+      ],
       postExpiryAccess: 'limited',
-      violationCount: 0
+      violationCount: 0,
     },
     {
       id: '2',
@@ -119,14 +121,16 @@ export default function LicenseControlPage() {
       isActive: true,
       currentActivations: 1,
       maxActivations: 2,
-      deviceInfo: [{
-        deviceId: 'MAC-MARC-MBPRO-001',
-        computerName: 'Marcus-MacBook-Pro',
-        lastHeartbeat: new Date('2025-01-23T09:15:00'),
-        isOnline: true
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'MAC-MARC-MBPRO-001',
+          computerName: 'Marcus-MacBook-Pro',
+          lastHeartbeat: new Date('2025-01-23T09:15:00'),
+          isOnline: true,
+        },
+      ],
       postExpiryAccess: 'basic',
-      violationCount: 0
+      violationCount: 0,
     },
     {
       id: '3',
@@ -144,17 +148,17 @@ export default function LicenseControlPage() {
           deviceId: 'WIN-SARA-DESKTOP-001',
           computerName: 'Sarah-Gaming-PC',
           lastHeartbeat: new Date('2025-01-23T11:45:00'),
-          isOnline: true
+          isOnline: true,
         },
         {
           deviceId: 'WIN-SARA-LAPTOP-002',
           computerName: 'Sarah-Dell-Laptop',
           lastHeartbeat: new Date('2025-01-22T16:20:00'),
-          isOnline: false
-        }
+          isOnline: false,
+        },
       ],
       postExpiryAccess: 'full',
-      violationCount: 0
+      violationCount: 0,
     },
     {
       id: '4',
@@ -167,57 +171,63 @@ export default function LicenseControlPage() {
       isActive: false,
       currentActivations: 1,
       maxActivations: 1,
-      deviceInfo: [{
-        deviceId: 'WIN-DAVI-LAPTOP-001',
-        computerName: 'David-ThinkPad',
-        lastHeartbeat: new Date('2025-01-20T14:30:00'),
-        isOnline: false
-      }],
+      deviceInfo: [
+        {
+          deviceId: 'WIN-DAVI-LAPTOP-001',
+          computerName: 'David-ThinkPad',
+          lastHeartbeat: new Date('2025-01-20T14:30:00'),
+          isOnline: false,
+        },
+      ],
       postExpiryAccess: 'limited',
-      violationCount: 2
-    }
-  ]
+      violationCount: 2,
+    },
+  ];
 
-  const filteredLicenses = licenses.filter(license => {
-    const matchesSearch = license.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         license.licenseKey.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesFilter = selectedFilter === 'all' || 
-                         (selectedFilter === 'active' && license.isActive) ||
-                         (selectedFilter === 'expired' && !license.isActive) ||
-                         (selectedFilter === 'violations' && license.violationCount > 0) ||
-                         (selectedFilter === 'offline' && license.deviceInfo.every(d => !d.isOnline))
+  const filteredLicenses = licenses.filter((license) => {
+    const matchesSearch =
+      license.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      license.licenseKey.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesSearch && matchesFilter
-  })
+    const matchesFilter =
+      selectedFilter === 'all' ||
+      (selectedFilter === 'active' && license.isActive) ||
+      (selectedFilter === 'expired' && !license.isActive) ||
+      (selectedFilter === 'violations' && license.violationCount > 0) ||
+      (selectedFilter === 'offline' && license.deviceInfo.every((d) => !d.isOnline));
+
+    return matchesSearch && matchesFilter;
+  });
 
   const handleRemoteAction = async (licenseId: string, action: string) => {
     try {
       const response = await fetch('/api/license-control', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, licenseId })
-      })
+        body: JSON.stringify({ action, licenseId }),
+      });
 
       if (response.ok) {
-        await fetchLicenseData()
-        alert(`Remote action "${action}" executed successfully`)
+        await fetchLicenseData();
+        alert(`Remote action "${action}" executed successfully`);
       } else {
-        throw new Error('Failed to execute remote action')
+        throw new Error('Failed to execute remote action');
       }
     } catch (error) {
-      alert('Error executing remote action. Please try again.')
+      alert('Error executing remote action. Please try again.');
     }
-  }
+  };
 
   const isExpiringSoon = (expirationDate: Date) => {
-    const daysUntilExpiry = Math.ceil((expirationDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    return daysUntilExpiry <= 30 && daysUntilExpiry > 0
-  }
+    const daysUntilExpiry = Math.ceil(
+      (expirationDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+    );
+    return daysUntilExpiry <= 30 && daysUntilExpiry > 0;
+  };
 
   const isExpired = (expirationDate: Date) => {
-    return expirationDate.getTime() < Date.now()
-  }
+    return expirationDate.getTime() < Date.now();
+  };
 
   if (isLoading) {
     return (
@@ -225,7 +235,7 @@ export default function LicenseControlPage() {
         <div className="animate-spin w-8 h-8 border-4 border-red-400 border-t-transparent rounded-full"></div>
         <span className="text-white ml-3">Loading license control system...</span>
       </div>
-    )
+    );
   }
 
   return (
@@ -233,20 +243,25 @@ export default function LicenseControlPage() {
       <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-xl hover:text-red-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-xl hover:text-red-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              AI Engine License Control System
-            </div>
+            <div className="text-white font-bold text-xl">AI Engine License Control System</div>
           </nav>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">AI Engine Licensing & Remote Control</h1>
-          <p className="text-gray-300">Monitor and control self-hosted AI engines after student purchases</p>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            AI Engine Licensing & Remote Control
+          </h1>
+          <p className="text-gray-300">
+            Monitor and control self-hosted AI engines after student purchases
+          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
@@ -271,7 +286,9 @@ export default function LicenseControlPage() {
             <div className="text-white/70 text-sm">Online Devices</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-            <div className="text-2xl font-bold text-emerald-300">${stats?.monthlyRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-emerald-300">
+              ${stats?.monthlyRevenue.toLocaleString()}
+            </div>
             <div className="text-white/70 text-sm">Monthly Revenue</div>
           </div>
         </div>
@@ -300,7 +317,9 @@ export default function LicenseControlPage() {
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-white/80 mb-2 text-sm font-medium">Search Licenses</label>
+              <label className="block text-white/80 mb-2 text-sm font-medium">
+                Search Licenses
+              </label>
               <input
                 type="text"
                 value={searchTerm}
@@ -310,8 +329,10 @@ export default function LicenseControlPage() {
               />
             </div>
             <div>
-              <label className="block text-white/80 mb-2 text-sm font-medium">Filter by Status</label>
-              <select 
+              <label className="block text-white/80 mb-2 text-sm font-medium">
+                Filter by Status
+              </label>
+              <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
                 className="w-full p-2 rounded-lg bg-black/30 text-white border border-white/30 focus:border-red-400"
@@ -359,19 +380,26 @@ export default function LicenseControlPage() {
                     </td>
                     <td className="p-4">
                       <div className="space-y-1">
-                        <span className={`px-2 py-1 rounded text-xs ${licenseTypeColors[license.licenseType]}`}>
+                        <span
+                          className={`px-2 py-1 rounded text-xs ${licenseTypeColors[license.licenseType]}`}
+                        >
                           {licenseTypeLabels[license.licenseType]}
                         </span>
-                        <div className={`text-sm ${
-                          isExpired(license.expirationDate) ? 'text-red-300' :
-                          isExpiringSoon(license.expirationDate) ? 'text-yellow-300' :
-                          'text-white/70'
-                        }`}>
+                        <div
+                          className={`text-sm ${
+                            isExpired(license.expirationDate)
+                              ? 'text-red-300'
+                              : isExpiringSoon(license.expirationDate)
+                                ? 'text-yellow-300'
+                                : 'text-white/70'
+                          }`}
+                        >
                           {license.expirationDate.toLocaleDateString()}
                         </div>
-                        {isExpiringSoon(license.expirationDate) && !isExpired(license.expirationDate) && (
-                          <div className="text-yellow-300 text-xs">Expires soon!</div>
-                        )}
+                        {isExpiringSoon(license.expirationDate) &&
+                          !isExpired(license.expirationDate) && (
+                            <div className="text-yellow-300 text-xs">Expires soon!</div>
+                          )}
                         {isExpired(license.expirationDate) && (
                           <div className="text-red-300 text-xs">EXPIRED</div>
                         )}
@@ -384,8 +412,12 @@ export default function LicenseControlPage() {
                         </div>
                         {license.deviceInfo.map((device, idx) => (
                           <div key={idx} className="text-xs">
-                            <div className={`flex items-center space-x-2 ${device.isOnline ? 'text-green-300' : 'text-red-300'}`}>
-                              <div className={`w-2 h-2 rounded-full ${device.isOnline ? 'bg-green-400' : 'bg-red-400'}`}></div>
+                            <div
+                              className={`flex items-center space-x-2 ${device.isOnline ? 'text-green-300' : 'text-red-300'}`}
+                            >
+                              <div
+                                className={`w-2 h-2 rounded-full ${device.isOnline ? 'bg-green-400' : 'bg-red-400'}`}
+                              ></div>
                               <span>{device.computerName}</span>
                             </div>
                             <div className="text-white/50 text-xs ml-4">
@@ -396,13 +428,17 @@ export default function LicenseControlPage() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className={`px-2 py-1 rounded text-xs ${postExpiryColors[license.postExpiryAccess]}`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs ${postExpiryColors[license.postExpiryAccess]}`}
+                      >
                         {license.postExpiryAccess.toUpperCase()}
                       </span>
                       <div className="text-white/60 text-xs mt-1">
-                        {license.postExpiryAccess === 'limited' ? '10% functionality' :
-                         license.postExpiryAccess === 'basic' ? '25% functionality' :
-                         'Full access'}
+                        {license.postExpiryAccess === 'limited'
+                          ? '10% functionality'
+                          : license.postExpiryAccess === 'basic'
+                            ? '25% functionality'
+                            : 'Full access'}
                       </div>
                     </td>
                     <td className="p-4">
@@ -416,25 +452,25 @@ export default function LicenseControlPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex flex-col space-y-1">
-                        <button 
+                        <button
                           onClick={() => handleRemoteAction(license.id, 'disable')}
                           className="text-red-300 hover:text-red-400 text-xs"
                         >
                           Disable
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleRemoteAction(license.id, 'limit_features')}
                           className="text-yellow-300 hover:text-yellow-400 text-xs"
                         >
                           Limit Features
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleRemoteAction(license.id, 'force_update')}
                           className="text-blue-300 hover:text-blue-400 text-xs"
                         >
                           Force Update
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleRemoteAction(license.id, 'deactivate_device')}
                           className="text-purple-300 hover:text-purple-400 text-xs"
                         >
@@ -456,5 +492,5 @@ export default function LicenseControlPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

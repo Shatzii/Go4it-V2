@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const AI_SERVICE = {
   async checkStatus() {
     const useLocal = process.env.USE_LOCAL_AI_ENGINE === 'true';
-    
+
     if (useLocal) {
       try {
         const response = await fetch('http://localhost:8000/health');
@@ -14,28 +14,28 @@ const AI_SERVICE = {
             status: 'healthy',
             engine: 'self-hosted',
             models: data.models || [],
-            message: 'Academic AI Engine is operational'
+            message: 'Academic AI Engine is operational',
           };
         }
       } catch (error) {
         return {
           status: 'error',
           engine: 'self-hosted',
-          message: 'Academic AI Engine not responding - please start it on port 8000'
+          message: 'Academic AI Engine not responding - please start it on port 8000',
         };
       }
     }
-    
+
     return {
       status: 'healthy',
       engine: 'external',
-      message: 'Using external AI APIs'
+      message: 'Using external AI APIs',
     };
   },
 
   async generateChatCompletion(messages: any[], options: any = {}) {
     const useLocal = process.env.USE_LOCAL_AI_ENGINE === 'true';
-    
+
     if (useLocal) {
       try {
         const response = await fetch('http://localhost:8000/v1/chat/completions', {
@@ -45,10 +45,10 @@ const AI_SERVICE = {
             messages,
             model: options.model || 'educational-llama-7b',
             max_tokens: options.maxTokens || 1024,
-            temperature: options.temperature || 0.7
-          })
+            temperature: options.temperature || 0.7,
+          }),
         });
-        
+
         if (response.ok) {
           return await response.json();
         }
@@ -56,9 +56,9 @@ const AI_SERVICE = {
         throw new Error('Academic AI Engine not available');
       }
     }
-    
+
     throw new Error('External AI APIs not configured');
-  }
+  },
 };
 
 export async function GET(request: NextRequest) {
@@ -79,8 +79,8 @@ export async function GET(request: NextRequest) {
           { id: 'neurodivergent-assistant', name: 'Neurodivergent Learning Assistant' },
           { id: 'legal-education-ai', name: 'Legal Education AI' },
           { id: 'language-tutor-ai', name: 'Multilingual Language Tutor' },
-          { id: 'cybersecurity-analyzer', name: 'Cybersecurity Content Analyzer' }
-        ]
+          { id: 'cybersecurity-analyzer', name: 'Cybersecurity Content Analyzer' },
+        ],
       });
     }
 
@@ -92,17 +92,19 @@ export async function GET(request: NextRequest) {
         'POST /api/ai/engine/chat - Generate chat completion',
         'POST /api/ai/engine/lesson - Generate lesson plan',
         'POST /api/ai/engine/assessment - Generate assessment',
-        'POST /api/ai/engine/analyze - Analyze content for safety'
+        'POST /api/ai/engine/analyze - Analyze content for safety',
       ],
-      engine: process.env.USE_LOCAL_AI_ENGINE === 'true' ? 'self-hosted' : 'external'
+      engine: process.env.USE_LOCAL_AI_ENGINE === 'true' ? 'self-hosted' : 'external',
     });
-
   } catch (error) {
     console.error('AI engine API error:', error);
-    return NextResponse.json({
-      success: false,
-      message: 'AI engine API error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'AI engine API error',
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -116,7 +118,7 @@ export async function POST(request: NextRequest) {
         const response = await AI_SERVICE.generateChatCompletion(messages, {
           model,
           maxTokens,
-          temperature
+          temperature,
         });
         return NextResponse.json(response);
       }
@@ -131,8 +133,8 @@ export async function POST(request: NextRequest) {
             topic,
             content: `Educational lesson about ${topic} for grade ${grade} students`,
             learningStyle,
-            accommodations
-          }
+            accommodations,
+          },
         });
       }
 
@@ -146,8 +148,8 @@ export async function POST(request: NextRequest) {
             topic,
             type: assessmentType,
             difficulty,
-            content: `${assessmentType} assessment for ${topic} at ${difficulty} level`
-          }
+            content: `${assessmentType} assessment for ${topic} at ${difficulty} level`,
+          },
         });
       }
 
@@ -160,8 +162,8 @@ export async function POST(request: NextRequest) {
             content,
             platform,
             userId,
-            message: 'Content analysis complete'
-          }
+            message: 'Content analysis complete',
+          },
         });
       }
 
@@ -170,7 +172,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           response: `🦸‍♂️ Dean Wonder here! I understand you're asking about: ${prompt}. Let me help you with this superhero-style learning adventure!`,
-          accommodations
+          accommodations,
         });
       }
 
@@ -179,7 +181,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           response: `🎭 Dean Sterling here! Your question about ${prompt} is excellent for our stage prep approach. Let's explore this together!`,
-          accommodations
+          accommodations,
         });
       }
 
@@ -188,7 +190,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
           success: true,
           response: `⚖️ Professor Barrett here! Your legal inquiry about ${prompt} is important. Let me provide you with comprehensive legal education guidance.`,
-          specialization
+          specialization,
         });
       }
 
@@ -198,22 +200,27 @@ export async function POST(request: NextRequest) {
           success: true,
           response: `🌍 Professor Lingua here! I'll help you learn about ${prompt} in ${language} at ${level} level. ¡Vamos a aprender!`,
           language,
-          level
+          level,
         });
       }
 
       default:
-        return NextResponse.json({
-          success: false,
-          message: 'Invalid action specified'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            message: 'Invalid action specified',
+          },
+          { status: 400 },
+        );
     }
-
   } catch (error) {
     console.error('AI engine POST error:', error);
-    return NextResponse.json({
-      success: false,
-      message: error.message || 'AI engine processing error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        message: error.message || 'AI engine processing error',
+      },
+      { status: 500 },
+    );
   }
 }

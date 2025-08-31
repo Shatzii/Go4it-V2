@@ -1,6 +1,6 @@
 /**
  * AI Configuration for ShatziiOS
- * 
+ *
  * This file provides a centralized configuration for all AI services
  * and makes it easy to switch between external APIs and the local academic AI engine.
  */
@@ -14,18 +14,18 @@ const LOCAL_AI_ENGINE_URL = process.env.LOCAL_AI_ENGINE_URL || 'http://localhost
 const MODEL_MAPPING = {
   // Anthropic models
   'claude-3-7-sonnet-20250219': 'academic-llama-7b-chat',
-  'claude-3-7-opus-20250219': 'academic-llama-13b-chat', 
+  'claude-3-7-opus-20250219': 'academic-llama-13b-chat',
   'claude-3-5-sonnet-20240620': 'academic-llama-7b-chat',
-  
+
   // OpenAI models
   'gpt-4o': 'academic-mixtral-8x7b',
   'gpt-4o-mini': 'academic-llama-7b-instruct',
   'gpt-4': 'academic-mixtral-8x7b',
-  
+
   // Perplexity models
   'llama-3-sonar-small-32k-online': 'academic-llama-7b-chat',
   'llama-3-sonar-large-32k-online': 'academic-llama-13b-chat',
-  'llama-3-sonar-huge-128k-online': 'academic-mixtral-8x7b'
+  'llama-3-sonar-huge-128k-online': 'academic-mixtral-8x7b',
 };
 
 /**
@@ -37,7 +37,7 @@ function getModelName(externalModel) {
   if (!USE_LOCAL_AI_ENGINE) {
     return externalModel;
   }
-  
+
   return MODEL_MAPPING[externalModel] || 'academic-llama-7b-chat'; // Default fallback
 }
 
@@ -61,5 +61,5 @@ module.exports = {
   useLocalEngine,
   getLocalEngineUrl,
   getModelName,
-  MODEL_MAPPING
+  MODEL_MAPPING,
 };

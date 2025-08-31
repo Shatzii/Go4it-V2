@@ -22,7 +22,9 @@ export const coupons = pgTable('coupons', {
 
 export const couponUsage = pgTable('coupon_usage', {
   id: text('id').primaryKey(),
-  couponId: text('coupon_id').notNull().references(() => coupons.id),
+  couponId: text('coupon_id')
+    .notNull()
+    .references(() => coupons.id),
   userId: text('user_id').notNull(),
   usedAt: timestamp('used_at').defaultNow().notNull(),
   orderAmount: decimal('order_amount', { precision: 10, scale: 2 }).notNull(),

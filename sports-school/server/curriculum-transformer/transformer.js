@@ -1,7 +1,7 @@
 /**
  * ShatziiOS Curriculum Transformer
- * 
- * This module provides the core transformation engine for adapting standard 
+ *
+ * This module provides the core transformation engine for adapting standard
  * educational content into neurodivergent-friendly formats across all schools.
  */
 
@@ -16,7 +16,7 @@ const TransformationTypes = {
   PATTERN: 'pattern',
   MULTISENSORY: 'multisensory',
   EXECUTIVE: 'executive',
-  SOCIAL: 'social'
+  SOCIAL: 'social',
 };
 
 // Neurodivergent profiles
@@ -25,7 +25,7 @@ const NeurodivergentProfiles = {
   ADHD: 'adhd',
   AUTISM: 'autism',
   MIXED: 'mixed',
-  GENERAL: 'general'
+  GENERAL: 'general',
 };
 
 // Supported file formats
@@ -35,14 +35,14 @@ const SupportedFormats = {
   PPTX: 'pptx',
   HTML: 'html',
   TEXT: 'txt',
-  MARKDOWN: 'md'
+  MARKDOWN: 'md',
 };
 
 // Supported output formats
 const OutputFormats = {
   HTML: 'html',
   PDF: 'pdf',
-  INTERACTIVE: 'interactive'
+  INTERACTIVE: 'interactive',
 };
 
 // Transformation status
@@ -50,7 +50,7 @@ const TransformationStatus = {
   PENDING: 'pending',
   PROCESSING: 'processing',
   COMPLETED: 'completed',
-  FAILED: 'failed'
+  FAILED: 'failed',
 };
 
 // Temporary storage for transformations
@@ -72,18 +72,18 @@ function startTransformation(options) {
   if (!options.content) {
     throw new Error('Content is required');
   }
-  
+
   if (!Object.values(SupportedFormats).includes(options.inputFormat)) {
     throw new Error(`Unsupported input format: ${options.inputFormat}`);
   }
-  
+
   if (!Object.values(OutputFormats).includes(options.outputFormat)) {
     throw new Error(`Unsupported output format: ${options.outputFormat}`);
   }
-  
+
   // Create job ID
   const jobId = uuidv4();
-  
+
   // Create transformation job
   const job = {
     id: jobId,
@@ -92,23 +92,23 @@ function startTransformation(options) {
     result: null,
     error: null,
     startTime: Date.now(),
-    endTime: null
+    endTime: null,
   };
-  
+
   // Store job
   transformations.set(jobId, job);
-  
+
   // Start worker thread for processing
   const worker = new Worker(path.join(__dirname, 'transformation-worker.js'), {
     workerData: {
       jobId,
-      options
-    }
+      options,
+    },
   });
-  
+
   // Update job status
   job.status = TransformationStatus.PROCESSING;
-  
+
   // Handle worker messages
   worker.on('message', (message) => {
     if (message.type === 'progress') {
@@ -121,14 +121,14 @@ function startTransformation(options) {
       job.endTime = Date.now();
     }
   });
-  
+
   // Handle worker errors
   worker.on('error', (error) => {
     job.status = TransformationStatus.FAILED;
     job.error = error.message;
     job.endTime = Date.now();
   });
-  
+
   // Handle worker exit
   worker.on('exit', (code) => {
     if (code !== 0 && job.status !== TransformationStatus.FAILED) {
@@ -137,7 +137,7 @@ function startTransformation(options) {
       job.endTime = Date.now();
     }
   });
-  
+
   return jobId;
 }
 
@@ -148,18 +148,18 @@ function startTransformation(options) {
  */
 function getTransformationStatus(jobId) {
   const job = transformations.get(jobId);
-  
+
   if (!job) {
     throw new Error(`Transformation job not found: ${jobId}`);
   }
-  
+
   return {
     id: job.id,
     status: job.status,
     progress: job.progress,
     startTime: job.startTime,
     endTime: job.endTime,
-    error: job.error
+    error: job.error,
   };
 }
 
@@ -170,15 +170,15 @@ function getTransformationStatus(jobId) {
  */
 function getTransformationResult(jobId) {
   const job = transformations.get(jobId);
-  
+
   if (!job) {
     throw new Error(`Transformation job not found: ${jobId}`);
   }
-  
+
   if (job.status !== TransformationStatus.COMPLETED) {
     throw new Error(`Transformation is not complete: ${jobId}`);
   }
-  
+
   return job.result;
 }
 
@@ -189,19 +189,19 @@ function getTransformationResult(jobId) {
  */
 function cancelTransformation(jobId) {
   const job = transformations.get(jobId);
-  
+
   if (!job) {
     throw new Error(`Transformation job not found: ${jobId}`);
   }
-  
+
   if (job.status === TransformationStatus.COMPLETED || job.status === TransformationStatus.FAILED) {
     return false;
   }
-  
+
   job.status = TransformationStatus.FAILED;
   job.error = 'Canceled by user';
   job.endTime = Date.now();
-  
+
   return true;
 }
 
@@ -212,14 +212,16 @@ function cancelTransformation(jobId) {
  */
 function transformSync(options) {
   // Only allow synchronous transformation for small content
-  const contentSize = typeof options.content === 'string' 
-    ? Buffer.byteLength(options.content, 'utf8') 
-    : options.content.length;
-  
-  if (contentSize > 1024 * 50) { // 50 KB limit
+  const contentSize =
+    typeof options.content === 'string'
+      ? Buffer.byteLength(options.content, 'utf8')
+      : options.content.length;
+
+  if (contentSize > 1024 * 50) {
+    // 50 KB limit
     throw new Error('Content too large for synchronous transformation');
   }
-  
+
   // Perform transformation
   return require('./transformers/transformer-utils').transform(options);
 }
@@ -235,5 +237,5 @@ module.exports = {
   NeurodivergentProfiles,
   SupportedFormats,
   OutputFormats,
-  TransformationStatus
+  TransformationStatus,
 };

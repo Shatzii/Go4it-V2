@@ -34,28 +34,42 @@ export async function POST(request: NextRequest) {
     const validatedData = createAthleteProfileSchema.parse(body);
 
     // Check if user exists
-    const existingUser = await db.select().from(users).where(eq(users.id, validatedData.userId)).limit(1);
+    const existingUser = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, validatedData.userId))
+      .limit(1);
     if (existingUser.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Check if profile already exists
-    const existingProfile = await db.select().from(athleteProfiles).where(eq(athleteProfiles.userId, validatedData.userId)).limit(1);
+    const existingProfile = await db
+      .select()
+      .from(athleteProfiles)
+      .where(eq(athleteProfiles.userId, validatedData.userId))
+      .limit(1);
     if (existingProfile.length > 0) {
       return NextResponse.json({ error: 'Profile already exists' }, { status: 400 });
     }
 
     // Create new athlete profile
-    const newProfile = await db.insert(athleteProfiles).values({
-      ...validatedData,
-      isProfileComplete: false,
-    }).returning();
+    const newProfile = await db
+      .insert(athleteProfiles)
+      .values({
+        ...validatedData,
+        isProfileComplete: false,
+      })
+      .returning();
 
     return NextResponse.json({ success: true, profile: newProfile[0] });
   } catch (error) {
     console.error('Error creating athlete profile:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid input data', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid input data', details: error.errors },
+        { status: 400 },
+      );
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -97,7 +111,11 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if profile exists
-    const existingProfile = await db.select().from(athleteProfiles).where(eq(athleteProfiles.userId, userId)).limit(1);
+    const existingProfile = await db
+      .select()
+      .from(athleteProfiles)
+      .where(eq(athleteProfiles.userId, userId))
+      .limit(1);
     if (existingProfile.length === 0) {
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
     }
@@ -117,7 +135,10 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Error updating athlete profile:', error);
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid input data', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid input data', details: error.errors },
+        { status: 400 },
+      );
     }
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

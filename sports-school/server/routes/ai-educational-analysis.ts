@@ -1,6 +1,6 @@
 /**
  * AI Educational Analysis API
- * 
+ *
  * This module provides endpoints for AI-powered educational analysis
  * using the Anthropic Claude API.
  */
@@ -17,11 +17,11 @@ const router = Router();
 router.post('/educational-analysis', async (req: Request, res: Response) => {
   try {
     const { text, gradeLevel, subject, learningStyle, neurodivergentType } = req.body;
-    
+
     if (!text) {
       return res.status(400).json({ error: 'Text content is required' });
     }
-    
+
     // Create a system prompt that instructs Claude to analyze educational content
     const systemPrompt = `
 You are an expert educational analyst specializing in neurodivergent learning styles. 
@@ -47,9 +47,9 @@ Format your analysis as JSON with clear sections and ratings.
     const response = await AnthropicService.generateText(text, {
       systemPrompt,
       maxTokens: 1500,
-      temperature: 0.2
+      temperature: 0.2,
     });
-    
+
     res.json({ analysis: response });
   } catch (error) {
     console.error('Error in educational analysis:', error);
@@ -63,16 +63,16 @@ Format your analysis as JSON with clear sections and ratings.
  */
 router.post('/content-generation', async (req: Request, res: Response) => {
   try {
-    const { 
-      topic, 
-      gradeLevel, 
-      subject, 
-      learningStyle, 
+    const {
+      topic,
+      gradeLevel,
+      subject,
+      learningStyle,
       neurodivergentType,
       outputFormat,
-      contentLength
+      contentLength,
     } = req.body;
-    
+
     if (!topic) {
       return res.status(400).json({ error: 'Topic is required' });
     }
@@ -100,14 +100,14 @@ Your content should:
 `;
 
     const response = await AnthropicService.generateText(
-      `Please create educational content about "${topic}" tailored for ${neurodivergentType || 'neurodivergent'} learners.`, 
+      `Please create educational content about "${topic}" tailored for ${neurodivergentType || 'neurodivergent'} learners.`,
       {
         systemPrompt,
         maxTokens: 2000,
-        temperature: 0.7
-      }
+        temperature: 0.7,
+      },
     );
-    
+
     res.json({ content: response });
   } catch (error) {
     console.error('Error in content generation:', error);
@@ -125,14 +125,14 @@ router.post('/image-analysis', async (req: Request, res: Response) => {
     if (!req.files || !req.files.image) {
       return res.status(400).json({ error: 'Image file is required' });
     }
-    
+
     const imageFile = req.files.image as any;
     const base64Image = imageFile.data.toString('base64');
     const imageType = imageFile.mimetype as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
-    
+
     // Additional parameters
     const { gradeLevel, subject } = req.body;
-    
+
     const systemPrompt = `
 You are an educational diagram and image analyzer specialized in creating accessible explanations for neurodivergent students.
 When analyzing this educational image/diagram:
@@ -149,8 +149,9 @@ Consider these specifics:
 `;
 
     // Create a prompt for analysis
-    const promptText = "Please analyze this educational diagram or image for educational content and accessibility.";
-    
+    const promptText =
+      'Please analyze this educational diagram or image for educational content and accessibility.';
+
     // Create options with the image data
     const multimodalOptions = {
       imageBase64: base64Image,
@@ -158,9 +159,9 @@ Consider these specifics:
       systemPrompt,
       maxTokens: 1500,
     };
-    
+
     const response = await AnthropicService.analyzeMultimodal(promptText, multimodalOptions);
-    
+
     res.json({ analysis: response });
   } catch (error) {
     console.error('Error in image analysis:', error);

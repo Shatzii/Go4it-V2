@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { storage } from '../storage';
 import anthropicService from '../services/anthropic';
-import { 
-  insertAiCompanionSchema, 
-  insertAiCompanionChatSchema, 
-  insertAiCompanionMessageSchema, 
-  insertAiCompanionLearningProgressSchema 
+import {
+  insertAiCompanionSchema,
+  insertAiCompanionChatSchema,
+  insertAiCompanionMessageSchema,
+  insertAiCompanionLearningProgressSchema,
 } from '@shared/schema';
 import { z } from 'zod';
 
@@ -28,11 +28,11 @@ router.get('/companions/:id', async (req, res) => {
   try {
     const companionId = parseInt(req.params.id);
     const companion = await storage.getAiCompanion(companionId);
-    
+
     if (!companion) {
       return res.status(404).json({ message: 'AI companion not found' });
     }
-    
+
     res.json(companion);
   } catch (error) {
     console.error('Error fetching AI companion:', error);
@@ -60,11 +60,11 @@ router.put('/companions/:id', async (req, res) => {
   try {
     const companionId = parseInt(req.params.id);
     const updatedCompanion = await storage.updateAiCompanion(companionId, req.body);
-    
+
     if (!updatedCompanion) {
       return res.status(404).json({ message: 'AI companion not found' });
     }
-    
+
     res.json(updatedCompanion);
   } catch (error) {
     console.error('Error updating AI companion:', error);
@@ -77,11 +77,11 @@ router.delete('/companions/:id', async (req, res) => {
   try {
     const companionId = parseInt(req.params.id);
     const success = await storage.deleteAiCompanion(companionId);
-    
+
     if (!success) {
       return res.status(404).json({ message: 'AI companion not found' });
     }
-    
+
     res.json({ message: 'AI companion deactivated successfully' });
   } catch (error) {
     console.error('Error deleting AI companion:', error);
@@ -133,40 +133,40 @@ router.post('/chats/:chatId/messages', async (req, res) => {
   try {
     const chatId = parseInt(req.params.chatId);
     const { content, type = 'text' } = req.body;
-    
+
     if (!content) {
       return res.status(400).json({ message: 'Message content is required' });
     }
-    
+
     // Create user message
     const userMessage = await storage.createAiCompanionMessage({
       chatId,
       role: 'user',
       content,
-      type
+      type,
     });
-    
+
     // Get chat and companion info for context
     const chat = await storage.getAiCompanionChat(chatId);
     if (!chat) {
       return res.status(404).json({ message: 'Chat session not found' });
     }
-    
+
     const companion = await storage.getAiCompanion(chat.companionId);
     if (!companion) {
       return res.status(404).json({ message: 'AI companion not found' });
     }
-    
+
     // Get previous messages for context
     const messages = await storage.getAiCompanionMessages(chatId);
     const chatHistory = messages
-      .filter(msg => msg.id !== userMessage.id) // Exclude current message
+      .filter((msg) => msg.id !== userMessage.id) // Exclude current message
       .sort((a, b) => new Date(a.sentAt).getTime() - new Date(b.sentAt).getTime())
-      .map(msg => ({
+      .map((msg) => ({
         role: msg.role as 'user' | 'assistant',
-        content: msg.content
+        content: msg.content,
       }));
-    
+
     // Generate AI response
     const systemPrompt = `
       You are an educational AI assistant with the following characteristics:
@@ -178,24 +178,24 @@ router.post('/chats/:chatId/messages', async (req, res) => {
       
       Adapt your responses to be helpful, educational, and supportive for the student.
     `;
-    
+
     const aiResponseText = await anthropicService.generateChatResponse(
       [...chatHistory, { role: 'user', content }],
-      systemPrompt
+      systemPrompt,
     );
-    
+
     // Save AI response to database
     const aiMessage = await storage.createAiCompanionMessage({
       chatId,
       role: 'assistant',
       content: aiResponseText,
-      type: 'text'
+      type: 'text',
     });
-    
+
     // Return both messages
     res.status(201).json({
       userMessage,
-      aiMessage
+      aiMessage,
     });
   } catch (error) {
     console.error('Error processing message:', error);
@@ -208,34 +208,38 @@ router.post('/companions/:companionId/analyze', async (req, res) => {
   try {
     const companionId = parseInt(req.params.companionId);
     const { userId, subject, learningContent } = req.body;
-    
+
     if (!userId || !subject || !learningContent) {
       return res.status(400).json({ message: 'userId, subject, and learningContent are required' });
     }
-    
+
     // Analyze learning progress using Anthropic
     const analysis = await anthropicService.analyzeLearningProgress(
       learningContent,
       subject,
-      "appropriate grade level", // This could be improved by getting actual grade level
-      "General understanding of the subject"
+      'appropriate grade level', // This could be improved by getting actual grade level
+      'General understanding of the subject',
     );
-    
+
     // Save or update learning progress
-    const existingProgress = await storage.getAiCompanionLearningProgressBySubject(parseInt(userId), companionId, subject);
-    
+    const existingProgress = await storage.getAiCompanionLearningProgressBySubject(
+      parseInt(userId),
+      companionId,
+      subject,
+    );
+
     if (existingProgress) {
       // Update existing record
       const updatedProgress = await storage.updateAiCompanionLearningProgress(existingProgress.id, {
         proficiencyLevel: analysis.proficiencyLevel,
         strengthAreas: analysis.strengthAreas,
         improvementAreas: analysis.improvementAreas,
-        lastAssessment: new Date()
+        lastAssessment: new Date(),
       });
-      
+
       return res.json({
         analysis,
-        progressRecord: updatedProgress
+        progressRecord: updatedProgress,
       });
     } else {
       // Create new record
@@ -247,12 +251,12 @@ router.post('/companions/:companionId/analyze', async (req, res) => {
         proficiencyLevel: analysis.proficiencyLevel,
         strengthAreas: analysis.strengthAreas,
         improvementAreas: analysis.improvementAreas,
-        lastAssessment: new Date()
+        lastAssessment: new Date(),
       });
-      
+
       return res.json({
         analysis,
-        progressRecord: newProgress
+        progressRecord: newProgress,
       });
     }
   } catch (error) {
@@ -265,18 +269,18 @@ router.post('/companions/:companionId/analyze', async (req, res) => {
 router.post('/companions/:companionId/quiz', async (req, res) => {
   try {
     const { subject, topic, difficulty = 3, numberOfQuestions = 5 } = req.body;
-    
+
     if (!subject || !topic) {
       return res.status(400).json({ message: 'subject and topic are required' });
     }
-    
+
     const combinedTopic = `${subject}: ${topic}`;
     const quizData = await anthropicService.generateQuiz(
-      combinedTopic, 
-      difficulty, 
-      numberOfQuestions
+      combinedTopic,
+      difficulty,
+      numberOfQuestions,
     );
-    
+
     res.json(quizData);
   } catch (error) {
     console.error('Error generating quiz:', error);
@@ -288,27 +292,27 @@ router.post('/companions/:companionId/quiz', async (req, res) => {
 router.post('/companions/:companionId/learning-path', async (req, res) => {
   try {
     const { userId, subject, currentLevel, learningGoals, timeframe, neurotype } = req.body;
-    
+
     if (!userId || !subject || !currentLevel || !learningGoals || !timeframe) {
-      return res.status(400).json({ 
-        message: 'userId, subject, currentLevel, learningGoals, and timeframe are required' 
+      return res.status(400).json({
+        message: 'userId, subject, currentLevel, learningGoals, and timeframe are required',
       });
     }
-    
+
     const studentProfile = {
       gradeLevel: currentLevel,
       subject: subject,
-      interests: [learningGoals] // This could be expanded in the future
+      interests: [learningGoals], // This could be expanded in the future
     };
 
     const learningPath = await anthropicService.generateLearningPlan(
       studentProfile,
-      "visual", // Default learning style, could be customized
-      neurotype || "neurotypical", 
+      'visual', // Default learning style, could be customized
+      neurotype || 'neurotypical',
       currentLevel,
-      learningGoals 
+      learningGoals,
     );
-    
+
     res.json(learningPath);
   } catch (error) {
     console.error('Error generating learning path:', error);

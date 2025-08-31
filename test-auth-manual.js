@@ -16,13 +16,13 @@ async function testExistingUserAuth() {
     console.log('1. Testing login with existing coach account...');
     const loginData = {
       email: 'a.barrett@go4itsports.org',
-      password: 'testpass123' // This might not work, but let's see the response
+      password: 'testpass123', // This might not work, but let's see the response
     };
 
     const loginResponse = await fetch(`${BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(loginData)
+      body: JSON.stringify(loginData),
     });
 
     const loginResult = await loginResponse.json();
@@ -37,7 +37,7 @@ async function testExistingUserAuth() {
     console.log('\n2. Testing protected route without authentication...');
     const noAuthResponse = await fetch(`${BASE_URL}/api/auth/me`);
     console.log(`Status: ${noAuthResponse.status}`);
-    
+
     if (noAuthResponse.status === 401) {
       console.log('✅ Unauthorized access properly blocked');
     }
@@ -46,7 +46,7 @@ async function testExistingUserAuth() {
     console.log('\n3. Testing auth page accessibility...');
     const authPageResponse = await fetch(`${BASE_URL}/auth`);
     console.log(`Auth page status: ${authPageResponse.status}`);
-    
+
     if (authPageResponse.status === 200) {
       console.log('✅ Auth page accessible');
     }
@@ -56,13 +56,13 @@ async function testExistingUserAuth() {
     const invalidRegData = {
       email: '', // Invalid empty email
       password: 'test',
-      username: 'test'
+      username: 'test',
     };
 
     const regResponse = await fetch(`${BASE_URL}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(invalidRegData)
+      body: JSON.stringify(invalidRegData),
     });
 
     console.log(`Registration validation status: ${regResponse.status}`);
@@ -73,11 +73,10 @@ async function testExistingUserAuth() {
     console.log('\n' + '='.repeat(50));
     console.log('Authentication System Status:');
     console.log('- API endpoints responding: ✅');
-    console.log('- Validation working: ✅'); 
+    console.log('- Validation working: ✅');
     console.log('- Unauthorized access blocked: ✅');
     console.log('- Auth page accessible: ✅');
     console.log('\nReady for user testing!');
-
   } catch (error) {
     console.error('Test error:', error.message);
   }

@@ -1,0 +1,74 @@
+08-22 13:33:24
+[req] GET / id=ruc6gn9dfh8
+08-22 13:33:50
+Loading active campaigns from database...
+08-22 13:34:05
+system: received signal terminated
+08-22 13:34:26
+Twilio credentials not configured. SMS functionality will be disabled.
+08-22 13:36:24
+Error: Could not find Chrome (ver. 139.0.7258.138). This can occur if either
+08-22 13:36:24
+1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+08-22 13:36:24
+2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+08-22 13:36:24
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+08-22 13:36:24
+at async n.initializeBrowser (.next/server/chunks/118.js:1:1117)
+08-22 13:36:24
+⨯ unhandledRejection: Error: Could not find Chrome (ver. 139.0.7258.138). This can occur if either
+08-22 13:36:24
+1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+08-22 13:36:24
+2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+08-22 13:36:24
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+08-22 13:36:24
+at async n.initializeBrowser (.next/server/chunks/118.js:1:1117)
+08-22 13:36:24
+[req] GET / id=pl6ywurv88
+08-22 13:36:25
+[req] GET /dashboard id=dj04qpyyxdp
+08-22 13:37:33
+[req] GET / id=trztn095m2
+08-22 13:37:33
+[req] POST /xmlrpc.php id=9q80s61iro6
+08-22 13:40:48
+[req] GET / id=1x4achvt4ir
+08-22 13:40:48
+[req] GET /auth/signin id=meyd794qb2i
+08-22 13:40:49
+[req] GET /auth/forgot-password id=kqtmm7iflc
+08-22 13:40:49
+[req] GET /register id=ut1asfi6znh
+08-22 13:40:50
+[req] POST /register id=dnirbofd22i
+08-22 13:40:51
+[req] POST /register id=ixmeimcavjb
+08-22 13:40:52
+[req] GET /api/auth/login id=2cs50g6lbpm
+08-22 13:42:14
+[req] GET / id=ne928s5u01h
+08-22 13:43:18
+[req] GET /xmlrpc.php id=tgw5vzk65z
+08-22 13:44:35
+Error: Could not find Chrome (ver. 139.0.7258.138). This can occur if either
+08-22 13:44:35
+1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+08-22 13:44:35
+2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+08-22 13:44:35
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+08-22 13:44:35
+at async n.initializeBrowser (.next/server/chunks/118.js:1:1117)
+08-22 13:44:35
+⨯ unhandledRejection: Error: Could not find Chrome (ver. 139.0.7258.138). This can occur if either
+08-22 13:44:35
+1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+08-22 13:44:35
+2. your cache path is incorrectly configured (which is: /home/runner/.cache/puppeteer).
+08-22 13:44:35
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+08-22 13:44:35
+at async n.initializeBrowser (.next/server/chunks/118.js:1:1117)

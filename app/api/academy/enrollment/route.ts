@@ -1,88 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth';
+import { NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const user = await getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const enrollmentData = {
-      studentId: user.id,
-      academicYear: '2024-2025',
-      semester: 'Spring',
-      enrollmentStatus: 'Active',
-      registrationDate: '2024-01-15',
-      expectedGraduation: '2026-05-15',
-      degree: 'Bachelor of Science in Sports Management',
-      concentration: 'Athletic Performance',
-      advisor: 'Dr. Martinez',
-      creditsEarned: 45,
-      creditsRequired: 120,
-      currentGPA: 3.8,
-      cumulativeGPA: 3.7,
-      academicStanding: 'Good Standing',
-      ncaaEligibility: {
-        status: 'Eligible',
-        lastReview: '2024-01-01',
-        nextReview: '2024-07-01',
-        coreCoursesCompleted: 16,
-        coreCoursesRequired: 16,
-        minGPA: 2.3,
-        currentGPA: 3.8,
-        eligibilityCenter: 'NCAA Eligibility Center',
-        amateurStatus: 'Certified'
-      }
-    };
-
-    return NextResponse.json({
-      success: true,
-      enrollment: enrollmentData
-    });
-
-  } catch (error) {
-    console.error('Error fetching enrollment data:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch enrollment data' },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const user = await getUserFromRequest(request);
-    if (!user) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const body = await request.json();
-    const { courseId, semester } = body;
-
-    // Simulate course enrollment
+    // Return student enrollment data
     const enrollment = {
-      id: `enrollment-${Date.now()}`,
-      studentId: user.id,
-      courseId,
-      semester,
-      enrollmentDate: new Date().toISOString(),
-      status: 'Enrolled',
-      grade: null,
-      credits: 3
+      studentId: 'demo-student',
+      enrollmentDate: '2024-01-15',
+      academicYear: '2024-2025',
+      gradeLevel: '11',
+      gpa: 3.85,
+      totalCredits: 24.5,
+      completedCredits: 18.0,
+      enrolledCourses: 3,
+      academicStanding: 'Good Standing',
+      ncaaEligible: true,
+      graduationTrack: 'On Track',
+      advisorNotes: 'Excellent progress in core subjects',
+      nextSemesterCredits: 6.5,
     };
 
-    return NextResponse.json({
-      success: true,
-      enrollment,
-      message: 'Successfully enrolled in course'
-    });
-
+    return NextResponse.json({ enrollment });
   } catch (error) {
-    console.error('Error enrolling in course:', error);
-    return NextResponse.json(
-      { error: 'Failed to enroll in course' },
-      { status: 500 }
-    );
+    console.error('Academy enrollment API error:', error);
+    return NextResponse.json({ error: 'Failed to fetch enrollment' }, { status: 500 });
   }
 }

@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
     // Get teams with roster counts
     const whereCondition = sport && sport !== 'all' ? eq(teams.sport, sport) : undefined;
-    
+
     const teamsData = await db
       .select({
         id: teams.id,
@@ -41,15 +41,12 @@ export async function GET(request: NextRequest) {
           rosterCount: rosterCount.length,
           availableSpots: team.maxRosterSize - rosterCount.length,
         };
-      })
+      }),
     );
 
     return NextResponse.json(teamsWithCounts);
   } catch (error) {
     console.error('Error fetching teams:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch teams' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch teams' }, { status: 500 });
   }
 }

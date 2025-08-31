@@ -1,6 +1,6 @@
 /**
  * Curriculum Transformation Worker
- * 
+ *
  * This worker thread handles CPU-intensive curriculum transformation tasks
  * to keep the main thread responsive.
  */
@@ -22,19 +22,14 @@ const CACHE_SIZE_LIMIT = 50; // Max number of cached transformations
 parentPort.on('message', async (message) => {
   try {
     const { messageId, action, content, learningDifference, gradeLevel, options } = message;
-    
+
     if (action === 'transformCurriculum') {
-      const result = await transformCurriculum(
-        content, 
-        learningDifference, 
-        gradeLevel, 
-        options
-      );
-      
+      const result = await transformCurriculum(content, learningDifference, gradeLevel, options);
+
       // Send the result back to the main thread
       parentPort.postMessage({
         messageId,
-        result
+        result,
       });
     } else {
       throw new Error(`Unknown action: ${action}`);
@@ -43,7 +38,7 @@ parentPort.on('message', async (message) => {
     // Send the error back to the main thread
     parentPort.postMessage({
       messageId: message.messageId,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -54,20 +49,20 @@ parentPort.on('message', async (message) => {
 async function transformCurriculum(content, learningDifference, gradeLevel, options = {}) {
   // Generate a cache key based on input parameters
   const cacheKey = generateCacheKey(content, learningDifference, gradeLevel, options);
-  
+
   // Check cache first
   if (transformationCache.has(cacheKey)) {
     const cachedResult = transformationCache.get(cacheKey);
     return {
       ...cachedResult,
-      fromCache: true
+      fromCache: true,
     };
   }
-  
+
   // CPU-intensive pre-processing optimizations
   const contentType = detectContentType(content);
   const preprocessed = preprocessContent(content, contentType);
-  
+
   // Make the API request to the AI engine
   const requestBody = {
     content: preprocessed,
@@ -76,15 +71,15 @@ async function transformCurriculum(content, learningDifference, gradeLevel, opti
     output_language: options.outputLanguage || 'en',
     visual_style: options.visualStyle || 'standard',
     format: options.format || 'html',
-    content_type: contentType
+    content_type: contentType,
   };
-  
+
   // Execute the request with retry logic
   const result = await executeWithRetry(() => sendRequest('/curriculum/transform', requestBody));
-  
+
   // Post-process the result
   const processed = postprocessResult(result, contentType, learningDifference);
-  
+
   // Cache the result
   if (transformationCache.size >= CACHE_SIZE_LIMIT) {
     // Remove the oldest entry if cache is full
@@ -92,7 +87,7 @@ async function transformCurriculum(content, learningDifference, gradeLevel, opti
     transformationCache.delete(firstKey);
   }
   transformationCache.set(cacheKey, processed);
-  
+
   return processed;
 }
 
@@ -117,13 +112,13 @@ function preprocessContent(content, contentType) {
   switch (contentType) {
     case 'html':
       // Remove excessive whitespace but preserve structure
-      return content.replace(/\\s+/g, ' ')
-                   .replace(/> \\s+</g, '><')
-                   .trim();
+      return content
+        .replace(/\\s+/g, ' ')
+        .replace(/> \\s+</g, '><')
+        .trim();
     case 'markdown':
       // Normalize markdown formatting
-      return content.replace(/\\n{3,}/g, '\\n\\n')
-                   .trim();
+      return content.replace(/\\n{3,}/g, '\\n\\n').trim();
     default:
       // Default text processing
       return content.trim();
@@ -144,7 +139,7 @@ function postprocessResult(result, contentType, learningDifference) {
     // Add ADHD-friendly structure
     result.transformed = addADHDFriendlyStructure(result.transformed, contentType);
   }
-  
+
   return result;
 }
 
@@ -176,12 +171,10 @@ function addADHDFriendlyStructure(content, contentType) {
   // Add breaks and visual cues for ADHD readers
   if (contentType === 'html') {
     // Add section breaks and visual cues for HTML
-    return content.replace(/<h([2-6])([^>]*)>/g, 
-      '<div class="section-break"></div><h$1$2>');
+    return content.replace(/<h([2-6])([^>]*)>/g, '<div class="section-break"></div><h$1$2>');
   } else if (contentType === 'markdown') {
     // Add section breaks for markdown
-    return content.replace(/^#{2,6} /gm, 
-      '\n---\n$&');
+    return content.replace(/^#{2,6} /gm, '\n---\n$&');
   }
   return content;
 }
@@ -204,12 +197,12 @@ async function sendRequest(endpoint, data) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-API-Key': AI_ENGINE_API_KEY
+        Accept: 'application/json',
+        'X-API-Key': AI_ENGINE_API_KEY,
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
-    
+
     if (response.ok) {
       return await response.json();
     } else {
@@ -227,21 +220,21 @@ async function sendRequest(endpoint, data) {
  */
 async function executeWithRetry(fn) {
   let lastError;
-  
+
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       return await fn();
     } catch (error) {
       lastError = error;
       console.warn(`Attempt ${attempt}/${MAX_RETRIES} failed: ${error.message}`);
-      
+
       if (attempt < MAX_RETRIES) {
         // Use standard setTimeout with a promise
-        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY * attempt));
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY * attempt));
       }
     }
   }
-  
+
   throw lastError;
 }
 

@@ -1,6 +1,6 @@
 /**
  * Neurodivergent Curriculum API Routes
- * 
+ *
  * These routes provide access to the Neurodivergent Curriculum Service,
  * which generates educational content tailored to different neurodivergent types, including:
  * - ADHD
@@ -25,26 +25,26 @@ const handleApiError = (res, error) => {
     return res.status(500).json({
       error: 'API configuration error',
       message: 'The required API key is not configured. Please contact the administrator.',
-      code: 'API_KEY_MISSING'
+      code: 'API_KEY_MISSING',
     });
   }
   if (error.message.includes('Unsupported neurotype')) {
     return res.status(400).json({
       error: 'Invalid neurotype',
       message: error.message,
-      code: 'INVALID_NEUROTYPE'
+      code: 'INVALID_NEUROTYPE',
     });
   }
   return res.status(500).json({
     error: 'Server error',
     message: error.message,
-    code: 'INTERNAL_ERROR'
+    code: 'INTERNAL_ERROR',
   });
 };
 
 /**
  * GET /api/neurodivergent-curriculum/neurotypes
- * 
+ *
  * Returns a list of available neurodivergent types supported by the service
  */
 router.get('/neurotypes', (req, res) => {
@@ -58,7 +58,7 @@ router.get('/neurotypes', (req, res) => {
 
 /**
  * GET /api/neurodivergent-curriculum/subjects
- * 
+ *
  * Returns a list of available subjects for curriculum generation
  */
 router.get('/subjects', (req, res) => {
@@ -72,7 +72,7 @@ router.get('/subjects', (req, res) => {
 
 /**
  * GET /api/neurodivergent-curriculum/grades
- * 
+ *
  * Returns a list of available grade levels for curriculum generation
  */
 router.get('/grades', (req, res) => {
@@ -86,7 +86,7 @@ router.get('/grades', (req, res) => {
 
 /**
  * GET /api/neurodivergent-curriculum/formats
- * 
+ *
  * Returns a list of available formats for curriculum generation
  */
 router.get('/formats', (req, res) => {
@@ -100,9 +100,9 @@ router.get('/formats', (req, res) => {
 
 /**
  * POST /api/neurodivergent-curriculum/generate-lesson
- * 
+ *
  * Generates a curriculum lesson based on the provided parameters
- * 
+ *
  * Request body:
  * - subject: The subject area
  * - grade: The grade level
@@ -114,16 +114,16 @@ router.get('/formats', (req, res) => {
 router.post('/generate-lesson', async (req, res) => {
   try {
     const { subject, grade, state = 'general', format, topic, neurotype } = req.body;
-    
+
     // Validate required parameters
     if (!subject || !grade || !format || !neurotype) {
       return res.status(400).json({
         error: 'Missing parameters',
         message: 'subject, grade, format, and neurotype parameters are required',
-        code: 'MISSING_PARAMS'
+        code: 'MISSING_PARAMS',
       });
     }
-    
+
     // Build parameters object for service
     const params = {
       subject,
@@ -131,12 +131,12 @@ router.post('/generate-lesson', async (req, res) => {
       state,
       format,
       topic: topic || `${subject} for ${grade}`,
-      neurotype
+      neurotype,
     };
-    
+
     // Call the service to generate the lesson
     const lesson = await neurodivergentCurriculumService.generateNeurodivergentLesson(params);
-    
+
     res.json(lesson);
   } catch (error) {
     handleApiError(res, error);

@@ -5,9 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Video, Calendar, Clock, Users, Star, Play,
-  CreditCard, Shield, Award, Mic, Camera, Settings
+import {
+  Video,
+  Calendar,
+  Clock,
+  Users,
+  Star,
+  Play,
+  CreditCard,
+  Shield,
+  Award,
+  Mic,
+  Camera,
+  Settings,
 } from 'lucide-react';
 
 interface LiveClass {
@@ -36,7 +46,8 @@ export default function LiveClassesPage() {
     {
       id: 'class_001',
       title: 'High-Intensity Conditioning Circuit',
-      description: 'Full-body conditioning workout focusing on explosive movements and cardiovascular endurance. Perfect for athletes looking to improve game-day stamina.',
+      description:
+        'Full-body conditioning workout focusing on explosive movements and cardiovascular endurance. Perfect for athletes looking to improve game-day stamina.',
       coach: 'Coach Sarah Williams',
       coachRating: 4.8,
       startTime: 'Now',
@@ -47,12 +58,13 @@ export default function LiveClassesPage() {
       category: 'Conditioning',
       status: 'live',
       equipment: ['Resistance bands', 'Dumbbells', 'Mat'],
-      level: 'intermediate'
+      level: 'intermediate',
     },
     {
       id: 'class_002',
       title: 'Olympic Lifting Technique',
-      description: 'Master the fundamentals of clean & jerk and snatch with proper form guidance. Includes mobility work and progression exercises.',
+      description:
+        'Master the fundamentals of clean & jerk and snatch with proper form guidance. Includes mobility work and progression exercises.',
       coach: 'Coach Marcus Johnson',
       coachRating: 4.9,
       startTime: '3:00 PM',
@@ -63,12 +75,13 @@ export default function LiveClassesPage() {
       category: 'Strength',
       status: 'scheduled',
       equipment: ['Barbell', 'Weight plates', 'Lifting shoes'],
-      level: 'advanced'
+      level: 'advanced',
     },
     {
       id: 'class_003',
       title: 'Speed & Agility Fundamentals',
-      description: 'Develop explosive speed and change of direction. Includes ladder drills, cone work, and sprint mechanics.',
+      description:
+        'Develop explosive speed and change of direction. Includes ladder drills, cone work, and sprint mechanics.',
       coach: 'Coach David Rodriguez',
       coachRating: 5.0,
       startTime: '5:30 PM',
@@ -79,8 +92,8 @@ export default function LiveClassesPage() {
       category: 'Speed',
       status: 'scheduled',
       equipment: ['Agility ladder', 'Cones', 'Resistance bands'],
-      level: 'beginner'
-    }
+      level: 'beginner',
+    },
   ];
 
   const categories = ['All', 'Strength', 'Conditioning', 'Speed', 'Recovery', 'Nutrition'];
@@ -96,9 +109,9 @@ export default function LiveClassesPage() {
         className: classItem.title,
         coach: classItem.coach,
         price: classItem.price,
-        startTime: classItem.startTime
+        startTime: classItem.startTime,
       };
-      
+
       const params = new URLSearchParams(paymentData as any);
       window.location.href = `/payment/class?${params.toString()}`;
     }
@@ -124,9 +137,7 @@ export default function LiveClassesPage() {
             Join live training sessions with elite coaches from anywhere
           </p>
           <div className="flex items-center justify-center gap-4">
-            <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
-              Live Streaming
-            </Badge>
+            <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Live Streaming</Badge>
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
               Interactive Training
             </Badge>
@@ -142,18 +153,17 @@ export default function LiveClassesPage() {
             <div className="flex flex-col md:flex-row items-center justify-between">
               <div>
                 <h3 className="text-xl font-bold text-white mb-2">Are you a coach?</h3>
-                <p className="text-slate-300">Host your own live classes and earn up to $200/hour</p>
+                <p className="text-slate-300">
+                  Host your own live classes and earn up to $200/hour
+                </p>
               </div>
               <div className="flex gap-3 mt-4 md:mt-0">
-                <Button 
-                  onClick={startHosting}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
+                <Button onClick={startHosting} className="bg-purple-600 hover:bg-purple-700">
                   <Camera className="w-4 h-4 mr-2" />
                   Start Streaming
                 </Button>
-                <Button 
-                  onClick={() => window.location.href = '/coach-signup'}
+                <Button
+                  onClick={() => (window.location.href = '/coach-signup')}
                   variant="outline"
                   className="border-slate-600"
                 >
@@ -178,126 +188,146 @@ export default function LiveClassesPage() {
 
           <TabsContent value="live" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {liveClasses.filter(c => c.status === 'live').map((classItem) => (
-                <Card key={classItem.id} className="bg-slate-800 border-red-500/50 shadow-lg shadow-red-500/20">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
-                            <Video className="w-6 h-6 text-red-400" />
+              {liveClasses
+                .filter((c) => c.status === 'live')
+                .map((classItem) => (
+                  <Card
+                    key={classItem.id}
+                    className="bg-slate-800 border-red-500/50 shadow-lg shadow-red-500/20"
+                  >
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="relative">
+                            <div className="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+                              <Video className="w-6 h-6 text-red-400" />
+                            </div>
+                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
                           </div>
-                          <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse"></div>
+                          <div>
+                            <CardTitle className="text-white text-lg">{classItem.title}</CardTitle>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
+                                LIVE
+                              </Badge>
+                              <span className="text-sm text-slate-400">
+                                {classItem.currentAttendees} watching
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <CardTitle className="text-white text-lg">{classItem.title}</CardTitle>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
-                              LIVE
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-green-400">
+                            ${classItem.price}
+                          </div>
+                          <div className="text-xs text-slate-400">{classItem.duration} min</div>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-4">
+                      <p className="text-slate-300 text-sm">{classItem.description}</p>
+
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <Users className="w-4 h-4 text-blue-400" />
+                          <span className="text-white">{classItem.coach}</span>
+                          <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span className="text-slate-400">{classItem.coachRating}</span>
+                          </div>
+                        </div>
+                        <Badge
+                          className={
+                            classItem.level === 'beginner'
+                              ? 'bg-green-500/20 text-green-400'
+                              : classItem.level === 'intermediate'
+                                ? 'bg-yellow-500/20 text-yellow-400'
+                                : 'bg-red-500/20 text-red-400'
+                          }
+                        >
+                          {classItem.level}
+                        </Badge>
+                      </div>
+
+                      <div>
+                        <h5 className="font-medium text-white text-sm mb-2">Equipment Needed:</h5>
+                        <div className="flex flex-wrap gap-1">
+                          {classItem.equipment.map((item, index) => (
+                            <Badge key={index} variant="outline" className="text-xs">
+                              {item}
                             </Badge>
-                            <span className="text-sm text-slate-400">{classItem.currentAttendees} watching</span>
-                          </div>
+                          ))}
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-2xl font-bold text-green-400">${classItem.price}</div>
-                        <div className="text-xs text-slate-400">{classItem.duration} min</div>
-                      </div>
-                    </div>
-                  </CardHeader>
 
-                  <CardContent className="space-y-4">
-                    <p className="text-slate-300 text-sm">{classItem.description}</p>
-
-                    <div className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-blue-400" />
-                        <span className="text-white">{classItem.coach}</span>
-                        <div className="flex items-center gap-1">
-                          <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                          <span className="text-slate-400">{classItem.coachRating}</span>
-                        </div>
-                      </div>
-                      <Badge className={
-                        classItem.level === 'beginner' ? 'bg-green-500/20 text-green-400' :
-                        classItem.level === 'intermediate' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-red-500/20 text-red-400'
-                      }>
-                        {classItem.level}
-                      </Badge>
-                    </div>
-
-                    <div>
-                      <h5 className="font-medium text-white text-sm mb-2">Equipment Needed:</h5>
-                      <div className="flex flex-wrap gap-1">
-                        {classItem.equipment.map((item, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {item}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <Button 
-                      onClick={() => joinClass(classItem)}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold"
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      Join Live Class
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                      <Button
+                        onClick={() => joinClass(classItem)}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold"
+                      >
+                        <Play className="w-4 h-4 mr-2" />
+                        Join Live Class
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </TabsContent>
 
           <TabsContent value="scheduled" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {liveClasses.filter(c => c.status === 'scheduled').map((classItem) => (
-                <Card key={classItem.id} className="bg-slate-800 border-slate-700 hover:border-blue-500/50 transition-all duration-300">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-white text-lg">{classItem.title}</CardTitle>
-                      <div className="text-right">
-                        <div className="text-xl font-bold text-green-400">${classItem.price}</div>
-                        <div className="text-xs text-slate-400">{classItem.duration} min</div>
+              {liveClasses
+                .filter((c) => c.status === 'scheduled')
+                .map((classItem) => (
+                  <Card
+                    key={classItem.id}
+                    className="bg-slate-800 border-slate-700 hover:border-blue-500/50 transition-all duration-300"
+                  >
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-white text-lg">{classItem.title}</CardTitle>
+                        <div className="text-right">
+                          <div className="text-xl font-bold text-green-400">${classItem.price}</div>
+                          <div className="text-xs text-slate-400">{classItem.duration} min</div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-blue-400" />
-                      <span className="text-sm text-blue-400">{classItem.startTime}</span>
-                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                        {classItem.category}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent className="space-y-4">
-                    <p className="text-slate-300 text-sm">{classItem.description}</p>
-
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-400">Coach: {classItem.coach}</span>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                        <span className="text-slate-400">{classItem.coachRating}</span>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-blue-400" />
+                        <span className="text-sm text-blue-400">{classItem.startTime}</span>
+                        <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+                          {classItem.category}
+                        </Badge>
                       </div>
-                    </div>
+                    </CardHeader>
 
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-400">Spots Available</span>
-                      <span className="text-white">{classItem.maxAttendees - classItem.currentAttendees}</span>
-                    </div>
+                    <CardContent className="space-y-4">
+                      <p className="text-slate-300 text-sm">{classItem.description}</p>
 
-                    <Button 
-                      onClick={() => joinClass(classItem)}
-                      className="w-full bg-blue-600 hover:bg-blue-700"
-                    >
-                      <Calendar className="w-4 h-4 mr-2" />
-                      Reserve Spot
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-400">Coach: {classItem.coach}</span>
+                        <div className="flex items-center gap-1">
+                          <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                          <span className="text-slate-400">{classItem.coachRating}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-slate-400">Spots Available</span>
+                        <span className="text-white">
+                          {classItem.maxAttendees - classItem.currentAttendees}
+                        </span>
+                      </div>
+
+                      <Button
+                        onClick={() => joinClass(classItem)}
+                        className="w-full bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Reserve Spot
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
             </div>
           </TabsContent>
 
@@ -308,9 +338,7 @@ export default function LiveClassesPage() {
               <p className="text-slate-400 mb-6">
                 Access recorded sessions and training programs anytime, anywhere
               </p>
-              <Button className="bg-purple-600 hover:bg-purple-700">
-                Get Notified
-              </Button>
+              <Button className="bg-purple-600 hover:bg-purple-700">Get Notified</Button>
             </div>
           </TabsContent>
         </Tabs>
@@ -351,9 +379,12 @@ export default function LiveClassesPage() {
         {/* Revenue Model Info */}
         <Card className="bg-gradient-to-r from-green-500/20 to-blue-500/20 border-green-500/30">
           <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">Join the Live Training Revolution</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">
+              Join the Live Training Revolution
+            </h3>
             <p className="text-slate-300 text-lg mb-6">
-              Train with elite coaches, connect with athletes worldwide, and accelerate your performance
+              Train with elite coaches, connect with athletes worldwide, and accelerate your
+              performance
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div className="text-center">
@@ -374,8 +405,8 @@ export default function LiveClassesPage() {
                 <CreditCard className="w-5 h-5 mr-2" />
                 Browse Live Classes
               </Button>
-              <Button 
-                onClick={() => window.location.href = '/coaches-corner'}
+              <Button
+                onClick={() => (window.location.href = '/coaches-corner')}
                 variant="outline"
                 className="border-slate-600 text-slate-300 px-8 py-3"
               >

@@ -1,16 +1,13 @@
 /**
  * Learning Mood Tracker API Routes
- * 
+ *
  * Handles all endpoints related to the emoji-based mood tracking system
  * for monitoring student emotional states during learning.
  */
 
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import {
-  insertLearningMoodSchema,
-  moodCategories
-} from '../../shared/learning-mood-types';
+import { insertLearningMoodSchema, moodCategories } from '../../shared/learning-mood-types';
 import { storage } from '../storage';
 
 const router = Router();
@@ -66,11 +63,11 @@ router.get('/:id', async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
     const mood = await (storage as any).getLearningMood(id);
-    
+
     if (!mood) {
       return res.status(404).json({ message: 'Learning mood not found' });
     }
-    
+
     res.json(mood);
   } catch (error) {
     console.error('Error fetching learning mood:', error);
@@ -98,11 +95,11 @@ router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const id = Number(req.params.id);
     const success = await (storage as any).deleteLearningMood(id);
-    
+
     if (!success) {
       return res.status(404).json({ message: 'Learning mood not found' });
     }
-    
+
     res.json({ message: 'Learning mood deleted successfully' });
   } catch (error) {
     console.error('Error deleting learning mood:', error);

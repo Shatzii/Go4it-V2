@@ -18,11 +18,13 @@ export async function GET(request: NextRequest) {
     const dailyChallenges = await db
       .select()
       .from(challenges)
-      .where(and(
-        eq(challenges.type, 'daily'),
-        eq(challenges.isActive, true),
-        gte(challenges.startDate, today)
-      ));
+      .where(
+        and(
+          eq(challenges.type, 'daily'),
+          eq(challenges.isActive, true),
+          gte(challenges.startDate, today),
+        ),
+      );
 
     // Get user's progress on these challenges
     const userProgress = await db
@@ -30,24 +32,20 @@ export async function GET(request: NextRequest) {
       .from(userChallenges)
       .where(eq(userChallenges.userId, user.id));
 
-    const challengesWithProgress = dailyChallenges.map(challenge => {
-      const progress = userProgress.find(p => p.challengeId === challenge.id);
+    const challengesWithProgress = dailyChallenges.map((challenge) => {
+      const progress = userProgress.find((p) => p.challengeId === challenge.id);
       return {
         ...challenge,
         userProgress: progress?.progress || 0,
         completed: progress?.completed || false,
-        reward: progress?.reward || null
+        reward: progress?.reward || null,
       };
     });
 
     return NextResponse.json(challengesWithProgress);
-
   } catch (error) {
     console.error('Daily challenges error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch daily challenges' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch daily challenges' }, { status: 500 });
   }
 }
 
@@ -64,10 +62,7 @@ export async function POST(request: NextRequest) {
     const existingProgress = await db
       .select()
       .from(userChallenges)
-      .where(and(
-        eq(userChallenges.userId, user.id),
-        eq(userChallenges.challengeId, challengeId)
-      ))
+      .where(and(eq(userChallenges.userId, user.id), eq(userChallenges.challengeId, challengeId)))
       .limit(1);
 
     if (existingProgress.length > 0) {
@@ -86,12 +81,9 @@ export async function POST(request: NextRequest) {
           progress: newProgress,
           completed: isCompleted,
           completedAt: isCompleted ? new Date() : null,
-          reward: isCompleted ? generateReward(challenge[0]) : null
+          reward: isCompleted ? generateReward(challenge[0]) : null,
         })
-        .where(and(
-          eq(userChallenges.userId, user.id),
-          eq(userChallenges.challengeId, challengeId)
-        ))
+        .where(and(eq(userChallenges.userId, user.id), eq(userChallenges.challengeId, challengeId)))
         .returning();
 
       return NextResponse.json(updated);
@@ -102,19 +94,15 @@ export async function POST(request: NextRequest) {
           userId: user.id,
           challengeId,
           progress: progressIncrement,
-          completed: false
+          completed: false,
         })
         .returning();
 
       return NextResponse.json(newProgress);
     }
-
   } catch (error) {
     console.error('Challenge progress update error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update challenge progress' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update challenge progress' }, { status: 500 });
   }
 }
 
@@ -124,7 +112,7 @@ function generateReward(challenge: any): string {
     'Skill Point +1',
     'Badge: Daily Achiever',
     'Training Unlock',
-    'Performance Insight'
+    'Performance Insight',
   ];
   return rewards[Math.floor(Math.random() * rewards.length)];
 }

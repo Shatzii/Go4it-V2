@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.formData();
     const file: File | null = data.get('image') as unknown as File;
-    
+
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
@@ -20,20 +20,17 @@ export async function POST(req: NextRequest) {
 
     // Save file
     await writeFile(filepath, buffer);
-    
+
     // Use the new media API endpoint for serving
     const url = `/api/media/${filename}`;
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       url,
-      message: 'File uploaded successfully' 
+      message: 'File uploaded successfully',
     });
   } catch (error) {
     console.error('Upload failed:', error);
-    return NextResponse.json(
-      { error: 'Upload failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
 }

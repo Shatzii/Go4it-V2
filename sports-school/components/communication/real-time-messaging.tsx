@@ -8,13 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  MessageCircle, 
-  Send, 
-  Phone, 
-  Video, 
-  Paperclip, 
-  Image, 
+import {
+  MessageCircle,
+  Send,
+  Phone,
+  Video,
+  Paperclip,
+  Image,
   Smile,
   Search,
   Users,
@@ -25,7 +25,7 @@ import {
   MoreHorizontal,
   CheckCheck,
   Check,
-  Clock
+  Clock,
 } from 'lucide-react';
 
 interface Message {
@@ -81,7 +81,7 @@ export function RealTimeMessaging() {
     id: 'current-user',
     name: 'John Doe',
     role: 'student' as const,
-    avatar: '/avatars/student.png'
+    avatar: '/avatars/student.png',
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -91,10 +91,10 @@ export function RealTimeMessaging() {
   useEffect(() => {
     // Initialize WebSocket connection
     connectWebSocket();
-    
+
     // Load conversations
     loadConversations();
-    
+
     return () => {
       if (ws.current) {
         ws.current.close();
@@ -115,25 +115,25 @@ export function RealTimeMessaging() {
   const connectWebSocket = () => {
     try {
       ws.current = new WebSocket(`ws://localhost:3001/ws`);
-      
+
       ws.current.onopen = () => {
         setIsConnected(true);
         console.log('WebSocket connected');
       };
-      
+
       ws.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         handleWebSocketMessage(data);
       };
-      
+
       ws.current.onclose = () => {
         setIsConnected(false);
         console.log('WebSocket disconnected');
-        
+
         // Reconnect after 3 seconds
         setTimeout(connectWebSocket, 3000);
       };
-      
+
       ws.current.onerror = (error) => {
         console.error('WebSocket error:', error);
       };
@@ -146,31 +146,31 @@ export function RealTimeMessaging() {
     switch (data.type) {
       case 'new_message':
         if (data.conversationId === activeConversation?.id) {
-          setMessages(prev => [...prev, data.message]);
+          setMessages((prev) => [...prev, data.message]);
         }
         updateConversationLastMessage(data.conversationId, data.message);
         break;
-        
+
       case 'typing_start':
         if (data.conversationId === activeConversation?.id) {
-          setTypingUsers(prev => [...prev.filter(id => id !== data.userId), data.userName]);
+          setTypingUsers((prev) => [...prev.filter((id) => id !== data.userId), data.userName]);
         }
         break;
-        
+
       case 'typing_stop':
         if (data.conversationId === activeConversation?.id) {
-          setTypingUsers(prev => prev.filter(name => name !== data.userName));
+          setTypingUsers((prev) => prev.filter((name) => name !== data.userName));
         }
         break;
-        
+
       case 'user_online':
         updateUserOnlineStatus(data.userId, true);
         break;
-        
+
       case 'user_offline':
         updateUserOnlineStatus(data.userId, false);
         break;
-        
+
       case 'message_read':
         markMessageAsRead(data.messageId);
         break;
@@ -183,7 +183,7 @@ export function RealTimeMessaging() {
       if (response.ok) {
         const data = await response.json();
         setConversations(data);
-        
+
         // Set first conversation as active
         if (data.length > 0) {
           setActiveConversation(data[0]);
@@ -217,101 +217,91 @@ export function RealTimeMessaging() {
       content: newMessage,
       timestamp: new Date(),
       type: 'text',
-      status: 'sending'
+      status: 'sending',
     };
 
-    setMessages(prev => [...prev, message]);
+    setMessages((prev) => [...prev, message]);
     setNewMessage('');
-    
+
     try {
       const response = await fetch(`/api/conversations/${activeConversation.id}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: newMessage,
-          type: 'text'
-        })
+          type: 'text',
+        }),
       });
-      
+
       if (response.ok) {
         const sentMessage = await response.json();
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.id === message.id 
-              ? { ...sentMessage, status: 'sent' }
-              : msg
-          )
+        setMessages((prev) =>
+          prev.map((msg) => (msg.id === message.id ? { ...sentMessage, status: 'sent' } : msg)),
         );
-        
+
         // Send via WebSocket for real-time delivery
         if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-          ws.current.send(JSON.stringify({
-            type: 'send_message',
-            conversationId: activeConversation.id,
-            message: sentMessage
-          }));
+          ws.current.send(
+            JSON.stringify({
+              type: 'send_message',
+              conversationId: activeConversation.id,
+              message: sentMessage,
+            }),
+          );
         }
       }
     } catch (error) {
       console.error('Failed to send message:', error);
       // Mark message as failed
-      setMessages(prev => 
-        prev.map(msg => 
-          msg.id === message.id 
-            ? { ...msg, status: 'sent' }
-            : msg
-        )
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === message.id ? { ...msg, status: 'sent' } : msg)),
       );
     }
   };
 
   const handleTyping = (isTyping: boolean) => {
     if (!activeConversation) return;
-    
+
     setIsTyping(isTyping);
-    
+
     if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-      ws.current.send(JSON.stringify({
-        type: isTyping ? 'typing_start' : 'typing_stop',
-        conversationId: activeConversation.id,
-        userId: currentUser.id,
-        userName: currentUser.name
-      }));
+      ws.current.send(
+        JSON.stringify({
+          type: isTyping ? 'typing_start' : 'typing_stop',
+          conversationId: activeConversation.id,
+          userId: currentUser.id,
+          userName: currentUser.name,
+        }),
+      );
     }
   };
 
   const updateConversationLastMessage = (conversationId: string, message: Message) => {
-    setConversations(prev => 
-      prev.map(conv => 
-        conv.id === conversationId 
-          ? { 
-              ...conv, 
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === conversationId
+          ? {
+              ...conv,
               lastMessage: message,
-              unreadCount: conv.id === activeConversation?.id ? 0 : conv.unreadCount + 1
+              unreadCount: conv.id === activeConversation?.id ? 0 : conv.unreadCount + 1,
             }
-          : conv
-      )
+          : conv,
+      ),
     );
   };
 
   const updateUserOnlineStatus = (userId: string, isOnline: boolean) => {
-    setConversations(prev => 
-      prev.map(conv => ({
+    setConversations((prev) =>
+      prev.map((conv) => ({
         ...conv,
-        participants: conv.participants.map(p => 
-          p.id === userId ? { ...p, isOnline } : p
-        )
-      }))
+        participants: conv.participants.map((p) => (p.id === userId ? { ...p, isOnline } : p)),
+      })),
     );
   };
 
   const markMessageAsRead = (messageId: string) => {
-    setMessages(prev => 
-      prev.map(msg => 
-        msg.id === messageId 
-          ? { ...msg, status: 'read' }
-          : msg
-      )
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === messageId ? { ...msg, status: 'read' } : msg)),
     );
   };
 
@@ -323,7 +313,7 @@ export function RealTimeMessaging() {
     return new Intl.DateTimeFormat('en-US', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     }).format(date);
   };
 
@@ -348,8 +338,8 @@ export function RealTimeMessaging() {
     }
   };
 
-  const filteredConversations = conversations.filter(conv =>
-    conv.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredConversations = conversations.filter((conv) =>
+    conv.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -369,7 +359,7 @@ export function RealTimeMessaging() {
                 </Button>
               </div>
             </div>
-            
+
             <div className="relative">
               <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
               <Input
@@ -380,7 +370,7 @@ export function RealTimeMessaging() {
               />
             </div>
           </div>
-          
+
           <ScrollArea className="flex-1">
             <div className="p-2">
               {filteredConversations.map((conversation) => (
@@ -397,14 +387,17 @@ export function RealTimeMessaging() {
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={conversation.avatar} />
                       <AvatarFallback>
-                        {conversation.name.split(' ').map(n => n[0]).join('')}
+                        {conversation.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
                       </AvatarFallback>
                     </Avatar>
                     {conversation.isOnline && (
                       <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                     )}
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
                       <h3 className="font-medium truncate">{conversation.name}</h3>
@@ -414,7 +407,7 @@ export function RealTimeMessaging() {
                         </span>
                       )}
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-600 truncate">
                         {conversation.lastMessage?.content || 'No messages yet'}
@@ -425,7 +418,7 @@ export function RealTimeMessaging() {
                         </Badge>
                       )}
                     </div>
-                    
+
                     <div className="flex items-center gap-1 mt-1">
                       <Badge variant="outline" className="text-xs">
                         {conversation.type}
@@ -452,17 +445,21 @@ export function RealTimeMessaging() {
                     <Avatar className="w-10 h-10">
                       <AvatarImage src={activeConversation.avatar} />
                       <AvatarFallback>
-                        {activeConversation.name.split(' ').map(n => n[0]).join('')}
+                        {activeConversation.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <h3 className="font-semibold">{activeConversation.name}</h3>
                       <p className="text-sm text-gray-600">
-                        {activeConversation.isOnline ? 'Online' : 'Offline'} • {activeConversation.participants.length} participants
+                        {activeConversation.isOnline ? 'Online' : 'Offline'} •{' '}
+                        {activeConversation.participants.length} participants
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Button variant="outline" size="sm">
                       <Phone className="w-4 h-4" />
@@ -497,30 +494,35 @@ export function RealTimeMessaging() {
                             <Avatar className="w-5 h-5">
                               <AvatarImage src={message.senderAvatar} />
                               <AvatarFallback className="text-xs">
-                                {message.senderName.split(' ').map(n => n[0]).join('')}
+                                {message.senderName
+                                  .split(' ')
+                                  .map((n) => n[0])
+                                  .join('')}
                               </AvatarFallback>
                             </Avatar>
                             <span className="text-xs font-medium">{message.senderName}</span>
                           </div>
                         )}
-                        
+
                         <p className="text-sm">{message.content}</p>
-                        
+
                         <div className="flex items-center justify-end gap-1 mt-1">
                           <span className="text-xs opacity-70">
                             {formatTime(message.timestamp)}
                           </span>
-                          {message.senderId === currentUser.id && getMessageStatusIcon(message.status)}
+                          {message.senderId === currentUser.id &&
+                            getMessageStatusIcon(message.status)}
                         </div>
                       </div>
                     </div>
                   ))}
-                  
+
                   {typingUsers.length > 0 && (
                     <div className="flex justify-start">
                       <div className="bg-gray-100 rounded-lg p-3 max-w-[70%]">
                         <p className="text-sm text-gray-600">
-                          {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+                          {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'}{' '}
+                          typing...
                         </p>
                       </div>
                     </div>
@@ -532,18 +534,14 @@ export function RealTimeMessaging() {
               {/* Message Input */}
               <div className="p-4 border-t bg-white">
                 <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
+                  <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
                     <Paperclip className="w-4 h-4" />
                   </Button>
-                  
+
                   <Button variant="outline" size="sm">
                     <Image className="w-4 h-4" />
                   </Button>
-                  
+
                   <Input
                     placeholder="Type a message..."
                     value={newMessage}
@@ -558,11 +556,11 @@ export function RealTimeMessaging() {
                     }}
                     className="flex-1"
                   />
-                  
+
                   <Button variant="outline" size="sm">
                     <Smile className="w-4 h-4" />
                   </Button>
-                  
+
                   <Button onClick={sendMessage} disabled={!newMessage.trim()}>
                     <Send className="w-4 h-4" />
                   </Button>

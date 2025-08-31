@@ -36,9 +36,9 @@ export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
     requirements: {
       ram: '8GB',
       storage: '5GB',
-      gpu: 'Optional (CUDA/ROCm)'
+      gpu: 'Optional (CUDA/ROCm)',
     },
-    capabilities: ['coaching', 'instruction', 'sports', 'personalization', 'analytics']
+    capabilities: ['coaching', 'instruction', 'sports', 'personalization', 'analytics'],
   },
   {
     name: 'codellama:7b',
@@ -48,9 +48,9 @@ export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
     modelFile: 'codellama-7b.gguf',
     requirements: {
       ram: '6GB',
-      storage: '4GB'
+      storage: '4GB',
     },
-    capabilities: ['instruction', 'technical', 'drills']
+    capabilities: ['instruction', 'technical', 'drills'],
   },
   {
     name: 'mistral:7b',
@@ -60,9 +60,9 @@ export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
     modelFile: 'mistral-7b.gguf',
     requirements: {
       ram: '6GB',
-      storage: '4.5GB'
+      storage: '4.5GB',
     },
-    capabilities: ['coaching', 'sports', 'motivation', 'psychology']
+    capabilities: ['coaching', 'sports', 'motivation', 'psychology'],
   },
   {
     name: 'neural-chat:7b',
@@ -72,9 +72,9 @@ export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
     modelFile: 'neural-chat-7b.gguf',
     requirements: {
       ram: '6GB',
-      storage: '4.5GB'
+      storage: '4.5GB',
     },
-    capabilities: ['coaching', 'conversation', 'psychology', 'motivation', 'education']
+    capabilities: ['coaching', 'conversation', 'psychology', 'motivation', 'education'],
   },
   {
     name: 'phi3:mini',
@@ -84,10 +84,10 @@ export const AVAILABLE_LOCAL_MODELS: LocalModelInfo[] = [
     modelFile: 'phi3-mini.gguf',
     requirements: {
       ram: '4GB',
-      storage: '2.5GB'
+      storage: '2.5GB',
     },
-    capabilities: ['coaching', 'basic', 'fast']
-  }
+    capabilities: ['coaching', 'basic', 'fast'],
+  },
 ];
 
 export class AIModelManager {
@@ -109,17 +109,21 @@ export class AIModelManager {
     }
   }
 
-  async generateResponseWithLicense(prompt: string, licenseKey: string, context?: any): Promise<string> {
+  async generateResponseWithLicense(
+    prompt: string,
+    licenseKey: string,
+    context?: any,
+  ): Promise<string> {
     if (this.config.type === 'local') {
       // Validate license before using local model
       const { createModelEncryptionManager } = await import('./model-encryption');
       const encryptionManager = createModelEncryptionManager();
-      
+
       const validation = await encryptionManager.validateLicense(licenseKey);
       if (!validation.valid) {
         throw new Error(`License validation failed: ${validation.error}`);
       }
-      
+
       return this.generateLocalResponse(prompt, context);
     } else {
       return this.generateCloudResponse(prompt, context);
@@ -161,7 +165,7 @@ export class AIModelManager {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
+        Authorization: `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -169,16 +173,17 @@ export class AIModelManager {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert sports analyst specializing in youth athlete development and neurodivergent-friendly coaching.'
+            content:
+              'You are an expert sports analyst specializing in youth athlete development and neurodivergent-friendly coaching.',
           },
           {
             role: 'user',
-            content: prompt
-          }
+            content: prompt,
+          },
         ],
         max_tokens: this.config.maxTokens || 2000,
-        temperature: this.config.temperature || 0.7
-      })
+        temperature: this.config.temperature || 0.7,
+      }),
     });
 
     const data = await response.json();
@@ -191,7 +196,7 @@ export class AIModelManager {
       headers: {
         'x-api-key': this.config.apiKey!,
         'content-type': 'application/json',
-        'anthropic-version': '2023-06-01'
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
         model: this.config.model,
@@ -199,10 +204,10 @@ export class AIModelManager {
         messages: [
           {
             role: 'user',
-            content: prompt
-          }
-        ]
-      })
+            content: prompt,
+          },
+        ],
+      }),
     });
 
     const data = await response.json();
@@ -211,7 +216,7 @@ export class AIModelManager {
 
   private async callOllama(prompt: string, context?: any): Promise<string> {
     const endpoint = this.config.endpoint || 'http://localhost:11434/api/generate';
-    
+
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -224,9 +229,9 @@ export class AIModelManager {
           stream: false,
           options: {
             temperature: this.config.temperature || 0.7,
-            num_predict: this.config.maxTokens || 2000
-          }
-        })
+            num_predict: this.config.maxTokens || 2000,
+          },
+        }),
       });
 
       const data = await response.json();
@@ -239,9 +244,18 @@ export class AIModelManager {
 
   private generateLocalSportsAnalysis(prompt: string, context?: any): string {
     // Intelligent sports analysis without external dependencies
-    const sportKeywords = ['basketball', 'football', 'soccer', 'tennis', 'baseball', 'volleyball', 'track', 'swimming'];
-    const sport = sportKeywords.find(s => prompt.toLowerCase().includes(s)) || 'general';
-    
+    const sportKeywords = [
+      'basketball',
+      'football',
+      'soccer',
+      'tennis',
+      'baseball',
+      'volleyball',
+      'track',
+      'swimming',
+    ];
+    const sport = sportKeywords.find((s) => prompt.toLowerCase().includes(s)) || 'general';
+
     // Pattern-based analysis for different sports analysis types
     if (prompt.includes('biomechanics') || prompt.includes('movement')) {
       return this.generateBiomechanicsAnalysis(sport, context);
@@ -258,49 +272,63 @@ export class AIModelManager {
 
   private generateBiomechanicsAnalysis(sport: string, context?: any): string {
     const analyses = {
-      basketball: "Biomechanical Analysis: Good shooting posture with slight forward lean. Balance score: 82/100. Coordination shows efficient energy transfer from legs to arms. Footwork demonstrates proper weight distribution. Recommendation: Focus on core stability and ankle mobility for improved consistency.",
-      soccer: "Biomechanical Analysis: Running gait shows good stride length and minimal energy waste. Balance during ball control: 85/100. Kicking mechanics display proper hip rotation and follow-through. Recommendation: Work on single-leg stability and dynamic balance exercises.",
-      tennis: "Biomechanical Analysis: Serve motion demonstrates good kinetic chain efficiency. Forehand stroke shows proper weight transfer. Balance and coordination: 80/100. Recommendation: Focus on rotational core strength and shoulder stability.",
-      general: "Biomechanical Analysis: Movement patterns show good overall efficiency. Balance and coordination within normal ranges. Posture demonstrates proper alignment. Recommendation: Continue with current training approach while focusing on sport-specific movements."
+      basketball:
+        'Biomechanical Analysis: Good shooting posture with slight forward lean. Balance score: 82/100. Coordination shows efficient energy transfer from legs to arms. Footwork demonstrates proper weight distribution. Recommendation: Focus on core stability and ankle mobility for improved consistency.',
+      soccer:
+        'Biomechanical Analysis: Running gait shows good stride length and minimal energy waste. Balance during ball control: 85/100. Kicking mechanics display proper hip rotation and follow-through. Recommendation: Work on single-leg stability and dynamic balance exercises.',
+      tennis:
+        'Biomechanical Analysis: Serve motion demonstrates good kinetic chain efficiency. Forehand stroke shows proper weight transfer. Balance and coordination: 80/100. Recommendation: Focus on rotational core strength and shoulder stability.',
+      general:
+        'Biomechanical Analysis: Movement patterns show good overall efficiency. Balance and coordination within normal ranges. Posture demonstrates proper alignment. Recommendation: Continue with current training approach while focusing on sport-specific movements.',
     };
     return analyses[sport] || analyses.general;
   }
 
   private generateTacticalAnalysis(sport: string, context?: any): string {
     const analyses = {
-      basketball: "Tactical Analysis: Decision-making shows good court vision and passing accuracy. Positioning demonstrates understanding of offensive spacing. Defensive awareness: 78/100. Recommendation: Work on transition defense and help-side positioning.",
-      soccer: "Tactical Analysis: Field vision shows good understanding of passing lanes. Positioning demonstrates spatial awareness. Decision-making under pressure: 75/100. Recommendation: Focus on quick decision-making drills and situational awareness.",
-      tennis: "Tactical Analysis: Shot selection shows good understanding of court positioning. Strategy demonstrates ability to construct points. Mental toughness: 82/100. Recommendation: Work on pattern recognition and point construction.",
-      general: "Tactical Analysis: Shows good understanding of game situations. Decision-making demonstrates solid fundamentals. Strategic thinking: 77/100. Recommendation: Continue developing sport-specific tactical awareness."
+      basketball:
+        'Tactical Analysis: Decision-making shows good court vision and passing accuracy. Positioning demonstrates understanding of offensive spacing. Defensive awareness: 78/100. Recommendation: Work on transition defense and help-side positioning.',
+      soccer:
+        'Tactical Analysis: Field vision shows good understanding of passing lanes. Positioning demonstrates spatial awareness. Decision-making under pressure: 75/100. Recommendation: Focus on quick decision-making drills and situational awareness.',
+      tennis:
+        'Tactical Analysis: Shot selection shows good understanding of court positioning. Strategy demonstrates ability to construct points. Mental toughness: 82/100. Recommendation: Work on pattern recognition and point construction.',
+      general:
+        'Tactical Analysis: Shows good understanding of game situations. Decision-making demonstrates solid fundamentals. Strategic thinking: 77/100. Recommendation: Continue developing sport-specific tactical awareness.',
     };
     return analyses[sport] || analyses.general;
   }
 
   private generateMentalAnalysis(sport: string, context?: any): string {
     const analyses = {
-      basketball: "Mental Analysis: Focus and concentration levels are consistently high. Confidence demonstrates positive self-talk. Pressure response: 79/100. Recommendation: Practice visualization techniques and pre-game routines.",
-      soccer: "Mental Analysis: Mental toughness shows good resilience during challenging moments. Confidence levels are steady throughout play. Focus: 81/100. Recommendation: Work on breathing techniques and mindfulness training.",
-      tennis: "Mental Analysis: Competitive mindset shows strong determination. Emotional regulation during pressure points: 83/100. Recommendation: Develop point-by-point mentality and recovery strategies.",
-      general: "Mental Analysis: Shows good mental preparation and focus. Confidence levels are appropriate for skill level. Resilience: 80/100. Recommendation: Continue mental training and develop sport-specific mental strategies."
+      basketball:
+        'Mental Analysis: Focus and concentration levels are consistently high. Confidence demonstrates positive self-talk. Pressure response: 79/100. Recommendation: Practice visualization techniques and pre-game routines.',
+      soccer:
+        'Mental Analysis: Mental toughness shows good resilience during challenging moments. Confidence levels are steady throughout play. Focus: 81/100. Recommendation: Work on breathing techniques and mindfulness training.',
+      tennis:
+        'Mental Analysis: Competitive mindset shows strong determination. Emotional regulation during pressure points: 83/100. Recommendation: Develop point-by-point mentality and recovery strategies.',
+      general:
+        'Mental Analysis: Shows good mental preparation and focus. Confidence levels are appropriate for skill level. Resilience: 80/100. Recommendation: Continue mental training and develop sport-specific mental strategies.',
     };
     return analyses[sport] || analyses.general;
   }
 
   private generateTechnicalAnalysis(sport: string, context?: any): string {
     const analyses = {
-      basketball: "Technical Analysis: Shooting form shows consistent mechanics with good arc. Dribbling technique demonstrates proper hand positioning. Ball handling: 84/100. Recommendation: Focus on weak-hand development and shooting consistency.",
-      soccer: "Technical Analysis: First touch shows good ball control and directional awareness. Passing accuracy demonstrates proper weight and timing. Technical skills: 79/100. Recommendation: Work on weak-foot development and 1v1 moves.",
-      tennis: "Technical Analysis: Groundstrokes show good racquet preparation and follow-through. Serve technique demonstrates proper toss and contact point. Technical execution: 82/100. Recommendation: Focus on consistency and shot depth.",
-      general: "Technical Analysis: Fundamental skills show solid execution. Technique demonstrates proper form and efficiency. Skill development: 81/100. Recommendation: Continue refining basic techniques while adding advanced skills."
+      basketball:
+        'Technical Analysis: Shooting form shows consistent mechanics with good arc. Dribbling technique demonstrates proper hand positioning. Ball handling: 84/100. Recommendation: Focus on weak-hand development and shooting consistency.',
+      soccer:
+        'Technical Analysis: First touch shows good ball control and directional awareness. Passing accuracy demonstrates proper weight and timing. Technical skills: 79/100. Recommendation: Work on weak-foot development and 1v1 moves.',
+      tennis:
+        'Technical Analysis: Groundstrokes show good racquet preparation and follow-through. Serve technique demonstrates proper toss and contact point. Technical execution: 82/100. Recommendation: Focus on consistency and shot depth.',
+      general:
+        'Technical Analysis: Fundamental skills show solid execution. Technique demonstrates proper form and efficiency. Skill development: 81/100. Recommendation: Continue refining basic techniques while adding advanced skills.',
     };
     return analyses[sport] || analyses.general;
   }
 
-
-
   private async callRemoteAIEngine(prompt: string, context?: any): Promise<string> {
     const endpoint = this.config.endpoint || 'http://localhost:3001';
-    
+
     try {
       const response = await fetch(`${endpoint}/api/analyze-text`, {
         method: 'POST',
@@ -313,8 +341,8 @@ export class AIModelManager {
           context: context,
           model: this.config.model,
           temperature: this.config.temperature || 0.7,
-          max_tokens: this.config.maxTokens || 2000
-        })
+          max_tokens: this.config.maxTokens || 2000,
+        }),
       });
 
       if (!response.ok) {
@@ -332,7 +360,7 @@ export class AIModelManager {
 
   private async callHuggingFace(prompt: string, context?: any): Promise<string> {
     const endpoint = this.config.endpoint || `http://localhost:8080/generate`;
-    
+
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -343,9 +371,9 @@ export class AIModelManager {
         parameters: {
           max_new_tokens: this.config.maxTokens || 2000,
           temperature: this.config.temperature || 0.7,
-          do_sample: true
-        }
-      })
+          do_sample: true,
+        },
+      }),
     });
 
     const data = await response.json();
@@ -379,7 +407,7 @@ export class AIModelManager {
 export function createAIModelManager(): AIModelManager {
   // Check if using remote AI engine server
   const useRemoteEngine = process.env.USE_REMOTE_AI_ENGINE === 'true';
-  
+
   if (useRemoteEngine) {
     return new AIModelManager({
       type: 'remote',
@@ -387,13 +415,13 @@ export function createAIModelManager(): AIModelManager {
       endpoint: process.env.AI_ENGINE_URL || 'http://localhost:3001',
       apiKey: process.env.AI_ENGINE_API_KEY,
       maxTokens: 2000,
-      temperature: 0.7
+      temperature: 0.7,
     });
   }
-  
+
   // Check for OpenAI API key - prioritize authentic AI over local models
   const openaiKey = process.env.OPENAI_API_KEY;
-  
+
   if (openaiKey) {
     return new AIModelManager({
       type: 'cloud',
@@ -401,14 +429,14 @@ export function createAIModelManager(): AIModelManager {
       model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       apiKey: openaiKey,
       maxTokens: 2000,
-      temperature: 0.7
+      temperature: 0.7,
     });
   }
-  
+
   // Default to self-hosted models for Go4It Sports Platform
   // User preference: Use self-hosted AI models instead of external APIs
   const useLocal = process.env.USE_LOCAL_MODELS !== 'false'; // Default to true
-  
+
   if (useLocal) {
     return new AIModelManager({
       type: 'local',
@@ -416,7 +444,7 @@ export function createAIModelManager(): AIModelManager {
       model: process.env.LOCAL_SPORTS_MODEL || 'llama3.1:8b',
       endpoint: process.env.OLLAMA_ENDPOINT || 'http://localhost:11434/api/generate',
       maxTokens: 2000,
-      temperature: 0.7
+      temperature: 0.7,
     });
   } else {
     // Fallback to cloud APIs only when explicitly requested
@@ -427,7 +455,7 @@ export function createAIModelManager(): AIModelManager {
         model: 'gpt-4o',
         apiKey: process.env.OPENAI_API_KEY,
         maxTokens: 2000,
-        temperature: 0.7
+        temperature: 0.7,
       });
     } else if (process.env.ANTHROPIC_API_KEY) {
       return new AIModelManager({
@@ -436,7 +464,7 @@ export function createAIModelManager(): AIModelManager {
         model: 'claude-3-sonnet-20240229',
         apiKey: process.env.ANTHROPIC_API_KEY,
         maxTokens: 2000,
-        temperature: 0.7
+        temperature: 0.7,
       });
     } else {
       throw new Error('No AI model configuration available');

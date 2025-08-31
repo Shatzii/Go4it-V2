@@ -1,7 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Instagram, Twitter, Share2, TrendingUp, Users, Heart, MessageCircle, Music } from 'lucide-react';
+import {
+  Instagram,
+  Twitter,
+  Share2,
+  TrendingUp,
+  Users,
+  Heart,
+  MessageCircle,
+  Music,
+} from 'lucide-react';
 
 interface SocialProfile {
   platform: string;
@@ -57,8 +66,8 @@ export function SocialIntegration() {
         body: JSON.stringify({
           userId: 'demo_user',
           action: 'generate_content',
-          content: { type: contentType }
-        })
+          content: { type: contentType },
+        }),
       });
 
       if (response.ok) {
@@ -82,8 +91,8 @@ export function SocialIntegration() {
         body: JSON.stringify({
           userId: 'demo_user',
           action: 'connect_platform',
-          platform
-        })
+          platform,
+        }),
       });
 
       if (response.ok) {
@@ -171,9 +180,7 @@ export function SocialIntegration() {
                   <Heart className="w-5 h-5 text-red-500" />
                   <span className="text-sm font-medium text-muted-foreground">Engagement</span>
                 </div>
-                <div className="text-2xl font-bold text-foreground">
-                  {metrics.totalEngagement}%
-                </div>
+                <div className="text-2xl font-bold text-foreground">{metrics.totalEngagement}%</div>
               </div>
 
               <div className="bg-card p-6 rounded-lg border">
@@ -181,9 +188,7 @@ export function SocialIntegration() {
                   <TrendingUp className="w-5 h-5 text-green-500" />
                   <span className="text-sm font-medium text-muted-foreground">Viral Potential</span>
                 </div>
-                <div className="text-2xl font-bold text-foreground">
-                  {metrics.viralPotential}
-                </div>
+                <div className="text-2xl font-bold text-foreground">{metrics.viralPotential}</div>
               </div>
 
               <div className="bg-card p-6 rounded-lg border">
@@ -225,15 +230,11 @@ export function SocialIntegration() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Engagement</span>
-                      <span className="font-medium text-foreground">
-                        {platform.engagement}%
-                      </span>
+                      <span className="font-medium text-foreground">{platform.engagement}%</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">Last Post</span>
-                      <span className="font-medium text-foreground">
-                        {platform.lastPost}
-                      </span>
+                      <span className="font-medium text-foreground">{platform.lastPost}</span>
                     </div>
                   </div>
 
@@ -253,10 +254,8 @@ export function SocialIntegration() {
         {activeTab === 'content' && (
           <div className="space-y-6">
             <div className="bg-card p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
-                AI Content Generator
-              </h3>
-              
+              <h3 className="text-lg font-semibold text-foreground mb-4">AI Content Generator</h3>
+
               <div className="space-y-4">
                 <div className="flex gap-2">
                   <button
@@ -313,9 +312,7 @@ export function SocialIntegration() {
 
             {/* Quick Actions */}
             <div className="bg-card p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
-                Quick Actions
-              </h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button className="p-4 border border-dashed border-muted-foreground rounded-lg hover:bg-muted transition-colors">
                   <Share2 className="w-6 h-6 mx-auto mb-2 text-muted-foreground" />
@@ -334,9 +331,7 @@ export function SocialIntegration() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             <div className="bg-card p-6 rounded-lg border">
-              <h3 className="text-lg font-semibold text-foreground mb-4">
-                Performance Analytics
-              </h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Performance Analytics</h3>
               <div className="text-center py-12 text-muted-foreground">
                 <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>Analytics dashboard coming soon!</p>

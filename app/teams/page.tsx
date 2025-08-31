@@ -2,17 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-  Users, 
-  Plus, 
-  Calendar, 
-  Trophy, 
-  MapPin, 
+import {
+  Users,
+  Plus,
+  Calendar,
+  Trophy,
+  MapPin,
   Edit,
   Trash2,
   Filter,
   GraduationCap,
-  TrendingUp
+  TrendingUp,
 } from 'lucide-react';
 
 interface Team {
@@ -34,7 +34,7 @@ const sports = [
   { value: 'flag_football', label: 'Flag Football', icon: '🏈' },
   { value: 'soccer', label: 'Soccer', icon: '⚽' },
   { value: 'basketball', label: 'Basketball', icon: '🏀' },
-  { value: 'track_field', label: 'Track & Field', icon: '🏃‍♂️' }
+  { value: 'track_field', label: 'Track & Field', icon: '🏃‍♂️' },
 ];
 
 export default function TeamsPage() {
@@ -51,17 +51,17 @@ export default function TeamsPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams();
       if (selectedSport !== 'all') {
         params.set('sport', selectedSport);
       }
-      
+
       const response = await fetch(`/api/teams?${params}`);
       if (!response.ok) {
         throw new Error('Failed to fetch teams');
       }
-      
+
       const teamsData = await response.json();
       setTeams(teamsData);
     } catch (err) {
@@ -108,9 +108,8 @@ export default function TeamsPage() {
     );
   }
 
-  const filteredTeams = selectedSport === 'all' 
-    ? teams 
-    : teams.filter(team => team.sport === selectedSport);
+  const filteredTeams =
+    selectedSport === 'all' ? teams : teams.filter((team) => team.sport === selectedSport);
 
   return (
     <div className="min-h-screen bg-slate-900">
@@ -120,7 +119,9 @@ export default function TeamsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Team Management</h1>
-              <p className="text-blue-200">Manage teams, track performance, and monitor academic progress</p>
+              <p className="text-blue-200">
+                Manage teams, track performance, and monitor academic progress
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
@@ -174,10 +175,9 @@ export default function TeamsPage() {
               <Trophy className="h-12 w-12 text-slate-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-slate-300 mb-2">No Teams Found</h3>
               <p className="text-slate-400 mb-4">
-                {selectedSport === 'all' 
-                  ? 'No teams have been created yet.' 
-                  : `No teams found for ${sports.find(s => s.value === selectedSport)?.label || selectedSport}.`
-                }
+                {selectedSport === 'all'
+                  ? 'No teams have been created yet.'
+                  : `No teams found for ${sports.find((s) => s.value === selectedSport)?.label || selectedSport}.`}
               </p>
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                 Create Your First Team
@@ -187,19 +187,15 @@ export default function TeamsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTeams.map((team) => (
-              <Link
-                key={team.id}
-                href={`/teams/${team.id}`}
-                className="group"
-              >
+              <Link key={team.id} href={`/teams/${team.id}`} className="group">
                 <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-blue-500 transition-all duration-200 group-hover:transform group-hover:scale-105">
                   {/* Team Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-xl font-semibold text-white mb-1">{team.name}</h3>
                       <div className="flex items-center gap-2 text-sm text-slate-400">
-                        <span>{sports.find(s => s.value === team.sport)?.icon}</span>
-                        <span>{sports.find(s => s.value === team.sport)?.label}</span>
+                        <span>{sports.find((s) => s.value === team.sport)?.icon}</span>
+                        <span>{sports.find((s) => s.value === team.sport)?.label}</span>
                         <span>•</span>
                         <span>{team.division}</span>
                       </div>
@@ -242,7 +238,9 @@ export default function TeamsPage() {
                         <Calendar className="h-4 w-4 text-purple-400" />
                         <span className="text-sm">Season</span>
                       </div>
-                      <span className="text-white text-sm">{team.season} {team.year}</span>
+                      <span className="text-white text-sm">
+                        {team.season} {team.year}
+                      </span>
                     </div>
                   </div>
 
@@ -275,9 +273,7 @@ export default function TeamsPage() {
                       <span>Academy Ready</span>
                     </div>
                     {team.availableSpots > 0 && (
-                      <div className="text-slate-400">
-                        {team.availableSpots} spots available
-                      </div>
+                      <div className="text-slate-400">{team.availableSpots} spots available</div>
                     )}
                   </div>
                 </div>

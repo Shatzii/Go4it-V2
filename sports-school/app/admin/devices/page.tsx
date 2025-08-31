@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function DeviceManagement() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
-  const [typeFilter, setTypeFilter] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
 
   // Sample device data
   const devices = [
@@ -25,7 +25,7 @@ export default function DeviceManagement() {
       warrantyExpiry: '2027-08-15',
       lastMaintenance: '2024-12-01',
       checkoutDate: '2024-08-20',
-      location: 'SuperHero School - Grade K'
+      location: 'SuperHero School - Grade K',
     },
     {
       id: '2',
@@ -42,7 +42,7 @@ export default function DeviceManagement() {
       warrantyExpiry: '2026-07-10',
       lastMaintenance: '2024-11-15',
       checkoutDate: null,
-      location: 'IT Storage Room'
+      location: 'IT Storage Room',
     },
     {
       id: '3',
@@ -59,29 +59,30 @@ export default function DeviceManagement() {
       warrantyExpiry: '2027-06-01',
       lastMaintenance: '2025-01-20',
       checkoutDate: '2024-08-15',
-      location: 'IT Repair Center'
-    }
-  ]
+      location: 'IT Repair Center',
+    },
+  ];
 
-  const deviceTypes = ['Laptop', 'Tablet', 'Chromebook', 'Desktop']
-  const statusTypes = ['available', 'assigned', 'maintenance', 'retired']
+  const deviceTypes = ['Laptop', 'Tablet', 'Chromebook', 'Desktop'];
+  const statusTypes = ['available', 'assigned', 'maintenance', 'retired'];
 
-  const filteredDevices = devices.filter(device => {
-    const matchesSearch = `${device.deviceId} ${device.brand} ${device.model} ${device.assignedTo || ''}`
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === 'all' || device.status === statusFilter
-    const matchesType = typeFilter === 'all' || device.type === typeFilter
-    return matchesSearch && matchesStatus && matchesType
-  })
+  const filteredDevices = devices.filter((device) => {
+    const matchesSearch =
+      `${device.deviceId} ${device.brand} ${device.model} ${device.assignedTo || ''}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || device.status === statusFilter;
+    const matchesType = typeFilter === 'all' || device.type === typeFilter;
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
   const stats = {
     total: devices.length,
-    assigned: devices.filter(d => d.status === 'assigned').length,
-    available: devices.filter(d => d.status === 'available').length,
-    maintenance: devices.filter(d => d.status === 'maintenance').length,
-    retired: devices.filter(d => d.status === 'retired').length
-  }
+    assigned: devices.filter((d) => d.status === 'assigned').length,
+    available: devices.filter((d) => d.status === 'available').length,
+    maintenance: devices.filter((d) => d.status === 'maintenance').length,
+    retired: devices.filter((d) => d.status === 'retired').length,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -89,7 +90,10 @@ export default function DeviceManagement() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/admin/dashboard" className="text-indigo-600 font-semibold text-lg hover:text-indigo-500">
+            <Link
+              href="/admin/dashboard"
+              className="text-indigo-600 font-semibold text-lg hover:text-indigo-500"
+            >
               ← Admin Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Device Management</h1>
@@ -114,7 +118,7 @@ export default function DeviceManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -126,7 +130,7 @@ export default function DeviceManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -138,7 +142,7 @@ export default function DeviceManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -150,7 +154,7 @@ export default function DeviceManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-red-100 rounded-lg">
@@ -169,7 +173,9 @@ export default function DeviceManagement() {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Search Devices</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Search Devices
+                </label>
                 <input
                   type="text"
                   placeholder="Device ID, Brand, Model, or User..."
@@ -178,7 +184,7 @@ export default function DeviceManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Device Type</label>
                 <select
@@ -187,12 +193,14 @@ export default function DeviceManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="all">All Types</option>
-                  {deviceTypes.map(type => (
-                    <option key={type} value={type}>{type}</option>
+                  {deviceTypes.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <select
@@ -201,14 +209,14 @@ export default function DeviceManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="all">All Status</option>
-                  {statusTypes.map(status => (
+                  {statusTypes.map((status) => (
                     <option key={status} value={status}>
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </option>
                   ))}
                 </select>
               </div>
-              
+
               <div className="flex items-end">
                 <button className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                   Generate Report
@@ -262,14 +270,18 @@ export default function DeviceManagement() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{device.type}</div>
-                        <div className="text-sm text-gray-500">{device.brand} {device.model}</div>
+                        <div className="text-sm text-gray-500">
+                          {device.brand} {device.model}
+                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         {device.assignedTo ? (
                           <>
-                            <div className="text-sm font-medium text-gray-900">{device.assignedTo}</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {device.assignedTo}
+                            </div>
                             <div className="text-sm text-gray-500">{device.studentId}</div>
                           </>
                         ) : (
@@ -278,22 +290,32 @@ export default function DeviceManagement() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        device.status === 'assigned' ? 'bg-green-100 text-green-800' :
-                        device.status === 'available' ? 'bg-blue-100 text-blue-800' :
-                        device.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          device.status === 'assigned'
+                            ? 'bg-green-100 text-green-800'
+                            : device.status === 'available'
+                              ? 'bg-blue-100 text-blue-800'
+                              : device.status === 'maintenance'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        device.condition === 'excellent' ? 'bg-green-100 text-green-800' :
-                        device.condition === 'good' ? 'bg-blue-100 text-blue-800' :
-                        device.condition === 'fair' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          device.condition === 'excellent'
+                            ? 'bg-green-100 text-green-800'
+                            : device.condition === 'good'
+                              ? 'bg-blue-100 text-blue-800'
+                              : device.condition === 'fair'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {device.condition.charAt(0).toUpperCase() + device.condition.slice(1)}
                       </span>
                     </td>
@@ -302,9 +324,7 @@ export default function DeviceManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex space-x-2">
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          View
-                        </button>
+                        <button className="text-indigo-600 hover:text-indigo-900">View</button>
                         <button className="text-indigo-600 hover:text-indigo-900">
                           {device.status === 'assigned' ? 'Return' : 'Assign'}
                         </button>
@@ -394,11 +414,15 @@ export default function DeviceManagement() {
                 <div className="space-y-2">
                   <div className="p-3 bg-red-50 border border-red-200 rounded">
                     <div className="font-medium">CHROME-098 - Currently in Maintenance</div>
-                    <div className="text-sm text-gray-600">Issue: Screen flickering, keyboard sticky keys</div>
+                    <div className="text-sm text-gray-600">
+                      Issue: Screen flickering, keyboard sticky keys
+                    </div>
                   </div>
                   <div className="p-3 bg-orange-50 border border-orange-200 rounded">
                     <div className="font-medium">5 devices due for routine maintenance</div>
-                    <div className="text-sm text-gray-600">Scheduled cleaning and software updates needed</div>
+                    <div className="text-sm text-gray-600">
+                      Scheduled cleaning and software updates needed
+                    </div>
                   </div>
                 </div>
               </div>
@@ -407,5 +431,5 @@ export default function DeviceManagement() {
         </div>
       </div>
     </div>
-  )
+  );
 }

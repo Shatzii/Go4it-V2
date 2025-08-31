@@ -1,6 +1,6 @@
 /**
  * Adaptive Difficulty API Routes
- * 
+ *
  * These routes provide the API interface for the adaptive difficulty system,
  * allowing users to adjust content difficulty and manage difficulty profiles.
  */
@@ -23,12 +23,15 @@ router.get('/parameters', (req, res) => {
 router.post('/profiles', async (req, res) => {
   try {
     const { userId, initialSettings } = req.body;
-    
+
     if (!userId) {
       return res.status(400).json({ error: 'userId is required' });
     }
-    
-    const profile = adaptiveDifficultyService.createDifficultyProfile(userId, initialSettings || {});
+
+    const profile = adaptiveDifficultyService.createDifficultyProfile(
+      userId,
+      initialSettings || {},
+    );
     res.status(201).json(profile);
   } catch (error) {
     console.error('Error creating difficulty profile:', error);
@@ -52,7 +55,7 @@ router.patch('/profiles/:userId', (req, res) => {
   try {
     const updatedProfile = adaptiveDifficultyService.updateDifficultyProfile(
       req.params.userId,
-      req.body
+      req.body,
     );
     res.json(updatedProfile);
   } catch (error) {
@@ -66,7 +69,7 @@ router.get('/profiles/:userId/subjects/:subject', (req, res) => {
   try {
     const difficulty = adaptiveDifficultyService.getEffectiveDifficulty(
       req.params.userId,
-      req.params.subject
+      req.params.subject,
     );
     res.json({ difficulty });
   } catch (error) {
@@ -79,24 +82,24 @@ router.get('/profiles/:userId/subjects/:subject', (req, res) => {
 router.put('/profiles/:userId/subjects/:subject', (req, res) => {
   try {
     const { difficultyLevel } = req.body;
-    
+
     if (difficultyLevel === undefined) {
       return res.status(400).json({ error: 'difficultyLevel is required' });
     }
-    
+
     // Get current difficulty for recording the change
     const oldDifficulty = adaptiveDifficultyService.getEffectiveDifficulty(
       req.params.userId,
-      req.params.subject
+      req.params.subject,
     );
-    
+
     // Update subject difficulty
     const updatedProfile = adaptiveDifficultyService.setSubjectDifficulty(
       req.params.userId,
       req.params.subject,
-      difficultyLevel
+      difficultyLevel,
     );
-    
+
     // Record the change
     if (oldDifficulty !== difficultyLevel) {
       adaptiveDifficultyService.recordDifficultyChange(
@@ -104,10 +107,10 @@ router.put('/profiles/:userId/subjects/:subject', (req, res) => {
         req.params.subject,
         oldDifficulty,
         difficultyLevel,
-        req.body.reason || 'manual'
+        req.body.reason || 'manual',
       );
     }
-    
+
     res.json(updatedProfile);
   } catch (error) {
     console.error('Error setting subject difficulty:', error);
@@ -119,17 +122,17 @@ router.put('/profiles/:userId/subjects/:subject', (req, res) => {
 router.post('/adapt', async (req, res) => {
   try {
     const { content, targetDifficulty, parameters } = req.body;
-    
+
     if (!content || targetDifficulty === undefined) {
       return res.status(400).json({ error: 'content and targetDifficulty are required' });
     }
-    
+
     const adaptedContent = await adaptiveDifficultyService.adaptContent(
       content,
       targetDifficulty,
-      parameters
+      parameters,
     );
-    
+
     res.json({ original: content, adapted: adaptedContent });
   } catch (error) {
     console.error('Error adapting content:', error);
@@ -141,17 +144,17 @@ router.post('/adapt', async (req, res) => {
 router.post('/questions', async (req, res) => {
   try {
     const { topic, difficultyLevel, count } = req.body;
-    
+
     if (!topic || difficultyLevel === undefined) {
       return res.status(400).json({ error: 'topic and difficultyLevel are required' });
     }
-    
+
     const questions = await adaptiveDifficultyService.generatePracticeQuestions(
       topic,
       difficultyLevel,
-      count || 5
+      count || 5,
     );
-    
+
     res.json({ questions });
   } catch (error) {
     console.error('Error generating practice questions:', error);
@@ -163,13 +166,13 @@ router.post('/questions', async (req, res) => {
 router.post('/recommend', (req, res) => {
   try {
     const { performanceData } = req.body;
-    
+
     if (!performanceData) {
       return res.status(400).json({ error: 'performanceData is required' });
     }
-    
+
     const recommendedLevel = adaptiveDifficultyService.recommendDifficultyLevel(performanceData);
-    
+
     res.json({ recommendedLevel });
   } catch (error) {
     console.error('Error recommending difficulty level:', error);
@@ -181,26 +184,26 @@ router.post('/recommend', (req, res) => {
 router.post('/auto-adjust', (req, res) => {
   try {
     const { userId, subject, performanceData } = req.body;
-    
+
     if (!userId || !subject || !performanceData) {
-      return res.status(400).json({ 
-        error: 'userId, subject, and performanceData are required'
+      return res.status(400).json({
+        error: 'userId, subject, and performanceData are required',
       });
     }
-    
+
     // Get current difficulty for recording the change
     const oldDifficulty = adaptiveDifficultyService.getEffectiveDifficulty(userId, subject);
-    
+
     // Auto-adjust difficulty
     const updatedProfile = adaptiveDifficultyService.autoAdjustDifficulty(
       userId,
       subject,
-      performanceData
+      performanceData,
     );
-    
+
     // Get new difficulty
     const newDifficulty = adaptiveDifficultyService.getEffectiveDifficulty(userId, subject);
-    
+
     // Record the change if difficulty was updated
     if (oldDifficulty !== newDifficulty) {
       adaptiveDifficultyService.recordDifficultyChange(
@@ -208,15 +211,15 @@ router.post('/auto-adjust', (req, res) => {
         subject,
         oldDifficulty,
         newDifficulty,
-        'auto'
+        'auto',
       );
     }
-    
+
     res.json({
       profile: updatedProfile,
       oldDifficulty,
       newDifficulty,
-      changed: oldDifficulty !== newDifficulty
+      changed: oldDifficulty !== newDifficulty,
     });
   } catch (error) {
     console.error('Error auto-adjusting difficulty:', error);
@@ -228,12 +231,12 @@ router.post('/auto-adjust', (req, res) => {
 router.get('/history/:userId', (req, res) => {
   try {
     const { subject } = req.query;
-    
+
     const history = adaptiveDifficultyService.getDifficultyHistory(
       req.params.userId,
-      subject || null
+      subject || null,
     );
-    
+
     res.json({ history });
   } catch (error) {
     console.error('Error getting difficulty history:', error);

@@ -20,13 +20,14 @@ export async function createAIAgent(staffMember) {
   return new Promise((resolve, reject) => {
     // Determine professor type based on department
     const isLawProfessor = staffMember.department?.toLowerCase().includes('law');
-    const isLanguageProfessor = staffMember.department?.toLowerCase().includes('language') || 
-                              staffMember.department?.toLowerCase().includes('english') ||
-                              staffMember.department?.toLowerCase().includes('spanish') ||
-                              staffMember.department?.toLowerCase().includes('german');
-    
+    const isLanguageProfessor =
+      staffMember.department?.toLowerCase().includes('language') ||
+      staffMember.department?.toLowerCase().includes('english') ||
+      staffMember.department?.toLowerCase().includes('spanish') ||
+      staffMember.department?.toLowerCase().includes('german');
+
     let subject, grade, tone, neuroType, outputModes;
-    
+
     if (isLawProfessor) {
       // For law professors, use legal-specific parameters
       subject = staffMember.department || 'Constitutional Law';
@@ -38,24 +39,28 @@ export async function createAIAgent(staffMember) {
     } else if (isLanguageProfessor) {
       // For language professors, determine the language and level
       let language = 'English'; // Default language
-      
+
       // Extract language from department or specialization
       if (staffMember.department?.toLowerCase().includes('spanish')) {
         language = 'Spanish';
       } else if (staffMember.department?.toLowerCase().includes('german')) {
         language = 'German';
       }
-      
+
       // Map grade level to proficiency level
       let proficiencyLevel = 'Intermediate';
-      if (staffMember.gradeLevel?.toLowerCase().includes('beginner') || 
-          staffMember.gradeLevel?.toLowerCase().includes('elementary')) {
+      if (
+        staffMember.gradeLevel?.toLowerCase().includes('beginner') ||
+        staffMember.gradeLevel?.toLowerCase().includes('elementary')
+      ) {
         proficiencyLevel = 'Beginner';
-      } else if (staffMember.gradeLevel?.toLowerCase().includes('advanced') || 
-                staffMember.gradeLevel?.toLowerCase().includes('fluent')) {
+      } else if (
+        staffMember.gradeLevel?.toLowerCase().includes('advanced') ||
+        staffMember.gradeLevel?.toLowerCase().includes('fluent')
+      ) {
         proficiencyLevel = 'Advanced';
       }
-      
+
       // Determine teaching method for language
       let method = 'Communicative';
       if (staffMember.teachingStyle?.toLowerCase().includes('immersion')) {
@@ -65,14 +70,16 @@ export async function createAIAgent(staffMember) {
       } else if (staffMember.teachingStyle?.toLowerCase().includes('grammar')) {
         method = 'Grammar-Translation';
       }
-      
+
       // Set neurotype support
       neuroType = staffMember.specialization || 'All';
-      
+
       // Determine language output modes
       let languageOutputModes = 'Dialogue, Visual Vocabulary';
-      if (staffMember.teachingStyle?.toLowerCase().includes('audio') || 
-          staffMember.teachingStyle?.toLowerCase().includes('listening')) {
+      if (
+        staffMember.teachingStyle?.toLowerCase().includes('audio') ||
+        staffMember.teachingStyle?.toLowerCase().includes('listening')
+      ) {
         languageOutputModes += ', Audio Pronunciation';
       }
       if (staffMember.teachingStyle?.toLowerCase().includes('writing')) {
@@ -81,7 +88,7 @@ export async function createAIAgent(staffMember) {
       if (staffMember.teachingStyle?.toLowerCase().includes('reading')) {
         languageOutputModes += ', Reading Comprehension';
       }
-      
+
       // For language professors
       subject = language;
       grade = proficiencyLevel;
@@ -97,29 +104,29 @@ export async function createAIAgent(staffMember) {
       outputModes = getOutputModes(staffMember);
       console.log(`Creating Education Professor agent: ${subject}, ${grade}, ${tone}`);
     }
-    
+
     // Use the JavaScript fallback directly instead of trying Python first
     try {
       const safeGrade = grade.replace(/\s+/g, '').replace(/-/g, '').replace(/–/g, '');
       const safeTone = tone.replace(/\s+/g, '');
       const agentName = `${subject}_${safeGrade}_${safeTone}_Bot`;
       const agentPath = `attached_assets/generated_agents/${agentName}.md`;
-      
+
       const content = generateAgentContent(subject, grade, tone, neuroType, outputModes, agentName);
       const outputDir = path.join(process.cwd(), 'attached_assets', 'generated_agents');
-      
+
       // Create directory if it doesn't exist
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
       }
-      
+
       fs.writeFileSync(path.join(process.cwd(), agentPath), content);
-      
+
       resolve({
         success: true,
         agentName,
         agentPath,
-        output: `AI agent created using JavaScript implementation: ${agentName}`
+        output: `AI agent created using JavaScript implementation: ${agentName}`,
       });
     } catch (error) {
       console.error(`Failed to create agent: ${error.message}`);
@@ -134,11 +141,12 @@ export async function createAIAgent(staffMember) {
 function generateAgentContent(subject, grade, tone, neuroType, outputModes, agentName) {
   // Determine professor type based on subject name
   const isLawProfessor = subject.toLowerCase().includes('law');
-  const isLanguageProfessor = subject.toLowerCase().includes('language') || 
-                            subject.toLowerCase().includes('english') ||
-                            subject.toLowerCase().includes('spanish') ||
-                            subject.toLowerCase().includes('german');
-  
+  const isLanguageProfessor =
+    subject.toLowerCase().includes('language') ||
+    subject.toLowerCase().includes('english') ||
+    subject.toLowerCase().includes('spanish') ||
+    subject.toLowerCase().includes('german');
+
   if (isLawProfessor) {
     // Generate Law Professor content
     return `
@@ -180,13 +188,13 @@ function generateAgentContent(subject, grade, tone, neuroType, outputModes, agen
     } else if (subject.toLowerCase().includes('german')) {
       language = 'German';
     }
-    
+
     // Map grade to proficiency level
     let proficiencyLevel = grade;
     if (!['Beginner', 'Intermediate', 'Advanced'].includes(proficiencyLevel)) {
       proficiencyLevel = 'Intermediate'; // Default if not explicitly set
     }
-    
+
     // Generate Language Professor content
     return `
 # GPT Language Professor: ${agentName}
@@ -269,18 +277,22 @@ function getPersonalityTone(staffMember) {
   const traits = (staffMember.personalityTraits || '').toLowerCase();
   const style = (staffMember.teachingStyle || '').toLowerCase();
   const combined = traits + ' ' + style;
-  
+
   // Map common terms to the four primary tones expected by the script
   if (combined.includes('calm') || combined.includes('patient')) {
     return 'Calm';
   } else if (combined.includes('curious') || combined.includes('question')) {
     return 'Curious';
-  } else if (combined.includes('playful') || combined.includes('fun') || combined.includes('engaging')) {
+  } else if (
+    combined.includes('playful') ||
+    combined.includes('fun') ||
+    combined.includes('engaging')
+  ) {
     return 'Playful';
   } else if (combined.includes('visual') || combined.includes('image')) {
     return 'Visual-First';
   }
-  
+
   // Default tone
   return 'Supportive';
 }
@@ -292,26 +304,26 @@ function getPersonalityTone(staffMember) {
  */
 function getOutputModes(staffMember) {
   const style = (staffMember.teachingStyle || '').toLowerCase();
-  
+
   // Map teaching style to output modes
   const modes = [];
-  
+
   if (style.includes('dialogue') || style.includes('conversation')) {
     modes.push('Dialogue');
   }
-  
+
   if (style.includes('checklist') || style.includes('steps') || style.includes('procedure')) {
     modes.push('Checklist');
   }
-  
+
   if (style.includes('visual') || style.includes('image') || style.includes('diagram')) {
     modes.push('Visual');
   }
-  
+
   if (style.includes('example') || style.includes('scenario')) {
     modes.push('Examples');
   }
-  
+
   // Default output modes if none detected
   return modes.length > 0 ? modes.join(', ') : 'Dialogue, Examples';
 }
@@ -323,9 +335,9 @@ function getOutputModes(staffMember) {
  */
 function mapToLawEducationLevel(gradeLevel) {
   if (!gradeLevel) return 'Pre-Law';
-  
+
   const grade = gradeLevel.toLowerCase();
-  
+
   if (grade.includes('undergraduate') || grade.includes('college')) {
     return 'Pre-Law';
   } else if (grade.includes('1l') || grade.includes('first year') || grade.includes('1st year')) {
@@ -339,7 +351,7 @@ function mapToLawEducationLevel(gradeLevel) {
   } else if (grade.includes('master') || grade.includes('llm')) {
     return 'LLM';
   }
-  
+
   // Default to Pre-Law if no match found
   return 'Pre-Law';
 }
@@ -351,9 +363,9 @@ function mapToLawEducationLevel(gradeLevel) {
  */
 function mapToLegalTeachingMethod(teachingStyle) {
   if (!teachingStyle) return 'Socratic';
-  
+
   const style = teachingStyle.toLowerCase();
-  
+
   if (style.includes('socratic') || style.includes('question')) {
     return 'Socratic';
   } else if (style.includes('case') || style.includes('precedent')) {
@@ -365,7 +377,7 @@ function mapToLegalTeachingMethod(teachingStyle) {
   } else if (style.includes('hypothetical') || style.includes('scenario')) {
     return 'Hypothetical';
   }
-  
+
   // Default to Socratic if no match found (traditional law school method)
   return 'Socratic';
 }
@@ -377,30 +389,30 @@ function mapToLegalTeachingMethod(teachingStyle) {
  */
 function getLegalOutputModes(staffMember) {
   const style = (staffMember.teachingStyle || '').toLowerCase();
-  
+
   // Map teaching style to legal output modes
   const modes = [];
-  
+
   if (style.includes('case') || style.includes('brief')) {
     modes.push('Case Briefing');
   }
-  
+
   if (style.includes('analysis') || style.includes('irac')) {
     modes.push('Legal Analysis');
   }
-  
+
   if (style.includes('visual') || style.includes('schema') || style.includes('diagram')) {
     modes.push('Visual Schemas');
   }
-  
+
   if (style.includes('practice') || style.includes('question') || style.includes('quiz')) {
     modes.push('Practice Questions');
   }
-  
+
   if (style.includes('moot') || style.includes('mock') || style.includes('trial')) {
     modes.push('Trial Simulation');
   }
-  
+
   // Default output modes for legal education if none detected
   return modes.length > 0 ? modes.join(', ') : 'Case Briefing, Legal Analysis';
 }

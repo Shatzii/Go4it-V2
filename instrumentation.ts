@@ -1,7 +1,8 @@
-// Instrumentation file to suppress Sentry warnings
+// Minimal instrumentation to avoid SSR issues
 export async function register() {
-  // Minimal instrumentation to satisfy Next.js requirements
-  if (process.env.NODE_ENV === 'production') {
-    console.log('Production instrumentation loaded');
+  // Only run in browser environment
+  if (typeof window !== 'undefined') {
+    // Browser-only initialization
+    console.log('Client-side instrumentation initialized');
   }
 }

@@ -1,6 +1,6 @@
 /**
  * ShatziiOS API Bridge
- * 
+ *
  * This module provides a bridge between the main server and the API server.
  * It allows making API requests from the main server to the API server.
  * This is particularly useful for testing and diagnostics.
@@ -40,9 +40,9 @@ class APIBridge {
       return await response.json();
     } catch (error) {
       console.error('API Bridge: Error getting API status:', error.message);
-      return { 
+      return {
         error: 'Failed to get API status',
-        details: error.message
+        details: error.message,
       };
     }
   }
@@ -57,21 +57,21 @@ class APIBridge {
       const response = await fetch(`${this.apiBaseUrl}/create-teacher`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(teacherConfig)
+        body: JSON.stringify(teacherConfig),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Teacher creation failed: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('API Bridge: Error creating teacher:', error.message);
-      return { 
+      return {
         error: 'Failed to create teacher',
-        details: error.message
+        details: error.message,
       };
     }
   }
@@ -88,25 +88,25 @@ class APIBridge {
       const response = await fetch(`${this.apiBaseUrl}/teacher-response`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           teacherConfig,
           conversationHistory,
-          userMessage
-        })
+          userMessage,
+        }),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Teacher response failed: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('API Bridge: Error getting teacher response:', error.message);
-      return { 
+      return {
         error: 'Failed to get teacher response',
-        details: error.message
+        details: error.message,
       };
     }
   }
@@ -121,21 +121,21 @@ class APIBridge {
       const response = await fetch(`${this.apiBaseUrl}/learning-plan`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(params)
+        body: JSON.stringify(params),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Learning plan generation failed: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('API Bridge: Error generating learning plan:', error.message);
-      return { 
+      return {
         error: 'Failed to generate learning plan',
-        details: error.message
+        details: error.message,
       };
     }
   }
@@ -150,21 +150,21 @@ class APIBridge {
       const response = await fetch(`${this.apiBaseUrl}/curriculum-content`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(params)
+        body: JSON.stringify(params),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Curriculum content generation failed: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('API Bridge: Error generating curriculum content:', error.message);
-      return { 
+      return {
         error: 'Failed to generate curriculum content',
-        details: error.message
+        details: error.message,
       };
     }
   }
@@ -179,21 +179,21 @@ class APIBridge {
       const response = await fetch(`${this.apiBaseUrl}/learning-style-assessment`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ responses })
+        body: JSON.stringify({ responses }),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Learning style assessment failed: ${response.status}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('API Bridge: Error assessing learning style:', error.message);
-      return { 
+      return {
         error: 'Failed to assess learning style',
-        details: error.message
+        details: error.message,
       };
     }
   }

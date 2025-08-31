@@ -7,28 +7,23 @@ const BASE_URL = 'http://localhost:5000';
 
 async function verifyMonetizationIntegration() {
   console.log('💰 VERIFYING MONETIZATION INTEGRATION ACROSS ALL FEATURES\n');
-  
+
   const results = {
     navigation: [],
     monetization: [],
     features: [],
-    recommendations: []
+    recommendations: [],
   };
 
   // Test 1: Navigation Integration
   console.log('🧭 Testing Navigation Integration...');
-  
+
   try {
     const homeResponse = await fetch(`${BASE_URL}/`);
     const homeContent = await homeResponse.text();
-    
-    const navFeatures = [
-      'NCAA Eligibility',
-      'Athletic Contacts', 
-      'Rankings',
-      'Pricing'
-    ];
-    
+
+    const navFeatures = ['NCAA Eligibility', 'Athletic Contacts', 'Rankings', 'Pricing'];
+
     for (const feature of navFeatures) {
       if (homeContent.includes(feature)) {
         results.navigation.push(`✅ ${feature} link present in navigation`);
@@ -36,7 +31,7 @@ async function verifyMonetizationIntegration() {
         results.navigation.push(`❌ ${feature} link missing from navigation`);
       }
     }
-    
+
     console.log('✅ Navigation integration verified');
   } catch (error) {
     results.navigation.push(`❌ Navigation test failed: ${error.message}`);
@@ -44,52 +39,59 @@ async function verifyMonetizationIntegration() {
 
   // Test 2: Feature Accessibility & Monetization
   console.log('\n📋 Testing Feature Accessibility & Monetization...');
-  
+
   const featurePages = [
-    { 
-      path: '/ncaa-eligibility', 
+    {
+      path: '/ncaa-eligibility',
       name: 'NCAA Eligibility Tracker',
       tier: 'STARTER',
-      description: 'Real-time eligibility tracking and sliding scale calculator'
+      description: 'Real-time eligibility tracking and sliding scale calculator',
     },
-    { 
-      path: '/athletic-contacts', 
+    {
+      path: '/athletic-contacts',
       name: 'Athletic Department Contacts',
-      tier: 'PRO', 
-      description: 'Verified coaching staff contacts for recruitment'
+      tier: 'PRO',
+      description: 'Verified coaching staff contacts for recruitment',
     },
-    { 
-      path: '/recruitment-ranking', 
+    {
+      path: '/recruitment-ranking',
       name: 'Recruitment Rankings',
       tier: 'ELITE',
-      description: 'National and regional athlete rankings with college match algorithms'
+      description: 'National and regional athlete rankings with college match algorithms',
     },
-    { 
-      path: '/pricing', 
+    {
+      path: '/pricing',
       name: 'Pricing Page',
       tier: 'FREE',
-      description: 'Subscription tiers and monetization hub'
-    }
+      description: 'Subscription tiers and monetization hub',
+    },
   ];
 
   for (const feature of featurePages) {
     try {
       const response = await fetch(`${BASE_URL}${feature.path}`);
       const content = await response.text();
-      
+
       if (response.status === 200) {
         results.features.push(`✅ ${feature.name}: Page loads successfully`);
-        
+
         // Check for monetization elements
-        const hasUpgrade = content.includes('upgrade') || content.includes('subscription') || content.includes('pricing');
-        const hasFeatureTier = content.includes(feature.tier) || content.includes('STARTER') || content.includes('PRO') || content.includes('ELITE');
-        
+        const hasUpgrade =
+          content.includes('upgrade') ||
+          content.includes('subscription') ||
+          content.includes('pricing');
+        const hasFeatureTier =
+          content.includes(feature.tier) ||
+          content.includes('STARTER') ||
+          content.includes('PRO') ||
+          content.includes('ELITE');
+
         if (hasUpgrade || hasFeatureTier) {
           results.monetization.push(`✅ ${feature.name}: Monetization elements present`);
         } else {
           results.monetization.push(`⚠️ ${feature.name}: Limited monetization integration`);
         }
-        
+
         console.log(`✅ ${feature.name} verified (${feature.tier} tier)`);
       } else {
         results.features.push(`❌ ${feature.name}: HTTP ${response.status}`);
@@ -101,18 +103,23 @@ async function verifyMonetizationIntegration() {
 
   // Test 3: Subscription Tier Alignment
   console.log('\n🎯 Analyzing Subscription Tier Alignment...');
-  
+
   try {
     const pricingResponse = await fetch(`${BASE_URL}/pricing`);
     const pricingContent = await pricingResponse.text();
-    
+
     const tierFeatures = {
       FREE: ['Profile creation', 'Highlight uploads', 'Basic coach contact'],
       STARTER: ['AI coaching', 'StarPath progression', 'NCAA eligibility', 'Unlimited uploads'],
       PRO: ['GAR analysis', 'Athletic contacts', 'Advanced recruiting', 'Performance predictions'],
-      ELITE: ['Full academy access', 'Recruitment rankings', 'Personal coaching', 'NCAA compliance']
+      ELITE: [
+        'Full academy access',
+        'Recruitment rankings',
+        'Personal coaching',
+        'NCAA compliance',
+      ],
     };
-    
+
     for (const [tier, features] of Object.entries(tierFeatures)) {
       const tierPresent = pricingContent.includes(tier);
       if (tierPresent) {
@@ -121,7 +128,7 @@ async function verifyMonetizationIntegration() {
         results.monetization.push(`⚠️ ${tier} tier: May need better visibility`);
       }
     }
-    
+
     console.log('✅ Subscription tier alignment analyzed');
   } catch (error) {
     results.monetization.push(`❌ Pricing analysis failed: ${error.message}`);
@@ -129,28 +136,28 @@ async function verifyMonetizationIntegration() {
 
   // Test 4: Feature Value Proposition
   console.log('\n💡 Evaluating Feature Value Proposition...');
-  
+
   const valuePropositions = {
     'NCAA Eligibility': {
       value: 'Saves hours of manual calculation and reduces eligibility confusion',
       tier: 'STARTER',
-      justification: 'Essential for student-athletes, justifies $19/month'
+      justification: 'Essential for student-athletes, justifies $19/month',
     },
     'Athletic Contacts': {
       value: 'Direct access to verified coaching staff accelerates recruitment',
       tier: 'PRO',
-      justification: 'High-value networking tool, justifies $49/month'
+      justification: 'High-value networking tool, justifies $49/month',
     },
     'Recruitment Rankings': {
       value: 'Competitive positioning and college match algorithms',
       tier: 'ELITE',
-      justification: 'Premium analytics feature, justifies $99/month'
+      justification: 'Premium analytics feature, justifies $99/month',
     },
     'Advanced AI Analysis': {
       value: 'Professional-grade performance analysis and injury prevention',
       tier: 'PRO/ELITE',
-      justification: 'Cutting-edge technology, supports premium pricing'
-    }
+      justification: 'Cutting-edge technology, supports premium pricing',
+    },
   };
 
   for (const [feature, prop] of Object.entries(valuePropositions)) {
@@ -161,18 +168,18 @@ async function verifyMonetizationIntegration() {
   // Generate Integration Report
   console.log('\n📊 MONETIZATION INTEGRATION REPORT');
   console.log('=====================================');
-  
+
   console.log('\n🧭 NAVIGATION INTEGRATION:');
-  results.navigation.forEach(result => console.log(result));
-  
+  results.navigation.forEach((result) => console.log(result));
+
   console.log('\n📋 FEATURE ACCESSIBILITY:');
-  results.features.forEach(result => console.log(result));
-  
+  results.features.forEach((result) => console.log(result));
+
   console.log('\n💰 MONETIZATION INTEGRATION:');
-  results.monetization.forEach(result => console.log(result));
-  
+  results.monetization.forEach((result) => console.log(result));
+
   console.log('\n💡 VALUE PROPOSITION & TIER ALIGNMENT:');
-  results.recommendations.forEach(result => console.log(result));
+  results.recommendations.forEach((result) => console.log(result));
 
   // Strategic Recommendations
   console.log('\n🎯 STRATEGIC RECOMMENDATIONS:');
@@ -185,17 +192,20 @@ async function verifyMonetizationIntegration() {
   console.log('⚠️ May benefit from usage analytics to optimize pricing');
 
   // Summary
-  const totalChecks = results.navigation.length + results.features.length + results.monetization.length;
+  const totalChecks =
+    results.navigation.length + results.features.length + results.monetization.length;
   const successfulChecks = [
-    ...results.navigation, 
-    ...results.features, 
-    ...results.monetization
-  ].filter(result => result.includes('✅')).length;
-  
+    ...results.navigation,
+    ...results.features,
+    ...results.monetization,
+  ].filter((result) => result.includes('✅')).length;
+
   console.log('\n📈 INTEGRATION SUMMARY:');
   console.log(`✅ Successful integrations: ${successfulChecks}`);
   console.log(`⚠️ Items needing attention: ${totalChecks - successfulChecks}`);
-  console.log(`📊 Integration success rate: ${((successfulChecks / totalChecks) * 100).toFixed(1)}%`);
+  console.log(
+    `📊 Integration success rate: ${((successfulChecks / totalChecks) * 100).toFixed(1)}%`,
+  );
 
   console.log('\n🏆 FINAL ASSESSMENT:');
   console.log('✅ All four priority features are live and accessible');
@@ -205,23 +215,27 @@ async function verifyMonetizationIntegration() {
   console.log('✅ Platform ready for user engagement and revenue generation');
 
   return {
-    success: successfulChecks >= (totalChecks * 0.8), // 80% success threshold
+    success: successfulChecks >= totalChecks * 0.8, // 80% success threshold
     totalChecks,
     successfulChecks,
     integrationRate: ((successfulChecks / totalChecks) * 100).toFixed(1),
-    results
+    results,
   };
 }
 
 // Run the verification
 if (require.main === module) {
-  verifyMonetizationIntegration().then(results => {
-    console.log(`\n🎉 Monetization integration verification completed with ${results.integrationRate}% success rate`);
-    process.exit(results.success ? 0 : 1);
-  }).catch(error => {
-    console.error('Verification failed:', error);
-    process.exit(1);
-  });
+  verifyMonetizationIntegration()
+    .then((results) => {
+      console.log(
+        `\n🎉 Monetization integration verification completed with ${results.integrationRate}% success rate`,
+      );
+      process.exit(results.success ? 0 : 1);
+    })
+    .catch((error) => {
+      console.error('Verification failed:', error);
+      process.exit(1);
+    });
 }
 
 module.exports = verifyMonetizationIntegration;

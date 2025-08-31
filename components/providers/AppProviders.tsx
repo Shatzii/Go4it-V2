@@ -1,66 +1,64 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@/lib/schema';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '@/lib/queryClient';
+
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  sport?: string;
+  position?: string;
+  garScore?: number;
+  role?: string;
+}
 
 interface AppContextType {
   user: User | null;
-  loading: boolean;
-  error: string | null;
   setUser: (user: User | null) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
+  isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize user authentication
-    const initializeAuth = async () => {
+    // Check for existing authentication on app load
+    const checkAuth = async () => {
       try {
         const response = await fetch('/api/auth/me');
         if (response.ok) {
           const userData = await response.json();
-          setUser(userData);
+          if (userData.user) {
+            setUser(userData.user);
+          }
         }
-      } catch (err) {
-        console.log('Auth initialization failed, using guest mode:', err);
-        // Set user to null for guest mode
-        setUser(null);
+      } catch (error) {
+        console.log('No existing session found');
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
-    // Set timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      console.log('Auth initialization timed out, using guest mode');
-      setUser(null);
-      setLoading(false);
-    }, 3000);
-
-    initializeAuth().finally(() => {
-      clearTimeout(timeoutId);
-    });
+    checkAuth();
   }, []);
 
   const value = {
     user,
-    loading,
-    error,
     setUser,
-    setLoading,
-    setError
+    isAuthenticated: !!user,
+    isLoading,
   };
 
   return (
     <AppContext.Provider value={value}>
-      {children}
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </AppContext.Provider>
   );
 }

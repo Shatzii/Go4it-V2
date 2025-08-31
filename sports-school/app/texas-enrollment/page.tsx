@@ -1,5 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
 
 export default function TexasEnrollmentPage() {
   return (
@@ -8,12 +8,13 @@ export default function TexasEnrollmentPage() {
       <header className="relative z-10 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-2xl hover:text-blue-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-2xl hover:text-blue-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              Texas Charter School Enrollment
-            </div>
+            <div className="text-white font-bold text-xl">Texas Charter School Enrollment</div>
           </nav>
         </div>
       </header>
@@ -30,7 +31,8 @@ export default function TexasEnrollmentPage() {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            TEA-compliant enrollment system with comprehensive neurodivergent support tracking and accommodation planning.
+            TEA-compliant enrollment system with comprehensive neurodivergent support tracking and
+            accommodation planning.
           </p>
         </div>
       </section>
@@ -42,27 +44,27 @@ export default function TexasEnrollmentPage() {
             <h2 className="text-3xl font-bold text-white mb-8 text-center">
               New Student Enrollment
             </h2>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               {/* Student Information */}
               <div className="space-y-6">
                 <div>
                   <label className="block text-white font-semibold mb-2">Student Name</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:border-blue-400 focus:outline-none"
                     placeholder="Full legal name"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-white font-semibold mb-2">Date of Birth</label>
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     className="w-full px-4 py-3 rounded-lg bg-white/20 text-white border border-white/30 focus:border-blue-400 focus:outline-none"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-white font-semibold mb-2">Grade Level</label>
                   <select className="w-full px-4 py-3 rounded-lg bg-white/20 text-white border border-white/30 focus:border-blue-400 focus:outline-none">
@@ -82,9 +84,11 @@ export default function TexasEnrollmentPage() {
                     <option value="12">12th Grade</option>
                   </select>
                 </div>
-                
+
                 <div>
-                  <label className="block text-white font-semibold mb-2">Preferred School Program</label>
+                  <label className="block text-white font-semibold mb-2">
+                    Preferred School Program
+                  </label>
                   <select className="w-full px-4 py-3 rounded-lg bg-white/20 text-white border border-white/30 focus:border-blue-400 focus:outline-none">
                     <option value="">Select Program</option>
                     <option value="superhero">SuperHero School (K-6)</option>
@@ -98,35 +102,37 @@ export default function TexasEnrollmentPage() {
               {/* Parent/Guardian Information */}
               <div className="space-y-6">
                 <div>
-                  <label className="block text-white font-semibold mb-2">Parent/Guardian Name</label>
-                  <input 
-                    type="text" 
+                  <label className="block text-white font-semibold mb-2">
+                    Parent/Guardian Name
+                  </label>
+                  <input
+                    type="text"
                     className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:border-blue-400 focus:outline-none"
                     placeholder="Full name"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-white font-semibold mb-2">Email Address</label>
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:border-blue-400 focus:outline-none"
                     placeholder="parent@email.com"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-white font-semibold mb-2">Phone Number</label>
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:border-blue-400 focus:outline-none"
                     placeholder="(555) 123-4567"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-white font-semibold mb-2">Address</label>
-                  <textarea 
+                  <textarea
                     className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:border-blue-400 focus:outline-none"
                     rows={3}
                     placeholder="Street address, city, state, ZIP"
@@ -137,45 +143,70 @@ export default function TexasEnrollmentPage() {
 
             {/* Neurodivergent Support Section */}
             <div className="mt-8 p-6 bg-purple-500/20 rounded-xl border border-purple-400/30">
-              <h3 className="text-2xl font-bold text-white mb-4">Neurodivergent Learning Support</h3>
+              <h3 className="text-2xl font-bold text-white mb-4">
+                Neurodivergent Learning Support
+              </h3>
               <p className="text-white/80 mb-4">
-                Our platform is designed specifically for neurodivergent learners. Please help us understand your child's unique needs.
+                Our platform is designed specifically for neurodivergent learners. Please help us
+                understand your child's unique needs.
               </p>
-              
+
               <div className="space-y-4">
                 <div>
-                  <label className="block text-white font-semibold mb-2">Learning Differences (Check all that apply)</label>
+                  <label className="block text-white font-semibold mb-2">
+                    Learning Differences (Check all that apply)
+                  </label>
                   <div className="grid md:grid-cols-2 gap-3">
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="rounded border-white/30 bg-white/20 text-purple-500"/>
+                      <input
+                        type="checkbox"
+                        className="rounded border-white/30 bg-white/20 text-purple-500"
+                      />
                       <span className="text-white">ADHD</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="rounded border-white/30 bg-white/20 text-purple-500"/>
+                      <input
+                        type="checkbox"
+                        className="rounded border-white/30 bg-white/20 text-purple-500"
+                      />
                       <span className="text-white">Dyslexia</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="rounded border-white/30 bg-white/20 text-purple-500"/>
+                      <input
+                        type="checkbox"
+                        className="rounded border-white/30 bg-white/20 text-purple-500"
+                      />
                       <span className="text-white">Autism Spectrum</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="rounded border-white/30 bg-white/20 text-purple-500"/>
+                      <input
+                        type="checkbox"
+                        className="rounded border-white/30 bg-white/20 text-purple-500"
+                      />
                       <span className="text-white">Processing Differences</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="rounded border-white/30 bg-white/20 text-purple-500"/>
+                      <input
+                        type="checkbox"
+                        className="rounded border-white/30 bg-white/20 text-purple-500"
+                      />
                       <span className="text-white">Sensory Sensitivities</span>
                     </label>
                     <label className="flex items-center space-x-2">
-                      <input type="checkbox" className="rounded border-white/30 bg-white/20 text-purple-500"/>
+                      <input
+                        type="checkbox"
+                        className="rounded border-white/30 bg-white/20 text-purple-500"
+                      />
                       <span className="text-white">Executive Function</span>
                     </label>
                   </div>
                 </div>
-                
+
                 <div>
-                  <label className="block text-white font-semibold mb-2">Additional Support Needs</label>
-                  <textarea 
+                  <label className="block text-white font-semibold mb-2">
+                    Additional Support Needs
+                  </label>
+                  <textarea
                     className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-white/60 border border-white/30 focus:border-blue-400 focus:outline-none"
                     rows={3}
                     placeholder="Please describe any specific accommodations, IEP/504 plans, or support strategies that work well for your child"
@@ -190,7 +221,8 @@ export default function TexasEnrollmentPage() {
                 Submit Enrollment Application
               </button>
               <p className="text-white/60 mt-4 text-sm">
-                Applications are reviewed within 24-48 hours. You will receive a confirmation email with next steps.
+                Applications are reviewed within 24-48 hours. You will receive a confirmation email
+                with next steps.
               </p>
             </div>
           </div>
@@ -202,23 +234,25 @@ export default function TexasEnrollmentPage() {
         <div className="container mx-auto text-center">
           <h3 className="text-3xl font-bold text-white mb-6">Texas Education Agency Compliance</h3>
           <p className="text-white/80 mb-8 max-w-3xl mx-auto">
-            The Universal One School is fully compliant with all Texas Education Agency requirements, including STAAR testing accommodations, PEIMS reporting, and special education services.
+            The Universal One School is fully compliant with all Texas Education Agency
+            requirements, including STAAR testing accommodations, PEIMS reporting, and special
+            education services.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Link 
-              href="/texas-assessments" 
+            <Link
+              href="/texas-assessments"
               className="bg-white/10 text-white px-6 py-3 rounded-full border border-white/20 hover:bg-white/20 transition-colors"
             >
               STAAR Testing Info
             </Link>
-            <Link 
-              href="/texas-reporting" 
+            <Link
+              href="/texas-reporting"
               className="bg-white/10 text-white px-6 py-3 rounded-full border border-white/20 hover:bg-white/20 transition-colors"
             >
               Academic Reports
             </Link>
-            <Link 
-              href="/texas-peims" 
+            <Link
+              href="/texas-peims"
               className="bg-white/10 text-white px-6 py-3 rounded-full border border-white/20 hover:bg-white/20 transition-colors"
             >
               PEIMS Data
@@ -227,5 +261,5 @@ export default function TexasEnrollmentPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

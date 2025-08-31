@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { query, filters } = await request.json()
-    
+    const { query, filters } = await request.json();
+
     if (!query || query.trim().length < 2) {
-      return NextResponse.json({ results: [] })
+      return NextResponse.json({ results: [] });
     }
 
     // Mock search results - in a real app, this would search the database
@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
           garScore: 92,
           createdAt: new Date().toISOString(),
           graduationYear: 2025,
-          level: 'Elite'
-        }
+          level: 'Elite',
+        },
       },
       {
         id: '2',
@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
           sport: 'Basketball',
           garScore: 88,
           graduationYear: 2024,
-          level: 'Elite'
-        }
+          level: 'Elite',
+        },
       },
       {
         id: '3',
@@ -46,8 +46,8 @@ export async function POST(request: NextRequest) {
         metadata: {
           sport: 'Basketball',
           level: 'Advanced',
-          createdAt: new Date().toISOString()
-        }
+          createdAt: new Date().toISOString(),
+        },
       },
       {
         id: '4',
@@ -58,32 +58,41 @@ export async function POST(request: NextRequest) {
         metadata: {
           sport: 'Basketball',
           garScore: 95,
-          createdAt: new Date().toISOString()
-        }
-      }
-    ]
+          createdAt: new Date().toISOString(),
+        },
+      },
+    ];
 
     // Filter results based on query
-    const filteredResults = mockResults.filter(result => {
-      const matchesQuery = result.title.toLowerCase().includes(query.toLowerCase()) ||
-                          result.description.toLowerCase().includes(query.toLowerCase())
-      
-      if (!matchesQuery) return false
-      
-      // Apply filters
-      if (filters.type !== 'all' && result.type !== filters.type) return false
-      if (filters.sport !== 'all' && result.metadata.sport?.toLowerCase() !== filters.sport.toLowerCase()) return false
-      if (filters.garScore !== 'all' && filters.garScore.includes('-')) {
-        const [min, max] = filters.garScore.split('-').map(Number)
-        if (result.metadata.garScore && (result.metadata.garScore < min || result.metadata.garScore > max)) return false
-      }
-      
-      return true
-    })
+    const filteredResults = mockResults.filter((result) => {
+      const matchesQuery =
+        result.title.toLowerCase().includes(query.toLowerCase()) ||
+        result.description.toLowerCase().includes(query.toLowerCase());
 
-    return NextResponse.json({ results: filteredResults })
+      if (!matchesQuery) return false;
+
+      // Apply filters
+      if (filters.type !== 'all' && result.type !== filters.type) return false;
+      if (
+        filters.sport !== 'all' &&
+        result.metadata.sport?.toLowerCase() !== filters.sport.toLowerCase()
+      )
+        return false;
+      if (filters.garScore !== 'all' && filters.garScore.includes('-')) {
+        const [min, max] = filters.garScore.split('-').map(Number);
+        if (
+          result.metadata.garScore &&
+          (result.metadata.garScore < min || result.metadata.garScore > max)
+        )
+          return false;
+      }
+
+      return true;
+    });
+
+    return NextResponse.json({ results: filteredResults });
   } catch (error) {
-    console.error('Search error:', error)
-    return NextResponse.json({ error: 'Search failed' }, { status: 500 })
+    console.error('Search error:', error);
+    return NextResponse.json({ error: 'Search failed' }, { status: 500 });
   }
 }

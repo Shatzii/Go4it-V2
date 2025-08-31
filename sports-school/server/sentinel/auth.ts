@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Authentication System
- * 
+ *
  * This module provides authentication-related security for the application.
  */
 
@@ -26,7 +26,7 @@ export function checkRedZone(ip: string): boolean {
   if (!failedAttempts[ip]) {
     return false;
   }
-  
+
   return failedAttempts[ip].blocked || failedAttempts[ip].count >= RED_ZONE_THRESHOLD;
 }
 
@@ -38,25 +38,25 @@ export function recordFailedLoginAttempt(ip: string, username: string): void {
     failedAttempts[ip] = {
       count: 0,
       lastAttempt: Date.now(),
-      blocked: false
+      blocked: false,
     };
   }
-  
+
   failedAttempts[ip].count += 1;
   failedAttempts[ip].lastAttempt = Date.now();
-  
+
   // Log the failed attempt
   logSecurityEvent(
     username,
     'Failed login attempt',
     { ip, attemptCount: failedAttempts[ip].count },
-    ip
+    ip,
   );
-  
+
   // Check if this IP should be blocked
   if (failedAttempts[ip].count >= RED_ZONE_THRESHOLD) {
     failedAttempts[ip].blocked = true;
-    
+
     // Send a security alert
     sendAlert(
       AlertSeverity.HIGH,
@@ -64,7 +64,7 @@ export function recordFailedLoginAttempt(ip: string, username: string): void {
       `IP Address blocked after ${RED_ZONE_THRESHOLD} failed login attempts`,
       { ip, username, attemptCount: failedAttempts[ip].count },
       username,
-      ip
+      ip,
     );
   }
 }
@@ -85,8 +85,8 @@ export function resetFailedLoginAttempts(ip: string): void {
 export function clearExpiredRedZoneEntries(): void {
   const now = Date.now();
   const RESET_AFTER_MS = 24 * 60 * 60 * 1000; // 24 hours
-  
-  Object.keys(failedAttempts).forEach(ip => {
+
+  Object.keys(failedAttempts).forEach((ip) => {
     if (now - failedAttempts[ip].lastAttempt > RESET_AFTER_MS) {
       delete failedAttempts[ip];
     }
@@ -102,9 +102,9 @@ setInterval(clearExpiredRedZoneEntries, 60 * 60 * 1000); // Every hour
 export function generateToken(user: any): string {
   // Don't include sensitive fields in the token
   const { password, ...userForToken } = user;
-  
+
   return jwt.sign(userForToken, JWT_SECRET, {
-    expiresIn: '24h' // Token expires in 24 hours
+    expiresIn: '24h', // Token expires in 24 hours
   });
 }
 
@@ -125,18 +125,18 @@ export function verifyToken(token: string): any {
 export function loginRequired(req: Request, res: Response, next: NextFunction): void {
   // Check for token in Authorization header or session
   const token = req.headers.authorization?.split(' ')[1] || (req as any).session?.token;
-  
+
   if (!token) {
     res.status(401).json({ message: 'Authentication required' });
     return;
   }
-  
+
   const decoded = verifyToken(token);
   if (!decoded) {
     res.status(401).json({ message: 'Invalid or expired token' });
     return;
   }
-  
+
   // Attach user information to the request
   (req as any).user = decoded;
   next();
@@ -147,28 +147,28 @@ export function loginRequired(req: Request, res: Response, next: NextFunction): 
  */
 export function roleRequired(role: string | string[]) {
   const roles = Array.isArray(role) ? role : [role];
-  
+
   return (req: Request, res: Response, next: NextFunction): void => {
     if (!(req as any).user) {
       res.status(401).json({ message: 'Authentication required' });
       return;
     }
-    
+
     const userRole = (req as any).user.role;
-    
+
     if (!roles.includes(userRole)) {
       logSecurityEvent(
         (req as any).user.username,
         'Unauthorized access attempt',
         { requiredRoles: roles, userRole },
         getRequestIP(req),
-        req.headers['user-agent']
+        req.headers['user-agent'],
       );
-      
+
       res.status(403).json({ message: 'Unauthorized access' });
       return;
     }
-    
+
     next();
   };
 }
@@ -178,19 +178,19 @@ export function roleRequired(role: string | string[]) {
  */
 export function redZoneMiddleware(req: Request, res: Response, next: NextFunction): void {
   const ip = getRequestIP(req);
-  
+
   if (checkRedZone(ip)) {
     logSecurityEvent(
       'BLOCKED',
       'Blocked request from Red Zone IP',
       { ip, path: req.path },
       ip,
-      req.headers['user-agent']
+      req.headers['user-agent'],
     );
-    
+
     res.status(403).json({ message: 'Too many failed attempts. Please try again later.' });
     return;
   }
-  
+
   next();
 }

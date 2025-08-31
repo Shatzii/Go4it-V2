@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation';
 
 // Redirect to the correct secondary school teacher dashboard
 export default function StagePrepTeacherDashboard() {
-  redirect('/schools/secondary/teacher-dashboard')
+  redirect('/schools/secondary/teacher-dashboard');
 }

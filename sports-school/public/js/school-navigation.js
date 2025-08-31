@@ -26,41 +26,41 @@ class SchoolNavigation {
         colors: {
           primary: '#ff6b6b',
           secondary: '#ffa726',
-          accent: '#66bb6a'
+          accent: '#66bb6a',
         },
         icon: '🦸',
-        gradient: 'linear-gradient(135deg, #ff6b6b, #ffa726)'
+        gradient: 'linear-gradient(135deg, #ff6b6b, #ffa726)',
       },
       secondary: {
         name: 'S.T.A.G.E Prep',
         colors: {
           primary: '#667eea',
           secondary: '#764ba2',
-          accent: '#f093fb'
+          accent: '#f093fb',
         },
         icon: '🎓',
-        gradient: 'linear-gradient(135deg, #667eea, #764ba2)'
+        gradient: 'linear-gradient(135deg, #667eea, #764ba2)',
       },
       law: {
         name: 'The Lawyer Makers',
         colors: {
           primary: '#2c3e50',
           secondary: '#34495e',
-          accent: '#3498db'
+          accent: '#3498db',
         },
         icon: '⚖️',
-        gradient: 'linear-gradient(135deg, #2c3e50, #34495e)'
+        gradient: 'linear-gradient(135deg, #2c3e50, #34495e)',
       },
       language: {
         name: 'LIOTA (Language School Of The Americas)',
         colors: {
           primary: '#74b9ff',
           secondary: '#0984e3',
-          accent: '#00cec9'
+          accent: '#00cec9',
         },
         icon: '🌍',
-        gradient: 'linear-gradient(135deg, #74b9ff, #0984e3)'
-      }
+        gradient: 'linear-gradient(135deg, #74b9ff, #0984e3)',
+      },
     };
 
     this.theme = themes[this.currentSchool] || themes.main;
@@ -69,7 +69,7 @@ class SchoolNavigation {
 
   applyThemeStyles() {
     if (this.currentSchool === 'main') return;
-    
+
     const root = document.documentElement;
     root.style.setProperty('--school-primary', this.theme.colors.primary);
     root.style.setProperty('--school-secondary', this.theme.colors.secondary);
@@ -92,7 +92,7 @@ class SchoolNavigation {
         { name: 'Captain Knowledge', url: '/demo/', icon: '🤖' },
         { name: 'Hero Progress', url: '/schools/primary-school/progress.html', icon: '📊' },
         { name: 'Achievement Badges', url: '/schools/primary-school/badges.html', icon: '🏆' },
-        { name: 'Parent Portal', url: '/schools/primary-school/parent.html', icon: '👨‍👩‍👧' }
+        { name: 'Parent Portal', url: '/schools/primary-school/parent.html', icon: '👨‍👩‍👧' },
       ],
       secondary: [
         { name: 'Student Dashboard', url: '/schools/secondary-school/dashboard.html', icon: '📚' },
@@ -100,7 +100,7 @@ class SchoolNavigation {
         { name: 'AI Tutor', url: '/demo/', icon: '🤖' },
         { name: 'Academic Progress', url: '/schools/secondary-school/progress.html', icon: '📈' },
         { name: 'Career Planning', url: '/schools/secondary-school/career.html', icon: '🎯' },
-        { name: 'Study Groups', url: '/schools/secondary-school/groups.html', icon: '👥' }
+        { name: 'Study Groups', url: '/schools/secondary-school/groups.html', icon: '👥' },
       ],
       law: [
         { name: 'Law Dashboard', url: '/schools/law-school/dashboard.html', icon: '⚖️' },
@@ -108,16 +108,20 @@ class SchoolNavigation {
         { name: 'Legal Research', url: '/schools/law-school/research.html', icon: '🔍' },
         { name: 'Moot Court', url: '/schools/law-school/moot.html', icon: '🏛️' },
         { name: 'Bar Prep', url: '/schools/law-school/bar-prep.html', icon: '📜' },
-        { name: 'Professional Ethics', url: '/schools/law-school/ethics.html', icon: '⭐' }
+        { name: 'Professional Ethics', url: '/schools/law-school/ethics.html', icon: '⭐' },
       ],
       language: [
         { name: 'Language Hub', url: '/schools/language-school/dashboard.html', icon: '🌍' },
-        { name: 'Live Conversations', url: '/schools/language-school/conversations.html', icon: '💬' },
+        {
+          name: 'Live Conversations',
+          url: '/schools/language-school/conversations.html',
+          icon: '💬',
+        },
         { name: 'Cultural Exchange', url: '/schools/language-school/culture.html', icon: '🎭' },
         { name: 'Progress Tracker', url: '/schools/language-school/progress.html', icon: '📊' },
         { name: 'Speaking Practice', url: '/schools/language-school/speaking.html', icon: '🎤' },
-        { name: 'Global Community', url: '/schools/language-school/community.html', icon: '🤝' }
-      ]
+        { name: 'Global Community', url: '/schools/language-school/community.html', icon: '🤝' },
+      ],
     };
 
     return menus[this.currentSchool] || [];
@@ -133,12 +137,16 @@ class SchoolNavigation {
           <button id="nav-toggle" class="nav-toggle">☰</button>
         </div>
         <nav class="school-nav-items" id="nav-items">
-          ${menuItems.map(item => `
+          ${menuItems
+            .map(
+              (item) => `
             <a href="${item.url}" class="nav-item ${this.isCurrentPage(item.url) ? 'active' : ''}">
               <span class="nav-icon">${item.icon}</span>
               <span class="nav-text">${item.name}</span>
             </a>
-          `).join('')}
+          `,
+            )
+            .join('')}
           <a href="/" class="nav-item nav-home">
             <span class="nav-icon">🏠</span>
             <span class="nav-text">Main Campus</span>
@@ -152,8 +160,10 @@ class SchoolNavigation {
   }
 
   isCurrentPage(url) {
-    return window.location.pathname === url || 
-           (url.includes('dashboard') && window.location.pathname.includes('dashboard'));
+    return (
+      window.location.pathname === url ||
+      (url.includes('dashboard') && window.location.pathname.includes('dashboard'))
+    );
   }
 
   initializeMenuEvents() {
@@ -169,7 +179,7 @@ class SchoolNavigation {
     }
 
     // Auto-collapse on mobile after selection
-    document.querySelectorAll('.nav-item').forEach(item => {
+    document.querySelectorAll('.nav-item').forEach((item) => {
       item.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
           navItems.classList.remove('expanded');
@@ -192,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Prevent errors from main.js school card interactions
 if (typeof window !== 'undefined') {
   const originalQuerySelector = document.querySelector;
-  document.querySelector = function(selector) {
+  document.querySelector = function (selector) {
     try {
       return originalQuerySelector.call(document, selector);
     } catch (error) {

@@ -5,8 +5,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Camera, Video, Square, Play, Pause, RotateCcw, Upload, Check, AlertCircle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Camera,
+  Video,
+  Square,
+  Play,
+  Pause,
+  RotateCcw,
+  Upload,
+  Check,
+  AlertCircle,
+} from 'lucide-react';
 
 interface RecordingGuide {
   sport: string;
@@ -17,7 +33,7 @@ interface RecordingGuide {
 }
 
 const recordingGuides: Record<string, RecordingGuide[]> = {
-  'flag_football': [
+  flag_football: [
     {
       sport: 'flag_football',
       technique: 'Throwing Motion',
@@ -25,10 +41,10 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Stand in athletic position',
         'Step forward with opposite foot',
         'Keep elbow high throughout motion',
-        'Follow through toward target'
+        'Follow through toward target',
       ],
       keyFrames: [0, 0.3, 0.6, 1.0],
-      duration: 3
+      duration: 3,
     },
     {
       sport: 'flag_football',
@@ -37,13 +53,13 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Start in proper stance',
         'First three steps explosive',
         'Sharp cuts at break point',
-        'Look for ball immediately'
+        'Look for ball immediately',
       ],
       keyFrames: [0, 0.2, 0.7, 1.0],
-      duration: 5
-    }
+      duration: 5,
+    },
   ],
-  'soccer': [
+  soccer: [
     {
       sport: 'soccer',
       technique: 'Shooting Form',
@@ -51,10 +67,10 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Plant foot beside ball',
         'Keep head over ball',
         'Strike with inside foot',
-        'Follow through low'
+        'Follow through low',
       ],
       keyFrames: [0, 0.4, 0.7, 1.0],
-      duration: 3
+      duration: 3,
     },
     {
       sport: 'soccer',
@@ -63,13 +79,13 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Keep ball close to feet',
         'Use both feet alternately',
         'Stay light on toes',
-        'Look up frequently'
+        'Look up frequently',
       ],
       keyFrames: [0, 0.25, 0.5, 0.75],
-      duration: 6
-    }
+      duration: 6,
+    },
   ],
-  'basketball': [
+  basketball: [
     {
       sport: 'basketball',
       technique: 'Shooting Form',
@@ -77,10 +93,10 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Square feet to basket',
         'Elbow under ball',
         'Smooth upward motion',
-        'Snap wrist on release'
+        'Snap wrist on release',
       ],
       keyFrames: [0, 0.3, 0.8, 1.0],
-      duration: 2
+      duration: 2,
     },
     {
       sport: 'basketball',
@@ -89,13 +105,13 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Keep head up',
         'Use fingertips not palm',
         'Stay low and controlled',
-        'Protect ball with body'
+        'Protect ball with body',
       ],
       keyFrames: [0, 0.2, 0.6, 1.0],
-      duration: 4
-    }
+      duration: 4,
+    },
   ],
-  'track_field': [
+  track_field: [
     {
       sport: 'track_field',
       technique: 'Sprint Start',
@@ -103,10 +119,10 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Set position - hands behind line',
         'Ready position - slight lift',
         'Drive with arms and legs',
-        'Gradual body rise'
+        'Gradual body rise',
       ],
       keyFrames: [0, 0.2, 0.5, 1.0],
-      duration: 3
+      duration: 3,
     },
     {
       sport: 'track_field',
@@ -115,12 +131,12 @@ const recordingGuides: Record<string, RecordingGuide[]> = {
         'Consistent approach speed',
         'Plant takeoff foot',
         'Drive knee and arms up',
-        'Land with heels first'
+        'Land with heels first',
       ],
       keyFrames: [0, 0.6, 0.8, 1.0],
-      duration: 4
-    }
-  ]
+      duration: 4,
+    },
+  ],
 };
 
 export default function MobileVideoPage() {
@@ -150,7 +166,7 @@ export default function MobileVideoPage() {
     if (selectedTechnique && isRecording) {
       const stepDuration = (selectedTechnique.duration * 1000) / selectedTechnique.keyFrames.length;
       intervalRef.current = setInterval(() => {
-        setCurrentStep(prev => {
+        setCurrentStep((prev) => {
           if (prev < selectedTechnique.keyFrames.length - 1) {
             return prev + 1;
           }
@@ -169,16 +185,16 @@ export default function MobileVideoPage() {
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
+        video: {
           facingMode: 'environment',
           width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          height: { ideal: 1080 },
         },
-        audio: true
+        audio: true,
       });
-      
+
       streamRef.current = stream;
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
@@ -189,7 +205,7 @@ export default function MobileVideoPage() {
 
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
   };
@@ -198,7 +214,7 @@ export default function MobileVideoPage() {
     if (!streamRef.current || !selectedTechnique) return;
 
     const mediaRecorder = new MediaRecorder(streamRef.current, {
-      mimeType: 'video/webm;codecs=vp9'
+      mimeType: 'video/webm;codecs=vp9',
     });
 
     const chunks: BlobPart[] = [];
@@ -222,7 +238,7 @@ export default function MobileVideoPage() {
     setCurrentStep(0);
 
     const timer = setInterval(() => {
-      setRecordingTime(prev => {
+      setRecordingTime((prev) => {
         const newTime = prev + 0.1;
         if (newTime >= selectedTechnique.duration) {
           stopRecording();
@@ -267,7 +283,7 @@ export default function MobileVideoPage() {
 
     try {
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) return prev;
           return prev + Math.random() * 10;
         });
@@ -275,7 +291,7 @@ export default function MobileVideoPage() {
 
       const response = await fetch('/api/mobile-tools/video-upload', {
         method: 'POST',
-        body: formData
+        body: formData,
       });
 
       clearInterval(progressInterval);
@@ -308,9 +324,7 @@ export default function MobileVideoPage() {
     <div className="container mx-auto p-4 space-y-6 max-w-2xl">
       <div className="text-center">
         <h1 className="text-3xl font-bold mb-2">Mobile Video Recording</h1>
-        <p className="text-muted-foreground">
-          Record technique videos with guided instructions
-        </p>
+        <p className="text-muted-foreground">Record technique videos with guided instructions</p>
       </div>
 
       {/* Sport and Technique Selection */}
@@ -338,10 +352,10 @@ export default function MobileVideoPage() {
           {availableTechniques.length > 0 && (
             <div>
               <label className="text-sm font-medium">Technique</label>
-              <Select 
-                value={selectedTechnique?.technique || ''} 
+              <Select
+                value={selectedTechnique?.technique || ''}
                 onValueChange={(value) => {
-                  const technique = availableTechniques.find(t => t.technique === value);
+                  const technique = availableTechniques.find((t) => t.technique === value);
                   setSelectedTechnique(technique || null);
                 }}
               >
@@ -349,7 +363,7 @@ export default function MobileVideoPage() {
                   <SelectValue placeholder="Select technique to practice" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableTechniques.map(technique => (
+                  {availableTechniques.map((technique) => (
                     <SelectItem key={technique.technique} value={technique.technique}>
                       {technique.technique}
                     </SelectItem>
@@ -365,24 +379,22 @@ export default function MobileVideoPage() {
       <Card>
         <CardContent className="p-0">
           <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-            <video 
+            <video
               ref={videoRef}
-              autoPlay 
-              playsInline 
+              autoPlay
+              playsInline
               muted
               className="w-full h-full object-cover"
             />
-            
+
             {/* Recording Overlay */}
             {isRecording && (
               <div className="absolute inset-0 bg-black/20">
                 <div className="absolute top-4 left-4 flex items-center gap-2">
                   <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  <span className="text-white font-medium">
-                    REC {recordingTime.toFixed(1)}s
-                  </span>
+                  <span className="text-white font-medium">REC {recordingTime.toFixed(1)}s</span>
                 </div>
-                
+
                 {selectedTechnique && (
                   <div className="absolute bottom-4 left-4 right-4">
                     <div className="bg-black/80 rounded-lg p-4 text-white">
@@ -394,11 +406,9 @@ export default function MobileVideoPage() {
                           {((recordingTime / selectedTechnique.duration) * 100).toFixed(0)}%
                         </span>
                       </div>
-                      <p className="text-sm mb-2">
-                        {selectedTechnique.instructions[currentStep]}
-                      </p>
-                      <Progress 
-                        value={(recordingTime / selectedTechnique.duration) * 100} 
+                      <p className="text-sm mb-2">{selectedTechnique.instructions[currentStep]}</p>
+                      <Progress
+                        value={(recordingTime / selectedTechnique.duration) * 100}
                         className="h-2"
                       />
                     </div>
@@ -410,7 +420,15 @@ export default function MobileVideoPage() {
             {/* Quality Score Overlay */}
             {qualityScore && !isRecording && (
               <div className="absolute top-4 right-4">
-                <Badge variant={qualityScore >= 85 ? "default" : qualityScore >= 70 ? "secondary" : "destructive"}>
+                <Badge
+                  variant={
+                    qualityScore >= 85
+                      ? 'default'
+                      : qualityScore >= 70
+                        ? 'secondary'
+                        : 'destructive'
+                  }
+                >
                   Quality: {qualityScore}%
                 </Badge>
               </div>
@@ -429,7 +447,7 @@ export default function MobileVideoPage() {
                   onClick={isRecording ? stopRecording : startRecording}
                   disabled={!selectedTechnique}
                   size="lg"
-                  variant={isRecording ? "destructive" : "default"}
+                  variant={isRecording ? 'destructive' : 'default'}
                 >
                   {isRecording ? (
                     <>
@@ -450,11 +468,7 @@ export default function MobileVideoPage() {
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Record Again
                 </Button>
-                <Button 
-                  onClick={uploadVideo} 
-                  disabled={isUploading}
-                  className="flex-1"
-                >
+                <Button onClick={uploadVideo} disabled={isUploading} className="flex-1">
                   {isUploading ? (
                     <>
                       <div className="animate-spin w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2" />

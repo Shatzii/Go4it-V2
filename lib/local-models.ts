@@ -29,7 +29,7 @@ export const AVAILABLE_MODELS: LocalModel[] = [
     filename: 'sports-vision-lite.bin',
     capabilities: ['pose_detection', 'movement_tracking', 'basic_biomechanics'],
     sports: ['basketball', 'soccer', 'football', 'tennis'],
-    installed: false
+    installed: false,
   },
   {
     name: 'Athletic-Performance-Base',
@@ -39,7 +39,7 @@ export const AVAILABLE_MODELS: LocalModel[] = [
     filename: 'athletic-performance-base.bin',
     capabilities: ['skill_analysis', 'technique_scoring', 'consistency_tracking'],
     sports: ['basketball', 'soccer', 'football', 'baseball', 'tennis'],
-    installed: false
+    installed: false,
   },
   {
     name: 'GAR-Scorer-Compact',
@@ -49,8 +49,8 @@ export const AVAILABLE_MODELS: LocalModel[] = [
     filename: 'gar-scorer-compact.bin',
     capabilities: ['gar_scoring', 'comparative_analysis', 'recommendation_engine'],
     sports: ['all_sports'],
-    installed: false
-  }
+    installed: false,
+  },
 ];
 
 export class LocalModelManager {
@@ -85,8 +85,11 @@ export class LocalModelManager {
     }
   }
 
-  async downloadModel(modelName: string, onProgress?: (progress: number) => void): Promise<boolean> {
-    const model = AVAILABLE_MODELS.find(m => m.name === modelName);
+  async downloadModel(
+    modelName: string,
+    onProgress?: (progress: number) => void,
+  ): Promise<boolean> {
+    const model = AVAILABLE_MODELS.find((m) => m.name === modelName);
     if (!model) {
       throw new Error(`Model ${modelName} not found`);
     }
@@ -98,17 +101,18 @@ export class LocalModelManager {
 
     try {
       console.log(`Downloading ${modelName} (${model.size})...`);
-      
+
       const modelPath = path.join(this.modelsDir, model.filename);
-      
+
       // Use curl for reliable download with progress
       const downloadCommand = `curl -L -o "${modelPath}" "${model.url}" --progress-bar`;
-      
+
       await execAsync(downloadCommand);
-      
+
       // Verify file exists and has content
       const stats = await fs.stat(modelPath);
-      if (stats.size > 1000) { // At least 1KB for demo
+      if (stats.size > 1000) {
+        // At least 1KB for demo
         this.installedModels.add(modelName);
         model.installed = true;
         console.log(`Successfully downloaded ${modelName}`);
@@ -116,36 +120,37 @@ export class LocalModelManager {
       } else {
         throw new Error('Downloaded file is too small, likely corrupted');
       }
-      
     } catch (error) {
       console.error(`Error downloading ${modelName}:`, error);
       return false;
     }
   }
 
-  async downloadAllModels(onProgress?: (modelName: string, progress: number) => void): Promise<boolean> {
+  async downloadAllModels(
+    onProgress?: (modelName: string, progress: number) => void,
+  ): Promise<boolean> {
     console.log('Starting download of all recommended models...');
-    
+
     for (const model of AVAILABLE_MODELS) {
       if (!this.installedModels.has(model.name)) {
         console.log(`\nDownloading ${model.name}...`);
         const success = await this.downloadModel(model.name, (progress) => {
           onProgress?.(model.name, progress);
         });
-        
+
         if (!success) {
           console.error(`Failed to download ${model.name}`);
           return false;
         }
       }
     }
-    
+
     console.log('\nAll models downloaded successfully!');
     return true;
   }
 
   getInstalledModels(): LocalModel[] {
-    return AVAILABLE_MODELS.filter(model => this.installedModels.has(model.name));
+    return AVAILABLE_MODELS.filter((model) => this.installedModels.has(model.name));
   }
 
   getAvailableModels(): LocalModel[] {
@@ -157,7 +162,7 @@ export class LocalModelManager {
   }
 
   getModelPath(modelName: string): string | null {
-    const model = AVAILABLE_MODELS.find(m => m.name === modelName);
+    const model = AVAILABLE_MODELS.find((m) => m.name === modelName);
     if (!model || !this.installedModels.has(modelName)) {
       return null;
     }
@@ -166,14 +171,16 @@ export class LocalModelManager {
 
   async getModelsStatus() {
     const totalSize = AVAILABLE_MODELS.reduce((sum, model) => {
-      const size = parseFloat(model.size.replace('GB', '').replace('MB', '')) * 
-                   (model.size.includes('GB') ? 1024 : 1);
+      const size =
+        parseFloat(model.size.replace('GB', '').replace('MB', '')) *
+        (model.size.includes('GB') ? 1024 : 1);
       return sum + size;
     }, 0);
 
     const installedSize = this.getInstalledModels().reduce((sum, model) => {
-      const size = parseFloat(model.size.replace('GB', '').replace('MB', '')) * 
-                   (model.size.includes('GB') ? 1024 : 1);
+      const size =
+        parseFloat(model.size.replace('GB', '').replace('MB', '')) *
+        (model.size.includes('GB') ? 1024 : 1);
       return sum + size;
     }, 0);
 
@@ -182,10 +189,10 @@ export class LocalModelManager {
       installed: this.installedModels.size,
       totalSizeGB: (totalSize / 1024).toFixed(1),
       installedSizeGB: (installedSize / 1024).toFixed(1),
-      models: AVAILABLE_MODELS.map(model => ({
+      models: AVAILABLE_MODELS.map((model) => ({
         ...model,
-        installed: this.installedModels.has(model.name)
-      }))
+        installed: this.installedModels.has(model.name),
+      })),
     };
   }
 }
@@ -200,11 +207,19 @@ export class LocalVideoAnalyzer {
 
   async analyzeVideoLocal(videoPath: string, sport: string): Promise<any> {
     // Check if required models are installed
-    const requiredModels = ['Sports-Vision-Lite', 'Athletic-Performance-Base', 'GAR-Scorer-Compact'];
-    const missingModels = requiredModels.filter(model => !this.modelManager.isModelInstalled(model));
-    
+    const requiredModels = [
+      'Sports-Vision-Lite',
+      'Athletic-Performance-Base',
+      'GAR-Scorer-Compact',
+    ];
+    const missingModels = requiredModels.filter(
+      (model) => !this.modelManager.isModelInstalled(model),
+    );
+
     if (missingModels.length > 0) {
-      throw new Error(`Missing required models: ${missingModels.join(', ')}. Please download models first.`);
+      throw new Error(
+        `Missing required models: ${missingModels.join(', ')}. Please download models first.`,
+      );
     }
 
     try {
@@ -221,7 +236,6 @@ export class LocalVideoAnalyzer {
 
       // Perform local video analysis
       return await this.performLocalAnalysis(videoPath, sport);
-      
     } catch (error) {
       console.error('Local video analysis failed:', error);
       throw error;
@@ -231,12 +245,12 @@ export class LocalVideoAnalyzer {
   private async performLocalAnalysis(videoPath: string, sport: string) {
     // REAL local AI video analysis - no fake data
     console.log(`\nAnalyzing ${sport} video: ${videoPath}`);
-    
+
     // Check if video file exists and is accessible
     if (!require('fs').existsSync(videoPath)) {
       throw new Error(`Video file not found: ${videoPath}`);
     }
-    
+
     // Import real video analyzer
     // const { realVideoAnalyzer } = await import('./real-video-analyzer'); // Disabled for build compatibility
     return await realVideoAnalyzer.analyzeVideo(videoPath, sport);
@@ -250,10 +264,16 @@ export class LocalVideoAnalyzer {
       soccer: ['Ball control', 'Field awareness', 'Passing accuracy'],
       football: ['Arm strength', 'Pocket presence', 'Reading defenses'],
       tennis: ['Forehand technique', 'Court coverage', 'Mental toughness'],
-      baseball: ['Batting stance', 'Hand-eye coordination', 'Base running']
+      baseball: ['Batting stance', 'Hand-eye coordination', 'Base running'],
     };
-    
-    return strengthsMap[sport.toLowerCase()] || ['Technical skills', 'Athletic ability', 'Game awareness'];
+
+    return (
+      strengthsMap[sport.toLowerCase()] || [
+        'Technical skills',
+        'Athletic ability',
+        'Game awareness',
+      ]
+    );
   }
 
   private getSportSpecificWeaknesses(sport: string): string[] {
@@ -262,22 +282,40 @@ export class LocalVideoAnalyzer {
       soccer: ['Weak foot development', 'Aerial challenges'],
       football: ['Scrambling ability', 'Quick release'],
       tennis: ['Backhand power', 'Net play'],
-      baseball: ['Breaking ball recognition', 'Fielding mechanics']
+      baseball: ['Breaking ball recognition', 'Fielding mechanics'],
     };
-    
+
     return weaknessesMap[sport.toLowerCase()] || ['Consistency', 'Technique refinement'];
   }
 
   private getSportSpecificRecommendations(sport: string): string[] {
     const recsMap: Record<string, string[]> = {
-      basketball: ['Practice shooting drills daily', 'Work on defensive slides', 'Improve ball handling'],
-      soccer: ['Focus on weak foot training', 'Practice heading technique', 'Enhance passing accuracy'],
+      basketball: [
+        'Practice shooting drills daily',
+        'Work on defensive slides',
+        'Improve ball handling',
+      ],
+      soccer: [
+        'Focus on weak foot training',
+        'Practice heading technique',
+        'Enhance passing accuracy',
+      ],
       football: ['Develop pocket awareness', 'Work on quick release', 'Study film regularly'],
       tennis: ['Strengthen backhand stroke', 'Improve net game', 'Work on serve consistency'],
-      baseball: ['Practice pitch recognition', 'Improve fielding fundamentals', 'Work on base running']
+      baseball: [
+        'Practice pitch recognition',
+        'Improve fielding fundamentals',
+        'Work on base running',
+      ],
     };
-    
-    return recsMap[sport.toLowerCase()] || ['Focus on fundamentals', 'Increase practice frequency', 'Work with coach'];
+
+    return (
+      recsMap[sport.toLowerCase()] || [
+        'Focus on fundamentals',
+        'Increase practice frequency',
+        'Work with coach',
+      ]
+    );
   }
 
   private getSportSpecificDrills(sport: string): string[] {
@@ -286,10 +324,12 @@ export class LocalVideoAnalyzer {
       soccer: ['Juggling practice', 'Passing gates', 'Shooting accuracy'],
       football: ['Pocket drills', 'Footwork ladder', 'Reading progressions'],
       tennis: ['Wall practice', 'Serve and volley', 'Footwork drills'],
-      baseball: ['Tee work', 'Fielding drills', 'Base running practice']
+      baseball: ['Tee work', 'Fielding drills', 'Base running practice'],
     };
-    
-    return drillsMap[sport.toLowerCase()] || ['Fundamental drills', 'Skill practice', 'Conditioning'];
+
+    return (
+      drillsMap[sport.toLowerCase()] || ['Fundamental drills', 'Skill practice', 'Conditioning']
+    );
   }
 }
 

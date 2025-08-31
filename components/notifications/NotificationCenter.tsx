@@ -31,7 +31,7 @@ export function NotificationCenter() {
     try {
       const userId = 'demo_user'; // Get from auth context
       const response = await fetch(`/api/notifications/websocket?userId=${userId}`);
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -52,17 +52,15 @@ export function NotificationCenter() {
         body: JSON.stringify({
           userId: 'demo_user',
           notificationId,
-          read: true
-        })
+          read: true,
+        }),
       });
 
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(n => 
-            n.id === notificationId ? { ...n, read: true } : n
-          )
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n)),
         );
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        setUnreadCount((prev) => Math.max(0, prev - 1));
       }
     } catch (error) {
       console.error('Failed to mark notification as read:', error);
@@ -127,10 +125,7 @@ export function NotificationCenter() {
           {/* Header */}
           <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-gray-400 hover:text-gray-600"
-            >
+            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -163,18 +158,18 @@ export function NotificationCenter() {
                     {getNotificationIcon(notification.type)}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className={`text-sm font-medium ${
-                          !notification.read ? 'text-gray-900' : 'text-gray-700'
-                        }`}>
+                        <p
+                          className={`text-sm font-medium ${
+                            !notification.read ? 'text-gray-900' : 'text-gray-700'
+                          }`}
+                        >
                           {notification.title}
                         </p>
                         <span className="text-xs text-gray-500">
                           {formatTime(notification.timestamp)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {notification.message}
-                      </p>
+                      <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
                       {!notification.read && (
                         <div className="flex items-center mt-2">
                           <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
@@ -194,7 +189,7 @@ export function NotificationCenter() {
               <button
                 onClick={() => {
                   // Mark all as read
-                  notifications.forEach(n => {
+                  notifications.forEach((n) => {
                     if (!n.read) markAsRead(n.id);
                   });
                 }}

@@ -5,9 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Activity, Brain, Zap, Target, TrendingUp, AlertCircle,
-  Timer, Heart, Thermometer, Droplets, Battery, Cpu
+import {
+  Activity,
+  Brain,
+  Zap,
+  Target,
+  TrendingUp,
+  AlertCircle,
+  Timer,
+  Heart,
+  Thermometer,
+  Droplets,
+  Battery,
+  Cpu,
 } from 'lucide-react';
 
 // Real-time Biomechanical Analysis
@@ -18,7 +28,7 @@ function BiomechanicalAnalyzer() {
     velocityOutput: 0,
     powerIndex: 0,
     asymmetryScore: 0,
-    injuryRisk: 0
+    injuryRisk: 0,
   });
 
   const [isScanning, setIsScanning] = useState(false);
@@ -33,7 +43,7 @@ function BiomechanicalAnalyzer() {
           velocityOutput: 75 + Math.random() * 25,
           powerIndex: 80 + Math.random() * 20,
           asymmetryScore: Math.random() * 20,
-          injuryRisk: Math.random() * 30
+          injuryRisk: Math.random() * 30,
         });
       }, 1000);
     }
@@ -55,7 +65,7 @@ function BiomechanicalAnalyzer() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <Button 
+          <Button
             onClick={startScan}
             disabled={isScanning}
             className="w-full bg-blue-600 hover:bg-blue-700"
@@ -69,11 +79,13 @@ function BiomechanicalAnalyzer() {
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Movement Efficiency</span>
-                    <span className="text-blue-400">{Math.round(analysis.movementEfficiency)}%</span>
+                    <span className="text-blue-400">
+                      {Math.round(analysis.movementEfficiency)}%
+                    </span>
                   </div>
                   <Progress value={analysis.movementEfficiency} className="h-2" />
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Force Production</span>
@@ -81,7 +93,7 @@ function BiomechanicalAnalyzer() {
                   </div>
                   <Progress value={analysis.forceProduction} className="h-2" />
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Velocity Output</span>
@@ -99,7 +111,7 @@ function BiomechanicalAnalyzer() {
                   </div>
                   <Progress value={analysis.powerIndex} className="h-2" />
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Asymmetry Score</span>
@@ -107,7 +119,7 @@ function BiomechanicalAnalyzer() {
                   </div>
                   <Progress value={analysis.asymmetryScore} className="h-2" />
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Injury Risk</span>
@@ -132,7 +144,7 @@ function PhysiologicalMonitor() {
     hydrationLevel: 0,
     lactateLevel: 0,
     vo2: 0,
-    rpe: 0
+    rpe: 0,
   });
 
   const [isMonitoring, setIsMonitoring] = useState(false);
@@ -147,7 +159,7 @@ function PhysiologicalMonitor() {
           hydrationLevel: 70 + Math.random() * 30,
           lactateLevel: 2 + Math.random() * 8,
           vo2: 40 + Math.random() * 20,
-          rpe: 6 + Math.random() * 4
+          rpe: 6 + Math.random() * 4,
         });
       }, 2000);
     }
@@ -164,7 +176,7 @@ function PhysiologicalMonitor() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <Button 
+          <Button
             onClick={() => setIsMonitoring(!isMonitoring)}
             className={`w-full ${isMonitoring ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
           >
@@ -222,9 +234,7 @@ function PhysiologicalMonitor() {
                   <Activity className="w-4 h-4 text-green-400" />
                   <span className="text-sm">VO2</span>
                 </div>
-                <div className="text-2xl font-bold text-green-400">
-                  {Math.round(vitals.vo2)}
-                </div>
+                <div className="text-2xl font-bold text-green-400">{Math.round(vitals.vo2)}</div>
                 <div className="text-xs text-green-300">ml/kg/min</div>
               </div>
 
@@ -233,9 +243,7 @@ function PhysiologicalMonitor() {
                   <Brain className="w-4 h-4 text-purple-400" />
                   <span className="text-sm">RPE</span>
                 </div>
-                <div className="text-2xl font-bold text-purple-400">
-                  {Math.round(vitals.rpe)}
-                </div>
+                <div className="text-2xl font-bold text-purple-400">{Math.round(vitals.rpe)}</div>
                 <div className="text-xs text-purple-300">/10</div>
               </div>
             </div>
@@ -253,45 +261,46 @@ function PerformanceOptimizer() {
     predictedGains: {},
     riskAssessment: '',
     trainingZones: {},
-    recoveryPlan: []
+    recoveryPlan: [],
   });
 
   const [isOptimizing, setIsOptimizing] = useState(false);
 
   const runOptimization = async () => {
     setIsOptimizing(true);
-    
+
     // Simulate AI optimization analysis
     setTimeout(() => {
       setOptimization({
         recommendations: [
-          "Increase explosive power training by 20% based on force production deficits",
-          "Implement altitude training protocol for improved VO2 max",
-          "Focus on single-leg stability exercises to reduce asymmetry",
-          "Add periodized strength training for sustained power output",
-          "Integrate cognitive load training for mental resilience"
+          'Increase explosive power training by 20% based on force production deficits',
+          'Implement altitude training protocol for improved VO2 max',
+          'Focus on single-leg stability exercises to reduce asymmetry',
+          'Add periodized strength training for sustained power output',
+          'Integrate cognitive load training for mental resilience',
         ],
         predictedGains: {
           speed: 8.5,
           strength: 12.3,
           endurance: 15.7,
           agility: 6.9,
-          recovery: 22.1
+          recovery: 22.1,
         },
-        riskAssessment: 'Low risk with current protocols. Monitor hydration levels during high-intensity sessions.',
+        riskAssessment:
+          'Low risk with current protocols. Monitor hydration levels during high-intensity sessions.',
         trainingZones: {
           aerobic: '65-75% HRmax',
           threshold: '80-90% HRmax',
           neuromuscular: '95-100% HRmax',
-          recovery: '50-60% HRmax'
+          recovery: '50-60% HRmax',
         },
         recoveryPlan: [
-          "Active recovery: 30min low-intensity cycling",
-          "Cold therapy: 15min ice bath at 10-12°C",
-          "Nutrition: 1.2g protein per kg body weight",
-          "Sleep optimization: 8.5 hours with room temp 65-68°F",
-          "Massage therapy: 45min deep tissue every 72 hours"
-        ]
+          'Active recovery: 30min low-intensity cycling',
+          'Cold therapy: 15min ice bath at 10-12°C',
+          'Nutrition: 1.2g protein per kg body weight',
+          'Sleep optimization: 8.5 hours with room temp 65-68°F',
+          'Massage therapy: 45min deep tissue every 72 hours',
+        ],
       });
       setIsOptimizing(false);
     }, 4000);
@@ -307,7 +316,7 @@ function PerformanceOptimizer() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <Button 
+          <Button
             onClick={runOptimization}
             disabled={isOptimizing}
             className="w-full bg-cyan-600 hover:bg-cyan-700"
@@ -319,7 +328,9 @@ function PerformanceOptimizer() {
             <div className="space-y-6">
               {/* Predicted Performance Gains */}
               <div className="p-4 bg-green-500/20 border border-green-500 rounded-lg">
-                <h4 className="font-bold text-green-400 mb-3">Predicted Performance Gains (6 weeks)</h4>
+                <h4 className="font-bold text-green-400 mb-3">
+                  Predicted Performance Gains (6 weeks)
+                </h4>
                 <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                   {Object.entries(optimization.predictedGains).map(([metric, gain]) => (
                     <div key={metric} className="text-center">
@@ -388,29 +399,30 @@ function PerformanceOptimizer() {
 // STEM Integration Dashboard
 function STEMIntegration() {
   const [activeExperiment, setActiveExperiment] = useState<string | null>(null);
-  
+
   const experiments = [
     {
       id: 'force-velocity',
       title: 'Force-Velocity Relationship',
-      description: 'Analyze the biomechanical relationship between force and velocity in athletic movements',
-      concepts: ['Newton\'s Laws', 'Power Equations', 'Vector Analysis'],
-      status: 'ready'
+      description:
+        'Analyze the biomechanical relationship between force and velocity in athletic movements',
+      concepts: ["Newton's Laws", 'Power Equations', 'Vector Analysis'],
+      status: 'ready',
     },
     {
       id: 'energy-systems',
       title: 'Energy System Analysis',
       description: 'Study ATP-PC, glycolytic, and oxidative energy pathways during exercise',
       concepts: ['Thermodynamics', 'Biochemistry', 'Metabolic Efficiency'],
-      status: 'ready'
+      status: 'ready',
     },
     {
       id: 'biomechanics',
       title: 'Kinematic Analysis',
       description: 'Mathematical modeling of joint angles and movement patterns',
       concepts: ['Calculus', 'Trigonometry', 'Physics'],
-      status: 'active'
-    }
+      status: 'active',
+    },
   ];
 
   return (
@@ -424,31 +436,37 @@ function STEMIntegration() {
       <CardContent>
         <div className="space-y-4">
           {experiments.map((experiment) => (
-            <div 
+            <div
               key={experiment.id}
               className={`p-4 rounded-lg border transition-all cursor-pointer
-                ${activeExperiment === experiment.id 
-                  ? 'bg-indigo-500/30 border-indigo-400' 
-                  : 'bg-gray-500/10 border-gray-500 hover:border-indigo-500'}`}
-              onClick={() => setActiveExperiment(
-                activeExperiment === experiment.id ? null : experiment.id
-              )}
+                ${
+                  activeExperiment === experiment.id
+                    ? 'bg-indigo-500/30 border-indigo-400'
+                    : 'bg-gray-500/10 border-gray-500 hover:border-indigo-500'
+                }`}
+              onClick={() =>
+                setActiveExperiment(activeExperiment === experiment.id ? null : experiment.id)
+              }
             >
               <div className="flex items-start justify-between mb-2">
                 <h4 className="font-bold text-indigo-400">{experiment.title}</h4>
-                <Badge 
+                <Badge
                   variant={experiment.status === 'active' ? 'default' : 'secondary'}
                   className={experiment.status === 'active' ? 'bg-green-500' : 'bg-gray-500'}
                 >
                   {experiment.status}
                 </Badge>
               </div>
-              
+
               <p className="text-sm text-gray-300 mb-3">{experiment.description}</p>
-              
+
               <div className="flex flex-wrap gap-2">
                 {experiment.concepts.map((concept, i) => (
-                  <Badge key={i} variant="outline" className="border-indigo-500 text-indigo-400 text-xs">
+                  <Badge
+                    key={i}
+                    variant="outline"
+                    className="border-indigo-500 text-indigo-400 text-xs"
+                  >
                     {concept}
                   </Badge>
                 ))}
@@ -467,7 +485,7 @@ function STEMIntegration() {
                         </div>
                       </div>
                     )}
-                    
+
                     {experiment.id === 'energy-systems' && (
                       <div>
                         <div className="font-semibold mb-2">Energy Pathway Distribution:</div>
@@ -478,7 +496,7 @@ function STEMIntegration() {
                         </div>
                       </div>
                     )}
-                    
+
                     {experiment.id === 'biomechanics' && (
                       <div>
                         <div className="font-semibold mb-2">Joint Angle Analysis:</div>
@@ -513,7 +531,7 @@ export default function SportsScienceLabPage() {
           <p className="text-xl text-gray-300 mb-6">
             Revolutionary biometric analysis and performance optimization with STEM integration
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-6">
             <Badge variant="outline" className="border-blue-500 text-blue-400">
               <Activity className="w-4 h-4 mr-2" />
@@ -553,14 +571,18 @@ export default function SportsScienceLabPage() {
               <div className="grid md:grid-cols-3 gap-8 text-center">
                 <div>
                   <div className="text-4xl font-bold text-green-400 mb-2">95%</div>
-                  <div className="text-green-300">Students maintain 3.5+ GPA during sports seasons</div>
+                  <div className="text-green-300">
+                    Students maintain 3.5+ GPA during sports seasons
+                  </div>
                   <div className="text-sm text-green-200 mt-2">
                     STEM integration improves academic performance in physics and mathematics
                   </div>
                 </div>
                 <div>
                   <div className="text-4xl font-bold text-blue-400 mb-2">100%</div>
-                  <div className="text-blue-300">College acceptance rate with 90% athletic scholarships</div>
+                  <div className="text-blue-300">
+                    College acceptance rate with 90% athletic scholarships
+                  </div>
                   <div className="text-sm text-blue-200 mt-2">
                     Biometric optimization results in 23% average performance improvement
                   </div>

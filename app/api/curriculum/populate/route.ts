@@ -1,39 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '../../../../server/db';
 import { curriculum, courseContent } from '../../../../shared/schema';
-import { CK12_CURRICULUM_MAP, OER_COMMONS_CURRICULUM_MAP, getAllAvailableCourses } from '../../../../lib/curriculum-integration';
+import {
+  CK12_CURRICULUM_MAP,
+  OER_COMMONS_CURRICULUM_MAP,
+  getAllAvailableCourses,
+} from '../../../../lib/curriculum-integration';
 import { eq, and } from 'drizzle-orm';
 
 export async function POST(request: NextRequest) {
   try {
     console.log('Starting curriculum population...');
-    
+
     // Get all available courses from our curriculum maps
     const allCourses = getAllAvailableCourses();
-    
+
     // Insert curriculum records
     for (const course of allCourses) {
       console.log(`Processing course: ${course.title}`);
-      
+
       // Get course details from curriculum maps
       let courseDetails: any = null;
       let source = '';
-      
+
       if (course.subject === 'mathematics' || course.subject === 'science') {
         const subjectMap = CK12_CURRICULUM_MAP[course.subject as keyof typeof CK12_CURRICULUM_MAP];
-        courseDetails = Object.values(subjectMap as any).find((c: any) => c.courseId === course.courseId);
+        courseDetails = Object.values(subjectMap as any).find(
+          (c: any) => c.courseId === course.courseId,
+        );
         source = 'CK-12 Foundation';
       } else if (course.subject === 'english' || course.subject === 'history') {
-        const subjectMap = OER_COMMONS_CURRICULUM_MAP[course.subject as keyof typeof OER_COMMONS_CURRICULUM_MAP];
-        courseDetails = Object.values(subjectMap as any).find((c: any) => c.courseId === course.courseId);
+        const subjectMap =
+          OER_COMMONS_CURRICULUM_MAP[course.subject as keyof typeof OER_COMMONS_CURRICULUM_MAP];
+        courseDetails = Object.values(subjectMap as any).find(
+          (c: any) => c.courseId === course.courseId,
+        );
         source = 'OER Commons';
       }
-      
+
       if (!courseDetails) continue;
-      
+
       // Insert curriculum record
-      const existingCourse = await db.select().from(curriculum).where(eq(curriculum.courseId, course.courseId)).limit(1);
-      
+      const existingCourse = await db
+        .select()
+        .from(curriculum)
+        .where(eq(curriculum.courseId, course.courseId))
+        .limit(1);
+
       if (existingCourse.length === 0) {
         await db.insert(curriculum).values({
           courseId: course.courseId,
@@ -41,45 +54,64 @@ export async function POST(request: NextRequest) {
           description: `Comprehensive ${course.subject} curriculum for grade ${course.gradeLevel} sourced from ${source}`,
           subject: course.subject,
           gradeLevel: course.gradeLevel,
-          creditHours: course.subject === 'mathematics' || course.subject === 'science' ? '1.0' : '1.0',
+          creditHours:
+            course.subject === 'mathematics' || course.subject === 'science' ? '1.0' : '1.0',
           prerequisites: [],
           learningObjectives: [
             `Master ${course.subject} concepts appropriate for grade ${course.gradeLevel}`,
             'Develop critical thinking and problem-solving skills',
             'Prepare for advanced coursework and standardized assessments',
-            'Build foundation for college-level study'
+            'Build foundation for college-level study',
           ],
-          assessmentMethods: ['formative_assessment', 'summative_assessment', 'project_based', 'peer_assessment'],
+          assessmentMethods: [
+            'formative_assessment',
+            'summative_assessment',
+            'project_based',
+            'peer_assessment',
+          ],
           standardsAlignment: {
             source: source,
-            standards: course.subject === 'mathematics' ? 'Common Core Mathematics' : 
-                     course.subject === 'science' ? 'Next Generation Science Standards' :
-                     course.subject === 'english' ? 'Common Core English Language Arts' : 'National Council for Social Studies Standards',
-            gradeLevel: course.gradeLevel
+            standards:
+              course.subject === 'mathematics'
+                ? 'Common Core Mathematics'
+                : course.subject === 'science'
+                  ? 'Next Generation Science Standards'
+                  : course.subject === 'english'
+                    ? 'Common Core English Language Arts'
+                    : 'National Council for Social Studies Standards',
+            gradeLevel: course.gradeLevel,
           },
           isNcaaApproved: true,
           difficulty: course.gradeLevel >= '11' ? 'honors' : 'standard',
-          estimatedHours: courseDetails.units?.reduce((total: number, unit: any) => total + (unit.lessons * 2), 0) || 120
+          estimatedHours:
+            courseDetails.units?.reduce(
+              (total: number, unit: any) => total + unit.lessons * 2,
+              0,
+            ) || 120,
         });
-        
+
         console.log(`Inserted curriculum: ${course.courseId}`);
       }
-      
+
       // Insert course content for each unit and lesson
       if (courseDetails.units) {
         for (const unit of courseDetails.units) {
           for (let lessonNum = 1; lessonNum <= unit.lessons; lessonNum++) {
             const contentTitle = `${unit.title} - Lesson ${lessonNum}`;
-            
+
             // Check if content already exists
-            const existingContent = await db.select().from(courseContent)
-              .where(and(
-                eq(courseContent.courseId, course.courseId), 
-                eq(courseContent.unit, unit.id), 
-                eq(courseContent.lesson, lessonNum)
-              ))
+            const existingContent = await db
+              .select()
+              .from(courseContent)
+              .where(
+                and(
+                  eq(courseContent.courseId, course.courseId),
+                  eq(courseContent.unit, unit.id),
+                  eq(courseContent.lesson, lessonNum),
+                ),
+              )
               .limit(1);
-            
+
             if (existingContent.length === 0) {
               await db.insert(courseContent).values({
                 courseId: course.courseId,
@@ -91,21 +123,26 @@ export async function POST(request: NextRequest) {
                 resources: {
                   source: source,
                   externalLinks: [
-                    source === 'CK-12 Foundation' ? 
-                      `https://www.ck12.org/book/ck-12-${course.subject.replace('_', '-')}-${course.gradeLevel}/` :
-                      `https://oercommons.org/courses/${course.subject}-grade-${course.gradeLevel}/`,
+                    source === 'CK-12 Foundation'
+                      ? `https://www.ck12.org/book/ck-12-${course.subject.replace('_', '-')}-${course.gradeLevel}/`
+                      : `https://oercommons.org/courses/${course.subject}-grade-${course.gradeLevel}/`,
                   ],
                   additionalMaterials: [
                     'Interactive simulations',
                     'Practice worksheets',
                     'Supplementary videos',
-                    'Real-world applications'
-                  ]
+                    'Real-world applications',
+                  ],
                 },
                 estimatedTime: lessonNum % 5 === 0 ? 75 : 50, // Quizzes take longer
                 isRequired: true,
-                prerequisites: lessonNum === 1 ? [] : [`${course.courseId}-${unit.id}-${lessonNum - 1}`],
-                learningObjectives: generateLearningObjectives(course.subject, unit.title, lessonNum),
+                prerequisites:
+                  lessonNum === 1 ? [] : [`${course.courseId}-${unit.id}-${lessonNum - 1}`],
+                learningObjectives: generateLearningObjectives(
+                  course.subject,
+                  unit.title,
+                  lessonNum,
+                ),
                 assessmentCriteria: {
                   masteryThreshold: 0.8,
                   assessmentType: lessonNum % 5 === 0 ? 'quiz' : 'completion',
@@ -113,10 +150,10 @@ export async function POST(request: NextRequest) {
                   rubric: {
                     understanding: 'Demonstrates clear understanding of concepts',
                     application: 'Can apply knowledge to solve problems',
-                    analysis: 'Shows analytical thinking and reasoning'
-                  }
+                    analysis: 'Shows analytical thinking and reasoning',
+                  },
                 },
-                order: lessonNum
+                order: lessonNum,
               });
             }
           }
@@ -124,23 +161,24 @@ export async function POST(request: NextRequest) {
         console.log(`Inserted content for course: ${course.courseId}`);
       }
     }
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       message: 'Curriculum populated successfully',
-      coursesProcessed: allCourses.length
+      coursesProcessed: allCourses.length,
     });
-    
   } catch (error) {
     console.error('Error populating curriculum:', error);
-    return NextResponse.json(
-      { error: 'Failed to populate curriculum' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to populate curriculum' }, { status: 500 });
   }
 }
 
-function generateLessonContent(subject: string, unitTitle: string, lessonNum: number, source: string): string {
+function generateLessonContent(
+  subject: string,
+  unitTitle: string,
+  lessonNum: number,
+  source: string,
+): string {
   const baseContent = `
     <div class="lesson-content">
       <h2>${unitTitle} - Lesson ${lessonNum}</h2>
@@ -168,25 +206,29 @@ function generateLessonContent(subject: string, unitTitle: string, lessonNum: nu
         
         <div class="external-link">
           <p><strong>For complete lesson content, visit:</strong> 
-          <a href="${source === 'CK-12 Foundation' ? 
-            'https://www.ck12.org/' : 
-            'https://oercommons.org/'}" target="_blank">${source}</a></p>
+          <a href="${
+            source === 'CK-12 Foundation' ? 'https://www.ck12.org/' : 'https://oercommons.org/'
+          }" target="_blank">${source}</a></p>
         </div>
       </div>
     </div>
   `;
-  
+
   return baseContent;
 }
 
-function generateLearningObjectives(subject: string, unitTitle: string, lessonNum: number): string[] {
+function generateLearningObjectives(
+  subject: string,
+  unitTitle: string,
+  lessonNum: number,
+): string[] {
   const baseObjectives = [
     `Understand core concepts in ${unitTitle.toLowerCase()}`,
     `Apply ${subject} knowledge to solve problems`,
     'Develop critical thinking and analytical skills',
-    'Connect learning to real-world applications'
+    'Connect learning to real-world applications',
   ];
-  
+
   // Add subject-specific objectives
   if (subject === 'mathematics') {
     baseObjectives.push('Demonstrate mathematical reasoning and proof');
@@ -201,6 +243,6 @@ function generateLearningObjectives(subject: string, unitTitle: string, lessonNu
     baseObjectives.push('Analyze historical events and their significance');
     baseObjectives.push('Understand cause and effect relationships in history');
   }
-  
+
   return baseObjectives;
 }

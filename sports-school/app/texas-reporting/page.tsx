@@ -1,5 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
 
 export default function TexasReportingPage() {
   return (
@@ -7,12 +7,13 @@ export default function TexasReportingPage() {
       <header className="relative z-10 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-2xl hover:text-purple-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-2xl hover:text-purple-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              TEA Reporting & Analytics
-            </div>
+            <div className="text-white font-bold text-xl">TEA Reporting & Analytics</div>
           </nav>
         </div>
       </header>
@@ -28,23 +29,23 @@ export default function TexasReportingPage() {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Comprehensive Texas Education Agency reporting with real-time analytics and compliance monitoring.
+            Comprehensive Texas Education Agency reporting with real-time analytics and compliance
+            monitoring.
           </p>
         </div>
       </section>
 
       <section className="py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">
-            Compliance Reports
-          </h2>
-          
+          <h2 className="text-4xl font-bold text-white text-center mb-16">Compliance Reports</h2>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/20 transition-all duration-300">
               <div className="text-4xl mb-4">📋</div>
               <h3 className="text-2xl font-bold text-white mb-2">Monthly Reports</h3>
               <p className="text-white/80 mb-4">
-                Automated monthly compliance reports including enrollment, attendance, and academic progress data.
+                Automated monthly compliance reports including enrollment, attendance, and academic
+                progress data.
               </p>
               <button className="bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors w-full">
                 Generate Report
@@ -55,7 +56,8 @@ export default function TexasReportingPage() {
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-2xl font-bold text-white mb-2">Performance Analytics</h3>
               <p className="text-white/80 mb-4">
-                Detailed academic performance tracking with neurodivergent support effectiveness metrics.
+                Detailed academic performance tracking with neurodivergent support effectiveness
+                metrics.
               </p>
               <button className="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-700 transition-colors w-full">
                 View Analytics
@@ -66,7 +68,8 @@ export default function TexasReportingPage() {
               <div className="text-4xl mb-4">✅</div>
               <h3 className="text-2xl font-bold text-white mb-2">Compliance Status</h3>
               <p className="text-white/80 mb-4">
-                Real-time monitoring of all TEA compliance requirements with automated alerts and recommendations.
+                Real-time monitoring of all TEA compliance requirements with automated alerts and
+                recommendations.
               </p>
               <button className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-colors w-full">
                 Check Status
@@ -110,5 +113,5 @@ export default function TexasReportingPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

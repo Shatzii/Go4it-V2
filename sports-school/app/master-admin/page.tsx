@@ -1,43 +1,43 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Crown, 
-  Globe, 
-  School, 
-  Users, 
-  DollarSign, 
-  Settings, 
-  BarChart3, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Crown,
+  Globe,
+  School,
+  Users,
+  DollarSign,
+  Settings,
+  BarChart3,
   Shield,
   Zap,
   Plus,
   Edit,
   Eye,
-  AlertCircle
-} from 'lucide-react'
+  AlertCircle,
+} from 'lucide-react';
 
 interface NetworkStats {
-  id: string
-  name: string
-  schoolCount: number
-  studentCount: number
-  revenue: number
-  status: 'active' | 'inactive' | 'pending'
-  domain: string
+  id: string;
+  name: string;
+  schoolCount: number;
+  studentCount: number;
+  revenue: number;
+  status: 'active' | 'inactive' | 'pending';
+  domain: string;
 }
 
 interface GlobalMetrics {
-  totalNetworks: number
-  totalSchools: number
-  totalStudents: number
-  totalRevenue: number
-  activeModules: number
-  systemHealth: number
+  totalNetworks: number;
+  totalSchools: number;
+  totalStudents: number;
+  totalRevenue: number;
+  activeModules: number;
+  systemHealth: number;
 }
 
 export default function MasterAdminDashboard() {
@@ -47,8 +47,8 @@ export default function MasterAdminDashboard() {
     totalStudents: 156789,
     totalRevenue: 25600000,
     activeModules: 18,
-    systemHealth: 99.7
-  })
+    systemHealth: 99.7,
+  });
 
   const [networks, setNetworks] = useState<NetworkStats[]>([
     {
@@ -58,16 +58,16 @@ export default function MasterAdminDashboard() {
       studentCount: 45000,
       revenue: 8900000,
       status: 'active',
-      domain: 'texas-schools.edu'
+      domain: 'texas-schools.edu',
     },
     {
-      id: '2', 
+      id: '2',
       name: 'European Learning Network',
       schoolCount: 156,
       studentCount: 78500,
       revenue: 12400000,
       status: 'active',
-      domain: 'eu-learning.org'
+      domain: 'eu-learning.org',
     },
     {
       id: '3',
@@ -76,7 +76,7 @@ export default function MasterAdminDashboard() {
       studentCount: 28900,
       revenue: 3800000,
       status: 'active',
-      domain: 'sg-smart.edu.sg'
+      domain: 'sg-smart.edu.sg',
     },
     {
       id: '4',
@@ -85,11 +85,11 @@ export default function MasterAdminDashboard() {
       studentCount: 4389,
       revenue: 450000,
       status: 'pending',
-      domain: 'nordic-edu.dk'
-    }
-  ])
+      domain: 'nordic-edu.dk',
+    },
+  ]);
 
-  const [selectedTab, setSelectedTab] = useState('overview')
+  const [selectedTab, setSelectedTab] = useState('overview');
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
@@ -152,7 +152,9 @@ export default function MasterAdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-400">Students</p>
-                  <p className="text-2xl font-bold">{globalMetrics.totalStudents.toLocaleString()}</p>
+                  <p className="text-2xl font-bold">
+                    {globalMetrics.totalStudents.toLocaleString()}
+                  </p>
                 </div>
                 <Users className="h-8 w-8 text-purple-400" />
               </div>
@@ -164,7 +166,9 @@ export default function MasterAdminDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-400">Revenue</p>
-                  <p className="text-2xl font-bold">${(globalMetrics.totalRevenue / 1000000).toFixed(1)}M</p>
+                  <p className="text-2xl font-bold">
+                    ${(globalMetrics.totalRevenue / 1000000).toFixed(1)}M
+                  </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-yellow-400" />
               </div>
@@ -216,20 +220,38 @@ export default function MasterAdminDashboard() {
                     <Globe className="h-5 w-5 text-blue-400" />
                     <span>Global Network Status</span>
                   </CardTitle>
-                  <CardDescription>Real-time network performance across all regions</CardDescription>
+                  <CardDescription>
+                    Real-time network performance across all regions
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {networks.map((network) => (
-                      <div key={network.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                      <div
+                        key={network.id}
+                        className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"
+                      >
                         <div>
                           <h4 className="font-medium">{network.name}</h4>
-                          <p className="text-sm text-slate-400">{network.schoolCount} schools • {network.studentCount.toLocaleString()} students</p>
+                          <p className="text-sm text-slate-400">
+                            {network.schoolCount} schools • {network.studentCount.toLocaleString()}{' '}
+                            students
+                          </p>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Badge 
-                            variant={network.status === 'active' ? 'default' : network.status === 'pending' ? 'secondary' : 'destructive'}
-                            className={network.status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500' : ''}
+                          <Badge
+                            variant={
+                              network.status === 'active'
+                                ? 'default'
+                                : network.status === 'pending'
+                                  ? 'secondary'
+                                  : 'destructive'
+                            }
+                            className={
+                              network.status === 'active'
+                                ? 'bg-green-500/20 text-green-400 border-green-500'
+                                : ''
+                            }
                           >
                             {network.status}
                           </Badge>
@@ -256,22 +278,30 @@ export default function MasterAdminDashboard() {
                     <div className="flex items-start space-x-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
                       <AlertCircle className="h-4 w-4 text-yellow-400 mt-0.5" />
                       <div>
-                        <p className="text-sm font-medium">Nordic Education Initiative pending approval</p>
-                        <p className="text-xs text-slate-400">Network setup requires master admin authorization</p>
+                        <p className="text-sm font-medium">
+                          Nordic Education Initiative pending approval
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          Network setup requires master admin authorization
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                       <AlertCircle className="h-4 w-4 text-blue-400 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium">Platform update available</p>
-                        <p className="text-xs text-slate-400">Universal One School v4.1 ready for deployment</p>
+                        <p className="text-xs text-slate-400">
+                          Universal One School v4.1 ready for deployment
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
                       <AlertCircle className="h-4 w-4 text-green-400 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium">Revenue milestone achieved</p>
-                        <p className="text-xs text-slate-400">$25M ARR target reached ahead of schedule</p>
+                        <p className="text-xs text-slate-400">
+                          $25M ARR target reached ahead of schedule
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -298,18 +328,28 @@ export default function MasterAdminDashboard() {
                       <div className="space-y-2">
                         <div className="flex items-center space-x-3">
                           <h4 className="text-lg font-medium">{network.name}</h4>
-                          <Badge 
+                          <Badge
                             variant={network.status === 'active' ? 'default' : 'secondary'}
-                            className={network.status === 'active' ? 'bg-green-500/20 text-green-400 border-green-500' : ''}
+                            className={
+                              network.status === 'active'
+                                ? 'bg-green-500/20 text-green-400 border-green-500'
+                                : ''
+                            }
                           >
                             {network.status}
                           </Badge>
                         </div>
                         <p className="text-sm text-slate-400">{network.domain}</p>
                         <div className="flex items-center space-x-6 text-sm">
-                          <span><strong>{network.schoolCount}</strong> schools</span>
-                          <span><strong>{network.studentCount.toLocaleString()}</strong> students</span>
-                          <span><strong>${(network.revenue / 1000000).toFixed(1)}M</strong> revenue</span>
+                          <span>
+                            <strong>{network.schoolCount}</strong> schools
+                          </span>
+                          <span>
+                            <strong>{network.studentCount.toLocaleString()}</strong> students
+                          </span>
+                          <span>
+                            <strong>${(network.revenue / 1000000).toFixed(1)}M</strong> revenue
+                          </span>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">
@@ -384,5 +424,5 @@ export default function MasterAdminDashboard() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

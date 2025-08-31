@@ -33,24 +33,27 @@ class ElevenLabsVoiceService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/text-to-speech/${this.professorBarrettVoiceId}`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': this.apiKey
+      const response = await fetch(
+        `${this.baseUrl}/text-to-speech/${this.professorBarrettVoiceId}`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'audio/mpeg',
+            'Content-Type': 'application/json',
+            'xi-api-key': this.apiKey,
+          },
+          body: JSON.stringify({
+            text: this.optimizeTextForSpeech(text),
+            model_id: 'eleven_monolingual_v1',
+            voice_settings: {
+              stability: voiceSettings?.stability || 0.5,
+              similarity_boost: voiceSettings?.similarity_boost || 0.75,
+              style: voiceSettings?.style || 0.0,
+              use_speaker_boost: voiceSettings?.use_speaker_boost || true,
+            },
+          }),
         },
-        body: JSON.stringify({
-          text: this.optimizeTextForSpeech(text),
-          model_id: "eleven_monolingual_v1",
-          voice_settings: {
-            stability: voiceSettings?.stability || 0.5,
-            similarity_boost: voiceSettings?.similarity_boost || 0.75,
-            style: voiceSettings?.style || 0.0,
-            use_speaker_boost: voiceSettings?.use_speaker_boost || true
-          }
-        })
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`ElevenLabs API error: ${response.status}`);
@@ -59,7 +62,7 @@ class ElevenLabsVoiceService {
       const audioBuffer = await response.buffer();
       const fileName = `professor-barrett-${Date.now()}.mp3`;
       const audioPath = path.join(process.cwd(), 'public', 'audio', fileName);
-      
+
       // Ensure audio directory exists
       const audioDir = path.dirname(audioPath);
       if (!fs.existsSync(audioDir)) {
@@ -71,9 +74,8 @@ class ElevenLabsVoiceService {
       return {
         audioUrl: `/audio/${fileName}`,
         duration: this.estimateDuration(text),
-        voiceId: this.professorBarrettVoiceId
+        voiceId: this.professorBarrettVoiceId,
       };
-
     } catch (error) {
       console.error('ElevenLabs TTS error:', error);
       return this.createFallbackResponse(text);
@@ -88,24 +90,27 @@ class ElevenLabsVoiceService {
     try {
       const response = await fetch(`${this.baseUrl}/voices`, {
         headers: {
-          'xi-api-key': this.apiKey
-        }
+          'xi-api-key': this.apiKey,
+        },
       });
 
       if (!response.ok) {
         throw new Error(`ElevenLabs API error: ${response.status}`);
       }
 
-      const data = await response.json() as { voices?: any[] };
+      const data = (await response.json()) as { voices?: any[] };
       return data.voices || [];
-
     } catch (error) {
       console.error('ElevenLabs voices error:', error);
       return this.getFallbackVoices();
     }
   }
 
-  async createCustomVoice(name: string, description: string, audioFiles: Buffer[]): Promise<string> {
+  async createCustomVoice(
+    name: string,
+    description: string,
+    audioFiles: Buffer[],
+  ): Promise<string> {
     if (!this.apiKey) {
       throw new Error('ElevenLabs API key required for voice creation');
     }
@@ -114,7 +119,7 @@ class ElevenLabsVoiceService {
       const formData = new FormData();
       formData.append('name', name);
       formData.append('description', description);
-      
+
       audioFiles.forEach((buffer, index) => {
         formData.append('files', new Blob([buffer]), `sample_${index}.mp3`);
       });
@@ -122,18 +127,17 @@ class ElevenLabsVoiceService {
       const response = await fetch(`${this.baseUrl}/voices/add`, {
         method: 'POST',
         headers: {
-          'xi-api-key': this.apiKey
+          'xi-api-key': this.apiKey,
         },
-        body: formData
+        body: formData,
       });
 
       if (!response.ok) {
         throw new Error(`ElevenLabs API error: ${response.status}`);
       }
 
-      const data = await response.json() as { voice_id: string };
+      const data = (await response.json()) as { voice_id: string };
       return data.voice_id;
-
     } catch (error) {
       console.error('ElevenLabs voice creation error:', error);
       throw error;
@@ -163,7 +167,7 @@ class ElevenLabsVoiceService {
     return {
       audioUrl: '/audio/fallback-professor-barrett.mp3',
       duration: this.estimateDuration(text),
-      voiceId: 'fallback-voice'
+      voiceId: 'fallback-voice',
     };
   }
 
@@ -172,8 +176,8 @@ class ElevenLabsVoiceService {
       {
         voice_id: 'fallback-professor-barrett',
         name: 'Professor Barrett (Fallback)',
-        description: 'Professional male voice for legal education'
-      }
+        description: 'Professional male voice for legal education',
+      },
     ];
   }
 
@@ -186,16 +190,16 @@ class ElevenLabsVoiceService {
       // - OpenAI Whisper API
       // - Google Speech-to-Text
       // - Azure Speech Service
-      
+
       return {
         text: 'Speech-to-text conversion would be processed here using your preferred STT service.',
-        confidence: 0.95
+        confidence: 0.95,
       };
     } catch (error) {
       console.error('Speech-to-text error:', error);
       return {
         text: 'Sorry, I could not process the audio. Please try speaking again.',
-        confidence: 0.0
+        confidence: 0.0,
       };
     }
   }
@@ -209,8 +213,8 @@ class ElevenLabsVoiceService {
     try {
       const response = await fetch(`${this.baseUrl}/user`, {
         headers: {
-          'xi-api-key': this.apiKey
-        }
+          'xi-api-key': this.apiKey,
+        },
       });
       return response.ok;
     } catch (error) {
@@ -227,8 +231,8 @@ class ElevenLabsVoiceService {
     try {
       const response = await fetch(`${this.baseUrl}/user/subscription`, {
         headers: {
-          'xi-api-key': this.apiKey
-        }
+          'xi-api-key': this.apiKey,
+        },
       });
 
       if (!response.ok) {

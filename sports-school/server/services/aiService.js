@@ -1,6 +1,6 @@
 /**
  * AI Service Integration Layer
- * 
+ *
  * Unified AI service that automatically routes to self-hosted Academic AI Engine
  * or falls back to external APIs based on configuration
  */
@@ -24,13 +24,13 @@ class AIService {
           status: 'healthy',
           engine: 'self-hosted',
           models: response.data.models || [],
-          message: 'Academic AI Engine is operational'
+          message: 'Academic AI Engine is operational',
         };
       } catch (error) {
         return {
           status: 'error',
           engine: 'self-hosted',
-          message: `Academic AI Engine not responding: ${error.message}`
+          message: `Academic AI Engine not responding: ${error.message}`,
         };
       }
     } else {
@@ -38,7 +38,7 @@ class AIService {
       const results = {
         anthropic: false,
         openai: false,
-        perplexity: false
+        perplexity: false,
       };
 
       if (this.anthropicApiKey) {
@@ -72,7 +72,10 @@ class AIService {
         status: Object.values(results).some(Boolean) ? 'healthy' : 'error',
         engine: 'external',
         ...results,
-        message: `External APIs: ${Object.entries(results).filter(([k, v]) => v).map(([k]) => k).join(', ')}`
+        message: `External APIs: ${Object.entries(results)
+          .filter(([k, v]) => v)
+          .map(([k]) => k)
+          .join(', ')}`,
       };
     }
   }
@@ -82,7 +85,7 @@ class AIService {
       model = 'educational-llama-7b',
       maxTokens = 1024,
       temperature = 0.7,
-      stream = false
+      stream = false,
     } = options;
 
     if (this.useLocalEngine) {
@@ -92,7 +95,7 @@ class AIService {
           model,
           max_tokens: maxTokens,
           temperature,
-          stream
+          stream,
         });
         return response.data;
       } catch (error) {
@@ -106,17 +109,14 @@ class AIService {
   }
 
   async generateAnthropicMessage(messages, options = {}) {
-    const {
-      model = 'neurodivergent-assistant',
-      maxTokens = 1024
-    } = options;
+    const { model = 'neurodivergent-assistant', maxTokens = 1024 } = options;
 
     if (this.useLocalEngine) {
       try {
         const response = await axios.post(`${this.localEngineUrl}/v1/messages`, {
           messages,
           model,
-          max_tokens: maxTokens
+          max_tokens: maxTokens,
         });
         return response.data;
       } catch (error) {
@@ -137,7 +137,7 @@ class AIService {
           grade,
           topic,
           learningStyle,
-          accommodations
+          accommodations,
         });
         return response.data;
       } catch (error) {
@@ -157,7 +157,7 @@ class AIService {
           grade,
           topic,
           assessmentType,
-          difficulty
+          difficulty,
         });
         return response.data;
       } catch (error) {
@@ -175,7 +175,7 @@ class AIService {
         const response = await axios.post(`${this.localEngineUrl}/v1/analyze/content`, {
           content,
           platform,
-          userId
+          userId,
         });
         return response.data;
       } catch (error) {
@@ -201,57 +201,69 @@ class AIService {
         object: 'list',
         data: [
           { id: 'gpt-4o', name: 'GPT-4o' },
-          { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet' }
-        ]
+          { id: 'claude-3-5-sonnet-20241022', name: 'Claude 3.5 Sonnet' },
+        ],
       };
     }
   }
 
   // School-specific AI teachers
   async getDeanWonder(prompt, accommodations = []) {
-    const messages = [{
-      role: 'system',
-      content: `You are Dean Wonder, the AI principal of SuperHero School (K-6). You help young students aged 5-11 with superhero-themed learning. You're encouraging, use simple language, and make learning fun with superhero metaphors. Always consider neurodivergent accommodations: ${accommodations.join(', ')}.`
-    }, {
-      role: 'user',
-      content: prompt
-    }];
+    const messages = [
+      {
+        role: 'system',
+        content: `You are Dean Wonder, the AI principal of SuperHero School (K-6). You help young students aged 5-11 with superhero-themed learning. You're encouraging, use simple language, and make learning fun with superhero metaphors. Always consider neurodivergent accommodations: ${accommodations.join(', ')}.`,
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ];
 
     return this.generateChatCompletion(messages, { model: 'neurodivergent-assistant' });
   }
 
   async getDeanSterling(prompt, accommodations = []) {
-    const messages = [{
-      role: 'system',
-      content: `You are Dean Sterling, the AI principal of Stage Prep School (7-12). You help teenagers with theater arts, performance skills, and academic preparation. You're mature, inspiring, and help students develop both artistic and academic excellence. Always consider neurodivergent accommodations: ${accommodations.join(', ')}.`
-    }, {
-      role: 'user',
-      content: prompt
-    }];
+    const messages = [
+      {
+        role: 'system',
+        content: `You are Dean Sterling, the AI principal of Stage Prep School (7-12). You help teenagers with theater arts, performance skills, and academic preparation. You're mature, inspiring, and help students develop both artistic and academic excellence. Always consider neurodivergent accommodations: ${accommodations.join(', ')}.`,
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ];
 
     return this.generateChatCompletion(messages, { model: 'educational-llama-7b' });
   }
 
   async getProfessorBarrett(prompt, specialization = 'general') {
-    const messages = [{
-      role: 'system',
-      content: `You are Professor Barrett, the AI law professor at The Lawyer Makers. You provide expert legal education, bar exam preparation, and career guidance. You're knowledgeable, professional, and help students master complex legal concepts. Specialization: ${specialization}.`
-    }, {
-      role: 'user',
-      content: prompt
-    }];
+    const messages = [
+      {
+        role: 'system',
+        content: `You are Professor Barrett, the AI law professor at The Lawyer Makers. You provide expert legal education, bar exam preparation, and career guidance. You're knowledgeable, professional, and help students master complex legal concepts. Specialization: ${specialization}.`,
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ];
 
     return this.generateChatCompletion(messages, { model: 'legal-education-ai' });
   }
 
   async getProfessorLingua(prompt, language = 'english', level = 'intermediate') {
-    const messages = [{
-      role: 'system',
-      content: `You are Professor Lingua, the AI language teacher at Global Language Academy. You provide immersive language learning in multiple languages with cultural context. You're patient, encouraging, and adapt to different proficiency levels. Target language: ${language}, Level: ${level}.`
-    }, {
-      role: 'user',
-      content: prompt
-    }];
+    const messages = [
+      {
+        role: 'system',
+        content: `You are Professor Lingua, the AI language teacher at Global Language Academy. You provide immersive language learning in multiple languages with cultural context. You're patient, encouraging, and adapt to different proficiency levels. Target language: ${language}, Level: ${level}.`,
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ];
 
     return this.generateChatCompletion(messages, { model: 'language-tutor-ai' });
   }

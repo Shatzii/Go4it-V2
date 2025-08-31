@@ -1,58 +1,76 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { 
-  Calendar, MapPin, Clock, Users, Trophy, Star, CheckCircle, 
-  AlertCircle, DollarSign, CreditCard, User, Mail, Phone, GraduationCap,
-  Activity, Target, Shield, Award, ArrowRight, Camera, Video
-} from 'lucide-react'
+import React, { useState } from 'react';
+import {
+  Calendar,
+  MapPin,
+  Clock,
+  Users,
+  Trophy,
+  Star,
+  CheckCircle,
+  AlertCircle,
+  DollarSign,
+  CreditCard,
+  User,
+  Mail,
+  Phone,
+  GraduationCap,
+  Activity,
+  Target,
+  Shield,
+  Award,
+  ArrowRight,
+  Camera,
+  Video,
+} from 'lucide-react';
 
 interface RegistrationForm {
   // Personal Information
-  firstName: string
-  lastName: string
-  email: string
-  phone: string
-  dateOfBirth: string
-  parentEmail?: string
-  
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string;
+  parentEmail?: string;
+
   // Athletic Information
-  sport: string
-  position: string
-  height: string
-  weight: string
-  classYear: string
-  currentSchool: string
-  
+  sport: string;
+  position: string;
+  height: string;
+  weight: string;
+  classYear: string;
+  currentSchool: string;
+
   // Performance Metrics
-  gpa: string
-  satScore?: string
-  actScore?: string
-  previousGARScore?: string
-  
+  gpa: string;
+  satScore?: string;
+  actScore?: string;
+  previousGARScore?: string;
+
   // Event Selection
-  selectedEvent: string
-  eventPackage: 'basic' | 'premium' | 'elite'
-  additionalServices: string[]
-  
+  selectedEvent: string;
+  eventPackage: 'basic' | 'premium' | 'elite';
+  additionalServices: string[];
+
   // Emergency Contact
-  emergencyName: string
-  emergencyPhone: string
-  emergencyRelation: string
-  
+  emergencyName: string;
+  emergencyPhone: string;
+  emergencyRelation: string;
+
   // Medical Information
-  medicalConditions: string
-  medications: string
-  allergies: string
-  
+  medicalConditions: string;
+  medications: string;
+  allergies: string;
+
   // Terms and Waivers
-  termsAccepted: boolean
-  liabilityWaiver: boolean
-  mediaRelease: boolean
+  termsAccepted: boolean;
+  liabilityWaiver: boolean;
+  mediaRelease: boolean;
 }
 
 export default function CombineRegistration() {
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<RegistrationForm>({
     firstName: '',
     lastName: '',
@@ -81,10 +99,10 @@ export default function CombineRegistration() {
     allergies: '',
     termsAccepted: false,
     liabilityWaiver: false,
-    mediaRelease: false
-  })
-  const [loading, setLoading] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
+    mediaRelease: false,
+  });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const events = [
     {
@@ -92,11 +110,12 @@ export default function CombineRegistration() {
       name: 'Vienna Elite Combine 2025',
       location: 'Vienna, Austria',
       dates: 'July 22-24, 2025',
-      description: 'First official GAR Score testing event featuring comprehensive athletic evaluation',
+      description:
+        'First official GAR Score testing event featuring comprehensive athletic evaluation',
       highlight: 'Friday Night Lights @ 7PM',
       status: 'filling-fast',
       spotsRemaining: 23,
-      totalSpots: 100
+      totalSpots: 100,
     },
     {
       id: 'chicago-2025',
@@ -107,7 +126,7 @@ export default function CombineRegistration() {
       highlight: 'College Scout Day',
       status: 'open',
       spotsRemaining: 67,
-      totalSpots: 150
+      totalSpots: 150,
     },
     {
       id: 'los-angeles-2025',
@@ -118,9 +137,9 @@ export default function CombineRegistration() {
       highlight: 'Media Coverage',
       status: 'open',
       spotsRemaining: 89,
-      totalSpots: 120
-    }
-  ]
+      totalSpots: 120,
+    },
+  ];
 
   const packages = {
     basic: {
@@ -131,8 +150,8 @@ export default function CombineRegistration() {
         'Physical Testing (Speed, Agility, Strength)',
         'Basic Skills Assessment',
         'Digital Results Report',
-        'Certificate of Participation'
-      ]
+        'Certificate of Participation',
+      ],
     },
     premium: {
       name: 'Premium Package',
@@ -144,8 +163,8 @@ export default function CombineRegistration() {
         'One-on-One Coach Feedback',
         'Professional Headshots',
         'StarPath Progression Plan',
-        'Priority College Scout Access'
-      ]
+        'Priority College Scout Access',
+      ],
     },
     elite: {
       name: 'Elite Experience',
@@ -157,57 +176,59 @@ export default function CombineRegistration() {
         'Scholarship Opportunity Matching',
         'VIP Event Access',
         'Verified 100 Lifetime Membership',
-        'Direct College Coach Meetings'
-      ]
-    }
-  }
+        'Direct College Coach Meetings',
+      ],
+    },
+  };
 
   const additionalServices = [
     { id: 'nutrition', name: 'Nutrition Consultation', price: 149 },
     { id: 'mental-performance', name: 'Mental Performance Session', price: 199 },
     { id: 'injury-screening', name: 'Injury Risk Screening', price: 129 },
     { id: 'highlight-reel', name: 'Professional Highlight Reel', price: 299 },
-    { id: 'social-media', name: 'Social Media Package', price: 179 }
-  ]
+    { id: 'social-media', name: 'Social Media Package', price: 179 },
+  ];
 
   const updateFormData = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const nextStep = () => {
-    if (currentStep < 5) setCurrentStep(currentStep + 1)
-  }
+    if (currentStep < 5) setCurrentStep(currentStep + 1);
+  };
 
   const prevStep = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1)
-  }
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
+  };
 
   const handleSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch('/api/combine/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
-      
+        body: JSON.stringify(formData),
+      });
+
       if (response.ok) {
-        setSubmitted(true)
+        setSubmitted(true);
       } else {
-        throw new Error('Registration failed')
+        throw new Error('Registration failed');
       }
     } catch (error) {
-      console.error('Registration error:', error)
-      alert('Registration failed. Please try again.')
+      console.error('Registration error:', error);
+      alert('Registration failed. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const selectedEvent = events.find(e => e.id === formData.selectedEvent)
-  const selectedPackage = packages[formData.eventPackage]
-  const selectedServices = additionalServices.filter(s => formData.additionalServices.includes(s.id))
-  const totalCost = selectedPackage.price + selectedServices.reduce((sum, s) => sum + s.price, 0)
+  const selectedEvent = events.find((e) => e.id === formData.selectedEvent);
+  const selectedPackage = packages[formData.eventPackage];
+  const selectedServices = additionalServices.filter((s) =>
+    formData.additionalServices.includes(s.id),
+  );
+  const totalCost = selectedPackage.price + selectedServices.reduce((sum, s) => sum + s.price, 0);
 
   if (submitted) {
     return (
@@ -241,15 +262,15 @@ export default function CombineRegistration() {
               </div>
             </div>
           </div>
-          <button 
-            onClick={() => window.location.href = '/dashboard'}
+          <button
+            onClick={() => (window.location.href = '/dashboard')}
             className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
           >
             Go to Dashboard
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -261,23 +282,27 @@ export default function CombineRegistration() {
           <p className="text-xl text-slate-300 mb-6">
             Register for elite athletic evaluation and GAR Score testing
           </p>
-          
+
           {/* Progress Bar */}
           <div className="flex justify-center mb-8">
             <div className="flex items-center gap-4">
               {[1, 2, 3, 4, 5].map((step) => (
                 <div key={step} className="flex items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                    step <= currentStep 
-                      ? 'bg-blue-600 border-blue-600 text-white' 
-                      : 'border-slate-600 text-slate-400'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
+                      step <= currentStep
+                        ? 'bg-blue-600 border-blue-600 text-white'
+                        : 'border-slate-600 text-slate-400'
+                    }`}
+                  >
                     {step < currentStep ? <CheckCircle className="w-5 h-5" /> : step}
                   </div>
                   {step < 5 && (
-                    <div className={`w-16 h-1 mx-2 ${
-                      step < currentStep ? 'bg-blue-600' : 'bg-slate-600'
-                    }`} />
+                    <div
+                      className={`w-16 h-1 mx-2 ${
+                        step < currentStep ? 'bg-blue-600' : 'bg-slate-600'
+                      }`}
+                    />
                   )}
                 </div>
               ))}
@@ -289,14 +314,13 @@ export default function CombineRegistration() {
           {/* Registration Form */}
           <div className="lg:col-span-2">
             <div className="bg-slate-800/50 rounded-xl p-8 border border-slate-700/50">
-              
               {/* Step 1: Event Selection */}
               {currentStep === 1 && (
                 <div>
                   <h2 className="text-2xl font-bold mb-6">Select Your Event</h2>
                   <div className="space-y-4">
                     {events.map((event) => (
-                      <div 
+                      <div
                         key={event.id}
                         onClick={() => updateFormData('selectedEvent', event.id)}
                         className={`p-6 rounded-xl border-2 cursor-pointer transition-all ${
@@ -322,11 +346,13 @@ export default function CombineRegistration() {
                             <div className="text-yellow-400 font-semibold">{event.highlight}</div>
                           </div>
                           <div className="text-right">
-                            <div className={`px-3 py-1 rounded text-sm font-bold mb-2 ${
-                              event.status === 'filling-fast' 
-                                ? 'bg-red-500/20 text-red-400' 
-                                : 'bg-green-500/20 text-green-400'
-                            }`}>
+                            <div
+                              className={`px-3 py-1 rounded text-sm font-bold mb-2 ${
+                                event.status === 'filling-fast'
+                                  ? 'bg-red-500/20 text-red-400'
+                                  : 'bg-green-500/20 text-green-400'
+                              }`}
+                            >
                               {event.status === 'filling-fast' ? 'FILLING FAST' : 'OPEN'}
                             </div>
                             <div className="text-sm text-slate-400">
@@ -396,7 +422,9 @@ export default function CombineRegistration() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Parent/Guardian Email (if under 18)</label>
+                      <label className="block text-sm font-medium mb-2">
+                        Parent/Guardian Email (if under 18)
+                      </label>
                       <input
                         type="email"
                         value={formData.parentEmail || ''}
@@ -504,7 +532,7 @@ export default function CombineRegistration() {
                     Previous
                   </button>
                 )}
-                
+
                 {currentStep < 5 ? (
                   <button
                     onClick={nextStep}
@@ -529,7 +557,7 @@ export default function CombineRegistration() {
           <div className="lg:col-span-1">
             <div className="bg-slate-800/50 rounded-xl p-6 border border-slate-700/50 sticky top-8">
               <h3 className="text-xl font-bold mb-6">Registration Summary</h3>
-              
+
               {selectedEvent && (
                 <div className="mb-6">
                   <h4 className="font-semibold text-blue-400 mb-2">Selected Event</h4>
@@ -590,5 +618,5 @@ export default function CombineRegistration() {
         </div>
       </div>
     </div>
-  )
+  );
 }

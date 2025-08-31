@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Users, Calendar, Trophy, Star, Clock, MapPin, Target } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Users, Calendar, Trophy, Star, Clock, MapPin, Target } from 'lucide-react';
+import Link from 'next/link';
 
 export default function SoccerPage() {
-  const [selectedDivision, setSelectedDivision] = useState('all')
+  const [selectedDivision, setSelectedDivision] = useState('all');
 
   const divisions = [
     { id: 'u8', name: 'U8', ages: '6-8', teams: 2, players: 28 },
@@ -16,8 +16,8 @@ export default function SoccerPage() {
     { id: 'u12', name: 'U12', ages: '11-12', teams: 2, players: 32 },
     { id: 'u14', name: 'U14', ages: '13-14', teams: 2, players: 28 },
     { id: 'u16', name: 'U16', ages: '15-16', teams: 1, players: 16 },
-    { id: 'u18', name: 'U18', ages: '17-18', teams: 1, players: 14 }
-  ]
+    { id: 'u18', name: 'U18', ages: '17-18', teams: 1, players: 14 },
+  ];
 
   const upcomingGames = [
     {
@@ -27,7 +27,7 @@ export default function SoccerPage() {
       division: 'U12',
       date: '2025-01-26',
       time: '2:00 PM',
-      location: 'Soccer Field 1'
+      location: 'Soccer Field 1',
     },
     {
       id: 2,
@@ -36,7 +36,7 @@ export default function SoccerPage() {
       division: 'U14',
       date: '2025-01-26',
       time: '3:30 PM',
-      location: 'Soccer Field 2'
+      location: 'Soccer Field 2',
     },
     {
       id: 3,
@@ -45,18 +45,60 @@ export default function SoccerPage() {
       division: 'U10',
       date: '2025-01-27',
       time: '1:00 PM',
-      location: 'Soccer Field 1'
-    }
-  ]
+      location: 'Soccer Field 1',
+    },
+  ];
 
   const teams = [
-    { name: 'Galaxy Strikers', division: 'U12', coach: 'Coach Rodriguez', players: 18, wins: 12, losses: 3 },
-    { name: 'Thunder Kicks', division: 'U14', coach: 'Coach Thompson', players: 16, wins: 8, losses: 5 },
-    { name: 'Lightning Bolts', division: 'U12', coach: 'Coach Martinez', players: 17, wins: 10, losses: 4 },
-    { name: 'Storm Eagles', division: 'U14', coach: 'Coach Williams', players: 15, wins: 9, losses: 6 },
-    { name: 'Fire Dragons', division: 'U10', coach: 'Coach Davis', players: 19, wins: 11, losses: 2 },
-    { name: 'Wind Runners', division: 'U10', coach: 'Coach Johnson', players: 18, wins: 7, losses: 7 },
-  ]
+    {
+      name: 'Galaxy Strikers',
+      division: 'U12',
+      coach: 'Coach Rodriguez',
+      players: 18,
+      wins: 12,
+      losses: 3,
+    },
+    {
+      name: 'Thunder Kicks',
+      division: 'U14',
+      coach: 'Coach Thompson',
+      players: 16,
+      wins: 8,
+      losses: 5,
+    },
+    {
+      name: 'Lightning Bolts',
+      division: 'U12',
+      coach: 'Coach Martinez',
+      players: 17,
+      wins: 10,
+      losses: 4,
+    },
+    {
+      name: 'Storm Eagles',
+      division: 'U14',
+      coach: 'Coach Williams',
+      players: 15,
+      wins: 9,
+      losses: 6,
+    },
+    {
+      name: 'Fire Dragons',
+      division: 'U10',
+      coach: 'Coach Davis',
+      players: 19,
+      wins: 11,
+      losses: 2,
+    },
+    {
+      name: 'Wind Runners',
+      division: 'U10',
+      coach: 'Coach Johnson',
+      players: 18,
+      wins: 7,
+      losses: 7,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -73,8 +115,8 @@ export default function SoccerPage() {
               </div>
               <h1 className="text-4xl font-bold mb-4">⚽ Soccer Development Program</h1>
               <p className="text-xl text-blue-100 max-w-2xl">
-                Youth soccer development program focusing on technical skills, tactical understanding, 
-                and character building through the beautiful game.
+                Youth soccer development program focusing on technical skills, tactical
+                understanding, and character building through the beautiful game.
               </p>
             </div>
             <div className="hidden md:block">
@@ -136,8 +178,8 @@ export default function SoccerPage() {
           <h2 className="text-2xl font-bold mb-6">Age Divisions</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {divisions.map((division) => (
-              <Card 
-                key={division.id} 
+              <Card
+                key={division.id}
                 className="bg-slate-800 border-slate-700 hover:border-blue-500 cursor-pointer transition-all"
                 onClick={() => setSelectedDivision(division.id)}
               >
@@ -199,9 +241,7 @@ export default function SoccerPage() {
                     <CardTitle className="text-white">{team.name}</CardTitle>
                     <Badge className="bg-blue-600 text-white">{team.division}</Badge>
                   </div>
-                  <CardDescription className="text-slate-400">
-                    Coach: {team.coach}
-                  </CardDescription>
+                  <CardDescription className="text-slate-400">Coach: {team.coach}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-3 gap-4 text-center">
@@ -286,5 +326,5 @@ export default function SoccerPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -7,19 +7,25 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Trophy, 
-  Users, 
-  Star, 
-  Calendar, 
-  MapPin, 
-  Clock, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Trophy,
+  Users,
+  Star,
+  Calendar,
+  MapPin,
+  Clock,
   GraduationCap,
   Target,
   Zap,
   CheckCircle,
-  Dribbble
+  Dribbble,
 } from 'lucide-react';
 
 interface RegistrationForm {
@@ -29,43 +35,43 @@ interface RegistrationForm {
   email: string;
   phone: string;
   dateOfBirth: string;
-  
+
   // Guardian Info
   parentName: string;
   parentEmail: string;
   emergencyContact: string;
   emergencyPhone: string;
-  
+
   // Event Selection
   eventType: 'open-house' | 'tryout' | 'both';
-  
+
   // Universal One Interest
   universalOneInterest: boolean;
   academicPrograms: string[];
   needsAcademicSupport: boolean;
-  
+
   // Sports Tryouts
   primarySport: string;
   secondarySports: string[];
   position: string;
   experience: string;
   previousTeams: string;
-  
+
   // Specific Sport Tryouts
   flagFootballTryout: boolean;
   basketballTryout: boolean;
   soccerTryout: boolean;
-  
+
   // Opt-ins
   garAnalysisOptIn: boolean;
   aiCoachingOptIn: boolean;
   recruitmentOptIn: boolean;
-  
+
   // Additional
   transportationNeeds: boolean;
   dietaryRestrictions: string;
   specialAccommodations: string;
-  
+
   // Account Creation
   createAccount: boolean;
   username: string;
@@ -103,7 +109,7 @@ export default function FridayNightLightsPage() {
     specialAccommodations: '',
     createAccount: false,
     username: '',
-    password: ''
+    password: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -117,7 +123,7 @@ export default function FridayNightLightsPage() {
       const response = await fetch('/api/events/friday-night-lights', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
 
       const result = await response.json();
@@ -135,15 +141,15 @@ export default function FridayNightLightsPage() {
   };
 
   const updateForm = (field: keyof RegistrationForm, value: any) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const toggleArrayField = (field: 'academicPrograms' | 'secondarySports', value: string) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
-      [field]: prev[field].includes(value) 
-        ? prev[field].filter(item => item !== value)
-        : [...prev[field], value]
+      [field]: prev[field].includes(value)
+        ? prev[field].filter((item) => item !== value)
+        : [...prev[field], value],
     }));
   };
 
@@ -156,9 +162,10 @@ export default function FridayNightLightsPage() {
               <CheckCircle className="w-16 h-16 text-green-400 mx-auto mb-6" />
               <h2 className="text-3xl font-bold mb-4">Registration Confirmed!</h2>
               <p className="text-slate-300 mb-6">
-                Welcome to Friday Night Lights! You're registered for our Universal One Open House and team tryouts.
+                Welcome to Friday Night Lights! You're registered for our Universal One Open House
+                and team tryouts.
               </p>
-              
+
               {submitResult.aiRecommendations && (
                 <div className="bg-slate-800/50 rounded-lg p-4 mb-6 text-left">
                   <h4 className="font-semibold text-blue-400 mb-2">AI Coach Recommendations</h4>
@@ -173,13 +180,14 @@ export default function FridayNightLightsPage() {
                 </div>
                 <div>
                   <strong className="text-orange-400">Event Date:</strong>
-                  <br />TBD - Check Email
+                  <br />
+                  TBD - Check Email
                 </div>
               </div>
 
-              <Button 
+              <Button
                 className="bg-orange-500 hover:bg-orange-600"
-                onClick={() => window.location.href = '/dashboard'}
+                onClick={() => (window.location.href = '/dashboard')}
               >
                 Go to Dashboard
               </Button>
@@ -199,13 +207,14 @@ export default function FridayNightLightsPage() {
             <Star className="w-5 h-5 mr-2" />
             FRIDAY NIGHT LIGHTS
           </Badge>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
             OPEN HOUSE & TRYOUTS
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-            Join us for Universal One Academy open house and team tryouts for flag football, basketball, and soccer
+            Join us for Universal One Academy open house and team tryouts for flag football,
+            basketball, and soccer
           </p>
 
           {/* Event Details */}
@@ -214,23 +223,29 @@ export default function FridayNightLightsPage() {
               <CardContent className="p-6 text-center">
                 <GraduationCap className="w-8 h-8 text-blue-400 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">Universal One Academy</h3>
-                <p className="text-sm text-slate-300">Learn about our comprehensive K-12 program for student athletes</p>
+                <p className="text-sm text-slate-300">
+                  Learn about our comprehensive K-12 program for student athletes
+                </p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 text-center">
                 <Trophy className="w-8 h-8 text-orange-400 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">Team Tryouts</h3>
-                <p className="text-sm text-slate-300">Tryout for flag football, basketball, and soccer teams</p>
+                <p className="text-sm text-slate-300">
+                  Tryout for flag football, basketball, and soccer teams
+                </p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-slate-800 border-slate-700">
               <CardContent className="p-6 text-center">
                 <Zap className="w-8 h-8 text-purple-400 mx-auto mb-4" />
                 <h3 className="font-semibold mb-2">GAR Analysis</h3>
-                <p className="text-sm text-slate-300">Free performance analysis and AI coaching session</p>
+                <p className="text-sm text-slate-300">
+                  Free performance analysis and AI coaching session
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -250,12 +265,12 @@ export default function FridayNightLightsPage() {
                   {[
                     { value: 'open-house', label: 'Academy Open House', icon: GraduationCap },
                     { value: 'tryout', label: 'Team Tryouts', icon: Trophy },
-                    { value: 'both', label: 'Both Events', icon: Star }
-                  ].map(option => (
+                    { value: 'both', label: 'Both Events', icon: Star },
+                  ].map((option) => (
                     <Button
                       key={option.value}
                       type="button"
-                      variant={form.eventType === option.value ? "default" : "outline"}
+                      variant={form.eventType === option.value ? 'default' : 'outline'}
                       className={`h-20 ${form.eventType === option.value ? 'bg-orange-500 hover:bg-orange-600' : ''}`}
                       onClick={() => updateForm('eventType', option.value)}
                     >
@@ -383,7 +398,7 @@ export default function FridayNightLightsPage() {
                   <div className="border-t border-slate-700 my-6"></div>
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Universal One Academy Interest</h3>
-                    
+
                     <div className="flex items-center space-x-2 mb-4">
                       <input
                         type="checkbox"
@@ -403,9 +418,13 @@ export default function FridayNightLightsPage() {
                           <Label>Academic Programs of Interest (select all that apply)</Label>
                           <div className="grid grid-cols-2 gap-2 mt-2">
                             {[
-                              'College Prep', 'STEM Focus', 'Arts & Humanities', 
-                              'Athletic Development', 'Special Education', 'Online Learning'
-                            ].map(program => (
+                              'College Prep',
+                              'STEM Focus',
+                              'Arts & Humanities',
+                              'Athletic Development',
+                              'Special Education',
+                              'Online Learning',
+                            ].map((program) => (
                               <div key={program} className="flex items-center space-x-2">
                                 <input
                                   type="checkbox"
@@ -414,7 +433,9 @@ export default function FridayNightLightsPage() {
                                   onChange={() => toggleArrayField('academicPrograms', program)}
                                   className="w-4 h-4"
                                 />
-                                <Label htmlFor={`program-${program}`} className="text-sm">{program}</Label>
+                                <Label htmlFor={`program-${program}`} className="text-sm">
+                                  {program}
+                                </Label>
                               </div>
                             ))}
                           </div>
@@ -444,7 +465,7 @@ export default function FridayNightLightsPage() {
                   <div className="border-t border-slate-700 my-6"></div>
                   <div>
                     <h3 className="text-lg font-semibold mb-4">Team Tryouts</h3>
-                    
+
                     <div className="space-y-4">
                       <div>
                         <Label>Which sports are you trying out for? (select all that apply)</Label>
@@ -462,7 +483,7 @@ export default function FridayNightLightsPage() {
                               Flag Football
                             </Label>
                           </div>
-                          
+
                           <div className="flex items-center space-x-2">
                             <input
                               type="checkbox"
@@ -476,7 +497,7 @@ export default function FridayNightLightsPage() {
                               Basketball
                             </Label>
                           </div>
-                          
+
                           <div className="flex items-center space-x-2">
                             <input
                               type="checkbox"
@@ -496,7 +517,10 @@ export default function FridayNightLightsPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label htmlFor="primarySport">Primary Sport</Label>
-                          <Select value={form.primarySport} onValueChange={(value) => updateForm('primarySport', value)}>
+                          <Select
+                            value={form.primarySport}
+                            onValueChange={(value) => updateForm('primarySport', value)}
+                          >
                             <SelectTrigger className="bg-slate-700 border-slate-600">
                               <SelectValue placeholder="Select primary sport" />
                             </SelectTrigger>
@@ -522,7 +546,10 @@ export default function FridayNightLightsPage() {
 
                       <div>
                         <Label htmlFor="experience">Experience Level</Label>
-                        <Select value={form.experience} onValueChange={(value) => updateForm('experience', value)}>
+                        <Select
+                          value={form.experience}
+                          onValueChange={(value) => updateForm('experience', value)}
+                        >
                           <SelectTrigger className="bg-slate-700 border-slate-600">
                             <SelectValue placeholder="Select experience level" />
                           </SelectTrigger>
@@ -676,9 +703,7 @@ export default function FridayNightLightsPage() {
               </div>
 
               {submitResult?.error && (
-                <div className="text-center text-red-400 mt-4">
-                  {submitResult.error}
-                </div>
+                <div className="text-center text-red-400 mt-4">{submitResult.error}</div>
               )}
             </form>
           </CardContent>

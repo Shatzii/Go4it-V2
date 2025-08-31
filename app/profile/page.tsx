@@ -2,11 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { User, Star, Trophy, Calendar, Settings, Mail, Phone, MapPin, School, Edit2, Camera, CheckCircle, Plus } from 'lucide-react';
+import {
+  User,
+  Star,
+  Trophy,
+  Calendar,
+  Settings,
+  Mail,
+  Phone,
+  MapPin,
+  School,
+  Edit2,
+  Camera,
+  CheckCircle,
+  Plus,
+} from 'lucide-react';
 
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('overview');
-  
+
   // Mock user data
   const user = {
     id: '1',
@@ -34,15 +48,15 @@ export default function ProfilePage() {
       videosUploaded: 14,
       totalAnalyses: 12,
       trainingHours: 145,
-      scoutViews: 47
-    }
+      scoutViews: 47,
+    },
   };
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: User },
     { id: 'achievements', label: 'Achievements', icon: Trophy },
     { id: 'stats', label: 'Statistics', icon: Star },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -73,7 +87,7 @@ export default function ProfilePage() {
                 <Camera className="w-4 h-4 text-white" />
               </button>
             </div>
-            
+
             <div className="flex-1">
               <div className="flex items-center space-x-4 mb-2">
                 <h2 className="text-2xl font-bold text-white">
@@ -86,7 +100,7 @@ export default function ProfilePage() {
                   Jersey {user.jersey}
                 </span>
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div className="flex items-center space-x-2 text-slate-400">
                   <School className="w-4 h-4" />
@@ -106,7 +120,7 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="text-right">
               <div className="mb-2">
                 <span className="text-2xl font-bold text-green-400">{user.garScore}</span>
@@ -116,9 +130,7 @@ export default function ProfilePage() {
                 <span className="text-xl font-bold text-blue-400">Level {user.starLevel}</span>
                 <span className="text-slate-400 text-sm ml-1">StarPath</span>
               </div>
-              <div className="text-sm text-slate-400">
-                {user.totalXp.toLocaleString()} XP
-              </div>
+              <div className="text-sm text-slate-400">{user.totalXp.toLocaleString()} XP</div>
             </div>
           </div>
         </div>
@@ -152,24 +164,32 @@ export default function ProfilePage() {
                     <h3 className="text-lg font-semibold text-white mb-4">Quick Stats</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-blue-400">{user.stats.videosUploaded}</div>
+                        <div className="text-2xl font-bold text-blue-400">
+                          {user.stats.videosUploaded}
+                        </div>
                         <div className="text-sm text-slate-400">Videos Uploaded</div>
                       </div>
                       <div className="bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-green-400">{user.stats.totalAnalyses}</div>
+                        <div className="text-2xl font-bold text-green-400">
+                          {user.stats.totalAnalyses}
+                        </div>
                         <div className="text-sm text-slate-400">Total Analyses</div>
                       </div>
                       <div className="bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-purple-400">{user.stats.trainingHours}</div>
+                        <div className="text-2xl font-bold text-purple-400">
+                          {user.stats.trainingHours}
+                        </div>
                         <div className="text-sm text-slate-400">Training Hours</div>
                       </div>
                       <div className="bg-slate-700 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-orange-400">{user.stats.scoutViews}</div>
+                        <div className="text-2xl font-bold text-orange-400">
+                          {user.stats.scoutViews}
+                        </div>
                         <div className="text-sm text-slate-400">Scout Views</div>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-4">Bio</h3>
                     <div className="bg-slate-700 rounded-lg p-4">
@@ -184,7 +204,10 @@ export default function ProfilePage() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white mb-4">Recent Achievements</h3>
                 {user.achievements.map((achievement) => (
-                  <div key={achievement.id} className="bg-slate-700 rounded-lg p-4 flex items-center space-x-4">
+                  <div
+                    key={achievement.id}
+                    className="bg-slate-700 rounded-lg p-4 flex items-center space-x-4"
+                  >
                     <div className="text-2xl">{achievement.icon}</div>
                     <div className="flex-1">
                       <div className="font-medium text-white">{achievement.title}</div>
@@ -201,11 +224,15 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-slate-700 rounded-lg p-4">
                     <h4 className="font-medium text-white mb-2">GAR Score Progression</h4>
-                    <div className="text-slate-400 text-sm">View your GAR score history and improvements over time</div>
+                    <div className="text-slate-400 text-sm">
+                      View your GAR score history and improvements over time
+                    </div>
                   </div>
                   <div className="bg-slate-700 rounded-lg p-4">
                     <h4 className="font-medium text-white mb-2">Training Analytics</h4>
-                    <div className="text-slate-400 text-sm">Detailed breakdown of your training sessions and progress</div>
+                    <div className="text-slate-400 text-sm">
+                      Detailed breakdown of your training sessions and progress
+                    </div>
                   </div>
                 </div>
               </div>
@@ -217,15 +244,21 @@ export default function ProfilePage() {
                 <div className="space-y-4">
                   <div className="bg-slate-700 rounded-lg p-4">
                     <h4 className="font-medium text-white mb-2">Privacy Settings</h4>
-                    <div className="text-slate-400 text-sm">Control who can view your profile and stats</div>
+                    <div className="text-slate-400 text-sm">
+                      Control who can view your profile and stats
+                    </div>
                   </div>
                   <div className="bg-slate-700 rounded-lg p-4">
                     <h4 className="font-medium text-white mb-2">Notification Preferences</h4>
-                    <div className="text-slate-400 text-sm">Manage email and push notification settings</div>
+                    <div className="text-slate-400 text-sm">
+                      Manage email and push notification settings
+                    </div>
                   </div>
                   <div className="bg-slate-700 rounded-lg p-4">
                     <h4 className="font-medium text-white mb-2">Account Security</h4>
-                    <div className="text-slate-400 text-sm">Update password and security settings</div>
+                    <div className="text-slate-400 text-sm">
+                      Update password and security settings
+                    </div>
                   </div>
                 </div>
               </div>

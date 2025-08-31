@@ -1,83 +1,84 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  AlertTriangle, 
-  X, 
-  Eye, 
-  TrendingUp, 
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  AlertTriangle,
+  X,
+  Eye,
+  TrendingUp,
   Clock,
   CheckCircle,
   AlertCircle,
-  ExternalLink
-} from 'lucide-react'
-import { ErrorTrackingService, ErrorLog, ErrorSeverity } from '@/lib/error-tracking'
-import Link from 'next/link'
+  ExternalLink,
+} from 'lucide-react';
+import { ErrorTrackingService, ErrorLog, ErrorSeverity } from '@/lib/error-tracking';
+import Link from 'next/link';
 
 export default function ErrorWidget() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [errors, setErrors] = useState<ErrorLog[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
+  const [isOpen, setIsOpen] = useState(false);
+  const [errors, setErrors] = useState<ErrorLog[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
-  const errorTracker = ErrorTrackingService.getInstance()
+  const errorTracker = ErrorTrackingService.getInstance();
 
   useEffect(() => {
     // Load initial errors
-    const allErrors = errorTracker.getErrors()
-    setErrors(allErrors)
-    setUnreadCount(errorTracker.getUnresolvedErrors().length)
+    const allErrors = errorTracker.getErrors();
+    setErrors(allErrors);
+    setUnreadCount(errorTracker.getUnresolvedErrors().length);
 
     // Listen for new errors
     const handleNewError = (error: ErrorLog) => {
-      setErrors(prev => [error, ...prev.slice(0, 49)]) // Keep last 50 errors
-      setUnreadCount(prev => prev + 1)
-    }
+      setErrors((prev) => [error, ...prev.slice(0, 49)]); // Keep last 50 errors
+      setUnreadCount((prev) => prev + 1);
+    };
 
-    errorTracker.addListener(handleNewError)
-    return () => errorTracker.removeListener(handleNewError)
-  }, [])
+    errorTracker.addListener(handleNewError);
+    return () => errorTracker.removeListener(handleNewError);
+  }, []);
 
-  const recentErrors = errors.slice(0, 5)
-  const criticalErrors = errors.filter(e => e.severity === ErrorSeverity.CRITICAL && !e.resolved)
-  const analytics = errorTracker.getAnalytics()
+  const recentErrors = errors.slice(0, 5);
+  const criticalErrors = errors.filter((e) => e.severity === ErrorSeverity.CRITICAL && !e.resolved);
+  const analytics = errorTracker.getAnalytics();
 
   const getSeverityColor = (severity: ErrorSeverity) => {
     switch (severity) {
-      case ErrorSeverity.CRITICAL: return 'text-red-600 bg-red-50'
-      case ErrorSeverity.HIGH: return 'text-orange-600 bg-orange-50'
-      case ErrorSeverity.MEDIUM: return 'text-yellow-600 bg-yellow-50'
-      case ErrorSeverity.LOW: return 'text-blue-600 bg-blue-50'
-      default: return 'text-gray-600 bg-gray-50'
+      case ErrorSeverity.CRITICAL:
+        return 'text-red-600 bg-red-50';
+      case ErrorSeverity.HIGH:
+        return 'text-orange-600 bg-orange-50';
+      case ErrorSeverity.MEDIUM:
+        return 'text-yellow-600 bg-yellow-50';
+      case ErrorSeverity.LOW:
+        return 'text-blue-600 bg-blue-50';
+      default:
+        return 'text-gray-600 bg-gray-50';
     }
-  }
+  };
 
   const getSeverityIcon = (severity: ErrorSeverity) => {
     switch (severity) {
       case ErrorSeverity.CRITICAL:
       case ErrorSeverity.HIGH:
-        return AlertTriangle
+        return AlertTriangle;
       case ErrorSeverity.MEDIUM:
-        return AlertCircle
+        return AlertCircle;
       case ErrorSeverity.LOW:
-        return Clock
+        return Clock;
       default:
-        return AlertCircle
+        return AlertCircle;
     }
-  }
+  };
 
   if (criticalErrors.length === 0 && !isOpen) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
-        <Button
-          onClick={() => setIsOpen(true)}
-          variant="outline"
-          className="relative"
-        >
+        <Button onClick={() => setIsOpen(true)} variant="outline" className="relative">
           <AlertTriangle className="h-4 w-4 mr-2" />
           Errors ({unreadCount})
           {unreadCount > 0 && (
@@ -87,7 +88,7 @@ export default function ErrorWidget() {
           )}
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -107,11 +108,7 @@ export default function ErrorWidget() {
                     <AlertTriangle className="h-5 w-5 mr-2 text-red-500" />
                     Error Monitor
                   </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsOpen(false)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
@@ -121,12 +118,8 @@ export default function ErrorWidget() {
                 {criticalErrors.length > 0 && (
                   <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-red-800">
-                        🚨 Critical Errors Detected
-                      </span>
-                      <Badge variant="destructive">
-                        {criticalErrors.length}
-                      </Badge>
+                      <span className="font-medium text-red-800">🚨 Critical Errors Detected</span>
+                      <Badge variant="destructive">{criticalErrors.length}</Badge>
                     </div>
                     <div className="space-y-1">
                       {criticalErrors.slice(0, 2).map((error) => (
@@ -154,7 +147,9 @@ export default function ErrorWidget() {
                     <div className="text-xs text-gray-600">Unresolved</div>
                   </div>
                   <div className="p-2 bg-green-50 rounded">
-                    <div className="font-semibold text-lg">{analytics.resolutionRate.toFixed(0)}%</div>
+                    <div className="font-semibold text-lg">
+                      {analytics.resolutionRate.toFixed(0)}%
+                    </div>
                     <div className="text-xs text-gray-600">Resolution</div>
                   </div>
                 </div>
@@ -168,7 +163,7 @@ export default function ErrorWidget() {
                   <ScrollArea className="h-32">
                     <div className="space-y-2">
                       {recentErrors.map((error) => {
-                        const SeverityIcon = getSeverityIcon(error.severity)
+                        const SeverityIcon = getSeverityIcon(error.severity);
                         return (
                           <div
                             key={error.id}
@@ -193,7 +188,7 @@ export default function ErrorWidget() {
                               </div>
                             </div>
                           </div>
-                        )
+                        );
                       })}
                     </div>
                   </ScrollArea>
@@ -207,10 +202,7 @@ export default function ErrorWidget() {
                       View All
                     </Button>
                   </Link>
-                  <Button
-                    variant="outline"
-                    onClick={() => setErrors(errorTracker.getErrors())}
-                  >
+                  <Button variant="outline" onClick={() => setErrors(errorTracker.getErrors())}>
                     <TrendingUp className="h-4 w-4" />
                   </Button>
                 </div>
@@ -220,5 +212,5 @@ export default function ErrorWidget() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

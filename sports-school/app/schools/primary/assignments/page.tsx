@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  BookOpen, 
-  Clock, 
-  Star, 
-  Trophy, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  BookOpen,
+  Clock,
+  Star,
+  Trophy,
   CheckCircle,
   AlertCircle,
   Calendar,
   FileText,
-  Target
-} from 'lucide-react'
-import Link from 'next/link'
+  Target,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function PrimaryAssignments() {
   const assignments = [
@@ -27,7 +27,7 @@ export default function PrimaryAssignments() {
       status: 'pending',
       difficulty: 'medium',
       points: 25,
-      description: 'Complete 20 multiplication problems using superhero themes'
+      description: 'Complete 20 multiplication problems using superhero themes',
     },
     {
       id: 2,
@@ -38,7 +38,7 @@ export default function PrimaryAssignments() {
       status: 'in_progress',
       difficulty: 'easy',
       points: 30,
-      description: 'Observe and record plant growth over 7 days'
+      description: 'Observe and record plant growth over 7 days',
     },
     {
       id: 3,
@@ -49,9 +49,9 @@ export default function PrimaryAssignments() {
       status: 'completed',
       difficulty: 'medium',
       points: 35,
-      description: 'Write a superhero story with beginning, middle, and end'
-    }
-  ]
+      description: 'Write a superhero story with beginning, middle, and end',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -102,22 +102,37 @@ export default function PrimaryAssignments() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-4xl">
-                      {assignment.subject === 'Mathematics' ? '🔢' :
-                       assignment.subject === 'Science' ? '🔬' :
-                       assignment.subject === 'English' ? '📚' : '📖'}
+                      {assignment.subject === 'Mathematics'
+                        ? '🔢'
+                        : assignment.subject === 'Science'
+                          ? '🔬'
+                          : assignment.subject === 'English'
+                            ? '📚'
+                            : '📖'}
                     </div>
                     <div>
                       <CardTitle className="text-lg">{assignment.title}</CardTitle>
-                      <p className="text-sm text-gray-600">{assignment.subject} • {assignment.teacher}</p>
+                      <p className="text-sm text-gray-600">
+                        {assignment.subject} • {assignment.teacher}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant={
-                      assignment.status === 'completed' ? 'default' :
-                      assignment.status === 'in_progress' ? 'secondary' : 'outline'
-                    } className="text-sm">
-                      {assignment.status === 'completed' ? '✅ Done!' :
-                       assignment.status === 'in_progress' ? '⏳ Working' : '📋 To Do'}
+                    <Badge
+                      variant={
+                        assignment.status === 'completed'
+                          ? 'default'
+                          : assignment.status === 'in_progress'
+                            ? 'secondary'
+                            : 'outline'
+                      }
+                      className="text-sm"
+                    >
+                      {assignment.status === 'completed'
+                        ? '✅ Done!'
+                        : assignment.status === 'in_progress'
+                          ? '⏳ Working'
+                          : '📋 To Do'}
                     </Badge>
                     <Badge className="bg-yellow-100 text-yellow-800">
                       ⭐ {assignment.points} points
@@ -134,8 +149,11 @@ export default function PrimaryAssignments() {
                       <span>Due: {assignment.dueDate}</span>
                     </div>
                     <Badge variant="outline" className="text-xs">
-                      {assignment.difficulty === 'easy' ? '🟢 Easy' :
-                       assignment.difficulty === 'medium' ? '🟡 Medium' : '🔴 Hard'}
+                      {assignment.difficulty === 'easy'
+                        ? '🟢 Easy'
+                        : assignment.difficulty === 'medium'
+                          ? '🟡 Medium'
+                          : '🔴 Hard'}
                     </Badge>
                   </div>
                   <div className="flex gap-2">
@@ -143,8 +161,11 @@ export default function PrimaryAssignments() {
                       📖 View Details
                     </Button>
                     <Button size="sm" disabled={assignment.status === 'completed'}>
-                      {assignment.status === 'completed' ? '✅ Completed' :
-                       assignment.status === 'in_progress' ? '▶️ Continue' : '🚀 Start'}
+                      {assignment.status === 'completed'
+                        ? '✅ Completed'
+                        : assignment.status === 'in_progress'
+                          ? '▶️ Continue'
+                          : '🚀 Start'}
                     </Button>
                   </div>
                 </div>
@@ -157,22 +178,18 @@ export default function PrimaryAssignments() {
         <Card className="mt-6 border-blue-200 bg-blue-50">
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="font-medium text-blue-800 mb-4">Need Help with Your Assignments? 🤔</h3>
+              <h3 className="font-medium text-blue-800 mb-4">
+                Need Help with Your Assignments? 🤔
+              </h3>
               <div className="flex justify-center gap-4">
                 <Link href="/ai-teachers">
-                  <Button className="bg-blue-500 hover:bg-blue-600">
-                    🤖 Ask AI Teacher
-                  </Button>
+                  <Button className="bg-blue-500 hover:bg-blue-600">🤖 Ask AI Teacher</Button>
                 </Link>
                 <Link href="/schools/primary/virtual-classroom">
-                  <Button variant="outline">
-                    🎓 Join Virtual Class
-                  </Button>
+                  <Button variant="outline">🎓 Join Virtual Class</Button>
                 </Link>
                 <Link href="/schools/primary/student-dashboard">
-                  <Button variant="outline">
-                    🏠 Back to Dashboard
-                  </Button>
+                  <Button variant="outline">🏠 Back to Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -180,5 +197,5 @@ export default function PrimaryAssignments() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

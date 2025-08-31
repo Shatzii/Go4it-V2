@@ -1,42 +1,42 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Brain, 
-  TrendingUp, 
-  Target, 
-  Clock, 
-  CheckCircle, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Brain,
+  TrendingUp,
+  Target,
+  Clock,
+  CheckCircle,
   AlertCircle,
   BarChart3,
   Zap,
   Star,
   ArrowUp,
   ArrowDown,
-  Minus
-} from 'lucide-react'
+  Minus,
+} from 'lucide-react';
 
 interface DifficultyLevel {
-  id: string
-  name: string
-  description: string
-  color: string
-  icon: React.ReactNode
+  id: string;
+  name: string;
+  description: string;
+  color: string;
+  icon: React.ReactNode;
 }
 
 interface PerformanceData {
-  subject: string
-  currentLevel: number
-  accuracy: number
-  timeSpent: number
-  streak: number
-  recommendations: string[]
-  nextAdjustment: 'increase' | 'decrease' | 'maintain'
+  subject: string;
+  currentLevel: number;
+  accuracy: number;
+  timeSpent: number;
+  streak: number;
+  recommendations: string[];
+  nextAdjustment: 'increase' | 'decrease' | 'maintain';
 }
 
 const difficultyLevels: DifficultyLevel[] = [
@@ -45,37 +45,37 @@ const difficultyLevels: DifficultyLevel[] = [
     name: 'Foundational',
     description: 'Building core concepts and basic understanding',
     color: 'bg-blue-100 text-blue-800 border-blue-200',
-    icon: <Target className="h-4 w-4" />
+    icon: <Target className="h-4 w-4" />,
   },
   {
     id: 'developing',
     name: 'Developing',
     description: 'Applying concepts with guided practice',
     color: 'bg-green-100 text-green-800 border-green-200',
-    icon: <TrendingUp className="h-4 w-4" />
+    icon: <TrendingUp className="h-4 w-4" />,
   },
   {
     id: 'proficient',
     name: 'Proficient',
     description: 'Independent application of skills',
     color: 'bg-purple-100 text-purple-800 border-purple-200',
-    icon: <CheckCircle className="h-4 w-4" />
+    icon: <CheckCircle className="h-4 w-4" />,
   },
   {
     id: 'advanced',
     name: 'Advanced',
     description: 'Complex problem-solving and analysis',
     color: 'bg-orange-100 text-orange-800 border-orange-200',
-    icon: <Brain className="h-4 w-4" />
+    icon: <Brain className="h-4 w-4" />,
   },
   {
     id: 'mastery',
     name: 'Mastery',
     description: 'Teaching others and creative application',
     color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    icon: <Star className="h-4 w-4" />
-  }
-]
+    icon: <Star className="h-4 w-4" />,
+  },
+];
 
 export default function DifficultyAnalyzer() {
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([
@@ -88,9 +88,9 @@ export default function DifficultyAnalyzer() {
       recommendations: [
         'Increase problem complexity',
         'Add multi-step word problems',
-        'Introduce advanced concepts'
+        'Introduce advanced concepts',
       ],
-      nextAdjustment: 'increase'
+      nextAdjustment: 'increase',
     },
     {
       subject: 'Reading Comprehension',
@@ -101,9 +101,9 @@ export default function DifficultyAnalyzer() {
       recommendations: [
         'Provide more practice at current level',
         'Focus on vocabulary building',
-        'Add graphic organizers'
+        'Add graphic organizers',
       ],
-      nextAdjustment: 'maintain'
+      nextAdjustment: 'maintain',
     },
     {
       subject: 'Science',
@@ -114,30 +114,30 @@ export default function DifficultyAnalyzer() {
       recommendations: [
         'Simplify complex concepts',
         'Add more visual aids',
-        'Provide additional examples'
+        'Provide additional examples',
       ],
-      nextAdjustment: 'decrease'
-    }
-  ])
+      nextAdjustment: 'decrease',
+    },
+  ]);
 
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const getAdjustmentIcon = (adjustment: string) => {
     switch (adjustment) {
       case 'increase':
-        return <ArrowUp className="h-4 w-4 text-green-600" />
+        return <ArrowUp className="h-4 w-4 text-green-600" />;
       case 'decrease':
-        return <ArrowDown className="h-4 w-4 text-red-600" />
+        return <ArrowDown className="h-4 w-4 text-red-600" />;
       default:
-        return <Minus className="h-4 w-4 text-gray-600" />
+        return <Minus className="h-4 w-4 text-gray-600" />;
     }
-  }
+  };
 
   const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 85) return 'text-green-600'
-    if (accuracy >= 70) return 'text-yellow-600'
-    return 'text-red-600'
-  }
+    if (accuracy >= 85) return 'text-green-600';
+    if (accuracy >= 70) return 'text-yellow-600';
+    return 'text-red-600';
+  };
 
   return (
     <div className="space-y-6">
@@ -147,7 +147,8 @@ export default function DifficultyAnalyzer() {
           Adaptive Difficulty Learning
         </h2>
         <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-          AI-powered difficulty adjustment that adapts in real-time to optimize learning outcomes for each student
+          AI-powered difficulty adjustment that adapts in real-time to optimize learning outcomes
+          for each student
         </p>
       </div>
 
@@ -223,7 +224,10 @@ export default function DifficultyAnalyzer() {
             <CardContent>
               <div className="space-y-4">
                 {difficultyLevels.map((level, index) => (
-                  <div key={level.id} className="flex items-center justify-between p-3 rounded-lg border">
+                  <div
+                    key={level.id}
+                    className="flex items-center justify-between p-3 rounded-lg border"
+                  >
                     <div className="flex items-center gap-3">
                       <Badge className={level.color}>
                         {level.icon}
@@ -282,7 +286,9 @@ export default function DifficultyAnalyzer() {
                     <ArrowDown className="h-5 w-5 text-orange-600" />
                     <div>
                       <p className="font-medium">Science - Decreased Difficulty</p>
-                      <p className="text-sm text-gray-600">Added visual aids and simplified concepts</p>
+                      <p className="text-sm text-gray-600">
+                        Added visual aids and simplified concepts
+                      </p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-orange-700">
@@ -321,15 +327,11 @@ export default function DifficultyAnalyzer() {
                       <p className="text-xs text-gray-600">Accuracy</p>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">
-                        {subject.timeSpent}m
-                      </div>
+                      <div className="text-2xl font-bold text-blue-600">{subject.timeSpent}m</div>
                       <p className="text-xs text-gray-600">Avg Time</p>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">
-                        {subject.streak}
-                      </div>
+                      <div className="text-2xl font-bold text-green-600">{subject.streak}</div>
                       <p className="text-xs text-gray-600">Day Streak</p>
                     </div>
                   </div>
@@ -339,9 +341,12 @@ export default function DifficultyAnalyzer() {
                     <div className="flex items-center gap-2">
                       {getAdjustmentIcon(subject.nextAdjustment)}
                       <span className="text-sm">
-                        {subject.nextAdjustment === 'increase' && 'Increase difficulty based on strong performance'}
-                        {subject.nextAdjustment === 'decrease' && 'Decrease difficulty to build confidence'}
-                        {subject.nextAdjustment === 'maintain' && 'Maintain current level for consolidation'}
+                        {subject.nextAdjustment === 'increase' &&
+                          'Increase difficulty based on strong performance'}
+                        {subject.nextAdjustment === 'decrease' &&
+                          'Decrease difficulty to build confidence'}
+                        {subject.nextAdjustment === 'maintain' &&
+                          'Maintain current level for consolidation'}
                       </span>
                     </div>
                   </div>
@@ -399,7 +404,9 @@ export default function DifficultyAnalyzer() {
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <h4 className="font-medium">Auto-Difficulty Adjustment</h4>
-                    <p className="text-sm text-gray-600">Allow AI to automatically adjust content difficulty</p>
+                    <p className="text-sm text-gray-600">
+                      Allow AI to automatically adjust content difficulty
+                    </p>
                   </div>
                   <Button variant="outline" size="sm">
                     Enabled
@@ -409,17 +416,19 @@ export default function DifficultyAnalyzer() {
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <h4 className="font-medium">Sensitivity Level</h4>
-                    <p className="text-sm text-gray-600">How quickly the system responds to performance changes</p>
+                    <p className="text-sm text-gray-600">
+                      How quickly the system responds to performance changes
+                    </p>
                   </div>
-                  <Badge variant="outline">
-                    Moderate
-                  </Badge>
+                  <Badge variant="outline">Moderate</Badge>
                 </div>
 
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <h4 className="font-medium">Neurodivergent Accommodations</h4>
-                    <p className="text-sm text-gray-600">Specialized adaptations for learning differences</p>
+                    <p className="text-sm text-gray-600">
+                      Specialized adaptations for learning differences
+                    </p>
                   </div>
                   <Button variant="outline" size="sm">
                     Active
@@ -429,7 +438,9 @@ export default function DifficultyAnalyzer() {
                 <div className="flex items-center justify-between p-4 border rounded-lg">
                   <div>
                     <h4 className="font-medium">Performance Notifications</h4>
-                    <p className="text-sm text-gray-600">Get notified of significant difficulty changes</p>
+                    <p className="text-sm text-gray-600">
+                      Get notified of significant difficulty changes
+                    </p>
                   </div>
                   <Button variant="outline" size="sm">
                     On
@@ -438,14 +449,12 @@ export default function DifficultyAnalyzer() {
               </div>
 
               <div className="pt-4 border-t">
-                <Button className="w-full">
-                  Save Preferences
-                </Button>
+                <Button className="w-full">Save Preferences</Button>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

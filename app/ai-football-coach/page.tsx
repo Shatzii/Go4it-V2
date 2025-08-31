@@ -4,18 +4,29 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Brain, MessageCircle, Video, Play, Mic, 
-  Trophy, Target, Star, Users, Crown, Zap
+import {
+  Brain,
+  MessageCircle,
+  Video,
+  Play,
+  Mic,
+  Trophy,
+  Target,
+  Star,
+  Users,
+  Crown,
+  Zap,
 } from 'lucide-react';
 
 export default function AIFootballCoachPage() {
   const [isVoiceActive, setIsVoiceActive] = useState(false);
 
   const startVoiceCoaching = () => {
-    const context = encodeURIComponent("Welcome to your personal AI Strength & Conditioning Coach! I'm here to help you build strength, improve conditioning, develop proper form, and create personalized training programs. What aspect of your fitness would you like to work on today?");
+    const context = encodeURIComponent(
+      "Welcome to your personal AI Strength & Conditioning Coach! I'm here to help you build strength, improve conditioning, develop proper form, and create personalized training programs. What aspect of your fitness would you like to work on today?",
+    );
     const voiceUrl = `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${context}`;
-    
+
     window.open(voiceUrl, '_blank', 'width=800,height=600');
     setIsVoiceActive(true);
   };
@@ -25,47 +36,47 @@ export default function AIFootballCoachPage() {
       title: 'Technique Analysis',
       description: 'Get voice feedback on your form and mechanics',
       icon: Video,
-      color: 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+      color: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
     },
     {
       title: 'Game Strategy',
       description: 'Learn advanced football strategies and tactics',
       icon: Brain,
-      color: 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+      color: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
     },
     {
       title: 'Performance Review',
       description: 'Comprehensive analysis of your athletic progress',
       icon: Trophy,
-      color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+      color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
     },
     {
       title: 'Skill Development',
       description: 'Personalized training plans for improvement',
       icon: Target,
-      color: 'bg-green-500/20 text-green-400 border-green-500/30'
+      color: 'bg-green-500/20 text-green-400 border-green-500/30',
     },
     {
       title: 'Recruiting Guidance',
       description: 'College recruitment advice and planning',
       icon: Star,
-      color: 'bg-red-500/20 text-red-400 border-red-500/30'
+      color: 'bg-red-500/20 text-red-400 border-red-500/30',
     },
     {
       title: 'Team Leadership',
       description: 'Develop leadership skills and team dynamics',
       icon: Users,
-      color: 'bg-orange-500/20 text-orange-400 border-orange-500/30'
-    }
+      color: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+    },
   ];
 
   const quickStartTopics = [
-    "How can I improve my GAR score?",
-    "What are the best drills for my position?", 
-    "Help me understand college recruiting",
-    "Analyze my recent game performance",
-    "Create a training plan for me",
-    "Explain flag football strategies"
+    'How can I improve my GAR score?',
+    'What are the best drills for my position?',
+    'Help me understand college recruiting',
+    'Analyze my recent game performance',
+    'Create a training plan for me',
+    'Explain flag football strategies',
   ];
 
   return (
@@ -82,10 +93,10 @@ export default function AIFootballCoachPage() {
           <p className="text-xl text-slate-300 mb-6">
             Your personal AI-powered strength & conditioning coach with voice interaction
           </p>
-          
+
           {/* Main Voice Coaching Button */}
           <div className="mb-8">
-            <Button 
+            <Button
               onClick={startVoiceCoaching}
               className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg font-semibold rounded-lg shadow-lg"
             >
@@ -101,9 +112,7 @@ export default function AIFootballCoachPage() {
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
               Voice Powered
             </Badge>
-            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-              Personalized
-            </Badge>
+            <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Personalized</Badge>
             <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
               Real-time
             </Badge>
@@ -115,10 +124,15 @@ export default function AIFootballCoachPage() {
           {coachingAreas.map((area, index) => {
             const IconComponent = area.icon;
             return (
-              <Card key={index} className="bg-slate-800 border-slate-700 hover:border-green-500/50 transition-all duration-300">
+              <Card
+                key={index}
+                className="bg-slate-800 border-slate-700 hover:border-green-500/50 transition-all duration-300"
+              >
                 <CardHeader>
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg ${area.color} flex items-center justify-center`}>
+                    <div
+                      className={`w-10 h-10 rounded-lg ${area.color} flex items-center justify-center`}
+                    >
                       <IconComponent className="w-5 h-5" />
                     </div>
                     <CardTitle className="text-white text-lg">{area.title}</CardTitle>
@@ -126,9 +140,9 @@ export default function AIFootballCoachPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-slate-300 text-sm mb-4">{area.description}</p>
-                  <Button 
+                  <Button
                     onClick={startVoiceCoaching}
-                    variant="outline" 
+                    variant="outline"
                     className="w-full border-slate-600 hover:bg-slate-700"
                   >
                     <MessageCircle className="w-4 h-4 mr-2" />
@@ -157,7 +171,9 @@ export default function AIFootballCoachPage() {
                 <Button
                   key={index}
                   onClick={() => {
-                    const context = encodeURIComponent(`The athlete is asking: "${topic}". Please provide detailed, personalized coaching advice on this topic.`);
+                    const context = encodeURIComponent(
+                      `The athlete is asking: "${topic}". Please provide detailed, personalized coaching advice on this topic.`,
+                    );
                     const voiceUrl = `https://elevenlabs.io/app/talk-to?agent_id=tb80F0KNyKEjO8IymYOU&context=${context}`;
                     window.open(voiceUrl, '_blank', 'width=800,height=600');
                   }}
@@ -245,15 +261,15 @@ export default function AIFootballCoachPage() {
               Experience personalized AI coaching that adapts to your unique needs and goals.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
+              <Button
                 onClick={startVoiceCoaching}
                 className="bg-green-600 hover:bg-green-700 px-8 py-3"
               >
                 <Mic className="w-5 h-5 mr-2" />
                 Start Coaching Now
               </Button>
-              <Button 
-                onClick={() => window.location.href = '/ai-coach-dashboard'}
+              <Button
+                onClick={() => (window.location.href = '/ai-coach-dashboard')}
                 variant="outline"
                 className="border-slate-600 text-slate-300 px-8 py-3"
               >

@@ -33,11 +33,16 @@ export async function GET(req: NextRequest) {
 
     // Redirect to a success page or dashboard
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';
-  logger.info('auth.verify.success', { userId, durationMs: Date.now() - t0 });
-  return NextResponse.redirect(`${appUrl}/dashboard?verified=1`);
+    logger.info('auth.verify.success', { userId, durationMs: Date.now() - t0 });
+    return NextResponse.redirect(`${appUrl}/dashboard?verified=1`);
   } catch (err) {
-  logger.error('auth.verify.error', { err: (err as Error)?.message, durationMs: Date.now() - t0 });
-  try { if (process.env.SENTRY_DSN) Sentry.captureException(err); } catch {}
+    logger.error('auth.verify.error', {
+      err: (err as Error)?.message,
+      durationMs: Date.now() - t0,
+    });
+    try {
+      if (process.env.SENTRY_DSN) Sentry.captureException(err);
+    } catch {}
     return NextResponse.json({ error: 'Verification failed' }, { status: 400 });
   }
 }

@@ -21,7 +21,7 @@ const initializeMediaLibrary = () => {
         size: '456 KB',
         tags: ['logo', 'branding', 'go4it', 'primary'],
         isActive: true,
-        displayOrder: 1
+        displayOrder: 1,
       },
 
       // EVENT & CAMP PROMOTIONAL MATERIALS
@@ -38,7 +38,7 @@ const initializeMediaLibrary = () => {
         size: '1.8 MB',
         tags: ['soccer', 'camp', 'promotional', 'flyer', 'events'],
         isActive: true,
-        displayOrder: 2
+        displayOrder: 2,
       },
       {
         id: 'baseball-camp-flyer-updated',
@@ -48,12 +48,13 @@ const initializeMediaLibrary = () => {
         category: 'camps',
         description: 'Updated version of baseball camp promotional flyer',
         url: '/api/media/Navy Blue and Gray Modern Baseball Camp Promotion Flyer_1754370606998.png',
-        thumbnailUrl: '/api/media/Navy Blue and Gray Modern Baseball Camp Promotion Flyer_1754370606998.png',
+        thumbnailUrl:
+          '/api/media/Navy Blue and Gray Modern Baseball Camp Promotion Flyer_1754370606998.png',
         uploadDate: '2025-01-07',
         size: '2.1 MB',
         tags: ['baseball', 'camp', 'promotional', 'flyer', 'updated', 'current'],
         isActive: true,
-        displayOrder: 3
+        displayOrder: 3,
       },
 
       // EUROPEAN EVENTS & INTERNATIONAL CONTENT
@@ -70,7 +71,7 @@ const initializeMediaLibrary = () => {
         size: '1.5 MB',
         tags: ['europe', 'elite', 'international', 'branding', 'logo'],
         isActive: true,
-        displayOrder: 4
+        displayOrder: 4,
       },
       {
         id: 'ews-2025-banner',
@@ -85,7 +86,7 @@ const initializeMediaLibrary = () => {
         size: '890 KB',
         tags: ['ews', '2025', 'event', 'banner', 'european', 'sports'],
         isActive: true,
-        displayOrder: 5
+        displayOrder: 5,
       },
       {
         id: 'team-camp-2025',
@@ -100,7 +101,7 @@ const initializeMediaLibrary = () => {
         size: '1.2 MB',
         tags: ['team', 'camp', '2025', 'group', 'training'],
         isActive: true,
-        displayOrder: 6
+        displayOrder: 6,
       },
 
       // VIDEO CONTENT
@@ -117,7 +118,7 @@ const initializeMediaLibrary = () => {
         size: '45 MB',
         tags: ['video', 'promotional', 'training', 'content'],
         isActive: true,
-        displayOrder: 7
+        displayOrder: 7,
       },
       {
         id: 'training-video-1',
@@ -132,7 +133,7 @@ const initializeMediaLibrary = () => {
         size: '67 MB',
         tags: ['video', 'training', 'technique', 'demonstration'],
         isActive: true,
-        displayOrder: 8
+        displayOrder: 8,
       },
 
       // ATHLETE PHOTOS & CONTENT
@@ -149,7 +150,7 @@ const initializeMediaLibrary = () => {
         size: '2.3 MB',
         tags: ['athlete', 'photo', 'training', 'action'],
         isActive: true,
-        displayOrder: 9
+        displayOrder: 9,
       },
       {
         id: 'athlete-photo-2',
@@ -164,7 +165,7 @@ const initializeMediaLibrary = () => {
         size: '1.9 MB',
         tags: ['athlete', 'photo', 'event', 'sports'],
         isActive: true,
-        displayOrder: 10
+        displayOrder: 10,
       },
 
       // DESIGN ASSETS & GRAPHICS
@@ -181,7 +182,7 @@ const initializeMediaLibrary = () => {
         size: '1.4 MB',
         tags: ['ai-generated', 'design', 'promotional', 'graphic'],
         isActive: true,
-        displayOrder: 11
+        displayOrder: 11,
       },
       {
         id: 'untitled-design',
@@ -196,12 +197,12 @@ const initializeMediaLibrary = () => {
         size: '1.6 MB',
         tags: ['design', 'custom', 'asset', 'graphic'],
         isActive: true,
-        displayOrder: 12
-      }
+        displayOrder: 12,
+      },
     ],
     categories: ['branding', 'events', 'camps', 'documentation', 'promotional', 'athlete-content'],
     featuredAssets: ['go4it-logo-main', 'promotional-video-1', 'ews-2025-banner'],
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   };
 };
 
@@ -237,14 +238,11 @@ export async function GET(req: NextRequest) {
       featuredAssets: mediaLibrary.featuredAssets,
       totalCount: mediaLibrary.assets.length,
       filteredCount: assets.length,
-      lastUpdated: mediaLibrary.lastUpdated
+      lastUpdated: mediaLibrary.lastUpdated,
     });
   } catch (error) {
     console.error('Failed to fetch media library:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch media library' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch media library' }, { status: 500 });
   }
 }
 
@@ -261,9 +259,9 @@ export async function PUT(req: NextRequest) {
       case 'updateAsset':
         if (assetId && updates) {
           mediaLibrary.assets = mediaLibrary.assets.map((asset: any) =>
-            asset.id === assetId 
+            asset.id === assetId
               ? { ...asset, ...updates, lastUpdated: new Date().toISOString() }
-              : asset
+              : asset,
           );
         }
         break;
@@ -277,9 +275,9 @@ export async function PUT(req: NextRequest) {
       case 'toggleActive':
         if (assetId) {
           mediaLibrary.assets = mediaLibrary.assets.map((asset: any) =>
-            asset.id === assetId 
+            asset.id === assetId
               ? { ...asset, isActive: !asset.isActive, lastUpdated: new Date().toISOString() }
-              : asset
+              : asset,
           );
         }
         break;
@@ -304,20 +302,17 @@ export async function PUT(req: NextRequest) {
     console.log('Media library updated:', {
       action,
       assetId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Media library updated successfully',
-      timestamp: mediaLibrary.lastUpdated
+      timestamp: mediaLibrary.lastUpdated,
     });
   } catch (error) {
     console.error('Failed to update media library:', error);
-    return NextResponse.json(
-      { error: 'Failed to update media library' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to update media library' }, { status: 500 });
   }
 }
 
@@ -336,37 +331,37 @@ export async function POST(req: NextRequest) {
         // Return media assets formatted for CMS integration
         return NextResponse.json({
           assets: mediaLibrary.assets.filter((asset: any) => asset.isActive),
-          featured: mediaLibrary.assets.filter((asset: any) => 
-            mediaLibrary.featuredAssets.includes(asset.id) && asset.isActive
+          featured: mediaLibrary.assets.filter(
+            (asset: any) => mediaLibrary.featuredAssets.includes(asset.id) && asset.isActive,
           ),
           byCategory: mediaLibrary.categories.reduce((acc: any, category: string) => {
-            acc[category] = mediaLibrary.assets.filter((asset: any) => 
-              asset.category === category && asset.isActive
+            acc[category] = mediaLibrary.assets.filter(
+              (asset: any) => asset.category === category && asset.isActive,
             );
             return acc;
           }, {}),
-          videos: mediaLibrary.assets.filter((asset: any) => 
-            asset.type === 'video' && asset.isActive
+          videos: mediaLibrary.assets.filter(
+            (asset: any) => asset.type === 'video' && asset.isActive,
           ),
-          images: mediaLibrary.assets.filter((asset: any) => 
-            (asset.type === 'image' || asset.type === 'logo') && asset.isActive
-          )
+          images: mediaLibrary.assets.filter(
+            (asset: any) => (asset.type === 'image' || asset.type === 'logo') && asset.isActive,
+          ),
         });
 
       case 'getFeaturedForHomepage':
         // Return only featured assets for homepage display
-        const featuredForHomepage = mediaLibrary.assets.filter((asset: any) => 
-          mediaLibrary.featuredAssets.includes(asset.id) && asset.isActive
-        ).sort((a: any, b: any) => a.displayOrder - b.displayOrder);
+        const featuredForHomepage = mediaLibrary.assets
+          .filter((asset: any) => mediaLibrary.featuredAssets.includes(asset.id) && asset.isActive)
+          .sort((a: any, b: any) => a.displayOrder - b.displayOrder);
 
         return NextResponse.json({
           hero: {
             backgroundVideo: featuredForHomepage.find((asset: any) => asset.type === 'video'),
             backgroundImage: featuredForHomepage.find((asset: any) => asset.type === 'image'),
-            logo: featuredForHomepage.find((asset: any) => asset.type === 'logo')
+            logo: featuredForHomepage.find((asset: any) => asset.type === 'logo'),
           },
           gallery: featuredForHomepage.slice(0, 6),
-          videos: featuredForHomepage.filter((asset: any) => asset.type === 'video')
+          videos: featuredForHomepage.filter((asset: any) => asset.type === 'video'),
         });
 
       default:

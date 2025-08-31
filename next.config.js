@@ -1,57 +1,61 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Optimized configuration for Replit deployment and .replit.dev preview
   output: 'standalone',
-  
-  // Consolidated environment variables
-  env: {
-    SENTRY_SUPPRESS_INSTRUMENTATION_FILE_WARNING: '1',
-    SENTRY_SUPPRESS_GLOBAL_ERROR_HANDLER_FILE_WARNING: '1',
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-    DATABASE_URL: process.env.DATABASE_URL,
-    STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  },
-  
+
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  
-  // Temporarily disable ESLint and TypeScript checks during build for deployment
+
+  // Deployment optimizations to reduce build size
+  productionBrowserSourceMaps: false,
+
+  images: {
+    unoptimized: process.env.NODE_ENV !== 'production',
+    formats: ['image/avif', 'image/webp'],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+
+  poweredByHeader: false,
+  compress: true,
+  generateEtags: false,
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  trailingSlash: false,
+
+  // Build error handling - ignore errors for deployment
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  
-  // Optimize for deployment size  
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error']
-    } : false,
+
+  // Server-side package externalization for AI/ML packages
+  serverExternalPackages: [
+    '@tensorflow/tfjs',
+    '@tensorflow/tfjs-node',
+    '@tensorflow/tfjs-backend-webgl',
+    '@tensorflow-models/pose-detection',
+    '@mediapipe/camera_utils',
+    '@mediapipe/drawing_utils',
+    '@mediapipe/holistic',
+    '@mediapipe/pose',
+    'puppeteer',
+    'sharp',
+    'canvas',
+  ],
+
+  // Puppeteer configuration for build
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || 'false',
+    PUPPETEER_EXECUTABLE_PATH: process.env.PUPPETEER_EXECUTABLE_PATH,
   },
-  
-  images: {
-    // In dev/Replit, disable optimization; in prod, allow AVIF/WebP
-    unoptimized: process.env.NODE_ENV !== 'production',
-    formats: ['image/avif', 'image/webp'],
-    dangerouslyAllowSVG: true,
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+
+  experimental: {
+    optimizePackageImports: ['@radix-ui/react-icons', 'lucide-react', 'framer-motion'],
   },
-  
-  // Remove powered by header
-  poweredByHeader: false,
-  
-  // Replit deployment optimizations
-  compress: true,
-  generateEtags: false,
-  
-  // Configure for .replit.dev domain preview
-  assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
-  trailingSlash: false,
-  
-  
-  // Headers for cross-origin compatibility
+
+
   async headers() {
     return [
       {
@@ -66,40 +70,39 @@ const nextConfig = {
       },
       {
         source: '/_next/:path*',
-        headers: [ { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' } ],
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {
         source: '/(.*)\.(svg|png|jpg|jpeg|gif|ico|webp|avif)$',
-        headers: [ { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' } ],
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
       {
         source: '/api/:path*',
-        headers: [ { key: 'Cache-Control', value: 'no-store' } ],
+        headers: [{ key: 'Cache-Control', value: 'no-store' }],
       },
     ];
   },
 
-  // Configure allowed dev origins for Replit
-  allowedDevOrigins: [
-    '*.replit.dev',
-    '*.replit.app', 
-    'localhost:5000',
-    '127.0.0.1:5000'
-  ],
-  
-  // Essential webpack configuration for dependencies
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      // Externalize problematic server-only dependencies
+  allowedDevOrigins: ['*.replit.dev', '*.replit.app', 'localhost:5000', '127.0.0.1:5000'],
+
+  // Minimal webpack configuration for stable builds
+  webpack: (config, { isServer, dev }) => {
+    if (isServer) {
+      // Completely exclude browser-only AI packages from server builds
       config.externals = config.externals || [];
       config.externals.push({
-        '@mapbox/node-pre-gyp': 'commonjs @mapbox/node-pre-gyp',
-        'mock-aws-s3': 'commonjs mock-aws-s3',
-        'nock': 'commonjs nock',
-        'puppeteer': 'commonjs puppeteer',
-        '@tensorflow/tfjs-node': 'commonjs @tensorflow/tfjs-node'
+        '@tensorflow/tfjs': 'commonjs @tensorflow/tfjs',
+        '@tensorflow/tfjs-backend-webgl': 'commonjs @tensorflow/tfjs-backend-webgl',
+        '@tensorflow-models/pose-detection': 'commonjs @tensorflow-models/pose-detection',
+        '@mediapipe/camera_utils': 'commonjs @mediapipe/camera_utils',
+        '@mediapipe/drawing_utils': 'commonjs @mediapipe/drawing_utils',
+        '@mediapipe/holistic': 'commonjs @mediapipe/holistic',
+        '@mediapipe/pose': 'commonjs @mediapipe/pose',
+        canvas: 'commonjs canvas',
       });
+    }
 
+    if (!isServer) {
       // Node.js fallbacks for client-side
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -117,23 +120,30 @@ const nextConfig = {
         zlib: false,
         querystring: false,
         child_process: false,
-        worker_threads: false
+        worker_threads: false,
+        net: false,
+        tls: false,
       };
     }
-    
+
     return config;
   },
 };
 
-// Conditionally wrap with Sentry config if available
+// Try to apply Sentry config safely
+let exported = nextConfig;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { withSentryConfig } = require('@sentry/nextjs');
-  module.exports = withSentryConfig(nextConfig, {
-    silent: true,
-    org: process.env.SENTRY_ORG,
-    project: process.env.SENTRY_PROJECT,
-  });
-} catch (e) {
-  module.exports = nextConfig;
+  if (process.env.NODE_ENV === 'production') {
+    const { withSentryConfig } = require('@sentry/nextjs');
+    exported = withSentryConfig(exported, {
+      silent: true,
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+    });
+  }
+} catch (error) {
+  // Sentry configuration is optional
+  console.warn('Sentry configuration failed, proceeding without it');
 }
+
+module.exports = exported;

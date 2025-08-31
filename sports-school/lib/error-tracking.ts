@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { z } from 'zod'
+import { z } from 'zod';
 
 // Error severity levels
 export enum ErrorSeverity {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  CRITICAL = 'critical'
+  CRITICAL = 'critical',
 }
 
 // Error categories
@@ -19,7 +19,7 @@ export enum ErrorCategory {
   NETWORK = 'network',
   VALIDATION = 'validation',
   PERMISSION = 'permission',
-  SYSTEM = 'system'
+  SYSTEM = 'system',
 }
 
 // Error schema validation
@@ -38,22 +38,22 @@ export const ErrorLogSchema = z.object({
   metadata: z.record(z.any()).optional(),
   resolved: z.boolean().default(false),
   resolvedAt: z.date().optional(),
-  resolvedBy: z.string().optional()
-})
+  resolvedBy: z.string().optional(),
+});
 
-export type ErrorLog = z.infer<typeof ErrorLogSchema>
+export type ErrorLog = z.infer<typeof ErrorLogSchema>;
 
 // Error tracking service
 export class ErrorTrackingService {
-  private static instance: ErrorTrackingService
-  private errors: ErrorLog[] = []
-  private listeners: ((error: ErrorLog) => void)[] = []
+  private static instance: ErrorTrackingService;
+  private errors: ErrorLog[] = [];
+  private listeners: ((error: ErrorLog) => void)[] = [];
 
   static getInstance(): ErrorTrackingService {
     if (!ErrorTrackingService.instance) {
-      ErrorTrackingService.instance = new ErrorTrackingService()
+      ErrorTrackingService.instance = new ErrorTrackingService();
     }
-    return ErrorTrackingService.instance
+    return ErrorTrackingService.instance;
   }
 
   // Log an error
@@ -71,77 +71,80 @@ export class ErrorTrackingService {
       schoolId: error.schoolId,
       sessionId: this.getSessionId(),
       metadata: error.metadata || {},
-      resolved: false
-    })
+      resolved: false,
+    });
 
-    this.errors.push(errorLog)
-    this.notifyListeners(errorLog)
-    this.persistError(errorLog)
-    
+    this.errors.push(errorLog);
+    this.notifyListeners(errorLog);
+    this.persistError(errorLog);
+
     // Auto-report critical errors
     if (errorLog.severity === ErrorSeverity.CRITICAL) {
-      this.reportCriticalError(errorLog)
+      this.reportCriticalError(errorLog);
     }
   }
 
   // Get all errors
   getErrors(): ErrorLog[] {
-    return [...this.errors]
+    return [...this.errors];
   }
 
   // Get errors by category
   getErrorsByCategory(category: ErrorCategory): ErrorLog[] {
-    return this.errors.filter(error => error.category === category)
+    return this.errors.filter((error) => error.category === category);
   }
 
   // Get errors by severity
   getErrorsBySeverity(severity: ErrorSeverity): ErrorLog[] {
-    return this.errors.filter(error => error.severity === severity)
+    return this.errors.filter((error) => error.severity === severity);
   }
 
   // Get unresolved errors
   getUnresolvedErrors(): ErrorLog[] {
-    return this.errors.filter(error => !error.resolved)
+    return this.errors.filter((error) => !error.resolved);
   }
 
   // Mark error as resolved
   resolveError(errorId: string, resolvedBy: string): void {
-    const error = this.errors.find(e => e.id === errorId)
+    const error = this.errors.find((e) => e.id === errorId);
     if (error) {
-      error.resolved = true
-      error.resolvedAt = new Date()
-      error.resolvedBy = resolvedBy
-      this.persistError(error)
+      error.resolved = true;
+      error.resolvedAt = new Date();
+      error.resolvedBy = resolvedBy;
+      this.persistError(error);
     }
   }
 
   // Add error listener
   addListener(listener: (error: ErrorLog) => void): void {
-    this.listeners.push(listener)
+    this.listeners.push(listener);
   }
 
   // Remove error listener
   removeListener(listener: (error: ErrorLog) => void): void {
-    this.listeners = this.listeners.filter(l => l !== listener)
+    this.listeners = this.listeners.filter((l) => l !== listener);
   }
 
   // Generate analytics
   getAnalytics() {
-    const total = this.errors.length
-    const resolved = this.errors.filter(e => e.resolved).length
-    const unresolved = total - resolved
-    
-    const bySeverity = {
-      critical: this.errors.filter(e => e.severity === ErrorSeverity.CRITICAL).length,
-      high: this.errors.filter(e => e.severity === ErrorSeverity.HIGH).length,
-      medium: this.errors.filter(e => e.severity === ErrorSeverity.MEDIUM).length,
-      low: this.errors.filter(e => e.severity === ErrorSeverity.LOW).length
-    }
+    const total = this.errors.length;
+    const resolved = this.errors.filter((e) => e.resolved).length;
+    const unresolved = total - resolved;
 
-    const byCategory = Object.values(ErrorCategory).reduce((acc, category) => {
-      acc[category] = this.errors.filter(e => e.category === category).length
-      return acc
-    }, {} as Record<ErrorCategory, number>)
+    const bySeverity = {
+      critical: this.errors.filter((e) => e.severity === ErrorSeverity.CRITICAL).length,
+      high: this.errors.filter((e) => e.severity === ErrorSeverity.HIGH).length,
+      medium: this.errors.filter((e) => e.severity === ErrorSeverity.MEDIUM).length,
+      low: this.errors.filter((e) => e.severity === ErrorSeverity.LOW).length,
+    };
+
+    const byCategory = Object.values(ErrorCategory).reduce(
+      (acc, category) => {
+        acc[category] = this.errors.filter((e) => e.category === category).length;
+        return acc;
+      },
+      {} as Record<ErrorCategory, number>,
+    );
 
     return {
       total,
@@ -149,76 +152,76 @@ export class ErrorTrackingService {
       unresolved,
       bySeverity,
       byCategory,
-      resolutionRate: total > 0 ? (resolved / total) * 100 : 0
-    }
+      resolutionRate: total > 0 ? (resolved / total) * 100 : 0,
+    };
   }
 
   // Private methods
   private generateId(): string {
-    return `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   private getSessionId(): string {
     if (typeof window !== 'undefined') {
-      let sessionId = sessionStorage.getItem('error_session_id')
+      let sessionId = sessionStorage.getItem('error_session_id');
       if (!sessionId) {
-        sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-        sessionStorage.setItem('error_session_id', sessionId)
+        sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        sessionStorage.setItem('error_session_id', sessionId);
       }
-      return sessionId
+      return sessionId;
     }
-    return 'server_session'
+    return 'server_session';
   }
 
   private notifyListeners(error: ErrorLog): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
-        listener(error)
+        listener(error);
       } catch (e) {
-        console.error('Error in error listener:', e)
+        console.error('Error in error listener:', e);
       }
-    })
+    });
   }
 
   private persistError(error: ErrorLog): void {
     if (typeof window !== 'undefined') {
       try {
-        const stored = localStorage.getItem('error_logs')
-        const logs = stored ? JSON.parse(stored) : []
-        logs.push(error)
-        
+        const stored = localStorage.getItem('error_logs');
+        const logs = stored ? JSON.parse(stored) : [];
+        logs.push(error);
+
         // Keep only last 1000 errors
         if (logs.length > 1000) {
-          logs.splice(0, logs.length - 1000)
+          logs.splice(0, logs.length - 1000);
         }
-        
-        localStorage.setItem('error_logs', JSON.stringify(logs))
+
+        localStorage.setItem('error_logs', JSON.stringify(logs));
       } catch (e) {
-        console.error('Failed to persist error:', e)
+        console.error('Failed to persist error:', e);
       }
     }
   }
 
   private reportCriticalError(error: ErrorLog): void {
     // In a real application, this would send to external monitoring service
-    console.error('CRITICAL ERROR DETECTED:', error)
-    
+    console.error('CRITICAL ERROR DETECTED:', error);
+
     // Send to API endpoint for immediate notification
     if (typeof window !== 'undefined') {
       fetch('/api/errors/critical', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(error)
-      }).catch(e => console.error('Failed to report critical error:', e))
+        body: JSON.stringify(error),
+      }).catch((e) => console.error('Failed to report critical error:', e));
     }
   }
 }
 
 // Global error handler
 export const setupGlobalErrorHandling = () => {
-  const errorTracker = ErrorTrackingService.getInstance()
+  const errorTracker = ErrorTrackingService.getInstance();
 
   // Handle unhandled promise rejections
   if (typeof window !== 'undefined') {
@@ -228,9 +231,9 @@ export const setupGlobalErrorHandling = () => {
         category: ErrorCategory.SYSTEM,
         message: `Unhandled promise rejection: ${event.reason}`,
         stack: event.reason?.stack,
-        metadata: { type: 'unhandled_rejection' }
-      })
-    })
+        metadata: { type: 'unhandled_rejection' },
+      });
+    });
 
     // Handle JavaScript errors
     window.addEventListener('error', (event) => {
@@ -243,50 +246,50 @@ export const setupGlobalErrorHandling = () => {
           type: 'javascript_error',
           filename: event.filename,
           lineno: event.lineno,
-          colno: event.colno
-        }
-      })
-    })
+          colno: event.colno,
+        },
+      });
+    });
   }
-}
+};
 
 // Convenience functions
 export const logError = (error: Partial<ErrorLog>) => {
-  ErrorTrackingService.getInstance().logError(error)
-}
+  ErrorTrackingService.getInstance().logError(error);
+};
 
 export const logCriticalError = (message: string, metadata?: Record<string, any>) => {
   logError({
     severity: ErrorSeverity.CRITICAL,
     category: ErrorCategory.SYSTEM,
     message,
-    metadata
-  })
-}
+    metadata,
+  });
+};
 
 export const logAuthError = (message: string, userId?: string) => {
   logError({
     severity: ErrorSeverity.HIGH,
     category: ErrorCategory.AUTHENTICATION,
     message,
-    userId
-  })
-}
+    userId,
+  });
+};
 
 export const logDatabaseError = (message: string, metadata?: Record<string, any>) => {
   logError({
     severity: ErrorSeverity.HIGH,
     category: ErrorCategory.DATABASE,
     message,
-    metadata
-  })
-}
+    metadata,
+  });
+};
 
 export const logApiError = (message: string, metadata?: Record<string, any>) => {
   logError({
     severity: ErrorSeverity.MEDIUM,
     category: ErrorCategory.API,
     message,
-    metadata
-  })
-}
+    metadata,
+  });
+};

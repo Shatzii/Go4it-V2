@@ -11,15 +11,17 @@ interface VideoUploadProps {
   className?: string;
 }
 
-export function VideoUpload({ 
-  onUpload, 
-  maxSize = 100, 
+export function VideoUpload({
+  onUpload,
+  maxSize = 100,
   acceptedFormats = ['video/mp4', 'video/webm', 'video/quicktime'],
-  className 
+  className,
 }: VideoUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>(
+    'idle',
+  );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -36,7 +38,7 @@ export function VideoUpload({
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       handleFileSelection(files[0]);
@@ -57,11 +59,11 @@ export function VideoUpload({
     }
 
     setSelectedFile(file);
-    
+
     // Create preview URL
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
-    
+
     setUploadStatus('idle');
   };
 
@@ -81,7 +83,7 @@ export function VideoUpload({
     try {
       // Simulate upload progress
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) {
             clearInterval(progressInterval);
             return 90;
@@ -91,7 +93,7 @@ export function VideoUpload({
       }, 200);
 
       await onUpload(selectedFile);
-      
+
       clearInterval(progressInterval);
       setUploadProgress(100);
       setUploadStatus('success');
@@ -122,13 +124,11 @@ export function VideoUpload({
             'border-2 border-dashed rounded-lg p-8 text-center transition-colors',
             isDragging
               ? 'border-blue-500 bg-blue-500/10'
-              : 'border-slate-600 hover:border-slate-500'
+              : 'border-slate-600 hover:border-slate-500',
           )}
         >
           <Upload className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-          <h3 className="text-lg font-medium text-white mb-2">
-            Upload your training video
-          </h3>
+          <h3 className="text-lg font-medium text-white mb-2">Upload your training video</h3>
           <p className="text-sm text-slate-400 mb-4">
             Drag and drop your video here, or click to select
           </p>
@@ -145,20 +145,14 @@ export function VideoUpload({
           >
             Select Video
           </label>
-          <p className="text-xs text-slate-500 mt-2">
-            Supports MP4, WebM, MOV up to {maxSize}MB
-          </p>
+          <p className="text-xs text-slate-500 mt-2">Supports MP4, WebM, MOV up to {maxSize}MB</p>
         </div>
       ) : (
         <div className="space-y-4">
           {/* Video Preview */}
           <div className="relative bg-slate-800 rounded-lg overflow-hidden">
             {previewUrl && (
-              <video
-                src={previewUrl}
-                controls
-                className="w-full h-64 object-cover"
-              >
+              <video src={previewUrl} controls className="w-full h-64 object-cover">
                 Your browser does not support the video tag.
               </video>
             )}
@@ -173,14 +167,12 @@ export function VideoUpload({
           {/* File Info */}
           <div className="bg-slate-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-white">
-                {selectedFile.name}
-              </span>
+              <span className="text-sm font-medium text-white">{selectedFile.name}</span>
               <span className="text-xs text-slate-400">
                 {(selectedFile.size / 1024 / 1024).toFixed(1)} MB
               </span>
             </div>
-            
+
             {/* Upload Progress */}
             {uploadStatus === 'uploading' && (
               <div className="mb-4">
@@ -206,25 +198,19 @@ export function VideoUpload({
                 uploadStatus === 'success'
                   ? 'bg-green-600 text-white'
                   : uploadStatus === 'error'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50',
               )}
             >
-              {uploadStatus === 'uploading' && (
-                <span>Uploading...</span>
-              )}
+              {uploadStatus === 'uploading' && <span>Uploading...</span>}
               {uploadStatus === 'success' && (
                 <span className="flex items-center justify-center">
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Upload Complete
                 </span>
               )}
-              {uploadStatus === 'error' && (
-                <span>Upload Failed - Try Again</span>
-              )}
-              {uploadStatus === 'idle' && (
-                <span>Analyze Video</span>
-              )}
+              {uploadStatus === 'error' && <span>Upload Failed - Try Again</span>}
+              {uploadStatus === 'idle' && <span>Analyze Video</span>}
             </button>
           </div>
         </div>

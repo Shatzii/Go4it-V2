@@ -1,18 +1,18 @@
 /**
  * Content Rules Service
- * 
+ *
  * This service generates content selection and adaptation rules based on learning profiles.
  * These rules are used to guide the AI content generation system in creating
  * personalized curriculum content for students.
  */
 
-import { 
-  LearningProfile, 
-  LearningStyle, 
-  Neurotype, 
+import {
+  LearningProfile,
+  LearningStyle,
+  Neurotype,
   AdaptationLevel,
   AdaptationCategory,
-  getContentAdaptationRecommendations
+  getContentAdaptationRecommendations,
 } from './learning-profile-service';
 
 /**
@@ -23,28 +23,28 @@ export enum ContentFormat {
   VISUAL = 'visual',
   AUDIO = 'audio',
   VIDEO = 'video',
-  INTERACTIVE = 'interactive'
+  INTERACTIVE = 'interactive',
 }
 
 export enum ContentComplexity {
   FOUNDATIONAL = 'foundational',
   STANDARD = 'standard',
   ADVANCED = 'advanced',
-  CHALLENGE = 'challenge'
+  CHALLENGE = 'challenge',
 }
 
 export enum ContentPace {
   DELIBERATE = 'deliberate',
   STANDARD = 'standard',
-  ACCELERATED = 'accelerated'
+  ACCELERATED = 'accelerated',
 }
 
 export enum PresentationStyle {
-  DIRECT = 'direct',                // Clear, straightforward presentation
-  NARRATIVE = 'narrative',          // Story-based presentation
-  EXPLORATORY = 'exploratory',      // Discovery-based presentation
-  SEQUENTIAL = 'sequential',        // Step-by-step presentation
-  CONCEPTUAL = 'conceptual'         // Big picture, concept-focused presentation
+  DIRECT = 'direct', // Clear, straightforward presentation
+  NARRATIVE = 'narrative', // Story-based presentation
+  EXPLORATORY = 'exploratory', // Discovery-based presentation
+  SEQUENTIAL = 'sequential', // Step-by-step presentation
+  CONCEPTUAL = 'conceptual', // Big picture, concept-focused presentation
 }
 
 /**
@@ -119,74 +119,49 @@ export async function generateContentRules(
   contentType: string,
   subject: string,
   gradeLevel: string,
-  tier: string
+  tier: string,
 ): Promise<ContentRules> {
   try {
     // Get content-specific adaptation recommendations
-    const adaptations = await getContentAdaptationRecommendations(
-      userId,
-      contentType,
-      subject
-    );
+    const adaptations = await getContentAdaptationRecommendations(userId, contentType, subject);
 
     // Determine primary format based on learning style
     const primaryFormat = determineContentFormat(profile.primaryStyle);
-    
+
     // Determine supporting formats
     const supportFormats = determineSupportFormats(
-      profile.primaryStyle, 
+      profile.primaryStyle,
       profile.secondaryStyle,
-      profile.contentPreferences
+      profile.contentPreferences,
     );
-    
+
     // Determine content complexity based on grade level and adaptation level
     const complexity = determineContentComplexity(gradeLevel, profile.adaptationLevel);
-    
+
     // Determine content pace based on neurotype and adaptation level
     const pace = determineContentPace(profile.neurotype, profile.adaptationLevel);
-    
+
     // Determine presentation style based on learning style and neurotype
-    const presentationStyle = determinePresentationStyle(
-      profile.primaryStyle, 
-      profile.neurotype
-    );
-    
+    const presentationStyle = determinePresentationStyle(profile.primaryStyle, profile.neurotype);
+
     // Create text adaptations based on profile and adaptation recommendations
-    const textAdaptations = createTextAdaptations(
-      profile,
-      adaptations
-    );
-    
+    const textAdaptations = createTextAdaptations(profile, adaptations);
+
     // Create visual adaptations
-    const visualAdaptations = createVisualAdaptations(
-      profile,
-      adaptations
-    );
-    
+    const visualAdaptations = createVisualAdaptations(profile, adaptations);
+
     // Create audio adaptations
-    const audioAdaptations = createAudioAdaptations(
-      profile,
-      adaptations
-    );
-    
+    const audioAdaptations = createAudioAdaptations(profile, adaptations);
+
     // Create interactive adaptations
-    const interactiveAdaptations = createInteractiveAdaptations(
-      profile,
-      adaptations
-    );
-    
+    const interactiveAdaptations = createInteractiveAdaptations(profile, adaptations);
+
     // Create organizational adaptations
-    const organizationalAdaptations = createOrganizationalAdaptations(
-      profile,
-      adaptations
-    );
-    
+    const organizationalAdaptations = createOrganizationalAdaptations(profile, adaptations);
+
     // Create focus adaptations
-    const focusAdaptations = createFocusAdaptations(
-      profile,
-      adaptations
-    );
-    
+    const focusAdaptations = createFocusAdaptations(profile, adaptations);
+
     // Compile the complete content rules
     const contentRules: ContentRules = {
       userId,
@@ -202,9 +177,9 @@ export async function generateContentRules(
       organizationalAdaptations,
       focusAdaptations,
       tier,
-      lastUpdated: new Date()
+      lastUpdated: new Date(),
     };
-    
+
     return contentRules;
   } catch (error) {
     console.error('Error generating content rules:', error);
@@ -242,44 +217,48 @@ function determineContentFormat(learningStyle: LearningStyle): ContentFormat {
 function determineSupportFormats(
   primaryStyle: LearningStyle,
   secondaryStyle: LearningStyle | null,
-  contentPreferences: LearningProfile['contentPreferences']
+  contentPreferences: LearningProfile['contentPreferences'],
 ): ContentFormat[] {
   const supportFormats: ContentFormat[] = [];
   const threshold = 5; // Minimum preference score to include a format
-  
+
   // Add format based on secondary learning style
   if (secondaryStyle) {
     supportFormats.push(determineContentFormat(secondaryStyle));
   }
-  
+
   // Add formats based on content preferences
-  if (contentPreferences.visualElements >= threshold && 
-      primaryStyle !== LearningStyle.VISUAL) {
+  if (contentPreferences.visualElements >= threshold && primaryStyle !== LearningStyle.VISUAL) {
     supportFormats.push(ContentFormat.VISUAL);
   }
-  
-  if (contentPreferences.audioElements >= threshold && 
-      primaryStyle !== LearningStyle.AUDITORY) {
+
+  if (contentPreferences.audioElements >= threshold && primaryStyle !== LearningStyle.AUDITORY) {
     supportFormats.push(ContentFormat.AUDIO);
   }
-  
-  if (contentPreferences.textElements >= threshold && 
-      primaryStyle !== LearningStyle.READING_WRITING) {
+
+  if (
+    contentPreferences.textElements >= threshold &&
+    primaryStyle !== LearningStyle.READING_WRITING
+  ) {
     supportFormats.push(ContentFormat.TEXT);
   }
-  
-  if (contentPreferences.interactiveElements >= threshold && 
-      primaryStyle !== LearningStyle.KINESTHETIC) {
+
+  if (
+    contentPreferences.interactiveElements >= threshold &&
+    primaryStyle !== LearningStyle.KINESTHETIC
+  ) {
     supportFormats.push(ContentFormat.INTERACTIVE);
   }
-  
+
   // Always include video as a support format if visual or auditory is primary
   // and the other is not already included
-  if ((primaryStyle === LearningStyle.VISUAL || primaryStyle === LearningStyle.AUDITORY) &&
-      !supportFormats.includes(ContentFormat.VIDEO)) {
+  if (
+    (primaryStyle === LearningStyle.VISUAL || primaryStyle === LearningStyle.AUDITORY) &&
+    !supportFormats.includes(ContentFormat.VIDEO)
+  ) {
     supportFormats.push(ContentFormat.VIDEO);
   }
-  
+
   // Remove duplicates
   return [...new Set(supportFormats)];
 }
@@ -292,11 +271,11 @@ function determineSupportFormats(
  */
 function determineContentComplexity(
   gradeLevel: string,
-  adaptationLevel: AdaptationLevel
+  adaptationLevel: AdaptationLevel,
 ): ContentComplexity {
   // Parse grade level
   const gradeNumber = parseInt(gradeLevel.replace(/\D/g, ''));
-  
+
   // Base complexity on grade level
   let baseComplexity: ContentComplexity;
   if (gradeNumber <= 2) {
@@ -308,7 +287,7 @@ function determineContentComplexity(
   } else {
     baseComplexity = ContentComplexity.CHALLENGE;
   }
-  
+
   // Adjust based on adaptation level
   if (adaptationLevel === AdaptationLevel.SIGNIFICANT) {
     // Step down complexity for significant adaptations
@@ -337,33 +316,33 @@ function determineContentComplexity(
  * @param adaptationLevel Adaptation level
  * @returns Content pace
  */
-function determineContentPace(
-  neurotype: Neurotype,
-  adaptationLevel: AdaptationLevel
-): ContentPace {
+function determineContentPace(neurotype: Neurotype, adaptationLevel: AdaptationLevel): ContentPace {
   if (adaptationLevel === AdaptationLevel.SIGNIFICANT) {
     return ContentPace.DELIBERATE;
   }
-  
+
   switch (neurotype) {
     case Neurotype.DYSLEXIA:
-      return adaptationLevel === AdaptationLevel.MODERATE ? 
-        ContentPace.DELIBERATE : ContentPace.STANDARD;
-      
+      return adaptationLevel === AdaptationLevel.MODERATE
+        ? ContentPace.DELIBERATE
+        : ContentPace.STANDARD;
+
     case Neurotype.AUTISM_SPECTRUM:
       // Some students with autism may prefer a deliberate pace
-      return adaptationLevel === AdaptationLevel.MODERATE ? 
-        ContentPace.DELIBERATE : ContentPace.STANDARD;
-      
+      return adaptationLevel === AdaptationLevel.MODERATE
+        ? ContentPace.DELIBERATE
+        : ContentPace.STANDARD;
+
     case Neurotype.ADHD:
       // Some students with ADHD may benefit from accelerated pace
       // to maintain engagement, unless adaptations are moderate
-      return adaptationLevel === AdaptationLevel.MODERATE ? 
-        ContentPace.STANDARD : ContentPace.ACCELERATED;
-      
+      return adaptationLevel === AdaptationLevel.MODERATE
+        ? ContentPace.STANDARD
+        : ContentPace.ACCELERATED;
+
     case Neurotype.NEUROTYPICAL:
       return ContentPace.STANDARD;
-      
+
     default:
       return ContentPace.STANDARD;
   }
@@ -377,48 +356,49 @@ function determineContentPace(
  */
 function determinePresentationStyle(
   learningStyle: LearningStyle,
-  neurotype: Neurotype
+  neurotype: Neurotype,
 ): PresentationStyle {
   // Base presentation style on learning style
   let baseStyle: PresentationStyle;
-  
+
   switch (learningStyle) {
     case LearningStyle.VISUAL:
       baseStyle = PresentationStyle.CONCEPTUAL; // Visual learners often prefer big picture
       break;
-      
+
     case LearningStyle.AUDITORY:
       baseStyle = PresentationStyle.NARRATIVE; // Auditory learners often prefer story-based
       break;
-      
+
     case LearningStyle.KINESTHETIC:
       baseStyle = PresentationStyle.EXPLORATORY; // Kinesthetic learners often prefer discovery
       break;
-      
+
     case LearningStyle.READING_WRITING:
       baseStyle = PresentationStyle.SEQUENTIAL; // Reading/writing learners often prefer logical steps
       break;
-      
+
     default:
       baseStyle = PresentationStyle.DIRECT;
   }
-  
+
   // Adjust based on neurotype
   switch (neurotype) {
     case Neurotype.DYSLEXIA:
       // Dyslexic students often benefit from sequential, direct presentation
       return PresentationStyle.SEQUENTIAL;
-      
+
     case Neurotype.ADHD:
       // Students with ADHD often benefit from narrative or exploratory styles
       // to maintain engagement, unless base style is already one of these
-      return (baseStyle === PresentationStyle.SEQUENTIAL || baseStyle === PresentationStyle.DIRECT) ? 
-        PresentationStyle.NARRATIVE : baseStyle;
-      
+      return baseStyle === PresentationStyle.SEQUENTIAL || baseStyle === PresentationStyle.DIRECT
+        ? PresentationStyle.NARRATIVE
+        : baseStyle;
+
     case Neurotype.AUTISM_SPECTRUM:
       // Students with autism often benefit from direct, sequential presentation
       return PresentationStyle.SEQUENTIAL;
-      
+
     default:
       return baseStyle;
   }
@@ -432,7 +412,7 @@ function determinePresentationStyle(
  */
 function createTextAdaptations(
   profile: LearningProfile,
-  adaptations: any
+  adaptations: any,
 ): ContentRules['textAdaptations'] {
   const textAdaptations: ContentRules['textAdaptations'] = {
     font: 'standard',
@@ -442,9 +422,9 @@ function createTextAdaptations(
     alignment: 'left',
     color: false,
     highlighting: false,
-    useReadingGuides: false
+    useReadingGuides: false,
   };
-  
+
   // Apply adaptations based on neurotype
   if (profile.neurotype === Neurotype.DYSLEXIA) {
     textAdaptations.font = 'dyslexic-friendly';
@@ -455,23 +435,22 @@ function createTextAdaptations(
     textAdaptations.highlighting = true;
     textAdaptations.useReadingGuides = true;
   }
-  
+
   // Apply adaptations based on learning style
   if (profile.primaryStyle === LearningStyle.VISUAL) {
     textAdaptations.color = true;
     textAdaptations.highlighting = true;
   }
-  
+
   // Check for specific text presentation adaptations in the profile
-  const textPresentationAdaptations = 
-    profile.adaptations[AdaptationCategory.TEXT_PRESENTATION];
-  
+  const textPresentationAdaptations = profile.adaptations[AdaptationCategory.TEXT_PRESENTATION];
+
   if (textPresentationAdaptations && textPresentationAdaptations.required) {
     // Apply more specific adaptations if required
     textAdaptations.fontSize = 'large';
     textAdaptations.lineSpacing = 'increased';
   }
-  
+
   return textAdaptations;
 }
 
@@ -483,7 +462,7 @@ function createTextAdaptations(
  */
 function createVisualAdaptations(
   profile: LearningProfile,
-  adaptations: any
+  adaptations: any,
 ): ContentRules['visualAdaptations'] {
   const visualAdaptations: ContentRules['visualAdaptations'] = {
     useDiagrams: false,
@@ -491,9 +470,9 @@ function createVisualAdaptations(
     useInfographics: false,
     colorCoding: false,
     reducedComplexity: false,
-    visualSchedules: false
+    visualSchedules: false,
   };
-  
+
   // Apply adaptations based on learning style
   if (profile.primaryStyle === LearningStyle.VISUAL) {
     visualAdaptations.useDiagrams = true;
@@ -504,7 +483,7 @@ function createVisualAdaptations(
     visualAdaptations.useDiagrams = true;
     visualAdaptations.colorCoding = true;
   }
-  
+
   // Apply adaptations based on neurotype
   if (profile.neurotype === Neurotype.AUTISM_SPECTRUM) {
     visualAdaptations.reducedComplexity = true;
@@ -512,14 +491,14 @@ function createVisualAdaptations(
   } else if (profile.neurotype === Neurotype.ADHD) {
     visualAdaptations.colorCoding = true;
   }
-  
+
   // Consider content preferences
   if (profile.contentPreferences.visualElements >= 7) {
     visualAdaptations.useDiagrams = true;
     visualAdaptations.useCharts = true;
     visualAdaptations.useInfographics = true;
   }
-  
+
   return visualAdaptations;
 }
 
@@ -531,15 +510,15 @@ function createVisualAdaptations(
  */
 function createAudioAdaptations(
   profile: LearningProfile,
-  adaptations: any
+  adaptations: any,
 ): ContentRules['audioAdaptations'] {
   const audioAdaptations: ContentRules['audioAdaptations'] = {
     provideAudioVersions: false,
     speechRate: 'normal',
     useBackgroundMusic: false,
-    emphasizeKeyInformation: false
+    emphasizeKeyInformation: false,
   };
-  
+
   // Apply adaptations based on learning style
   if (profile.primaryStyle === LearningStyle.AUDITORY) {
     audioAdaptations.provideAudioVersions = true;
@@ -547,7 +526,7 @@ function createAudioAdaptations(
   } else if (profile.secondaryStyle === LearningStyle.AUDITORY) {
     audioAdaptations.provideAudioVersions = true;
   }
-  
+
   // Apply adaptations based on neurotype
   if (profile.neurotype === Neurotype.DYSLEXIA) {
     audioAdaptations.provideAudioVersions = true;
@@ -556,12 +535,12 @@ function createAudioAdaptations(
   } else if (profile.neurotype === Neurotype.ADHD) {
     audioAdaptations.emphasizeKeyInformation = true;
   }
-  
+
   // Consider content preferences
   if (profile.contentPreferences.audioElements >= 7) {
     audioAdaptations.provideAudioVersions = true;
   }
-  
+
   return audioAdaptations;
 }
 
@@ -573,15 +552,15 @@ function createAudioAdaptations(
  */
 function createInteractiveAdaptations(
   profile: LearningProfile,
-  adaptations: any
+  adaptations: any,
 ): ContentRules['interactiveAdaptations'] {
   const interactiveAdaptations: ContentRules['interactiveAdaptations'] = {
     requireHandsOn: false,
     includeGameElements: false,
     allowExploratoryLearning: false,
-    provideSimulations: false
+    provideSimulations: false,
   };
-  
+
   // Apply adaptations based on learning style
   if (profile.primaryStyle === LearningStyle.KINESTHETIC) {
     interactiveAdaptations.requireHandsOn = true;
@@ -592,27 +571,27 @@ function createInteractiveAdaptations(
     interactiveAdaptations.includeGameElements = true;
     interactiveAdaptations.provideSimulations = true;
   }
-  
+
   // Apply adaptations based on neurotype
   if (profile.neurotype === Neurotype.ADHD) {
     interactiveAdaptations.includeGameElements = true;
     interactiveAdaptations.allowExploratoryLearning = true;
   }
-  
+
   // Consider content preferences
   if (profile.contentPreferences.interactiveElements >= 7) {
     interactiveAdaptations.requireHandsOn = true;
     interactiveAdaptations.includeGameElements = true;
   }
-  
+
   // Check for specific interactive adaptations in the profile
-  const interactiveElementAdaptations = 
+  const interactiveElementAdaptations =
     profile.adaptations[AdaptationCategory.INTERACTIVE_ELEMENTS];
-  
+
   if (interactiveElementAdaptations && interactiveElementAdaptations.required) {
     interactiveAdaptations.requireHandsOn = true;
   }
-  
+
   return interactiveAdaptations;
 }
 
@@ -624,15 +603,15 @@ function createInteractiveAdaptations(
  */
 function createOrganizationalAdaptations(
   profile: LearningProfile,
-  adaptations: any
+  adaptations: any,
 ): ContentRules['organizationalAdaptations'] {
   const organizationalAdaptations: ContentRules['organizationalAdaptations'] = {
     chunkInformation: false,
     provideOutlines: false,
     useCheckpoints: false,
-    breakComplexTasks: false
+    breakComplexTasks: false,
   };
-  
+
   // Apply adaptations based on neurotype
   if (profile.neurotype === Neurotype.ADHD) {
     organizationalAdaptations.chunkInformation = true;
@@ -645,7 +624,7 @@ function createOrganizationalAdaptations(
     organizationalAdaptations.provideOutlines = true;
     organizationalAdaptations.chunkInformation = true;
   }
-  
+
   // Apply adaptations based on adaptation level
   if (profile.adaptationLevel === AdaptationLevel.SIGNIFICANT) {
     organizationalAdaptations.chunkInformation = true;
@@ -656,16 +635,16 @@ function createOrganizationalAdaptations(
     organizationalAdaptations.chunkInformation = true;
     organizationalAdaptations.provideOutlines = true;
   }
-  
+
   // Check for specific content organization adaptations in the profile
-  const contentOrganizationAdaptations = 
+  const contentOrganizationAdaptations =
     profile.adaptations[AdaptationCategory.CONTENT_ORGANIZATION];
-  
+
   if (contentOrganizationAdaptations && contentOrganizationAdaptations.required) {
     organizationalAdaptations.chunkInformation = true;
     organizationalAdaptations.provideOutlines = true;
   }
-  
+
   return organizationalAdaptations;
 }
 
@@ -677,15 +656,15 @@ function createOrganizationalAdaptations(
  */
 function createFocusAdaptations(
   profile: LearningProfile,
-  adaptations: any
+  adaptations: any,
 ): ContentRules['focusAdaptations'] {
   const focusAdaptations: ContentRules['focusAdaptations'] = {
     minimizeDistractingElements: false,
     useTimers: false,
     provideBreakReminders: false,
-    emphasizeImportantContent: false
+    emphasizeImportantContent: false,
   };
-  
+
   // Apply adaptations based on neurotype
   if (profile.neurotype === Neurotype.ADHD) {
     focusAdaptations.minimizeDistractingElements = true;
@@ -695,30 +674,29 @@ function createFocusAdaptations(
   } else if (profile.neurotype === Neurotype.AUTISM_SPECTRUM) {
     focusAdaptations.minimizeDistractingElements = true;
   }
-  
+
   // Apply adaptations based on adaptation level
   if (profile.adaptationLevel === AdaptationLevel.SIGNIFICANT) {
     focusAdaptations.minimizeDistractingElements = true;
     focusAdaptations.emphasizeImportantContent = true;
   }
-  
+
   // Check for specific focus support adaptations in the profile
-  const focusSupportsAdaptations = 
-    profile.adaptations[AdaptationCategory.FOCUS_SUPPORTS];
-  
+  const focusSupportsAdaptations = profile.adaptations[AdaptationCategory.FOCUS_SUPPORTS];
+
   if (focusSupportsAdaptations && focusSupportsAdaptations.required) {
     focusAdaptations.minimizeDistractingElements = true;
     focusAdaptations.useTimers = profile.neurotype === Neurotype.ADHD;
     focusAdaptations.provideBreakReminders = profile.neurotype === Neurotype.ADHD;
   }
-  
+
   return focusAdaptations;
 }
 
 /**
  * Get content rules for a specific content request
  * @param userId User ID
- * @param contentType Type of content 
+ * @param contentType Type of content
  * @param subject Subject area
  * @param gradeLevel Grade level
  * @param tier Subscription tier
@@ -729,12 +707,12 @@ export async function getContentRules(
   contentType: string,
   subject: string,
   gradeLevel: string,
-  tier: string
+  tier: string,
 ): Promise<ContentRules | null> {
   try {
     // Placeholder for implementation that would fetch profile and generate rules
     // In a real implementation, this would check for cached rules and regenerate as needed
-    
+
     return null;
   } catch (error) {
     console.error('Error getting content rules:', error);

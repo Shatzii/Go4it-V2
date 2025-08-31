@@ -1,28 +1,38 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Drama, BookOpen, Calculator, Microscope, Globe, Palette, Users, Brain } from 'lucide-react'
-import { TEXAS_CURRICULUM_DATA } from '@/shared/texas-curriculum-schema'
+import { useState } from 'react';
+import Link from 'next/link';
+import {
+  ArrowLeft,
+  Drama,
+  BookOpen,
+  Calculator,
+  Microscope,
+  Globe,
+  Palette,
+  Users,
+  Brain,
+} from 'lucide-react';
+import { TEXAS_CURRICULUM_DATA } from '@/shared/texas-curriculum-schema';
 
 interface StudentProfile {
-  id: string
-  name: string
-  grade: string
-  school: string
-  learningStyle: string
-  accommodations: string[]
-  strengths: string[]
-  challenges: string[]
-  interests: string[]
-  parentEmail: string
-  emergencyContact: string
-  medicalNotes: string
+  id: string;
+  name: string;
+  grade: string;
+  school: string;
+  learningStyle: string;
+  accommodations: string[];
+  strengths: string[];
+  challenges: string[];
+  interests: string[];
+  parentEmail: string;
+  emergencyContact: string;
+  medicalNotes: string;
   technologyAccess: {
-    hasDevice: boolean
-    hasInternet: boolean
-    deviceType: string
-  }
+    hasDevice: boolean;
+    hasInternet: boolean;
+    deviceType: string;
+  };
 }
 
 // Secondary School Students (6-12)
@@ -40,7 +50,7 @@ const SECONDARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'david.chen@email.com',
     emergencyContact: '555-0789',
     medicalNotes: 'Dyslexia - needs extra time for reading',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '8',
@@ -55,7 +65,7 @@ const SECONDARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'james.davis@email.com',
     emergencyContact: '555-0890',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '9',
@@ -70,11 +80,11 @@ const SECONDARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'sarah.wilson@email.com',
     emergencyContact: '555-0123',
     medicalNotes: 'ADHD - needs movement breaks',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' },
   },
   {
     id: '10',
-    name: 'Aiden O\'Connor',
+    name: "Aiden O'Connor",
     grade: '9',
     school: 'secondary',
     learningStyle: 'multimodal',
@@ -85,7 +95,7 @@ const SECONDARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'sarah.oconnor@email.com',
     emergencyContact: '555-0012',
     medicalNotes: 'Anxiety disorder - needs calm environment',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' },
   },
   {
     id: '11',
@@ -100,7 +110,7 @@ const SECONDARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'miguel.garcia@email.com',
     emergencyContact: '555-0456',
     medicalNotes: 'Dyslexia - needs visual aids',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '12',
@@ -115,25 +125,30 @@ const SECONDARY_STUDENTS: StudentProfile[] = [
     parentEmail: 'jennifer.lee@email.com',
     emergencyContact: '555-0789',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' }
-  }
-]
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' },
+  },
+];
 
 export default function SecondarySchoolOnboarding() {
-  const [selectedStudent, setSelectedStudent] = useState<StudentProfile | null>(null)
-  const [generatedSchedule, setGeneratedSchedule] = useState<any>(null)
-  const [isGenerating, setIsGenerating] = useState(false)
+  const [selectedStudent, setSelectedStudent] = useState<StudentProfile | null>(null);
+  const [generatedSchedule, setGeneratedSchedule] = useState<any>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const generateSchedule = async (student: StudentProfile) => {
-    setIsGenerating(true)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    const gradeData = TEXAS_CURRICULUM_DATA.middle_school[student.grade as keyof typeof TEXAS_CURRICULUM_DATA.middle_school] ||
-                     TEXAS_CURRICULUM_DATA.high_school[student.grade as keyof typeof TEXAS_CURRICULUM_DATA.high_school]
-    
+    setIsGenerating(true);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const gradeData =
+      TEXAS_CURRICULUM_DATA.middle_school[
+        student.grade as keyof typeof TEXAS_CURRICULUM_DATA.middle_school
+      ] ||
+      TEXAS_CURRICULUM_DATA.high_school[
+        student.grade as keyof typeof TEXAS_CURRICULUM_DATA.high_school
+      ];
+
     if (!gradeData) {
-      setIsGenerating(false)
-      return
+      setIsGenerating(false);
+      return;
     }
 
     const schedule = {
@@ -151,81 +166,84 @@ export default function SecondarySchoolOnboarding() {
         room_number: `Studio ${100 + index}`,
         teks_standards: subject.standards,
         theatrical_theme: getTheatricalTheme(subject.subject),
-        accommodations: getAccommodationsForStudent(student, subject.subject)
+        accommodations: getAccommodationsForStudent(student, subject.subject),
       })),
       total_instructional_minutes: gradeData.total_instructional_minutes,
       meets_texas_requirements: true,
-      compliance_notes: `S.T.A.G.E Prep Academy schedule meets all Texas TEKS requirements for grade ${student.grade}.`
-    }
-    
-    setGeneratedSchedule(schedule)
-    setIsGenerating(false)
-  }
+      compliance_notes: `S.T.A.G.E Prep Academy schedule meets all Texas TEKS requirements for grade ${student.grade}.`,
+    };
+
+    setGeneratedSchedule(schedule);
+    setIsGenerating(false);
+  };
 
   const getTheatricalTheme = (subject: string) => {
     const themes = {
-      'english_language_arts': 'Literary Performance - Express through language!',
-      'mathematics': 'Mathematical Drama - Numbers come alive!',
-      'science': 'Scientific Theater - Discover and perform!',
-      'social_studies': 'Historical Stagecraft - Live the past!',
-      'fine_arts': 'Artistic Expression - Create and showcase!',
-      'physical_education': 'Movement Performance - Body as art!'
-    }
-    return themes[subject as keyof typeof themes] || 'Academic Performance'
-  }
+      english_language_arts: 'Literary Performance - Express through language!',
+      mathematics: 'Mathematical Drama - Numbers come alive!',
+      science: 'Scientific Theater - Discover and perform!',
+      social_studies: 'Historical Stagecraft - Live the past!',
+      fine_arts: 'Artistic Expression - Create and showcase!',
+      physical_education: 'Movement Performance - Body as art!',
+    };
+    return themes[subject as keyof typeof themes] || 'Academic Performance';
+  };
 
   const getTeacherForSubject = (subject: string) => {
     const teachers = {
-      'english_language_arts': 'Ms. Shakespeare (Drama Director)',
-      'mathematics': 'Professor Newton (Math Maestro)',
-      'science': 'Dr. Curie (Science Performer)',
-      'social_studies': 'Professor Timeline (History Director)',
-      'fine_arts': 'Maestro Picasso (Arts Director)',
-      'physical_education': 'Coach Performance (Movement Director)'
-    }
-    return teachers[subject as keyof typeof teachers] || 'Academic Director'
-  }
+      english_language_arts: 'Ms. Shakespeare (Drama Director)',
+      mathematics: 'Professor Newton (Math Maestro)',
+      science: 'Dr. Curie (Science Performer)',
+      social_studies: 'Professor Timeline (History Director)',
+      fine_arts: 'Maestro Picasso (Arts Director)',
+      physical_education: 'Coach Performance (Movement Director)',
+    };
+    return teachers[subject as keyof typeof teachers] || 'Academic Director';
+  };
 
   const getAccommodationsForStudent = (student: StudentProfile, subject: string) => {
-    const accommodations = []
-    
+    const accommodations = [];
+
     if (student.accommodations.includes('dyslexia')) {
-      accommodations.push('Script support with audio recordings')
-      accommodations.push('Extended rehearsal time')
-      accommodations.push('Visual cue cards')
+      accommodations.push('Script support with audio recordings');
+      accommodations.push('Extended rehearsal time');
+      accommodations.push('Visual cue cards');
     }
-    
+
     if (student.accommodations.includes('anxiety')) {
-      accommodations.push('Supportive performance environment')
-      accommodations.push('Gradual exposure to presentation')
-      accommodations.push('Calming backstage area')
+      accommodations.push('Supportive performance environment');
+      accommodations.push('Gradual exposure to presentation');
+      accommodations.push('Calming backstage area');
     }
-    
+
     if (student.accommodations.includes('adhd')) {
-      accommodations.push('Active role assignments')
-      accommodations.push('Movement incorporated into lessons')
-      accommodations.push('Frequent scene changes')
+      accommodations.push('Active role assignments');
+      accommodations.push('Movement incorporated into lessons');
+      accommodations.push('Frequent scene changes');
     }
-    
+
     if (student.learningStyle === 'auditory') {
-      accommodations.push('Audio-enhanced lessons')
-      accommodations.push('Musical integration')
+      accommodations.push('Audio-enhanced lessons');
+      accommodations.push('Musical integration');
     }
-    
+
     if (student.learningStyle === 'visual') {
-      accommodations.push('Visual storytelling techniques')
-      accommodations.push('Costume and prop integration')
+      accommodations.push('Visual storytelling techniques');
+      accommodations.push('Costume and prop integration');
     }
-    
-    return accommodations
-  }
+
+    return accommodations;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-50">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/schools/secondary" className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-4">
+          <Link
+            href="/schools/secondary"
+            className="inline-flex items-center gap-2 text-purple-600 hover:text-purple-700 mb-4"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back to S.T.A.G.E Prep Academy
           </Link>
@@ -234,8 +252,12 @@ export default function SecondarySchoolOnboarding() {
               <Drama className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">S.T.A.G.E Prep Academy Onboarding</h1>
-              <p className="text-gray-600">Create personalized academic performance schedules for grades 6-12</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                S.T.A.G.E Prep Academy Onboarding
+              </h1>
+              <p className="text-gray-600">
+                Create personalized academic performance schedules for grades 6-12
+              </p>
             </div>
           </div>
         </div>
@@ -264,10 +286,19 @@ export default function SecondarySchoolOnboarding() {
                     </div>
                   </div>
                   <div className="space-y-1 text-sm">
-                    <p className="text-gray-600">Learning Style: <span className="font-medium">{student.learningStyle}</span></p>
-                    <p className="text-gray-600">Interests: <span className="font-medium">{student.interests.slice(0, 2).join(', ')}</span></p>
+                    <p className="text-gray-600">
+                      Learning Style: <span className="font-medium">{student.learningStyle}</span>
+                    </p>
+                    <p className="text-gray-600">
+                      Interests:{' '}
+                      <span className="font-medium">
+                        {student.interests.slice(0, 2).join(', ')}
+                      </span>
+                    </p>
                     {student.accommodations[0] !== 'none' && (
-                      <p className="text-purple-600 font-medium">Special Support: {student.accommodations.join(', ')}</p>
+                      <p className="text-purple-600 font-medium">
+                        Special Support: {student.accommodations.join(', ')}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -291,26 +322,50 @@ export default function SecondarySchoolOnboarding() {
                 <ArrowLeft className="w-5 h-5" />
               </button>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mb-8">
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3">Academic Profile</h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Grade:</span> {selectedStudent.grade}</p>
-                  <p><span className="font-medium">Learning Style:</span> {selectedStudent.learningStyle}</p>
-                  <p><span className="font-medium">Parent Email:</span> {selectedStudent.parentEmail}</p>
-                  <p><span className="font-medium">Emergency Contact:</span> {selectedStudent.emergencyContact}</p>
+                  <p>
+                    <span className="font-medium">Grade:</span> {selectedStudent.grade}
+                  </p>
+                  <p>
+                    <span className="font-medium">Learning Style:</span>{' '}
+                    {selectedStudent.learningStyle}
+                  </p>
+                  <p>
+                    <span className="font-medium">Parent Email:</span> {selectedStudent.parentEmail}
+                  </p>
+                  <p>
+                    <span className="font-medium">Emergency Contact:</span>{' '}
+                    {selectedStudent.emergencyContact}
+                  </p>
                 </div>
               </div>
-              
+
               <div>
-                <h3 className="font-semibold text-gray-900 mb-3">Performance Strengths & Growth Areas</h3>
+                <h3 className="font-semibold text-gray-900 mb-3">
+                  Performance Strengths & Growth Areas
+                </h3>
                 <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Strengths:</span> {selectedStudent.strengths.join(', ')}</p>
-                  <p><span className="font-medium">Growth Areas:</span> {selectedStudent.challenges.join(', ')}</p>
-                  <p><span className="font-medium">Interests:</span> {selectedStudent.interests.join(', ')}</p>
+                  <p>
+                    <span className="font-medium">Strengths:</span>{' '}
+                    {selectedStudent.strengths.join(', ')}
+                  </p>
+                  <p>
+                    <span className="font-medium">Growth Areas:</span>{' '}
+                    {selectedStudent.challenges.join(', ')}
+                  </p>
+                  <p>
+                    <span className="font-medium">Interests:</span>{' '}
+                    {selectedStudent.interests.join(', ')}
+                  </p>
                   {selectedStudent.accommodations[0] !== 'none' && (
-                    <p><span className="font-medium">Special Support:</span> {selectedStudent.accommodations.join(', ')}</p>
+                    <p>
+                      <span className="font-medium">Special Support:</span>{' '}
+                      {selectedStudent.accommodations.join(', ')}
+                    </p>
                   )}
                 </div>
               </div>
@@ -336,7 +391,9 @@ export default function SecondarySchoolOnboarding() {
                 <Drama className="w-6 h-6 text-purple-500" />
                 {selectedStudent?.name}'s Performance Schedule
               </h2>
-              <p className="text-gray-600">{generatedSchedule.school_type} - Grade {generatedSchedule.grade_level}</p>
+              <p className="text-gray-600">
+                {generatedSchedule.school_type} - Grade {generatedSchedule.grade_level}
+              </p>
             </div>
 
             <div className="space-y-4">
@@ -348,23 +405,31 @@ export default function SecondarySchoolOnboarding() {
                         {period.period_number}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{period.subject.replace('_', ' ').toUpperCase()}</h3>
+                        <h3 className="font-semibold text-gray-900">
+                          {period.subject.replace('_', ' ').toUpperCase()}
+                        </h3>
                         <p className="text-sm text-purple-600">{period.theatrical_theme}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">{period.start_time} - {period.end_time}</p>
+                      <p className="text-sm font-medium text-gray-900">
+                        {period.start_time} - {period.end_time}
+                      </p>
                       <p className="text-sm text-gray-600">{period.room_number}</p>
                     </div>
                   </div>
-                  
+
                   <div className="text-sm text-gray-600 mb-2">
-                    <p><span className="font-medium">Director:</span> {period.teacher_name}</p>
+                    <p>
+                      <span className="font-medium">Director:</span> {period.teacher_name}
+                    </p>
                   </div>
-                  
+
                   {period.accommodations.length > 0 && (
                     <div className="bg-purple-50 rounded-lg p-3">
-                      <p className="text-sm font-medium text-purple-800 mb-1">Performance Support:</p>
+                      <p className="text-sm font-medium text-purple-800 mb-1">
+                        Performance Support:
+                      </p>
                       <ul className="text-sm text-purple-700 space-y-1">
                         {period.accommodations.map((acc: string, idx: number) => (
                           <li key={idx}>• {acc}</li>
@@ -387,8 +452,8 @@ export default function SecondarySchoolOnboarding() {
             <div className="mt-6 text-center">
               <button
                 onClick={() => {
-                  setSelectedStudent(null)
-                  setGeneratedSchedule(null)
+                  setSelectedStudent(null);
+                  setGeneratedSchedule(null);
                 }}
                 className="bg-gradient-to-r from-purple-500 to-blue-600 text-white px-8 py-3 rounded-lg hover:from-purple-600 hover:to-blue-700 transition-all font-semibold"
               >
@@ -399,5 +464,5 @@ export default function SecondarySchoolOnboarding() {
         )}
       </div>
     </div>
-  )
+  );
 }

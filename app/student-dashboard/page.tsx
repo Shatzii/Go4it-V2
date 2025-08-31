@@ -5,57 +5,57 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BookOpen, 
-  Trophy, 
-  Target, 
-  Calendar, 
-  Bell, 
+import {
+  BookOpen,
+  Trophy,
+  Target,
+  Calendar,
+  Bell,
   PlayCircle,
   TrendingUp,
   Star,
   Clock,
-  Award
+  Award,
 } from 'lucide-react';
 
 export default function StudentDashboardPage() {
   const studentData = {
-    name: "Alex Johnson",
-    sport: "Basketball",
-    position: "Point Guard",
+    name: 'Alex Johnson',
+    sport: 'Basketball',
+    position: 'Point Guard',
     garScore: 8.5,
-    level: "Varsity",
+    level: 'Varsity',
     achievements: [
-      { title: "First Triple-Double", date: "2 days ago", icon: Trophy },
-      { title: "Improved Free Throw %", date: "1 week ago", icon: Target },
-      { title: "Team Captain", date: "2 weeks ago", icon: Star }
+      { title: 'First Triple-Double', date: '2 days ago', icon: Trophy },
+      { title: 'Improved Free Throw %', date: '1 week ago', icon: Target },
+      { title: 'Team Captain', date: '2 weeks ago', icon: Star },
     ],
     starPathProgress: {
       level: 12,
       xp: 2850,
       nextLevelXp: 3000,
       completedChallenges: 45,
-      totalChallenges: 60
+      totalChallenges: 60,
     },
     upcomingEvents: [
-      { title: "Practice Session", time: "4:00 PM", type: "practice" },
-      { title: "Game vs. Eagles", time: "Friday 6:00 PM", type: "game" },
-      { title: "Video Analysis", time: "Saturday 2:00 PM", type: "analysis" }
+      { title: 'Practice Session', time: '4:00 PM', type: 'practice' },
+      { title: 'Game vs. Eagles', time: 'Friday 6:00 PM', type: 'game' },
+      { title: 'Video Analysis', time: 'Saturday 2:00 PM', type: 'analysis' },
     ],
     recentVideos: [
-      { title: "Scrimmage Highlights", date: "Yesterday", score: 8.7 },
-      { title: "Free Throw Practice", date: "3 days ago", score: 9.2 },
-      { title: "Defensive Drills", date: "1 week ago", score: 7.8 }
+      { title: 'Scrimmage Highlights', date: 'Yesterday', score: 8.7 },
+      { title: 'Free Throw Practice', date: '3 days ago', score: 9.2 },
+      { title: 'Defensive Drills', date: '1 week ago', score: 7.8 },
     ],
     academicProgress: {
       gpa: 3.8,
       courses: [
-        { name: "Mathematics", grade: "A-", progress: 92 },
-        { name: "English", grade: "B+", progress: 88 },
-        { name: "Science", grade: "A", progress: 95 },
-        { name: "History", grade: "B", progress: 85 }
-      ]
-    }
+        { name: 'Mathematics', grade: 'A-', progress: 92 },
+        { name: 'English', grade: 'B+', progress: 88 },
+        { name: 'Science', grade: 'A', progress: 95 },
+        { name: 'History', grade: 'B', progress: 85 },
+      ],
+    },
   };
 
   return (
@@ -72,7 +72,10 @@ export default function StudentDashboardPage() {
                 {studentData.position} • {studentData.sport} • {studentData.level}
               </p>
             </div>
-            <Button onClick={() => window.location.href = '/starpath'} className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+            <Button
+              onClick={() => (window.location.href = '/starpath')}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+            >
               <Star className="w-4 h-4 mr-2" />
               StarPath Hub
             </Button>
@@ -92,37 +95,43 @@ export default function StudentDashboardPage() {
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <Star className="w-5 h-5 text-purple-500" />
                 <div>
-                  <p className="text-2xl font-bold text-purple-600">{studentData.starPathProgress.level}</p>
+                  <p className="text-2xl font-bold text-purple-600">
+                    {studentData.starPathProgress.level}
+                  </p>
                   <p className="text-sm text-gray-600">StarPath Level</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5 text-blue-500" />
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{studentData.academicProgress.gpa}</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {studentData.academicProgress.gpa}
+                  </p>
                   <p className="text-sm text-gray-600">GPA</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold text-green-600">{studentData.starPathProgress.completedChallenges}</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {studentData.starPathProgress.completedChallenges}
+                  </p>
                   <p className="text-sm text-gray-600">Challenges</p>
                 </div>
               </div>
@@ -141,7 +150,8 @@ export default function StudentDashboardPage() {
                   StarPath Progress
                 </CardTitle>
                 <CardDescription>
-                  Level {studentData.starPathProgress.level} • {studentData.starPathProgress.xp}/{studentData.starPathProgress.nextLevelXp} XP
+                  Level {studentData.starPathProgress.level} • {studentData.starPathProgress.xp}/
+                  {studentData.starPathProgress.nextLevelXp} XP
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -150,23 +160,44 @@ export default function StudentDashboardPage() {
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium">Level Progress</span>
                       <span className="text-sm text-gray-500">
-                        {Math.round((studentData.starPathProgress.xp / studentData.starPathProgress.nextLevelXp) * 100)}%
+                        {Math.round(
+                          (studentData.starPathProgress.xp /
+                            studentData.starPathProgress.nextLevelXp) *
+                            100,
+                        )}
+                        %
                       </span>
                     </div>
-                    <Progress value={(studentData.starPathProgress.xp / studentData.starPathProgress.nextLevelXp) * 100} />
+                    <Progress
+                      value={
+                        (studentData.starPathProgress.xp /
+                          studentData.starPathProgress.nextLevelXp) *
+                        100
+                      }
+                    />
                   </div>
-                  
+
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-sm font-medium">Challenge Completion</span>
                       <span className="text-sm text-gray-500">
-                        {studentData.starPathProgress.completedChallenges}/{studentData.starPathProgress.totalChallenges}
+                        {studentData.starPathProgress.completedChallenges}/
+                        {studentData.starPathProgress.totalChallenges}
                       </span>
                     </div>
-                    <Progress value={(studentData.starPathProgress.completedChallenges / studentData.starPathProgress.totalChallenges) * 100} />
+                    <Progress
+                      value={
+                        (studentData.starPathProgress.completedChallenges /
+                          studentData.starPathProgress.totalChallenges) *
+                        100
+                      }
+                    />
                   </div>
-                  
-                  <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => window.location.href = '/starpath'}>
+
+                  <Button
+                    className="w-full bg-primary hover:bg-primary/90"
+                    onClick={() => (window.location.href = '/starpath')}
+                  >
                     <Star className="w-4 h-4 mr-2" />
                     View Full StarPath
                   </Button>
@@ -185,7 +216,10 @@ export default function StudentDashboardPage() {
               <CardContent>
                 <div className="space-y-3">
                   {studentData.recentVideos.map((video, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <PlayCircle className="w-8 h-8 text-blue-500" />
                         <div>
@@ -210,9 +244,7 @@ export default function StudentDashboardPage() {
                   <BookOpen className="w-5 h-5" />
                   Academic Progress
                 </CardTitle>
-                <CardDescription>
-                  Current GPA: {studentData.academicProgress.gpa}
-                </CardDescription>
+                <CardDescription>Current GPA: {studentData.academicProgress.gpa}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -246,7 +278,10 @@ export default function StudentDashboardPage() {
               <CardContent>
                 <div className="space-y-3">
                   {studentData.achievements.map((achievement, index) => (
-                    <div key={index} className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg"
+                    >
                       <achievement.icon className="w-6 h-6 text-yellow-600" />
                       <div>
                         <p className="font-medium text-sm">{achievement.title}</p>
@@ -291,19 +326,35 @@ export default function StudentDashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/starpath'}>
+                  <Button
+                    className="w-full justify-start"
+                    variant="outline"
+                    onClick={() => (window.location.href = '/starpath')}
+                  >
                     <Star className="w-4 h-4 mr-2" />
                     View StarPath Hub
                   </Button>
-                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/gar-upload'}>
+                  <Button
+                    className="w-full justify-start"
+                    variant="outline"
+                    onClick={() => (window.location.href = '/gar-upload')}
+                  >
                     <Target className="w-4 h-4 mr-2" />
                     Get GAR Analysis
                   </Button>
-                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/ai-coach'}>
+                  <Button
+                    className="w-full justify-start"
+                    variant="outline"
+                    onClick={() => (window.location.href = '/ai-coach')}
+                  >
                     <Trophy className="w-4 h-4 mr-2" />
                     AI Coach Training
                   </Button>
-                  <Button className="w-full justify-start" variant="outline" onClick={() => window.location.href = '/academy'}>
+                  <Button
+                    className="w-full justify-start"
+                    variant="outline"
+                    onClick={() => (window.location.href = '/academy')}
+                  >
                     <BookOpen className="w-4 h-4 mr-2" />
                     Academy Courses
                   </Button>

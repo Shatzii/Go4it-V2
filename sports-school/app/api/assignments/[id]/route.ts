@@ -24,7 +24,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     return NextResponse.json(assignment);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid assignment data', details: error.errors }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Invalid assignment data', details: error.errors },
+        { status: 400 },
+      );
     }
     console.error('Error updating assignment:', error);
     return NextResponse.json({ error: 'Failed to update assignment' }, { status: 500 });

@@ -1,14 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
-    
+    const user = await getUserFromRequest(request);
+
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     // Mock analytics dashboard data
     const dashboardData = {
       userId: user.id,
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         avgGarScore: 85,
         improvement: 15,
         hoursAnalyzed: 12.5,
-        streakDays: 7
+        streakDays: 7,
       },
       charts: {
         performanceOverTime: [
@@ -28,35 +28,35 @@ export async function GET(request: NextRequest) {
           { date: '2024-07-04', score: 83 },
           { date: '2024-07-05', score: 85 },
           { date: '2024-07-06', score: 87 },
-          { date: '2024-07-07', score: 85 }
+          { date: '2024-07-07', score: 85 },
         ],
         skillBreakdown: [
           { skill: 'Shooting', score: 88 },
           { skill: 'Passing', score: 82 },
           { skill: 'Dribbling', score: 90 },
           { skill: 'Defense', score: 78 },
-          { skill: 'Positioning', score: 85 }
-        ]
+          { skill: 'Positioning', score: 85 },
+        ],
       },
       recentActivity: [
         {
           type: 'analysis',
           description: 'Completed game footage analysis',
           timestamp: new Date().toISOString(),
-          score: 87
+          score: 87,
         },
         {
           type: 'achievement',
           description: 'Reached Elite ranking',
           timestamp: new Date(Date.now() - 86400000).toISOString(),
-          score: null
-        }
-      ]
-    }
-    
-    return NextResponse.json({ dashboard: dashboardData })
+          score: null,
+        },
+      ],
+    };
+
+    return NextResponse.json({ dashboard: dashboardData });
   } catch (error) {
-    console.error('Error fetching analytics dashboard:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching analytics dashboard:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

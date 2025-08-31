@@ -13,7 +13,10 @@ const createCouponSchema = z.object({
   discountValue: z.string(),
   maxUses: z.number().optional(),
   validFrom: z.string().transform((str) => new Date(str)),
-  validUntil: z.string().optional().transform((str) => str ? new Date(str) : undefined),
+  validUntil: z
+    .string()
+    .optional()
+    .transform((str) => (str ? new Date(str) : undefined)),
   applicablePlans: z.array(z.string()).optional(),
   minimumAmount: z.string().optional(),
 });
@@ -27,7 +30,7 @@ export async function POST(request: NextRequest) {
     if (action === 'init') {
       // Initialize predefined coupons
       const results = [];
-      
+
       for (const couponData of PREDEFINED_COUPONS) {
         try {
           // Check if coupon already exists
@@ -72,10 +75,13 @@ export async function POST(request: NextRequest) {
       .limit(1);
 
     if (existingCoupon.length > 0) {
-      return NextResponse.json({
-        success: false,
-        error: 'Coupon code already exists',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Coupon code already exists',
+        },
+        { status: 400 },
+      );
     }
 
     // Create new coupon
@@ -91,22 +97,27 @@ export async function POST(request: NextRequest) {
       message: 'Coupon created successfully',
       couponId,
     });
-
   } catch (error) {
     console.error('Admin coupon error:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid coupon data',
-        details: error.errors,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Invalid coupon data',
+          details: error.errors,
+        },
+        { status: 400 },
+      );
     }
 
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error',
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -115,7 +126,7 @@ export async function GET() {
   try {
     const allCoupons = await db.select().from(coupons);
 
-    const formattedCoupons = allCoupons.map(coupon => ({
+    const formattedCoupons = allCoupons.map((coupon) => ({
       ...coupon,
       usagePercentage: coupon.maxUses ? (coupon.currentUses / coupon.maxUses) * 100 : 0,
       isExpired: coupon.validUntil ? new Date() > coupon.validUntil : false,
@@ -127,17 +138,19 @@ export async function GET() {
       coupons: formattedCoupons,
       total: formattedCoupons.length,
       stats: {
-        active: formattedCoupons.filter(c => c.isActive).length,
-        expired: formattedCoupons.filter(c => c.isExpired).length,
+        active: formattedCoupons.filter((c) => c.isActive).length,
+        expired: formattedCoupons.filter((c) => c.isExpired).length,
         totalUses: formattedCoupons.reduce((sum, c) => sum + c.currentUses, 0),
       },
     });
-
   } catch (error) {
     console.error('Get admin coupons error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error',
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Internal server error',
+      },
+      { status: 500 },
+    );
   }
 }

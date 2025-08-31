@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function CommunicationsHub() {
-  const [activeTab, setActiveTab] = useState('messages')
-  const [composeOpen, setComposeOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('messages');
+  const [composeOpen, setComposeOpen] = useState(false);
 
   // Sample message data
   const messages = [
@@ -21,7 +21,7 @@ export default function CommunicationsHub() {
       readCount: 847,
       totalRecipients: 1205,
       language: 'English',
-      hasTranslation: true
+      hasTranslation: true,
     },
     {
       id: '2',
@@ -35,13 +35,13 @@ export default function CommunicationsHub() {
       readCount: 1150,
       totalRecipients: 1205,
       language: 'English',
-      hasTranslation: true
+      hasTranslation: true,
     },
     {
       id: '3',
       type: 'individual',
       subject: 'IEP Meeting Scheduled',
-      content: 'Your child\'s annual IEP meeting has been scheduled for February 5th at 2:00 PM.',
+      content: "Your child's annual IEP meeting has been scheduled for February 5th at 2:00 PM.",
       recipients: 'Martinez Family',
       sentBy: 'Special Ed Coordinator',
       sentAt: '2025-01-23 02:45 PM',
@@ -49,17 +49,17 @@ export default function CommunicationsHub() {
       readCount: 1,
       totalRecipients: 1,
       language: 'Spanish',
-      hasTranslation: false
-    }
-  ]
+      hasTranslation: false,
+    },
+  ];
 
   const templates = [
     { id: '1', name: 'Absence Notification', category: 'Attendance', usage: 45 },
     { id: '2', name: 'IEP Meeting Notice', category: 'Special Education', usage: 23 },
     { id: '3', name: 'Field Trip Permission', category: 'Activities', usage: 12 },
     { id: '4', name: 'Parent Conference Invite', category: 'Academic', usage: 89 },
-    { id: '5', name: 'Emergency Alert', category: 'Safety', usage: 3 }
-  ]
+    { id: '5', name: 'Emergency Alert', category: 'Safety', usage: 3 },
+  ];
 
   const campaigns = [
     {
@@ -70,7 +70,7 @@ export default function CommunicationsHub() {
       startDate: '2025-01-15',
       endDate: '2025-02-01',
       messagesCount: 5,
-      engagement: 94.2
+      engagement: 94.2,
     },
     {
       id: '2',
@@ -80,9 +80,9 @@ export default function CommunicationsHub() {
       startDate: '2025-02-15',
       endDate: '2025-04-30',
       messagesCount: 8,
-      engagement: 0
-    }
-  ]
+      engagement: 0,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -90,11 +90,14 @@ export default function CommunicationsHub() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/admin/dashboard" className="text-indigo-600 font-semibold text-lg hover:text-indigo-500">
+            <Link
+              href="/admin/dashboard"
+              className="text-indigo-600 font-semibold text-lg hover:text-indigo-500"
+            >
               ← Admin Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Communications Hub</h1>
-            <button 
+            <button
               onClick={() => setComposeOpen(true)}
               className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
@@ -118,7 +121,7 @@ export default function CommunicationsHub() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -130,7 +133,7 @@ export default function CommunicationsHub() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -142,7 +145,7 @@ export default function CommunicationsHub() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -164,7 +167,7 @@ export default function CommunicationsHub() {
                 { id: 'messages', name: 'Messages', icon: '📧' },
                 { id: 'templates', name: 'Templates', icon: '📝' },
                 { id: 'campaigns', name: 'Campaigns', icon: '📊' },
-                { id: 'analytics', name: 'Analytics', icon: '📈' }
+                { id: 'analytics', name: 'Analytics', icon: '📈' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -200,18 +203,22 @@ export default function CommunicationsHub() {
                     </select>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   {messages.map((message) => (
                     <div key={message.id} className="border rounded-lg p-4 hover:bg-gray-50">
                       <div className="flex justify-between items-start mb-3">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              message.type === 'announcement' ? 'bg-blue-100 text-blue-800' :
-                              message.type === 'alert' ? 'bg-red-100 text-red-800' :
-                              'bg-green-100 text-green-800'
-                            }`}>
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                message.type === 'announcement'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : message.type === 'alert'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-green-100 text-green-800'
+                              }`}
+                            >
                               {message.type.charAt(0).toUpperCase() + message.type.slice(1)}
                             </span>
                             {message.hasTranslation && (
@@ -229,17 +236,20 @@ export default function CommunicationsHub() {
                         </div>
                       </div>
                       <div className="flex justify-between items-center text-sm">
-                        <div className="text-gray-600">
-                          To: {message.recipients}
-                        </div>
+                        <div className="text-gray-600">To: {message.recipients}</div>
                         <div className="flex items-center space-x-4">
                           <span className="text-green-600">
-                            {message.readCount}/{message.totalRecipients} read ({((message.readCount/message.totalRecipients)*100).toFixed(1)}%)
+                            {message.readCount}/{message.totalRecipients} read (
+                            {((message.readCount / message.totalRecipients) * 100).toFixed(1)}%)
                           </span>
                           <div className="flex space-x-2">
                             <button className="text-indigo-600 hover:text-indigo-800">View</button>
-                            <button className="text-indigo-600 hover:text-indigo-800">Resend</button>
-                            <button className="text-indigo-600 hover:text-indigo-800">Analytics</button>
+                            <button className="text-indigo-600 hover:text-indigo-800">
+                              Resend
+                            </button>
+                            <button className="text-indigo-600 hover:text-indigo-800">
+                              Analytics
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -257,7 +267,7 @@ export default function CommunicationsHub() {
                     + Create Template
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {templates.map((template) => (
                     <div key={template.id} className="border rounded-lg p-4">
@@ -290,7 +300,7 @@ export default function CommunicationsHub() {
                     + Create Campaign
                   </button>
                 </div>
-                
+
                 <div className="space-y-4">
                   {campaigns.map((campaign) => (
                     <div key={campaign.id} className="border rounded-lg p-6">
@@ -299,11 +309,15 @@ export default function CommunicationsHub() {
                           <h4 className="font-semibold text-gray-900 text-lg">{campaign.name}</h4>
                           <p className="text-sm text-gray-600">{campaign.type}</p>
                         </div>
-                        <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
-                          campaign.status === 'active' ? 'bg-green-100 text-green-800' :
-                          campaign.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span
+                          className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+                            campaign.status === 'active'
+                              ? 'bg-green-100 text-green-800'
+                              : campaign.status === 'scheduled'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-gray-100 text-gray-800'
+                          }`}
+                        >
                           {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
                         </span>
                       </div>
@@ -326,7 +340,9 @@ export default function CommunicationsHub() {
                         </div>
                       </div>
                       <div className="mt-4 flex space-x-2">
-                        <button className="text-indigo-600 hover:text-indigo-800">View Details</button>
+                        <button className="text-indigo-600 hover:text-indigo-800">
+                          View Details
+                        </button>
                         <button className="text-indigo-600 hover:text-indigo-800">Edit</button>
                         <button className="text-indigo-600 hover:text-indigo-800">Analytics</button>
                       </div>
@@ -338,8 +354,10 @@ export default function CommunicationsHub() {
 
             {activeTab === 'analytics' && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Communication Analytics</h3>
-                
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  Communication Analytics
+                </h3>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="bg-gray-50 p-6 rounded-lg">
                     <h4 className="font-semibold text-gray-900 mb-4">Engagement Metrics</h4>
@@ -370,7 +388,10 @@ export default function CommunicationsHub() {
                         <span>English</span>
                         <div className="flex items-center space-x-2">
                           <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div className="bg-blue-500 h-2 rounded-full" style={{width: '78%'}}></div>
+                            <div
+                              className="bg-blue-500 h-2 rounded-full"
+                              style={{ width: '78%' }}
+                            ></div>
                           </div>
                           <span className="text-sm">78%</span>
                         </div>
@@ -379,7 +400,10 @@ export default function CommunicationsHub() {
                         <span>Spanish</span>
                         <div className="flex items-center space-x-2">
                           <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div className="bg-green-500 h-2 rounded-full" style={{width: '15%'}}></div>
+                            <div
+                              className="bg-green-500 h-2 rounded-full"
+                              style={{ width: '15%' }}
+                            ></div>
                           </div>
                           <span className="text-sm">15%</span>
                         </div>
@@ -388,7 +412,10 @@ export default function CommunicationsHub() {
                         <span>Vietnamese</span>
                         <div className="flex items-center space-x-2">
                           <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div className="bg-purple-500 h-2 rounded-full" style={{width: '4%'}}></div>
+                            <div
+                              className="bg-purple-500 h-2 rounded-full"
+                              style={{ width: '4%' }}
+                            ></div>
                           </div>
                           <span className="text-sm">4%</span>
                         </div>
@@ -397,7 +424,10 @@ export default function CommunicationsHub() {
                         <span>Arabic</span>
                         <div className="flex items-center space-x-2">
                           <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div className="bg-yellow-500 h-2 rounded-full" style={{width: '2%'}}></div>
+                            <div
+                              className="bg-yellow-500 h-2 rounded-full"
+                              style={{ width: '2%' }}
+                            ></div>
                           </div>
                           <span className="text-sm">2%</span>
                         </div>
@@ -406,7 +436,10 @@ export default function CommunicationsHub() {
                         <span>Other</span>
                         <div className="flex items-center space-x-2">
                           <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div className="bg-gray-500 h-2 rounded-full" style={{width: '1%'}}></div>
+                            <div
+                              className="bg-gray-500 h-2 rounded-full"
+                              style={{ width: '1%' }}
+                            ></div>
                           </div>
                           <span className="text-sm">1%</span>
                         </div>
@@ -425,7 +458,7 @@ export default function CommunicationsHub() {
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Compose New Message</h3>
-                <button 
+                <button
                   onClick={() => setComposeOpen(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
@@ -435,7 +468,9 @@ export default function CommunicationsHub() {
               <form className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Message Type</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Message Type
+                    </label>
                     <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
                       <option>Announcement</option>
                       <option>Alert</option>
@@ -443,7 +478,9 @@ export default function CommunicationsHub() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Recipients</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Recipients
+                    </label>
                     <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
                       <option>All Parents</option>
                       <option>Grade Level</option>
@@ -454,15 +491,15 @@ export default function CommunicationsHub() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     placeholder="Enter message subject..."
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                  <textarea 
+                  <textarea
                     rows={6}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     placeholder="Type your message..."
@@ -479,14 +516,14 @@ export default function CommunicationsHub() {
                   </label>
                 </div>
                 <div className="flex justify-end space-x-3">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setComposeOpen(false)}
                     className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     type="submit"
                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                   >
@@ -499,5 +536,5 @@ export default function CommunicationsHub() {
         )}
       </div>
     </div>
-  )
+  );
 }

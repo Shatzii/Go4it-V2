@@ -30,29 +30,23 @@ export default function Error({
           <p className="text-red-300">
             An unexpected error occurred while loading this page. This might be a temporary issue.
           </p>
-          
+
           <div className="bg-red-900/20 p-3 rounded-lg">
             <p className="text-xs text-red-200 font-mono">
               Error: {error.message || 'Unknown error'}
             </p>
             {error.digest && (
-              <p className="text-xs text-red-200 font-mono mt-1">
-                Digest: {error.digest}
-              </p>
+              <p className="text-xs text-red-200 font-mono mt-1">Digest: {error.digest}</p>
             )}
           </div>
-          
+
           <div className="flex gap-2">
-            <Button 
-              onClick={reset}
-              className="flex-1 bg-red-600 hover:bg-red-700"
-              size="sm"
-            >
+            <Button onClick={reset} className="flex-1 bg-red-600 hover:bg-red-700" size="sm">
               <RefreshCw className="w-4 h-4 mr-2" />
               Try Again
             </Button>
-            <Button 
-              onClick={() => window.location.href = '/'}
+            <Button
+              onClick={() => (window.location.href = '/')}
               className="flex-1 bg-gray-600 hover:bg-gray-700"
               size="sm"
               variant="outline"

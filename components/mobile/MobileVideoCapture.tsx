@@ -1,167 +1,167 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { Camera, Video, Square, Upload, RotateCw, Zap, ZapOff, Check, X } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react';
+import { Camera, Video, Square, Upload, RotateCw, Zap, ZapOff, Check, X } from 'lucide-react';
 
 export function MobileVideoCapture() {
-  const [isRecording, setIsRecording] = useState(false)
-  const [hasRecording, setHasRecording] = useState(false)
-  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment')
-  const [flashEnabled, setFlashEnabled] = useState(false)
-  const [countdown, setCountdown] = useState(0)
-  const [isPreview, setIsPreview] = useState(false)
-  
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
-  const streamRef = useRef<MediaStream | null>(null)
+  const [isRecording, setIsRecording] = useState(false);
+  const [hasRecording, setHasRecording] = useState(false);
+  const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
+  const [flashEnabled, setFlashEnabled] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [isPreview, setIsPreview] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
-    startCamera()
+    startCamera();
     return () => {
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop())
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
-    }
-  }, [facingMode])
+    };
+  }, [facingMode]);
 
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode },
-        audio: true
-      })
-      
+        audio: true,
+      });
+
       if (videoRef.current) {
-        videoRef.current.srcObject = stream
+        videoRef.current.srcObject = stream;
       }
-      
-      streamRef.current = stream
+
+      streamRef.current = stream;
     } catch (error) {
-      console.error('Error accessing camera:', error)
+      console.error('Error accessing camera:', error);
     }
-  }
+  };
 
   const startRecording = async () => {
-    if (!streamRef.current) return
+    if (!streamRef.current) return;
 
     // Start countdown
-    setCountdown(3)
+    setCountdown(3);
     const countdownInterval = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev) => {
         if (prev === 1) {
-          clearInterval(countdownInterval)
-          beginRecording()
-          return 0
+          clearInterval(countdownInterval);
+          beginRecording();
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
-  }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const beginRecording = () => {
-    if (!streamRef.current) return
+    if (!streamRef.current) return;
 
     const mediaRecorder = new MediaRecorder(streamRef.current, {
-      mimeType: 'video/webm;codecs=vp8,opus'
-    })
+      mimeType: 'video/webm;codecs=vp8,opus',
+    });
 
-    mediaRecorderRef.current = mediaRecorder
-    chunksRef.current = []
+    mediaRecorderRef.current = mediaRecorder;
+    chunksRef.current = [];
 
     mediaRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
-        chunksRef.current.push(event.data)
+        chunksRef.current.push(event.data);
       }
-    }
+    };
 
     mediaRecorder.onstop = () => {
-      const blob = new Blob(chunksRef.current, { type: 'video/webm' })
-      setRecordedBlob(blob)
-      setHasRecording(true)
-      setIsPreview(true)
-      
+      const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+      setRecordedBlob(blob);
+      setHasRecording(true);
+      setIsPreview(true);
+
       // Stop the live stream
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop())
-        streamRef.current = null
+        streamRef.current.getTracks().forEach((track) => track.stop());
+        streamRef.current = null;
       }
-    }
+    };
 
-    mediaRecorder.start()
-    setIsRecording(true)
-  }
+    mediaRecorder.start();
+    setIsRecording(true);
+  };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-      mediaRecorderRef.current.stop()
-      setIsRecording(false)
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
     }
-  }
+  };
 
   const toggleCamera = () => {
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user')
-  }
+    setFacingMode((prev) => (prev === 'user' ? 'environment' : 'user'));
+  };
 
   const toggleFlash = () => {
-    setFlashEnabled(prev => !prev)
+    setFlashEnabled((prev) => !prev);
     // Note: Flash control would require more complex implementation
-  }
+  };
 
   const retakeVideo = () => {
-    setHasRecording(false)
-    setRecordedBlob(null)
-    setIsPreview(false)
-    setUploadProgress(0)
-    startCamera()
-  }
+    setHasRecording(false);
+    setRecordedBlob(null);
+    setIsPreview(false);
+    setUploadProgress(0);
+    startCamera();
+  };
 
   const uploadVideo = async () => {
-    if (!recordedBlob) return
+    if (!recordedBlob) return;
 
-    setIsUploading(true)
-    setUploadProgress(0)
+    setIsUploading(true);
+    setUploadProgress(0);
 
     try {
-      const formData = new FormData()
-      formData.append('video', recordedBlob, 'mobile-recording.webm')
-      formData.append('sport', 'Football') // Could be selected by user
-      formData.append('source', 'mobile')
+      const formData = new FormData();
+      formData.append('video', recordedBlob, 'mobile-recording.webm');
+      formData.append('sport', 'Football'); // Could be selected by user
+      formData.append('source', 'mobile');
 
       // Simulate upload progress
       const progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
+        setUploadProgress((prev) => {
           if (prev >= 90) {
-            clearInterval(progressInterval)
-            return prev
+            clearInterval(progressInterval);
+            return prev;
           }
-          return prev + Math.random() * 10
-        })
-      }, 200)
+          return prev + Math.random() * 10;
+        });
+      }, 200);
 
       const response = await fetch('/api/videos/upload', {
         method: 'POST',
-        body: formData
-      })
+        body: formData,
+      });
 
-      clearInterval(progressInterval)
-      setUploadProgress(100)
+      clearInterval(progressInterval);
+      setUploadProgress(100);
 
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json();
         setTimeout(() => {
-          window.location.href = `/video-analysis/${data.videoId}`
-        }, 1000)
+          window.location.href = `/video-analysis/${data.videoId}`;
+        }, 1000);
       }
     } catch (error) {
-      console.error('Upload failed:', error)
+      console.error('Upload failed:', error);
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   if (isPreview && recordedBlob) {
     return (
@@ -170,10 +170,7 @@ export function MobileVideoCapture() {
         <div className="p-4 bg-black/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <h2 className="text-white font-semibold">Preview Recording</h2>
-            <button
-              onClick={retakeVideo}
-              className="text-white hover:text-gray-300"
-            >
+            <button onClick={retakeVideo} className="text-white hover:text-gray-300">
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -235,7 +232,7 @@ export function MobileVideoCapture() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -245,20 +242,14 @@ export function MobileVideoCapture() {
         <div className="flex items-center justify-between">
           <h2 className="text-white font-semibold">Record Performance</h2>
           <div className="flex items-center gap-2">
-            <button
-              onClick={toggleFlash}
-              className="p-2 bg-white/20 rounded-full"
-            >
+            <button onClick={toggleFlash} className="p-2 bg-white/20 rounded-full">
               {flashEnabled ? (
                 <Zap className="w-5 h-5 text-white" />
               ) : (
                 <ZapOff className="w-5 h-5 text-white" />
               )}
             </button>
-            <button
-              onClick={toggleCamera}
-              className="p-2 bg-white/20 rounded-full"
-            >
+            <button onClick={toggleCamera} className="p-2 bg-white/20 rounded-full">
               <RotateCw className="w-5 h-5 text-white" />
             </button>
           </div>
@@ -267,14 +258,8 @@ export function MobileVideoCapture() {
 
       {/* Camera View */}
       <div className="flex-1 relative">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="w-full h-full object-cover"
-        />
-        
+        <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+
         {/* Recording Indicator */}
         {isRecording && (
           <div className="absolute top-4 left-4 flex items-center gap-2 bg-red-500 text-white px-3 py-1 rounded-full">
@@ -286,9 +271,7 @@ export function MobileVideoCapture() {
         {/* Countdown */}
         {countdown > 0 && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-8xl font-bold text-white animate-pulse">
-              {countdown}
-            </div>
+            <div className="text-8xl font-bold text-white animate-pulse">{countdown}</div>
           </div>
         )}
 
@@ -311,9 +294,7 @@ export function MobileVideoCapture() {
             onClick={isRecording ? stopRecording : startRecording}
             disabled={countdown > 0}
             className={`w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-all ${
-              isRecording 
-                ? 'bg-red-500 border-red-500' 
-                : 'bg-transparent hover:bg-white/20'
+              isRecording ? 'bg-red-500 border-red-500' : 'bg-transparent hover:bg-white/20'
             } ${countdown > 0 ? 'opacity-50' : ''}`}
           >
             {isRecording ? (
@@ -323,7 +304,7 @@ export function MobileVideoCapture() {
             )}
           </button>
         </div>
-        
+
         <div className="mt-4 text-center">
           <p className="text-white/80 text-sm">
             {isRecording ? 'Tap to stop recording' : 'Tap to start recording'}
@@ -331,5 +312,5 @@ export function MobileVideoCapture() {
         </div>
       </div>
     </div>
-  )
+  );
 }

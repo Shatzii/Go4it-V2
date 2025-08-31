@@ -1,6 +1,6 @@
 /**
  * ShatziiOS Educational Platform - Production Server
- * 
+ *
  * Optimized for deployment on 4-core/16GB RAM hardware at 188.245.209.124
  * This server implements:
  * - Fast startup with deferred initialization
@@ -42,29 +42,33 @@ const app = express();
 const httpServer = createServer(app);
 
 // Basic middlewares that should be applied immediately
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      imgSrc: ["'self'", "data:", "blob:"],
-      connectSrc: ["'self'", "ws:", "wss:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        connectSrc: ["'self'", 'ws:', 'wss:'],
+      },
     },
-  },
-}));
+  }),
+);
 app.use(compression()); // Compress all responses
 app.use(bodyParser.json({ limit: '5mb' }));
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production' ? ['https://shatzii.com'] : true,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === 'production' ? ['https://shatzii.com'] : true,
+    credentials: true,
+  }),
+);
 
 // Prioritize port binding to meet container startup requirements
 httpServer.listen(PORT, '0.0.0.0', async () => {
   console.log(`🚀 Server running at http://0.0.0.0:${PORT}`);
-  
+
   // Now that the port is open, continue with other initializations
   await completeServerInitialization();
 });
@@ -78,9 +82,9 @@ async function completeServerInitialization() {
       try {
         const worker = new Worker(join(__dirname, 'workers/curriculum-worker.js'));
         workers.push(worker);
-        console.log(`Worker ${i+1}/${WORKER_COUNT} initialized`);
+        console.log(`Worker ${i + 1}/${WORKER_COUNT} initialized`);
       } catch (error) {
-        console.error(`Error initializing worker ${i+1}:`, error);
+        console.error(`Error initializing worker ${i + 1}:`, error);
       }
     }
 
@@ -97,16 +101,16 @@ async function completeServerInitialization() {
     try {
       const aiEngineModule = await import('./services/ai-engine-service.js');
       const aiService = aiEngineModule.createAIEngineService();
-      
+
       // Initialize the service in the background
-      aiService.initialize().then(success => {
+      aiService.initialize().then((success) => {
         if (success) {
           console.log('✅ AI Engine Service initialized successfully');
         } else {
           console.warn('⚠️ AI Engine Service initialization failed, using fallback mode');
         }
       });
-      
+
       // Make AI service available to routes
       app.locals.aiService = aiService;
     } catch (error) {
@@ -119,11 +123,11 @@ async function completeServerInitialization() {
       // Core routes
       const lawSchoolRoutes = (await import('./routes/law-school-routes.js')).default;
       const translationRoutes = (await import('./routes/translation-routes.js')).default;
-      
+
       // Register routes
       app.use('/api/law-school', lawSchoolRoutes);
       app.use('/api/translation', translationRoutes);
-      
+
       console.log('✅ API routes initialized');
     } catch (error) {
       console.error('❌ Error initializing API routes:', error);
@@ -133,12 +137,12 @@ async function completeServerInitialization() {
     const staticPath = join(__dirname, '../dist');
     app.use(express.static(join(__dirname, '../public')));
     app.use(express.static(staticPath));
-    
+
     // Landing page and SPA catch-all route
     app.get('/', (req, res) => {
       res.sendFile(join(__dirname, '../public/index.html'));
     });
-    
+
     app.get('*', (req, res) => {
       if (req.path.startsWith('/api')) {
         return res.status(404).json({ error: 'API endpoint not found' });
@@ -163,7 +167,12 @@ export function getNextWorker() {
 }
 
 // Curriculum transformation using worker pool
-export async function transformCurriculumWithWorker(content, learningDifference, gradeLevel, options = {}) {
+export async function transformCurriculumWithWorker(
+  content,
+  learningDifference,
+  gradeLevel,
+  options = {},
+) {
   if (workers.length === 0) {
     // Fallback if no workers are available
     console.warn('No workers available, using fallback curriculum transformation');
@@ -174,14 +183,14 @@ export async function transformCurriculumWithWorker(content, learningDifference,
       adaptations: ['No adaptations applied - worker unavailable'],
       learningDifference,
       gradeLevel,
-      fallback: true
+      fallback: true,
     };
   }
 
   return new Promise((resolve, reject) => {
     const worker = getNextWorker();
     const messageId = Date.now() + Math.random().toString(36).substring(2);
-    
+
     // Handler for worker responses
     const messageHandler = (message) => {
       if (message.messageId === messageId) {
@@ -193,9 +202,9 @@ export async function transformCurriculumWithWorker(content, learningDifference,
         }
       }
     };
-    
+
     worker.on('message', messageHandler);
-    
+
     // Send the work to the worker
     worker.postMessage({
       messageId,
@@ -203,9 +212,9 @@ export async function transformCurriculumWithWorker(content, learningDifference,
       content,
       learningDifference,
       gradeLevel,
-      options
+      options,
     });
-    
+
     // Timeout safety
     setTimeout(() => {
       worker.removeListener('message', messageHandler);
@@ -221,17 +230,17 @@ function startMemoryMonitoring() {
     const heapUsedMB = Math.round(memoryUsage.heapUsed / 1024 / 1024);
     const heapTotalMB = Math.round(memoryUsage.heapTotal / 1024 / 1024);
     const percentUsed = Math.round((heapUsedMB / heapTotalMB) * 100);
-    
+
     // Log significant changes
     if (Math.abs(heapUsedMB - lastMemoryUsage) > 10) {
       console.log(`Memory usage: ${heapUsedMB}MB / ${heapTotalMB}MB (${percentUsed}%)`);
       lastMemoryUsage = heapUsedMB;
     }
-    
+
     // Trigger garbage collection at high memory usage
     if (percentUsed > MAX_MEMORY_PERCENT) {
       console.warn(`High memory usage detected: ${percentUsed}%. Attempting optimization.`);
-      
+
       // Force a garbage collection cycle if possible
       if (global.gc) {
         console.log('Running garbage collection');
@@ -245,13 +254,13 @@ function startMemoryMonitoring() {
 function createFallbackAIService() {
   return {
     initialize: async () => false,
-    generateText: async (systemPrompt, userInput) => 
-      "AI Engine is currently unavailable. Please try again later.",
-    analyzeContent: async (content, analysisType) => ({ 
-      status: "error",
-      message: "AI Engine unavailable",
+    generateText: async (systemPrompt, userInput) =>
+      'AI Engine is currently unavailable. Please try again later.',
+    analyzeContent: async (content, analysisType) => ({
+      status: 'error',
+      message: 'AI Engine unavailable',
       metadata: { wordCount: content.split(/\\s+/).length },
-      fallback: true
+      fallback: true,
     }),
     transformCurriculum: async (content, learningDifference, gradeLevel) => ({
       title: 'AI Engine Unavailable',
@@ -260,18 +269,18 @@ function createFallbackAIService() {
       adaptations: [],
       learningDifference,
       gradeLevel,
-      fallback: true
+      fallback: true,
     }),
     generateEducationalMaterial: async (topic, materialType) => ({
       topic,
       materialType,
-      content: "AI Engine is currently unavailable. Please try again later.",
-      fallback: true
+      content: 'AI Engine is currently unavailable. Please try again later.',
+      fallback: true,
     }),
-    generateFallbackResponse: async (prompt, context, type) => 
-      type === 'json' 
+    generateFallbackResponse: async (prompt, context, type) =>
+      type === 'json'
         ? { status: 'error', message: 'AI Engine unavailable' }
-        : "AI Engine is currently unavailable. Please try again later."
+        : 'AI Engine is currently unavailable. Please try again later.',
   };
 }
 
@@ -281,17 +290,17 @@ process.on('SIGTERM', gracefulShutdown);
 
 async function gracefulShutdown() {
   console.log('🛑 Shutting down server gracefully...');
-  
+
   // Clear monitoring interval
   if (memoryMonitorInterval) {
     clearInterval(memoryMonitorInterval);
   }
-  
+
   // Terminate worker threads
   for (const worker of workers) {
     worker.terminate();
   }
-  
+
   // Close database connections
   try {
     await pool.end();
@@ -299,13 +308,13 @@ async function gracefulShutdown() {
   } catch (error) {
     console.error('Error closing database connections:', error);
   }
-  
+
   // Close server
   httpServer.close(() => {
     console.log('HTTP server closed');
     process.exit(0);
   });
-  
+
   // Force exit after timeout
   setTimeout(() => {
     console.error('Forced shutdown after timeout');

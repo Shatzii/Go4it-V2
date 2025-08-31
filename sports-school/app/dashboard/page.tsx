@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  BookOpen, 
-  Users, 
-  Calendar, 
-  Brain, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  BookOpen,
+  Users,
+  Calendar,
+  Brain,
   Trophy,
   MessageSquare,
   BarChart3,
@@ -19,59 +19,94 @@ import {
   Target,
   Clock,
   Bell,
-  Star
-} from 'lucide-react'
-import Link from 'next/link'
+  Star,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
   const [user, setUser] = useState({
     name: 'Student Name',
     role: 'student',
     school: 'Primary School',
     grade: '5th Grade',
-    avatar: '/avatar-placeholder.png'
-  })
+    avatar: '/avatar-placeholder.png',
+  });
 
   const quickActions = [
-    { title: 'AI Teachers', href: '/ai-teachers', icon: Brain, description: 'Chat with specialized AI teachers' },
-    { title: 'My Courses', href: '/course-management', icon: BookOpen, description: 'View and manage your courses' },
-    { title: 'Schedule', href: '/block-scheduling', icon: Calendar, description: 'Check your class schedule' },
-    { title: 'Virtual Classroom', href: '/virtual-classroom', icon: School, description: 'Join live classes' },
+    {
+      title: 'AI Teachers',
+      href: '/ai-teachers',
+      icon: Brain,
+      description: 'Chat with specialized AI teachers',
+    },
+    {
+      title: 'My Courses',
+      href: '/course-management',
+      icon: BookOpen,
+      description: 'View and manage your courses',
+    },
+    {
+      title: 'Schedule',
+      href: '/block-scheduling',
+      icon: Calendar,
+      description: 'Check your class schedule',
+    },
+    {
+      title: 'Virtual Classroom',
+      href: '/virtual-classroom',
+      icon: School,
+      description: 'Join live classes',
+    },
     { title: 'Study Buddy', href: '/study-buddy', icon: Users, description: 'Find study partners' },
-    { title: 'Assignments', href: '/assignments', icon: Target, description: 'View upcoming assignments' }
-  ]
+    {
+      title: 'Assignments',
+      href: '/assignments',
+      icon: Target,
+      description: 'View upcoming assignments',
+    },
+  ];
 
   const recentActivities = [
     { type: 'assignment', title: 'Math homework submitted', time: '2 hours ago', icon: BookOpen },
-    { type: 'chat', title: 'Talked with Professor Newton', time: '4 hours ago', icon: MessageSquare },
+    {
+      type: 'chat',
+      title: 'Talked with Professor Newton',
+      time: '4 hours ago',
+      icon: MessageSquare,
+    },
     { type: 'grade', title: 'Science quiz graded: A-', time: '1 day ago', icon: Trophy },
-    { type: 'schedule', title: 'New class added: Art History', time: '2 days ago', icon: Calendar }
-  ]
+    { type: 'schedule', title: 'New class added: Art History', time: '2 days ago', icon: Calendar },
+  ];
 
   const upcomingEvents = [
     { title: 'Math Test - Algebra', date: 'Today, 2:00 PM', type: 'test' },
     { title: 'Science Lab - Chemistry', date: 'Tomorrow, 10:00 AM', type: 'class' },
     { title: 'English Essay Due', date: 'Friday, 11:59 PM', type: 'assignment' },
-    { title: 'Parent-Teacher Conference', date: 'Next Monday, 3:00 PM', type: 'meeting' }
-  ]
+    { title: 'Parent-Teacher Conference', date: 'Next Monday, 3:00 PM', type: 'meeting' },
+  ];
 
   const coursesProgress = [
     { subject: 'Mathematics', progress: 78, grade: 'A-', teacher: 'Professor Newton' },
     { subject: 'Science', progress: 85, grade: 'A', teacher: 'Dr. Curie' },
     { subject: 'English', progress: 72, grade: 'B+', teacher: 'Ms. Shakespeare' },
-    { subject: 'Social Studies', progress: 81, grade: 'A-', teacher: 'Professor Timeline' }
-  ]
+    { subject: 'Social Studies', progress: 81, grade: 'A-', teacher: 'Professor Timeline' },
+  ];
 
   const getEventIcon = (type: string) => {
     switch (type) {
-      case 'test': return Target
-      case 'class': return School
-      case 'assignment': return BookOpen
-      case 'meeting': return Users
-      default: return Bell
+      case 'test':
+        return Target;
+      case 'class':
+        return School;
+      case 'assignment':
+        return BookOpen;
+      case 'meeting':
+        return Users;
+      default:
+        return Bell;
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -81,7 +116,9 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Welcome back, {user.name}!</h1>
-              <p className="text-gray-600 mt-1">{user.school} • {user.grade}</p>
+              <p className="text-gray-600 mt-1">
+                {user.school} • {user.grade}
+              </p>
             </div>
             <div className="flex items-center gap-4">
               <Badge variant="secondary" className="text-sm">
@@ -116,9 +153,12 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {quickActions.map((action) => {
-                    const Icon = action.icon
+                    const Icon = action.icon;
                     return (
-                      <Card key={action.href} className="hover:shadow-md transition-shadow cursor-pointer">
+                      <Card
+                        key={action.href}
+                        className="hover:shadow-md transition-shadow cursor-pointer"
+                      >
                         <CardContent className="p-4">
                           <Link href={action.href} className="block">
                             <div className="flex items-center gap-3">
@@ -133,7 +173,7 @@ export default function DashboardPage() {
                           </Link>
                         </CardContent>
                       </Card>
-                    )
+                    );
                   })}
                 </div>
               </CardContent>
@@ -151,9 +191,12 @@ export default function DashboardPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {recentActivities.map((activity, index) => {
-                      const Icon = activity.icon
+                      const Icon = activity.icon;
                       return (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                        >
                           <div className="p-2 bg-white rounded-full">
                             <Icon className="h-4 w-4 text-blue-600" />
                           </div>
@@ -162,7 +205,7 @@ export default function DashboardPage() {
                             <p className="text-xs text-gray-500">{activity.time}</p>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </CardContent>
@@ -178,9 +221,12 @@ export default function DashboardPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {upcomingEvents.map((event, index) => {
-                      const Icon = getEventIcon(event.type)
+                      const Icon = getEventIcon(event.type);
                       return (
-                        <div key={index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                        >
                           <div className="p-2 bg-white rounded-full">
                             <Icon className="h-4 w-4 text-orange-600" />
                           </div>
@@ -189,7 +235,7 @@ export default function DashboardPage() {
                             <p className="text-xs text-gray-500">{event.date}</p>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </CardContent>
@@ -221,7 +267,7 @@ export default function DashboardPage() {
                             <span>{course.progress}%</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div 
+                            <div
                               className="bg-blue-600 h-2 rounded-full transition-all"
                               style={{ width: `${course.progress}%` }}
                             />
@@ -269,9 +315,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="mt-4">
                   <Link href="/block-scheduling">
-                    <Button className="w-full">
-                      View Full Schedule
-                    </Button>
+                    <Button className="w-full">View Full Schedule</Button>
                   </Link>
                 </div>
               </CardContent>
@@ -311,5 +355,5 @@ export default function DashboardPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

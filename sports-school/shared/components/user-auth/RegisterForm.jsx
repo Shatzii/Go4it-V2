@@ -14,46 +14,46 @@ const RegisterForm = ({ onSuccess, redirectTo = '/' }) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
+
     // Validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     // Validate password strength
     if (password.length < 8) {
       setError('Password must be at least 8 characters long');
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     try {
       const response = await axios.post('/api/auth/register', {
         firstName,
         lastName,
         email,
         password,
-        role: 'student' // Default role
+        role: 'student', // Default role
       });
-      
+
       if (response.status === 201) {
         // Registration successful
         if (onSuccess) {
           onSuccess(response.data);
         }
-        
+
         // Redirect to specified location or dashboard
         setLocation(redirectTo);
       }
     } catch (err) {
       console.error('Registration error:', err);
-      
+
       if (err.response) {
         // Server responded with error
         setError(err.response.data.message || 'Registration failed. Please try again.');
@@ -68,18 +68,14 @@ const RegisterForm = ({ onSuccess, redirectTo = '/' }) => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="auth-form register-form">
       <h2>Create Your ShatziiOS Account</h2>
-      
+
       <form onSubmit={handleSubmit}>
-        {error && (
-          <div className="auth-error">
-            {error}
-          </div>
-        )}
-        
+        {error && <div className="auth-error">{error}</div>}
+
         <div className="form-row">
           <div className="form-group">
             <label htmlFor="firstName">First Name</label>
@@ -93,7 +89,7 @@ const RegisterForm = ({ onSuccess, redirectTo = '/' }) => {
               disabled={isLoading}
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="lastName">Last Name</label>
             <input
@@ -107,7 +103,7 @@ const RegisterForm = ({ onSuccess, redirectTo = '/' }) => {
             />
           </div>
         </div>
-        
+
         <div className="form-group">
           <label htmlFor="register-email">Email Address</label>
           <input
@@ -120,7 +116,7 @@ const RegisterForm = ({ onSuccess, redirectTo = '/' }) => {
             disabled={isLoading}
           />
         </div>
-        
+
         <div className="form-group">
           <label htmlFor="register-password">Password</label>
           <input
@@ -134,7 +130,7 @@ const RegisterForm = ({ onSuccess, redirectTo = '/' }) => {
           />
           <small className="form-text">Password must be at least 8 characters long</small>
         </div>
-        
+
         <div className="form-group">
           <label htmlFor="confirm-password">Confirm Password</label>
           <input
@@ -147,32 +143,30 @@ const RegisterForm = ({ onSuccess, redirectTo = '/' }) => {
             disabled={isLoading}
           />
         </div>
-        
+
         <div className="form-actions">
-          <button 
-            type="submit" 
-            className="btn btn-primary"
-            disabled={isLoading}
-          >
+          <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Creating Account...' : 'Create Account'}
           </button>
         </div>
       </form>
-      
+
       <div className="auth-separator">
         <span>or</span>
       </div>
-      
+
       <div className="social-auth">
         <a href="/api/auth/google" className="btn btn-google">
           <i className="google-icon"></i>
           Sign up with Google
         </a>
       </div>
-      
+
       <div className="auth-links">
         <span>Already have an account?</span>
-        <a href="#login" className="auth-link">Log in</a>
+        <a href="#login" className="auth-link">
+          Log in
+        </a>
       </div>
     </div>
   );

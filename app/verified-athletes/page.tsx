@@ -5,7 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { CheckCircle, Trophy, Star, Users, MapPin, Calendar, Filter, Eye } from 'lucide-react';
 import { VerificationBadge } from '@/components/ui/verification-badge';
 
@@ -33,7 +39,7 @@ export default function VerifiedAthletesPage() {
   const [filters, setFilters] = useState({
     sport: '',
     minGarScore: '',
-    search: ''
+    search: '',
   });
 
   useEffect(() => {
@@ -48,7 +54,7 @@ export default function VerifiedAthletesPage() {
     try {
       const response = await fetch('/api/verified-athletes');
       const data = await response.json();
-      
+
       if (data.success) {
         setAthletes(data.athletes);
         setFilteredAthletes(data.athletes);
@@ -62,26 +68,25 @@ export default function VerifiedAthletesPage() {
 
   const applyFilters = () => {
     let filtered = athletes;
-    
+
     if (filters.sport) {
-      filtered = filtered.filter(athlete => 
-        athlete.sport.toLowerCase().includes(filters.sport.toLowerCase())
+      filtered = filtered.filter((athlete) =>
+        athlete.sport.toLowerCase().includes(filters.sport.toLowerCase()),
       );
     }
-    
+
     if (filters.minGarScore) {
-      filtered = filtered.filter(athlete => 
-        athlete.garScore >= parseInt(filters.minGarScore)
-      );
+      filtered = filtered.filter((athlete) => athlete.garScore >= parseInt(filters.minGarScore));
     }
-    
+
     if (filters.search) {
-      filtered = filtered.filter(athlete => 
-        athlete.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        athlete.position.toLowerCase().includes(filters.search.toLowerCase())
+      filtered = filtered.filter(
+        (athlete) =>
+          athlete.name.toLowerCase().includes(filters.search.toLowerCase()) ||
+          athlete.position.toLowerCase().includes(filters.search.toLowerCase()),
       );
     }
-    
+
     setFilteredAthletes(filtered);
   };
 
@@ -89,11 +94,11 @@ export default function VerifiedAthletesPage() {
     setFilters({
       sport: '',
       minGarScore: '',
-      search: ''
+      search: '',
     });
   };
 
-  const sports = [...new Set(athletes.map(a => a.sport))];
+  const sports = [...new Set(athletes.map((a) => a.sport))];
 
   if (loading) {
     return (
@@ -112,11 +117,11 @@ export default function VerifiedAthletesPage() {
             <CheckCircle className="w-5 h-5 mr-2" />
             VERIFIED ATHLETES
           </Badge>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             GAR-VERIFIED ATHLETES
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
             Athletes who have completed official GAR Score analysis and received verification
           </p>
@@ -133,7 +138,9 @@ export default function VerifiedAthletesPage() {
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-6 text-center">
               <div className="text-3xl font-bold text-green-400 mb-2">
-                {athletes.length > 0 ? Math.round(athletes.reduce((sum, a) => sum + a.garScore, 0) / athletes.length) : 0}
+                {athletes.length > 0
+                  ? Math.round(athletes.reduce((sum, a) => sum + a.garScore, 0) / athletes.length)
+                  : 0}
               </div>
               <div className="text-sm text-slate-300">Avg GAR Score</div>
             </CardContent>
@@ -147,7 +154,7 @@ export default function VerifiedAthletesPage() {
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-6 text-center">
               <div className="text-3xl font-bold text-orange-400 mb-2">
-                {athletes.filter(a => a.garScore >= 90).length}
+                {athletes.filter((a) => a.garScore >= 90).length}
               </div>
               <div className="text-sm text-slate-300">Elite Level (90+)</div>
             </CardContent>
@@ -168,25 +175,33 @@ export default function VerifiedAthletesPage() {
                 <Input
                   placeholder="Search by name or position..."
                   value={filters.search}
-                  onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
                   className="bg-slate-700 border-slate-600"
                 />
               </div>
               <div>
-                <Select value={filters.sport} onValueChange={(value) => setFilters(prev => ({ ...prev, sport: value }))}>
+                <Select
+                  value={filters.sport}
+                  onValueChange={(value) => setFilters((prev) => ({ ...prev, sport: value }))}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="All Sports" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="">All Sports</SelectItem>
-                    {sports.map(sport => (
-                      <SelectItem key={sport} value={sport}>{sport}</SelectItem>
+                    {sports.map((sport) => (
+                      <SelectItem key={sport} value={sport}>
+                        {sport}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Select value={filters.minGarScore} onValueChange={(value) => setFilters(prev => ({ ...prev, minGarScore: value }))}>
+                <Select
+                  value={filters.minGarScore}
+                  onValueChange={(value) => setFilters((prev) => ({ ...prev, minGarScore: value }))}
+                >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue placeholder="Min GAR Score" />
                   </SelectTrigger>
@@ -210,8 +225,11 @@ export default function VerifiedAthletesPage() {
 
         {/* Athletes Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAthletes.map(athlete => (
-            <Card key={athlete.id} className="bg-slate-800 border-slate-700 hover:border-blue-500/50 transition-all duration-300">
+          {filteredAthletes.map((athlete) => (
+            <Card
+              key={athlete.id}
+              className="bg-slate-800 border-slate-700 hover:border-blue-500/50 transition-all duration-300"
+            >
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{athlete.name}</CardTitle>
@@ -233,7 +251,9 @@ export default function VerifiedAthletesPage() {
                       <Star
                         key={i}
                         className={`w-4 h-4 ${
-                          i < Math.floor(athlete.garScore / 20) ? 'text-yellow-500 fill-yellow-500' : 'text-slate-600'
+                          i < Math.floor(athlete.garScore / 20)
+                            ? 'text-yellow-500 fill-yellow-500'
+                            : 'text-slate-600'
                         }`}
                       />
                     ))}
@@ -247,7 +267,9 @@ export default function VerifiedAthletesPage() {
                     <div className="text-xs text-slate-300">GPA</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold text-purple-400">{athlete.stats.satScore}</div>
+                    <div className="text-lg font-semibold text-purple-400">
+                      {athlete.stats.satScore}
+                    </div>
                     <div className="text-xs text-slate-300">SAT</div>
                   </div>
                 </div>
@@ -257,7 +279,11 @@ export default function VerifiedAthletesPage() {
                   <h4 className="font-semibold text-white mb-2 text-sm">Achievements</h4>
                   <div className="flex flex-wrap gap-1">
                     {athlete.achievements.slice(0, 3).map((achievement, index) => (
-                      <Badge key={index} variant="secondary" className="bg-slate-700 text-slate-300 text-xs">
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="bg-slate-700 text-slate-300 text-xs"
+                      >
                         {achievement}
                       </Badge>
                     ))}
@@ -306,19 +332,13 @@ export default function VerifiedAthletesPage() {
           <Card className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30 max-w-2xl mx-auto">
             <CardContent className="p-8">
               <CheckCircle className="w-16 h-16 text-blue-400 mx-auto mb-4 drop-shadow-[0_0_16px_rgba(59,130,246,0.6)]" />
-              <h3 className="text-2xl font-bold mb-4 text-white">
-                Get Your GAR Verification
-              </h3>
+              <h3 className="text-2xl font-bold mb-4 text-white">Get Your GAR Verification</h3>
               <p className="text-slate-300 mb-6">
                 Join these elite athletes with official GAR Score analysis and verification
               </p>
               <div className="flex gap-4 justify-center">
-                <Button className="bg-blue-500 hover:bg-blue-600">
-                  Start GAR Analysis
-                </Button>
-                <Button variant="outline">
-                  Learn More
-                </Button>
+                <Button className="bg-blue-500 hover:bg-blue-600">Start GAR Analysis</Button>
+                <Button variant="outline">Learn More</Button>
               </div>
             </CardContent>
           </Card>

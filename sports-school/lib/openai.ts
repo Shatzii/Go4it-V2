@@ -1,8 +1,8 @@
-import OpenAI from 'openai'
+import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-})
+});
 
 export async function generateAIResponse(message: string, context?: string) {
   try {
@@ -24,21 +24,24 @@ You provide:
 
 Current context: ${context || 'general learning assistance'}
 
-Be helpful, encouraging, and educational. Adapt your language to be appropriate for the student's level. Always prioritize learning and academic growth.`
+Be helpful, encouraging, and educational. Adapt your language to be appropriate for the student's level. Always prioritize learning and academic growth.`;
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o', // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: message }
+        { role: 'user', content: message },
       ],
       temperature: 0.7,
       max_tokens: 500,
-    })
+    });
 
-    return response.choices[0].message.content || "I'm sorry, I couldn't generate a response at this time."
+    return (
+      response.choices[0].message.content ||
+      "I'm sorry, I couldn't generate a response at this time."
+    );
   } catch (error) {
-    console.error('OpenAI API error:', error)
-    return "I'm having trouble connecting to my knowledge base right now. Please try again in a moment."
+    console.error('OpenAI API error:', error);
+    return "I'm having trouble connecting to my knowledge base right now. Please try again in a moment.";
   }
 }

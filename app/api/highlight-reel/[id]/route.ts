@@ -3,13 +3,10 @@ import { db } from '@/lib/db';
 import { highlightReels, videos } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = parseInt(params.id);
-    
+
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid highlight reel ID' }, { status: 400 });
     }
@@ -39,24 +36,23 @@ export async function GET(
 
     return NextResponse.json({
       success: true,
-      highlightReel: highlightReel[0]
+      highlightReel: highlightReel[0],
     });
-
   } catch (error) {
     console.error('Error fetching highlight reel:', error);
-    return NextResponse.json({ 
-      error: 'Failed to fetch highlight reel' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch highlight reel',
+      },
+      { status: 500 },
+    );
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const id = parseInt(params.id);
-    
+
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid highlight reel ID' }, { status: 400 });
     }
@@ -72,13 +68,15 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
-      message: 'Highlight reel deleted successfully'
+      message: 'Highlight reel deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting highlight reel:', error);
-    return NextResponse.json({ 
-      error: 'Failed to delete highlight reel' 
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Failed to delete highlight reel',
+      },
+      { status: 500 },
+    );
   }
 }

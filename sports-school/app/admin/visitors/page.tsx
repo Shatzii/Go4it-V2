@@ -1,11 +1,11 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function VisitorManagement() {
-  const [activeTab, setActiveTab] = useState('checkin')
-  const [showCheckInForm, setShowCheckInForm] = useState(false)
+  const [activeTab, setActiveTab] = useState('checkin');
+  const [showCheckInForm, setShowCheckInForm] = useState(false);
 
   // Sample visitor data
   const activeVisitors = [
@@ -20,7 +20,7 @@ export default function VisitorManagement() {
       badgeNumber: 'V-001',
       backgroundCheck: true,
       expectedDuration: '1 hour',
-      location: 'Conference Room A'
+      location: 'Conference Room A',
     },
     {
       id: '2',
@@ -33,9 +33,9 @@ export default function VisitorManagement() {
       badgeNumber: 'V-002',
       backgroundCheck: false,
       expectedDuration: '30 minutes',
-      location: 'IT Department'
-    }
-  ]
+      location: 'IT Department',
+    },
+  ];
 
   const recentVisitors = [
     {
@@ -49,7 +49,7 @@ export default function VisitorManagement() {
       checkOutTime: '2025-01-23 11:30 AM',
       duration: '2.5 hours',
       badgeNumber: 'V-003',
-      notes: 'Regular volunteer, cleared background check on file'
+      notes: 'Regular volunteer, cleared background check on file',
     },
     {
       id: '4',
@@ -62,9 +62,9 @@ export default function VisitorManagement() {
       checkOutTime: '2025-01-22 03:30 PM',
       duration: '7.5 hours',
       badgeNumber: 'V-004',
-      notes: 'Annual HVAC inspection and maintenance completed'
-    }
-  ]
+      notes: 'Annual HVAC inspection and maintenance completed',
+    },
+  ];
 
   const scheduledVisits = [
     {
@@ -78,7 +78,7 @@ export default function VisitorManagement() {
       scheduledTime: '10:00 AM',
       expectedDuration: '3 hours',
       backgroundCheckStatus: 'completed',
-      preApproved: true
+      preApproved: true,
     },
     {
       id: '6',
@@ -91,16 +91,16 @@ export default function VisitorManagement() {
       scheduledTime: '07:30 AM',
       expectedDuration: '4 hours',
       backgroundCheckStatus: 'pending',
-      preApproved: false
-    }
-  ]
+      preApproved: false,
+    },
+  ];
 
   const emergencyContacts = [
     { name: 'School Resource Officer', phone: '(555) 911-1234', extension: '101' },
     { name: 'Principal Office', phone: '(555) 123-4567', extension: '100' },
     { name: 'Local Police', phone: '911', extension: '' },
-    { name: 'Facilities Emergency', phone: '(555) 234-5678', extension: '200' }
-  ]
+    { name: 'Facilities Emergency', phone: '(555) 234-5678', extension: '200' },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,11 +108,14 @@ export default function VisitorManagement() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/admin/dashboard" className="text-indigo-600 font-semibold text-lg hover:text-indigo-500">
+            <Link
+              href="/admin/dashboard"
+              className="text-indigo-600 font-semibold text-lg hover:text-indigo-500"
+            >
               ← Admin Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Visitor Management</h1>
-            <button 
+            <button
               onClick={() => setShowCheckInForm(true)}
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
             >
@@ -136,7 +139,7 @@ export default function VisitorManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-lg">
@@ -144,11 +147,13 @@ export default function VisitorManagement() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Today's Visits</p>
-                <p className="text-2xl font-bold text-gray-900">{recentVisitors.length + activeVisitors.length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {recentVisitors.length + activeVisitors.length}
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -160,7 +165,7 @@ export default function VisitorManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -169,7 +174,11 @@ export default function VisitorManagement() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Background Checks</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {[...activeVisitors, ...scheduledVisits].filter(v => v.backgroundCheck || v.backgroundCheckStatus === 'completed').length}
+                  {
+                    [...activeVisitors, ...scheduledVisits].filter(
+                      (v) => v.backgroundCheck || v.backgroundCheckStatus === 'completed',
+                    ).length
+                  }
                 </p>
               </div>
             </div>
@@ -184,7 +193,7 @@ export default function VisitorManagement() {
                 { id: 'checkin', name: 'Active Visitors', icon: '🏃‍♂️' },
                 { id: 'recent', name: 'Recent Visits', icon: '📋' },
                 { id: 'scheduled', name: 'Scheduled', icon: '📅' },
-                { id: 'security', name: 'Security', icon: '🔒' }
+                { id: 'security', name: 'Security', icon: '🔒' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -212,7 +221,7 @@ export default function VisitorManagement() {
                     </button>
                   </div>
                 </div>
-                
+
                 {activeVisitors.length === 0 ? (
                   <div className="text-center py-12 text-gray-500">
                     <span className="text-4xl mb-4 block">👋</span>
@@ -266,7 +275,10 @@ export default function VisitorManagement() {
                           </div>
                         </div>
                         <div className="text-sm text-gray-600">
-                          <span>Expected Duration: {visitor.expectedDuration} | Current Location: {visitor.location}</span>
+                          <span>
+                            Expected Duration: {visitor.expectedDuration} | Current Location:{' '}
+                            {visitor.location}
+                          </span>
                         </div>
                       </div>
                     ))}
@@ -290,17 +302,29 @@ export default function VisitorManagement() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Visitor</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Organization</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Purpose</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duration</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Host</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Visitor
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Organization
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Purpose
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Duration
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Host
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Notes
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -308,11 +332,17 @@ export default function VisitorManagement() {
                         <tr key={visitor.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4">
                             <div>
-                              <div className="font-medium text-gray-900">{visitor.firstName} {visitor.lastName}</div>
-                              <div className="text-sm text-gray-500">Badge: {visitor.badgeNumber}</div>
+                              <div className="font-medium text-gray-900">
+                                {visitor.firstName} {visitor.lastName}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                Badge: {visitor.badgeNumber}
+                              </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-900">{visitor.organization}</td>
+                          <td className="px-6 py-4 text-sm text-gray-900">
+                            {visitor.organization}
+                          </td>
                           <td className="px-6 py-4 text-sm text-gray-900">{visitor.purpose}</td>
                           <td className="px-6 py-4 text-sm text-gray-900">{visitor.duration}</td>
                           <td className="px-6 py-4 text-sm text-gray-900">{visitor.host}</td>
@@ -333,7 +363,7 @@ export default function VisitorManagement() {
                     + Schedule New Visit
                   </button>
                 </div>
-                
+
                 <div className="space-y-4">
                   {scheduledVisits.map((visit) => (
                     <div key={visit.id} className="border rounded-lg p-6">
@@ -348,11 +378,15 @@ export default function VisitorManagement() {
                                 Pre-approved
                               </span>
                             )}
-                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              visit.backgroundCheckStatus === 'completed' ? 'bg-blue-100 text-blue-800' :
-                              visit.backgroundCheckStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-red-100 text-red-800'
-                            }`}>
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                visit.backgroundCheckStatus === 'completed'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : visit.backgroundCheckStatus === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-red-100 text-red-800'
+                              }`}
+                            >
                               Background Check: {visit.backgroundCheckStatus}
                             </span>
                           </div>
@@ -367,7 +401,9 @@ export default function VisitorManagement() {
                             </div>
                             <div>
                               <span className="text-gray-600">Date & Time:</span>
-                              <div className="font-medium">{visit.scheduledDate} at {visit.scheduledTime}</div>
+                              <div className="font-medium">
+                                {visit.scheduledDate} at {visit.scheduledTime}
+                              </div>
                             </div>
                             <div>
                               <span className="text-gray-600">Duration:</span>
@@ -387,9 +423,7 @@ export default function VisitorManagement() {
                           </button>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-600">
-                        Host: {visit.host}
-                      </div>
+                      <div className="text-sm text-gray-600">Host: {visit.host}</div>
                     </div>
                   ))}
                 </div>
@@ -398,8 +432,10 @@ export default function VisitorManagement() {
 
             {activeTab === 'security' && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Security & Emergency Information</h3>
-                
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                  Security & Emergency Information
+                </h3>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-4">Emergency Contacts</h4>
@@ -433,7 +469,7 @@ export default function VisitorManagement() {
                           <li>• Lost badges must be reported immediately</li>
                         </ul>
                       </div>
-                      
+
                       <div className="p-4 border rounded-lg">
                         <h5 className="font-medium mb-2">Background Check Requirements</h5>
                         <ul className="text-sm text-gray-600 space-y-1">
@@ -442,7 +478,7 @@ export default function VisitorManagement() {
                           <li>• Volunteer visitors need annual renewal</li>
                         </ul>
                       </div>
-                      
+
                       <div className="p-4 border rounded-lg">
                         <h5 className="font-medium mb-2">Emergency Procedures</h5>
                         <ul className="text-sm text-gray-600 space-y-1">
@@ -465,7 +501,7 @@ export default function VisitorManagement() {
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold">Visitor Check-in</h3>
-                <button 
+                <button
                   onClick={() => setShowCheckInForm(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
@@ -475,17 +511,21 @@ export default function VisitorManagement() {
               <form className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                    <input 
-                      type="text" 
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                    <input 
-                      type="text" 
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       required
                     />
@@ -493,22 +533,28 @@ export default function VisitorManagement() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Organization</label>
-                    <input 
-                      type="text" 
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Organization
+                    </label>
+                    <input
+                      type="text"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                    <input 
-                      type="tel" 
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Purpose of Visit</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Purpose of Visit
+                  </label>
                   <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
                     <option>Parent Meeting</option>
                     <option>Volunteer Activity</option>
@@ -519,15 +565,19 @@ export default function VisitorManagement() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Host/Contact Person</label>
-                    <input 
-                      type="text" 
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Host/Contact Person
+                    </label>
+                    <input
+                      type="text"
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                       placeholder="Staff member to meet with"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Expected Duration</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Expected Duration
+                    </label>
                     <select className="w-full px-3 py-2 border border-gray-300 rounded-lg">
                       <option>30 minutes</option>
                       <option>1 hour</option>
@@ -548,14 +598,14 @@ export default function VisitorManagement() {
                   </label>
                 </div>
                 <div className="flex justify-end space-x-3">
-                  <button 
+                  <button
                     type="button"
                     onClick={() => setShowCheckInForm(false)}
                     className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
                   >
                     Cancel
                   </button>
-                  <button 
+                  <button
                     type="submit"
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                   >
@@ -568,5 +618,5 @@ export default function VisitorManagement() {
         )}
       </div>
     </div>
-  )
+  );
 }

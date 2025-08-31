@@ -1,74 +1,74 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 
 export function AccessibilityEnhancements() {
   useEffect(() => {
     // Voice navigation setup
     if ('speechSynthesis' in window && 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-      const recognition = new SpeechRecognition()
-      
-      recognition.continuous = true
-      recognition.interimResults = true
-      recognition.lang = 'en-US'
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
 
       recognition.onresult = (event) => {
-        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase()
-        
+        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+
         if (transcript.includes('go to dashboard')) {
-          window.location.href = '/dashboard'
+          window.location.href = '/dashboard';
         } else if (transcript.includes('go to academy')) {
-          window.location.href = '/academy'
+          window.location.href = '/academy';
         } else if (transcript.includes('search')) {
           // Trigger search with Cmd/Ctrl + K
-          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }))
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }));
         }
-      }
+      };
 
       // Start voice recognition on Alt + V
       document.addEventListener('keydown', (e) => {
         if (e.altKey && e.key === 'v') {
-          recognition.start()
+          recognition.start();
         }
-      })
+      });
 
       return () => {
-        recognition.stop()
-      }
+        recognition.stop();
+      };
     }
 
     // High contrast mode
     const toggleHighContrast = () => {
-      document.body.classList.toggle('high-contrast')
-    }
+      document.body.classList.toggle('high-contrast');
+    };
 
     // Text size adjustment
     const increaseFontSize = () => {
-      const currentSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
-      document.documentElement.style.fontSize = `${currentSize + 2}px`
-    }
+      const currentSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      document.documentElement.style.fontSize = `${currentSize + 2}px`;
+    };
 
     const decreaseFontSize = () => {
-      const currentSize = parseFloat(getComputedStyle(document.documentElement).fontSize)
-      document.documentElement.style.fontSize = `${currentSize - 2}px`
-    }
+      const currentSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      document.documentElement.style.fontSize = `${currentSize - 2}px`;
+    };
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
       if (e.altKey && e.key === 'h') {
-        toggleHighContrast()
+        toggleHighContrast();
       } else if (e.ctrlKey && e.key === '+') {
-        e.preventDefault()
-        increaseFontSize()
+        e.preventDefault();
+        increaseFontSize();
       } else if (e.ctrlKey && e.key === '-') {
-        e.preventDefault()
-        decreaseFontSize()
+        e.preventDefault();
+        decreaseFontSize();
       }
-    })
+    });
 
     // Add accessibility styles
-    const style = document.createElement('style')
+    const style = document.createElement('style');
     style.textContent = `
       .high-contrast {
         filter: contrast(150%) brightness(120%);
@@ -111,21 +111,21 @@ export function AccessibilityEnhancements() {
       .skip-nav:focus {
         top: 6px;
       }
-    `
-    document.head.appendChild(style)
+    `;
+    document.head.appendChild(style);
 
     // Add skip navigation
-    const skipNav = document.createElement('a')
-    skipNav.href = '#main-content'
-    skipNav.className = 'skip-nav'
-    skipNav.textContent = 'Skip to main content'
-    document.body.insertBefore(skipNav, document.body.firstChild)
+    const skipNav = document.createElement('a');
+    skipNav.href = '#main-content';
+    skipNav.className = 'skip-nav';
+    skipNav.textContent = 'Skip to main content';
+    document.body.insertBefore(skipNav, document.body.firstChild);
 
     return () => {
-      document.head.removeChild(style)
-      document.body.removeChild(skipNav)
-    }
-  }, [])
+      document.head.removeChild(style);
+      document.body.removeChild(skipNav);
+    };
+  }, []);
 
-  return null
+  return null;
 }

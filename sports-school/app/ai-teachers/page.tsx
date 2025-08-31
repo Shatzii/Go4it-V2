@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  MessageSquare, 
-  BookOpen, 
-  Calculator, 
-  Microscope, 
-  Palette, 
-  Globe, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  MessageSquare,
+  BookOpen,
+  Calculator,
+  Microscope,
+  Palette,
+  Globe,
   Heart,
   Star,
   Video,
   Clock,
-  Users
-} from 'lucide-react'
-import Link from 'next/link'
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function AITeachers() {
   const aiTeachers = [
@@ -30,7 +30,7 @@ export default function AITeachers() {
       color: 'blue',
       status: 'online',
       studentsHelped: 1240,
-      description: 'Makes complex math concepts simple and fun through step-by-step guidance'
+      description: 'Makes complex math concepts simple and fun through step-by-step guidance',
     },
     {
       id: 2,
@@ -42,7 +42,7 @@ export default function AITeachers() {
       color: 'green',
       status: 'online',
       studentsHelped: 980,
-      description: 'Encourages discovery through hands-on experiments and real-world applications'
+      description: 'Encourages discovery through hands-on experiments and real-world applications',
     },
     {
       id: 3,
@@ -54,7 +54,7 @@ export default function AITeachers() {
       color: 'purple',
       status: 'online',
       studentsHelped: 1580,
-      description: 'Inspires creativity in writing and deep understanding of literature'
+      description: 'Inspires creativity in writing and deep understanding of literature',
     },
     {
       id: 4,
@@ -66,7 +66,7 @@ export default function AITeachers() {
       color: 'orange',
       status: 'online',
       studentsHelped: 750,
-      description: 'Brings history to life through engaging stories and connections to today'
+      description: 'Brings history to life through engaging stories and connections to today',
     },
     {
       id: 5,
@@ -78,7 +78,7 @@ export default function AITeachers() {
       color: 'pink',
       status: 'online',
       studentsHelped: 620,
-      description: 'Nurtures artistic expression through various mediums and creative techniques'
+      description: 'Nurtures artistic expression through various mediums and creative techniques',
     },
     {
       id: 6,
@@ -90,15 +90,33 @@ export default function AITeachers() {
       color: 'red',
       status: 'online',
       studentsHelped: 450,
-      description: 'Provides personalized support for diverse learning needs and styles'
-    }
-  ]
+      description: 'Provides personalized support for diverse learning needs and styles',
+    },
+  ];
 
   const recentSessions = [
-    { student: 'Alex', teacher: 'Professor Newton', topic: 'Algebra Word Problems', duration: '25 min', rating: 5 },
-    { student: 'Emma', teacher: 'Dr. Curie', topic: 'Plant Biology', duration: '30 min', rating: 5 },
-    { student: 'James', teacher: 'Ms. Shakespeare', topic: 'Creative Writing', duration: '35 min', rating: 4 }
-  ]
+    {
+      student: 'Alex',
+      teacher: 'Professor Newton',
+      topic: 'Algebra Word Problems',
+      duration: '25 min',
+      rating: 5,
+    },
+    {
+      student: 'Emma',
+      teacher: 'Dr. Curie',
+      topic: 'Plant Biology',
+      duration: '30 min',
+      rating: 5,
+    },
+    {
+      student: 'James',
+      teacher: 'Ms. Shakespeare',
+      topic: 'Creative Writing',
+      duration: '35 min',
+      rating: 4,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
@@ -106,7 +124,9 @@ export default function AITeachers() {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-lg p-6 mb-6">
           <h1 className="text-3xl font-bold">AI Teachers - Your Personal Learning Assistants 🤖</h1>
-          <p className="text-blue-100 mt-1">Chat with our specialized AI teachers anytime, anywhere</p>
+          <p className="text-blue-100 mt-1">
+            Chat with our specialized AI teachers anytime, anywhere
+          </p>
         </div>
 
         {/* Stats Overview */}
@@ -140,9 +160,7 @@ export default function AITeachers() {
             <Card key={teacher.id} className="border-2 hover:shadow-lg transition-all duration-300">
               <CardHeader className="text-center">
                 <div className={`mx-auto mb-3 p-3 rounded-full bg-${teacher.color}-100`}>
-                  <div className={`text-${teacher.color}-600`}>
-                    {teacher.icon}
-                  </div>
+                  <div className={`text-${teacher.color}-600`}>{teacher.icon}</div>
                 </div>
                 <CardTitle className="text-lg">{teacher.name}</CardTitle>
                 <p className="text-sm text-gray-600">{teacher.subject}</p>
@@ -198,13 +216,18 @@ export default function AITeachers() {
           <CardContent>
             <div className="space-y-3">
               {recentSessions.map((session, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                       <span className="text-sm font-medium">{session.student[0]}</span>
                     </div>
                     <div>
-                      <p className="font-medium text-sm">{session.student} with {session.teacher}</p>
+                      <p className="font-medium text-sm">
+                        {session.student} with {session.teacher}
+                      </p>
                       <p className="text-xs text-gray-600">{session.topic}</p>
                     </div>
                   </div>
@@ -212,7 +235,10 @@ export default function AITeachers() {
                     <p className="text-sm font-medium">{session.duration}</p>
                     <div className="flex items-center gap-1">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`h-3 w-3 ${i < session.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} />
+                        <Star
+                          key={i}
+                          className={`h-3 w-3 ${i < session.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'}`}
+                        />
                       ))}
                     </div>
                   </div>
@@ -241,9 +267,7 @@ export default function AITeachers() {
                   </Button>
                 </Link>
                 <Link href="/dashboard">
-                  <Button variant="outline">
-                    Back to Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -251,5 +275,5 @@ export default function AITeachers() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

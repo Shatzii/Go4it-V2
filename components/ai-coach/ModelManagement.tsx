@@ -1,106 +1,118 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Download, Check, Settings, Cpu, HardDrive, Zap, AlertCircle, Play, Pause } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
+import {
+  Download,
+  Check,
+  Settings,
+  Cpu,
+  HardDrive,
+  Zap,
+  AlertCircle,
+  Play,
+  Pause,
+} from 'lucide-react';
 
 interface AIModel {
-  name: string
-  size: string
-  description: string
-  downloadUrl: string
-  modelFile: string
+  name: string;
+  size: string;
+  description: string;
+  downloadUrl: string;
+  modelFile: string;
   requirements: {
-    ram: string
-    storage: string
-    gpu?: string
-  }
-  capabilities: string[]
+    ram: string;
+    storage: string;
+    gpu?: string;
+  };
+  capabilities: string[];
   coachingCapabilities: {
-    sportsKnowledge: boolean
-    skillDevelopment: boolean
-    personalizedTraining: boolean
-    progressTracking: boolean
-    motivationalSupport: boolean
-  }
+    sportsKnowledge: boolean;
+    skillDevelopment: boolean;
+    personalizedTraining: boolean;
+    progressTracking: boolean;
+    motivationalSupport: boolean;
+  };
   suitableFor: {
-    beginners: boolean
-    intermediate: boolean
-    advanced: boolean
-  }
-  status: 'not_downloaded' | 'downloading' | 'downloaded' | 'active'
+    beginners: boolean;
+    intermediate: boolean;
+    advanced: boolean;
+  };
+  status: 'not_downloaded' | 'downloading' | 'downloaded' | 'active';
 }
 
 export function ModelManagement() {
-  const [models, setModels] = useState<AIModel[]>([])
-  const [loading, setLoading] = useState(true)
-  const [downloadingModel, setDownloadingModel] = useState<string | null>(null)
-  const [activeModel, setActiveModel] = useState<string>('llama3.1:8b')
+  const [models, setModels] = useState<AIModel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [downloadingModel, setDownloadingModel] = useState<string | null>(null);
+  const [activeModel, setActiveModel] = useState<string>('llama3.1:8b');
 
   useEffect(() => {
-    fetchModels()
-  }, [])
+    fetchModels();
+  }, []);
 
   const fetchModels = async () => {
     try {
       const response = await fetch('/api/ai-coach/models', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        }
-      })
-      
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+      });
+
       if (response.ok) {
-        const data = await response.json()
-        setModels(data.models.map((model: any) => ({
-          ...model,
-          status: model.name === 'llama3.1:8b' ? 'active' : 'not_downloaded'
-        })))
-        setActiveModel(data.defaultModel)
+        const data = await response.json();
+        setModels(
+          data.models.map((model: any) => ({
+            ...model,
+            status: model.name === 'llama3.1:8b' ? 'active' : 'not_downloaded',
+          })),
+        );
+        setActiveModel(data.defaultModel);
       }
     } catch (error) {
-      console.error('Failed to fetch models:', error)
+      console.error('Failed to fetch models:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const downloadModel = async (modelName: string) => {
-    setDownloadingModel(modelName)
+    setDownloadingModel(modelName);
     try {
       const response = await fetch('/api/ai-coach/models', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
         body: JSON.stringify({
           modelName,
-          action: 'download'
-        })
-      })
+          action: 'download',
+        }),
+      });
 
       if (response.ok) {
         // Update model status to downloading
-        setModels(prev => prev.map(model => 
-          model.name === modelName 
-            ? { ...model, status: 'downloading' }
-            : model
-        ))
+        setModels((prev) =>
+          prev.map((model) =>
+            model.name === modelName ? { ...model, status: 'downloading' } : model,
+          ),
+        );
 
         // Simulate download progress
         setTimeout(() => {
-          setModels(prev => prev.map(model => 
-            model.name === modelName 
-              ? { ...model, status: 'downloaded' }
-              : model
-          ))
-          setDownloadingModel(null)
-        }, 3000)
+          setModels((prev) =>
+            prev.map((model) =>
+              model.name === modelName ? { ...model, status: 'downloaded' } : model,
+            ),
+          );
+          setDownloadingModel(null);
+        }, 3000);
       }
     } catch (error) {
-      console.error('Failed to download model:', error)
-      setDownloadingModel(null)
+      console.error('Failed to download model:', error);
+      setDownloadingModel(null);
     }
-  }
+  };
 
   const activateModel = async (modelName: string) => {
     try {
@@ -108,51 +120,65 @@ export function ModelManagement() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
         },
         body: JSON.stringify({
           modelName,
-          action: 'activate'
-        })
-      })
+          action: 'activate',
+        }),
+      });
 
       if (response.ok) {
-        setActiveModel(modelName)
-        setModels(prev => prev.map(model => ({
-          ...model,
-          status: model.name === modelName ? 'active' : 
-                  model.status === 'active' ? 'downloaded' : model.status
-        })))
+        setActiveModel(modelName);
+        setModels((prev) =>
+          prev.map((model) => ({
+            ...model,
+            status:
+              model.name === modelName
+                ? 'active'
+                : model.status === 'active'
+                  ? 'downloaded'
+                  : model.status,
+          })),
+        );
       }
     } catch (error) {
-      console.error('Failed to activate model:', error)
+      console.error('Failed to activate model:', error);
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-600 bg-green-100'
-      case 'downloaded': return 'text-blue-600 bg-blue-100'
-      case 'downloading': return 'text-yellow-600 bg-yellow-100'
-      default: return 'text-gray-600 bg-gray-100'
+      case 'active':
+        return 'text-green-600 bg-green-100';
+      case 'downloaded':
+        return 'text-blue-600 bg-blue-100';
+      case 'downloading':
+        return 'text-yellow-600 bg-yellow-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
-  }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return <Play className="w-4 h-4" />
-      case 'downloaded': return <Check className="w-4 h-4" />
-      case 'downloading': return <Download className="w-4 h-4 animate-pulse" />
-      default: return null
+      case 'active':
+        return <Play className="w-4 h-4" />;
+      case 'downloaded':
+        return <Check className="w-4 h-4" />;
+      case 'downloading':
+        return <Download className="w-4 h-4 animate-pulse" />;
+      default:
+        return null;
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -165,9 +191,7 @@ export function ModelManagement() {
         </div>
         <div className="flex items-center gap-2 px-3 py-2 bg-green-100 rounded-lg">
           <Zap className="w-4 h-4 text-green-600" />
-          <span className="text-sm font-medium text-green-800">
-            Active: {activeModel}
-          </span>
+          <span className="text-sm font-medium text-green-800">Active: {activeModel}</span>
         </div>
       </div>
 
@@ -178,8 +202,8 @@ export function ModelManagement() {
           <div>
             <h3 className="font-medium text-yellow-800">System Requirements</h3>
             <p className="text-sm text-yellow-700 mt-1">
-              Self-hosted AI models require significant computational resources. 
-              Ensure your server has adequate RAM and storage before downloading.
+              Self-hosted AI models require significant computational resources. Ensure your server
+              has adequate RAM and storage before downloading.
             </p>
           </div>
         </div>
@@ -193,7 +217,9 @@ export function ModelManagement() {
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-semibold text-lg">{model.name}</h3>
-                <div className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getStatusColor(model.status)}`}>
+                <div
+                  className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getStatusColor(model.status)}`}
+                >
                   {getStatusIcon(model.status)}
                   {model.status.replace('_', ' ')}
                 </div>
@@ -299,7 +325,7 @@ export function ModelManagement() {
                   )}
                 </button>
               )}
-              
+
               {model.status === 'downloaded' && (
                 <button
                   onClick={() => activateModel(model.name)}
@@ -309,7 +335,7 @@ export function ModelManagement() {
                   Activate Model
                 </button>
               )}
-              
+
               {model.status === 'active' && (
                 <div className="w-full bg-green-100 text-green-800 py-2 px-4 rounded font-medium text-center">
                   Currently Active
@@ -320,5 +346,5 @@ export function ModelManagement() {
         ))}
       </div>
     </div>
-  )
+  );
 }

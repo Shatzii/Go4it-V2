@@ -1,6 +1,6 @@
 /**
  * Shatzii School of Law API Routes
- * 
+ *
  * This module provides API endpoints for the law school functionality,
  * including bar exam preparation, legal education courses, and UAE legal
  * system resources.
@@ -11,7 +11,7 @@ import { Anthropic } from '@anthropic-ai/sdk';
 
 const router = express.Router();
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 // Get available law courses
@@ -26,7 +26,7 @@ router.get('/courses', (req, res) => {
         level: 'beginner',
         modules: 12,
         duration: '8 weeks',
-        featured: true
+        featured: true,
       },
       {
         id: 'contract-law',
@@ -35,7 +35,7 @@ router.get('/courses', (req, res) => {
         level: 'intermediate',
         modules: 15,
         duration: '10 weeks',
-        featured: true
+        featured: true,
       },
       {
         id: 'commercial-law',
@@ -44,7 +44,7 @@ router.get('/courses', (req, res) => {
         level: 'intermediate',
         modules: 14,
         duration: '10 weeks',
-        featured: false
+        featured: false,
       },
       {
         id: 'property-law',
@@ -53,7 +53,7 @@ router.get('/courses', (req, res) => {
         level: 'intermediate',
         modules: 10,
         duration: '8 weeks',
-        featured: false
+        featured: false,
       },
       {
         id: 'criminal-law',
@@ -62,9 +62,9 @@ router.get('/courses', (req, res) => {
         level: 'advanced',
         modules: 16,
         duration: '12 weeks',
-        featured: true
-      }
-    ]
+        featured: true,
+      },
+    ],
   });
 });
 
@@ -86,8 +86,8 @@ router.get('/bar-exams', (req, res) => {
           'Commercial Law',
           'Criminal Law',
           'Civil Procedure',
-          'Personal Status Law'
-        ]
+          'Personal Status Law',
+        ],
       },
       {
         id: 'uae-bar-practice-1',
@@ -96,11 +96,7 @@ router.get('/bar-exams', (req, res) => {
         questions: 100,
         duration: '90 minutes',
         passingScore: 65,
-        categories: [
-          'Constitutional Law',
-          'Civil Code',
-          'Civil Procedure'
-        ]
+        categories: ['Constitutional Law', 'Civil Code', 'Civil Procedure'],
       },
       {
         id: 'uae-bar-practice-2',
@@ -109,13 +105,9 @@ router.get('/bar-exams', (req, res) => {
         questions: 100,
         duration: '90 minutes',
         passingScore: 65,
-        categories: [
-          'Commercial Law',
-          'Criminal Law',
-          'Criminal Procedure'
-        ]
-      }
-    ]
+        categories: ['Commercial Law', 'Criminal Law', 'Criminal Procedure'],
+      },
+    ],
   });
 });
 
@@ -123,16 +115,16 @@ router.get('/bar-exams', (req, res) => {
 router.post('/generate/case-analysis', async (req, res) => {
   try {
     const { caseDetails, jurisdiction, analysisType } = req.body;
-    
+
     if (!caseDetails || !jurisdiction) {
       return res.status(400).json({
         success: false,
-        error: 'Case details and jurisdiction are required'
+        error: 'Case details and jurisdiction are required',
       });
     }
-    
+
     const type = analysisType || 'comprehensive';
-    
+
     const prompt = `Analyze the following legal case in the ${jurisdiction} jurisdiction:
 
 "${caseDetails}"
@@ -152,39 +144,36 @@ Focus on ${jurisdiction} legal principles and procedures. Cite specific UAE lega
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
       max_tokens: 1500,
-      messages: [
-        { role: 'user', content: prompt }
-      ],
+      messages: [{ role: 'user', content: prompt }],
     });
-    
+
     // Extract JSON from the response
     try {
       const content = response.content[0].text;
       // Find JSON in the content
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || 
-                        content.match(/```\n([\s\S]*?)\n```/) || 
-                        [null, content];
-      
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
+        content.match(/```\n([\s\S]*?)\n```/) || [null, content];
+
       const jsonContent = jsonMatch[1];
       const analysis = JSON.parse(jsonContent);
-      
+
       res.json({
         success: true,
-        analysis
+        analysis,
       });
     } catch (jsonError) {
       console.error('JSON parsing error:', jsonError);
       res.status(500).json({
         success: false,
         error: 'Failed to parse AI response as JSON',
-        rawResponse: response.content[0].text
+        rawResponse: response.content[0].text,
       });
     }
   } catch (error) {
     console.error('Case analysis generation error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -193,14 +182,14 @@ Focus on ${jurisdiction} legal principles and procedures. Cite specific UAE lega
 router.post('/generate/legal-document', async (req, res) => {
   try {
     const { documentType, jurisdiction, details } = req.body;
-    
+
     if (!documentType || !jurisdiction) {
       return res.status(400).json({
         success: false,
-        error: 'Document type and jurisdiction are required'
+        error: 'Document type and jurisdiction are required',
       });
     }
-    
+
     const prompt = `Create a ${documentType} template for use in ${jurisdiction}, with the following details:
 
 ${details || 'Standard template with placeholders for customization'}
@@ -218,39 +207,36 @@ Ensure the document complies with ${jurisdiction} legal requirements and follows
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
       max_tokens: 1500,
-      messages: [
-        { role: 'user', content: prompt }
-      ],
+      messages: [{ role: 'user', content: prompt }],
     });
-    
+
     // Extract JSON from the response
     try {
       const content = response.content[0].text;
       // Find JSON in the content
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || 
-                        content.match(/```\n([\s\S]*?)\n```/) || 
-                        [null, content];
-      
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
+        content.match(/```\n([\s\S]*?)\n```/) || [null, content];
+
       const jsonContent = jsonMatch[1];
       const document = JSON.parse(jsonContent);
-      
+
       res.json({
         success: true,
-        document
+        document,
       });
     } catch (jsonError) {
       console.error('JSON parsing error:', jsonError);
       res.status(500).json({
         success: false,
         error: 'Failed to parse AI response as JSON',
-        rawResponse: response.content[0].text
+        rawResponse: response.content[0].text,
       });
     }
   } catch (error) {
     console.error('Legal document generation error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });

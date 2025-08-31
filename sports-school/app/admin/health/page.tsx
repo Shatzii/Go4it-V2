@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function HealthServices() {
-  const [activeTab, setActiveTab] = useState('records')
+  const [activeTab, setActiveTab] = useState('records');
 
   // Sample health data
   const healthRecords = [
@@ -19,7 +19,7 @@ export default function HealthServices() {
       treatment: 'Rest in nurse office, water',
       disposition: 'Returned to class',
       medicationGiven: false,
-      parentNotified: false
+      parentNotified: false,
     },
     {
       id: '2',
@@ -32,14 +32,14 @@ export default function HealthServices() {
       treatment: 'Administered prescribed medication',
       disposition: 'Returned to class',
       medicationGiven: true,
-      parentNotified: false
-    }
-  ]
+      parentNotified: false,
+    },
+  ];
 
   const immunizationAlerts = [
     { studentName: 'Sophia Rodriguez', grade: '9', vaccine: 'Meningitis', dueDate: '2025-02-15' },
-    { studentName: 'James Chen', grade: '5', vaccine: 'Tdap Booster', dueDate: '2025-02-28' }
-  ]
+    { studentName: 'James Chen', grade: '5', vaccine: 'Tdap Booster', dueDate: '2025-02-28' },
+  ];
 
   const medications = [
     {
@@ -47,16 +47,16 @@ export default function HealthServices() {
       medication: 'Ritalin 10mg',
       times: ['8:00 AM', '12:00 PM'],
       prescribingDoctor: 'Dr. Smith',
-      expiration: '2025-06-15'
+      expiration: '2025-06-15',
     },
     {
       studentName: 'Lily Zhang',
       medication: 'EpiPen',
       times: ['As needed'],
       prescribingDoctor: 'Dr. Johnson',
-      expiration: '2025-12-01'
-    }
-  ]
+      expiration: '2025-12-01',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -64,7 +64,10 @@ export default function HealthServices() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/admin/dashboard" className="text-indigo-600 font-semibold text-lg hover:text-indigo-500">
+            <Link
+              href="/admin/dashboard"
+              className="text-indigo-600 font-semibold text-lg hover:text-indigo-500"
+            >
               ← Admin Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Health Services Management</h1>
@@ -89,7 +92,7 @@ export default function HealthServices() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-red-100 rounded-lg">
@@ -101,7 +104,7 @@ export default function HealthServices() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -113,7 +116,7 @@ export default function HealthServices() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -135,7 +138,7 @@ export default function HealthServices() {
                 { id: 'records', name: 'Health Records', icon: '📋' },
                 { id: 'medications', name: 'Medications', icon: '💊' },
                 { id: 'immunizations', name: 'Immunizations', icon: '💉' },
-                { id: 'emergencies', name: 'Emergency Info', icon: '🚨' }
+                { id: 'emergencies', name: 'Emergency Info', icon: '🚨' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -168,17 +171,29 @@ export default function HealthServices() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reason</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Treatment</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Disposition</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Student
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Time
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Reason
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Treatment
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Disposition
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -199,7 +214,9 @@ export default function HealthServices() {
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm">
-                            <button className="text-indigo-600 hover:text-indigo-900 mr-3">View</button>
+                            <button className="text-indigo-600 hover:text-indigo-900 mr-3">
+                              View
+                            </button>
                             <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
                           </td>
                         </tr>
@@ -218,7 +235,7 @@ export default function HealthServices() {
                     + Add Medication
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {medications.map((med, index) => (
                     <div key={index} className="border rounded-lg p-4">
@@ -232,12 +249,20 @@ export default function HealthServices() {
                         </span>
                       </div>
                       <div className="space-y-2 text-sm text-gray-600">
-                        <p><strong>Schedule:</strong> {med.times.join(', ')}</p>
-                        <p><strong>Prescribing Doctor:</strong> {med.prescribingDoctor}</p>
-                        <p><strong>Expires:</strong> {med.expiration}</p>
+                        <p>
+                          <strong>Schedule:</strong> {med.times.join(', ')}
+                        </p>
+                        <p>
+                          <strong>Prescribing Doctor:</strong> {med.prescribingDoctor}
+                        </p>
+                        <p>
+                          <strong>Expires:</strong> {med.expiration}
+                        </p>
                       </div>
                       <div className="mt-4 flex space-x-2">
-                        <button className="text-green-600 hover:text-green-800">✓ Give Medication</button>
+                        <button className="text-green-600 hover:text-green-800">
+                          ✓ Give Medication
+                        </button>
                         <button className="text-indigo-600 hover:text-indigo-800">Edit</button>
                       </div>
                     </div>
@@ -260,7 +285,9 @@ export default function HealthServices() {
                   <div className="space-y-2">
                     {immunizationAlerts.map((alert, index) => (
                       <div key={index} className="flex justify-between items-center text-sm">
-                        <span>{alert.studentName} (Grade {alert.grade}) - {alert.vaccine}</span>
+                        <span>
+                          {alert.studentName} (Grade {alert.grade}) - {alert.vaccine}
+                        </span>
                         <span className="text-yellow-700 font-medium">Due: {alert.dueDate}</span>
                       </div>
                     ))}
@@ -295,15 +322,21 @@ export default function HealthServices() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="bg-white border-2 border-red-200 rounded-lg p-6">
-                    <h4 className="font-semibold text-red-800 mb-4">High Priority Medical Alerts</h4>
+                    <h4 className="font-semibold text-red-800 mb-4">
+                      High Priority Medical Alerts
+                    </h4>
                     <div className="space-y-3">
                       <div className="p-3 bg-red-50 rounded border">
                         <div className="font-medium">Lily Zhang - Severe Peanut Allergy</div>
-                        <div className="text-sm text-gray-600">EpiPen in nurse office and classroom</div>
+                        <div className="text-sm text-gray-600">
+                          EpiPen in nurse office and classroom
+                        </div>
                       </div>
                       <div className="p-3 bg-red-50 rounded border">
                         <div className="font-medium">Alex Rodriguez - Type 1 Diabetes</div>
-                        <div className="text-sm text-gray-600">Glucagon kit available, check BG regularly</div>
+                        <div className="text-sm text-gray-600">
+                          Glucagon kit available, check BG regularly
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -384,5 +417,5 @@ export default function HealthServices() {
         </div>
       </div>
     </div>
-  )
+  );
 }

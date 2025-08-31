@@ -1,6 +1,6 @@
 /**
  * ShatziiOS AI API Client
- * 
+ *
  * This module provides functions for interacting with the ShatziiOS AI API
  * to access AI-powered educational features.
  */
@@ -14,27 +14,29 @@ console.log(`API client connecting to: ${window.location.origin}${API_BASE_URL}`
 
 // Function to check if API server is available
 function pingAPIServer() {
-  return fetch(`${API_BASE_URL}/status`, { 
+  return fetch(`${API_BASE_URL}/status`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
     // Add cache busting to prevent browser caching
-    cache: 'no-cache'
-  }).then(response => {
-    if (!response.ok) {
-      throw new Error(`API server returned status ${response.status}`);
-    }
-    return response.json();
-  }).catch(error => {
-    console.error('Error pinging API server:', error);
-    return { 
-      error: 'Failed to connect to API server',
-      details: error.message
-    };
-  });
+    cache: 'no-cache',
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`API server returned status ${response.status}`);
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      console.error('Error pinging API server:', error);
+      return {
+        error: 'Failed to connect to API server',
+        details: error.message,
+      };
+    });
 }
 
 // Ping the API server immediately
-pingAPIServer().then(result => {
+pingAPIServer().then((result) => {
   if (result.error) {
     console.error('API connection test failed:', result.error);
   } else {
@@ -55,9 +57,9 @@ async function checkAIIntegrationStatus() {
     return await response.json();
   } catch (error) {
     console.error('Error checking AI integration status:', error);
-    return { 
+    return {
       error: 'Failed to connect to AI API',
-      details: error.message
+      details: error.message,
     };
   }
 }
@@ -72,21 +74,21 @@ async function createAITeacher(teacherConfig) {
     const response = await fetch(`${API_BASE_URL}/create-teacher`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(teacherConfig)
+      body: JSON.stringify(teacherConfig),
     });
-    
+
     if (!response.ok) {
       throw new Error(`AI teacher creation failed: ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error creating AI teacher:', error);
-    return { 
+    return {
       error: 'Failed to create AI teacher',
-      details: error.message
+      details: error.message,
     };
   }
 }
@@ -103,25 +105,25 @@ async function getAITeacherResponse(teacherConfig, conversationHistory, userMess
     const response = await fetch(`${API_BASE_URL}/teacher-response`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         teacherConfig,
         conversationHistory,
-        userMessage
-      })
+        userMessage,
+      }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`AI teacher response failed: ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error getting AI teacher response:', error);
-    return { 
+    return {
       error: 'Failed to get AI teacher response',
-      details: error.message
+      details: error.message,
     };
   }
 }
@@ -136,21 +138,21 @@ async function generateLearningPlan(params) {
     const response = await fetch(`${API_BASE_URL}/learning-plan`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(params),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Learning plan generation failed: ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error generating learning plan:', error);
-    return { 
+    return {
       error: 'Failed to generate learning plan',
-      details: error.message
+      details: error.message,
     };
   }
 }
@@ -165,21 +167,21 @@ async function generateCurriculumContent(params) {
     const response = await fetch(`${API_BASE_URL}/curriculum-content`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(params)
+      body: JSON.stringify(params),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Curriculum content generation failed: ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error generating curriculum content:', error);
-    return { 
+    return {
       error: 'Failed to generate curriculum content',
-      details: error.message
+      details: error.message,
     };
   }
 }
@@ -194,21 +196,21 @@ async function assessLearningStyle(responses) {
     const response = await fetch(`${API_BASE_URL}/learning-style-assessment`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ responses })
+      body: JSON.stringify({ responses }),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Learning style assessment failed: ${response.status}`);
     }
-    
+
     return await response.json();
   } catch (error) {
     console.error('Error assessing learning style:', error);
-    return { 
+    return {
       error: 'Failed to assess learning style',
-      details: error.message
+      details: error.message,
     };
   }
 }
@@ -221,5 +223,5 @@ window.ShatziiOS.AI = {
   getAITeacherResponse,
   generateLearningPlan,
   generateCurriculumContent,
-  assessLearningStyle
+  assessLearningStyle,
 };

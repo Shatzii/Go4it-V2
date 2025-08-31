@@ -1,6 +1,6 @@
 /**
  * Anthropic School Integrations Service
- * 
+ *
  * This service provides AI-powered content generation for the educational platforms,
  * including Language School, Law School, and Superhero School, using the Anthropic Claude API.
  */
@@ -17,14 +17,14 @@ import { AnthropicService } from '../anthropic-service';
 export async function generateVocabularyList(
   language: string,
   proficiencyLevel: string,
-  topic: string
+  topic: string,
 ): Promise<any> {
   try {
     // Create system prompt for vocabulary generation
     const systemPrompt = `You are an expert language educator specializing in ${language} instruction.
     Your task is to create helpful, culturally appropriate vocabulary lists for ${proficiencyLevel} level students
     learning ${language}. Focus on useful, practical vocabulary that students can immediately apply.`;
-    
+
     // Create the main prompt
     const prompt = `Please create a vocabulary list for ${proficiencyLevel} level ${language} learners on the topic of "${topic}".
     
@@ -53,20 +53,20 @@ export async function generateVocabularyList(
         }
       ]
     }`;
-    
+
     // Call Anthropic API
     const result = await AnthropicService.generateText(prompt, {
       systemPrompt,
       maxTokens: 2000,
-      temperature: 0.7
+      temperature: 0.7,
     });
-    
+
     // Extract JSON from the result
     const jsonMatch = result.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Failed to parse vocabulary list from AI response');
     }
-    
+
     const vocabularyList = JSON.parse(jsonMatch[0]);
     return vocabularyList;
   } catch (error) {
@@ -87,14 +87,14 @@ export async function createLanguageDialogue(
   language: string,
   proficiencyLevel: string,
   situation: string,
-  participants: number = 2
+  participants: number = 2,
 ): Promise<any> {
   try {
     // Create system prompt for dialogue generation
     const systemPrompt = `You are an expert ${language} language educator creating educational dialogues.
     Your task is to craft natural, culturally authentic dialogues for ${proficiencyLevel} level students.
     Use appropriate vocabulary, grammar, and cultural references for ${language} speakers.`;
-    
+
     // Create the main prompt
     const prompt = `Please create a realistic dialogue in ${language} for ${proficiencyLevel} level learners.
     
@@ -131,20 +131,20 @@ export async function createLanguageDialogue(
         }
       ]
     }`;
-    
+
     // Call Anthropic API
     const result = await AnthropicService.generateText(prompt, {
       systemPrompt,
       maxTokens: 2500,
-      temperature: 0.7
+      temperature: 0.7,
     });
-    
+
     // Extract JSON from the result
     const jsonMatch = result.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Failed to parse dialogue from AI response');
     }
-    
+
     const dialogue = JSON.parse(jsonMatch[0]);
     return dialogue;
   } catch (error) {
@@ -163,14 +163,14 @@ export async function createLanguageDialogue(
 export async function generateGrammarExercises(
   language: string,
   proficiencyLevel: string,
-  grammarTopic: string
+  grammarTopic: string,
 ): Promise<any> {
   try {
     // Create system prompt for grammar exercise generation
     const systemPrompt = `You are an expert ${language} language educator specializing in grammar instruction.
     Your task is to create effective, level-appropriate grammar exercises for ${proficiencyLevel} level students
     learning ${language}.`;
-    
+
     // Create the main prompt
     const prompt = `Please create a set of grammar exercises for ${proficiencyLevel} level ${language} learners focusing on "${grammarTopic}".
     
@@ -211,20 +211,20 @@ export async function generateGrammarExercises(
         ]
       }
     }`;
-    
+
     // Call Anthropic API
     const result = await AnthropicService.generateText(prompt, {
       systemPrompt,
       maxTokens: 3000,
-      temperature: 0.7
+      temperature: 0.7,
     });
-    
+
     // Extract JSON from the result
     const jsonMatch = result.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Failed to parse grammar exercises from AI response');
     }
-    
+
     const grammarExercises = JSON.parse(jsonMatch[0]);
     return grammarExercises;
   } catch (error) {
@@ -243,7 +243,7 @@ export async function generateGrammarExercises(
 export async function generateCulturalLesson(
   language: string,
   proficiencyLevel: string,
-  culturalTopic: string
+  culturalTopic: string,
 ): Promise<any> {
   try {
     // Determine the culture based on language
@@ -261,12 +261,12 @@ export async function generateCulturalLesson(
       default:
         culture = `${language}-speaking countries`;
     }
-    
+
     // Create system prompt for cultural lesson generation
     const systemPrompt = `You are an expert in ${culture} and the ${language} language.
     Your task is to create engaging, accurate cultural lessons that help language learners understand
     the cultural context behind the ${language} language. Provide authentic insights that go beyond stereotypes.`;
-    
+
     // Create the main prompt
     const prompt = `Please create a cultural lesson about "${culturalTopic}" for ${proficiencyLevel} level ${language} learners.
     
@@ -306,20 +306,20 @@ export async function generateCulturalLesson(
         "significance": "Cultural significance of this text"
       }
     }`;
-    
+
     // Call Anthropic API
     const result = await AnthropicService.generateText(prompt, {
       systemPrompt,
       maxTokens: 3000,
-      temperature: 0.7
+      temperature: 0.7,
     });
-    
+
     // Extract JSON from the result
     const jsonMatch = result.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Failed to parse cultural lesson from AI response');
     }
-    
+
     const culturalLesson = JSON.parse(jsonMatch[0]);
     return culturalLesson;
   } catch (error) {
@@ -342,14 +342,14 @@ export async function generateCulturalLesson(
 export async function analyzeLegalCase(
   caseText: string,
   legalArea: string,
-  prompt: string = ''
+  prompt: string = '',
 ): Promise<any> {
   try {
     // Create system prompt for legal case analysis
     const systemPrompt = `You are an expert legal professor specializing in ${legalArea} law.
     Your task is to analyze legal cases and provide clear, structured insights
     for law students. Focus on key legal principles, reasoning, and implications.`;
-    
+
     // Create the main prompt
     const mainPrompt = `Please analyze the following ${legalArea} law case:
 
@@ -387,20 +387,20 @@ Format your response as a JSON object with this structure:
   "keyPrinciples": ["Legal principle 1", "Legal principle 2", "..."],
   "implications": "Implications for future cases"
 }`;
-    
+
     // Call Anthropic API
     const result = await AnthropicService.generateText(mainPrompt, {
       systemPrompt,
       maxTokens: 3000,
-      temperature: 0.3 // Lower temperature for more factual analysis
+      temperature: 0.3, // Lower temperature for more factual analysis
     });
-    
+
     // Extract JSON from the result
     const jsonMatch = result.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Failed to parse legal case analysis from AI response');
     }
-    
+
     const analysis = JSON.parse(jsonMatch[0]);
     return analysis;
   } catch (error) {
@@ -419,14 +419,14 @@ Format your response as a JSON object with this structure:
 export async function generateBarExamQuestions(
   legalTopic: string,
   questionCount: number = 3,
-  format: string = 'multiple-choice'
+  format: string = 'multiple-choice',
 ): Promise<any> {
   try {
     // Create system prompt for bar exam question generation
     const systemPrompt = `You are an expert UAE bar exam preparation coach.
     Your task is to create challenging, realistic bar exam questions on ${legalTopic}
     that reflect the actual difficulty and style of the UAE bar examination.`;
-    
+
     // Create the main prompt
     const mainPrompt = `Please generate ${questionCount} ${format} questions on ${legalTopic} for UAE bar exam preparation.
 
@@ -445,34 +445,37 @@ Format your response as a JSON object with this structure:
     {
       "questionNumber": 1,
       "questionText": "The question stem",
-      ${format === 'multiple-choice' ? `
+      ${
+        format === 'multiple-choice'
+          ? `
       "options": {
         "A": "First option",
         "B": "Second option",
         "C": "Third option",
         "D": "Fourth option"
       },
-      "correctAnswer": "The correct letter (A, B, C, or D)",` 
-      : ''}
+      "correctAnswer": "The correct letter (A, B, C, or D)",`
+          : ''
+      }
       "explanation": "Detailed explanation of why the answer is correct and why others are incorrect",
       "relatedPrinciples": ["Legal principle 1", "Legal principle 2"]
     }
   ]
 }`;
-    
+
     // Call Anthropic API
     const result = await AnthropicService.generateText(mainPrompt, {
       systemPrompt,
       maxTokens: 3000,
-      temperature: 0.4
+      temperature: 0.4,
     });
-    
+
     // Extract JSON from the result
     const jsonMatch = result.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error('Failed to parse bar exam questions from AI response');
     }
-    
+
     const questions = JSON.parse(jsonMatch[0]);
     return questions;
   } catch (error) {

@@ -15,11 +15,11 @@ process.env.HOSTNAME = '0.0.0.0';
 try {
   // Run Next.js build
   console.log('📦 Running Next.js build...');
-  execSync('npx next build', { 
+  execSync('npx next build', {
     stdio: 'inherit',
-    cwd: process.cwd()
+    cwd: process.cwd(),
   });
-  
+
   console.log('✅ Build completed successfully!');
   process.exit(0);
 } catch (error) {

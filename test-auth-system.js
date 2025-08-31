@@ -14,7 +14,7 @@ const testUser = {
   lastName: 'Athlete',
   dateOfBirth: '2006-01-15',
   position: 'Quarterback',
-  sport: 'football'
+  sport: 'football',
 };
 
 const testCampRegistration = {
@@ -31,7 +31,7 @@ const testCampRegistration = {
   usaFootballMembership: true,
   actionNetworkOptIn: true,
   createAccount: true,
-  registrationFee: 299.99
+  registrationFee: 299.99,
 };
 
 async function makeRequest(endpoint, options = {}) {
@@ -39,9 +39,9 @@ async function makeRequest(endpoint, options = {}) {
     const response = await fetch(`${BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...options.headers,
       },
-      ...options
+      ...options,
     });
 
     const data = await response.json();
@@ -54,10 +54,10 @@ async function makeRequest(endpoint, options = {}) {
 
 async function testUserRegistration() {
   console.log('\n🔵 Testing User Registration...');
-  
+
   const { response, data, error } = await makeRequest('/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify(testUser)
+    body: JSON.stringify(testUser),
   });
 
   if (error) {
@@ -71,7 +71,7 @@ async function testUserRegistration() {
     console.log('   Username:', data.user.username);
     console.log('   Email:', data.user.email);
     console.log('   Role:', data.user.role);
-    
+
     // Extract cookie for future requests
     const cookies = response.headers.get('set-cookie');
     if (cookies && cookies.includes('token=')) {
@@ -89,13 +89,13 @@ async function testUserRegistration() {
 
 async function testUserLogin() {
   console.log('\n🔵 Testing User Login...');
-  
+
   const { response, data, error } = await makeRequest('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify({
       email: testUser.email,
-      password: testUser.password
-    })
+      password: testUser.password,
+    }),
   });
 
   if (error) {
@@ -107,7 +107,7 @@ async function testUserLogin() {
     console.log('✅ User login successful');
     console.log('   User ID:', data.user.id);
     console.log('   Username:', data.user.username);
-    
+
     const cookies = response.headers.get('set-cookie');
     if (cookies && cookies.includes('token=')) {
       console.log('✅ Authentication token received');
@@ -116,18 +116,18 @@ async function testUserLogin() {
   } else {
     console.log('❌ Login failed:', data.error);
   }
-  
+
   return false;
 }
 
 async function testAuthenticatedRequest(cookies) {
   console.log('\n🔵 Testing Authenticated User Profile Fetch...');
-  
+
   const { response, data, error } = await makeRequest('/api/auth/me', {
     method: 'GET',
     headers: {
-      'Cookie': cookies
-    }
+      Cookie: cookies,
+    },
   });
 
   if (error) {
@@ -151,7 +151,7 @@ async function testAuthenticatedRequest(cookies) {
 
 async function testCampRegistrationWithAccount() {
   console.log('\n🔵 Testing Camp Registration with Account Creation...');
-  
+
   // Use slightly different email to avoid conflicts
   const registrationData = {
     ...testCampRegistration,
@@ -162,12 +162,12 @@ async function testCampRegistrationWithAccount() {
     dateOfBirth: testUser.dateOfBirth,
     position: testUser.position,
     username: testUser.username + '_camp',
-    password: testUser.password
+    password: testUser.password,
   };
 
   const { response, data, error } = await makeRequest('/api/camp-registration', {
     method: 'POST',
-    body: JSON.stringify(registrationData)
+    body: JSON.stringify(registrationData),
   });
 
   if (error) {
@@ -189,11 +189,11 @@ async function testCampRegistrationWithAccount() {
 
 async function testDatabaseQueries() {
   console.log('\n🔵 Testing Database Queries...');
-  
+
   try {
     // Test notifications endpoint as a proxy for database connectivity
     const { response, data, error } = await makeRequest('/api/notifications');
-    
+
     if (error) {
       console.log('❌ Database query failed:', error);
       return false;
@@ -216,13 +216,13 @@ async function testDatabaseQueries() {
 async function runAllTests() {
   console.log('🚀 Starting Comprehensive Authentication System Test');
   console.log('================================================');
-  
+
   let results = {
     registration: false,
     login: false,
     authRequest: false,
     campRegistration: false,
-    database: false
+    database: false,
   };
 
   // Test 1: User Registration
@@ -258,9 +258,9 @@ async function runAllTests() {
 
   const totalTests = Object.keys(results).length;
   const passedTests = Object.values(results).filter(Boolean).length;
-  
+
   console.log(`\n🎯 Overall: ${passedTests}/${totalTests} tests passed`);
-  
+
   if (passedTests === totalTests) {
     console.log('🎉 ALL TESTS PASSED! Authentication system is working correctly.');
   } else {

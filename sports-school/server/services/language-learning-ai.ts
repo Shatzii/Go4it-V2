@@ -1,6 +1,6 @@
 /**
  * Enhanced Language Learning AI Service
- * 
+ *
  * This service integrates Anthropic Claude for advanced language learning capabilities
  * within the ShotziOS platform. It provides specialized functions for vocabulary generation,
  * grammar exercises, dialogue creation, and pronunciation feedback.
@@ -31,7 +31,7 @@ export async function generateVocabularyList(
   topic: string,
   level: string,
   count: number = 15,
-  includeContext: boolean = true
+  includeContext: boolean = true,
 ): Promise<{
   language: string;
   topic: string;
@@ -82,10 +82,10 @@ export async function generateVocabularyList(
       model: MODEL,
       max_tokens: 3000,
       messages: [
-        { 
-          role: 'user', 
-          content: `Generate a vocabulary list for ${level} ${language} students on the topic of "${topic}".`
-        }
+        {
+          role: 'user',
+          content: `Generate a vocabulary list for ${level} ${language} students on the topic of "${topic}".`,
+        },
       ],
       system: systemPrompt,
     });
@@ -96,11 +96,16 @@ export async function generateVocabularyList(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const vocabularyData = JSON.parse(jsonMatch[0]);
 
     // Validate required fields
-    if (!vocabularyData.language || !vocabularyData.topic || !vocabularyData.level || !Array.isArray(vocabularyData.vocabulary)) {
+    if (
+      !vocabularyData.language ||
+      !vocabularyData.topic ||
+      !vocabularyData.level ||
+      !Array.isArray(vocabularyData.vocabulary)
+    ) {
       throw new Error('AI response missing required vocabulary fields');
     }
 
@@ -125,7 +130,7 @@ export async function generateLanguageDialogue(
   topic: string,
   level: string,
   context: string,
-  characterCount: number = 2
+  characterCount: number = 2,
 ): Promise<{
   language: string;
   topic: string;
@@ -180,10 +185,10 @@ export async function generateLanguageDialogue(
       model: MODEL,
       max_tokens: 3500,
       messages: [
-        { 
-          role: 'user', 
-          content: `Create a ${level} level ${language} dialogue about "${topic}" set in this context: "${context}" with ${characterCount} speakers.`
-        }
+        {
+          role: 'user',
+          content: `Create a ${level} level ${language} dialogue about "${topic}" set in this context: "${context}" with ${characterCount} speakers.`,
+        },
       ],
       system: systemPrompt,
     });
@@ -194,11 +199,15 @@ export async function generateLanguageDialogue(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const dialogueData = JSON.parse(jsonMatch[0]);
 
     // Validate required fields
-    if (!dialogueData.dialogue || !Array.isArray(dialogueData.dialogue) || !dialogueData.keyPhrases) {
+    if (
+      !dialogueData.dialogue ||
+      !Array.isArray(dialogueData.dialogue) ||
+      !dialogueData.keyPhrases
+    ) {
       throw new Error('AI response missing required dialogue fields');
     }
 
@@ -221,7 +230,7 @@ export async function generateGrammarExercises(
   language: string,
   grammarConcept: string,
   level: string,
-  exerciseCount: number = 10
+  exerciseCount: number = 10,
 ): Promise<{
   language: string;
   grammarConcept: string;
@@ -278,10 +287,10 @@ export async function generateGrammarExercises(
       model: MODEL,
       max_tokens: 3500,
       messages: [
-        { 
-          role: 'user', 
-          content: `Create ${level} level ${language} grammar exercises on ${grammarConcept} with ${exerciseCount} practice questions.`
-        }
+        {
+          role: 'user',
+          content: `Create ${level} level ${language} grammar exercises on ${grammarConcept} with ${exerciseCount} practice questions.`,
+        },
       ],
       system: systemPrompt,
     });
@@ -292,11 +301,15 @@ export async function generateGrammarExercises(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const grammarData = JSON.parse(jsonMatch[0]);
 
     // Validate required fields
-    if (!grammarData.explanation || !Array.isArray(grammarData.examples) || !Array.isArray(grammarData.exercises)) {
+    if (
+      !grammarData.explanation ||
+      !Array.isArray(grammarData.examples) ||
+      !Array.isArray(grammarData.exercises)
+    ) {
       throw new Error('AI response missing required grammar exercise fields');
     }
 
@@ -317,7 +330,7 @@ export async function generateGrammarExercises(
 export async function generateCulturalLesson(
   language: string,
   culturalTopic: string,
-  level: string
+  level: string,
 ): Promise<{
   language: string;
   culturalTopic: string;
@@ -381,10 +394,10 @@ export async function generateCulturalLesson(
       model: MODEL,
       max_tokens: 4000,
       messages: [
-        { 
-          role: 'user', 
-          content: `Create a ${level} level cultural lesson about "${culturalTopic}" for ${language} language students.`
-        }
+        {
+          role: 'user',
+          content: `Create a ${level} level cultural lesson about "${culturalTopic}" for ${language} language students.`,
+        },
       ],
       system: systemPrompt,
     });
@@ -395,12 +408,16 @@ export async function generateCulturalLesson(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const lessonData = JSON.parse(jsonMatch[0]);
 
     // Validate required fields
-    if (!lessonData.introduction || !Array.isArray(lessonData.mainContent) || 
-        !Array.isArray(lessonData.keyVocabulary) || !Array.isArray(lessonData.discussionQuestions)) {
+    if (
+      !lessonData.introduction ||
+      !Array.isArray(lessonData.mainContent) ||
+      !Array.isArray(lessonData.keyVocabulary) ||
+      !Array.isArray(lessonData.discussionQuestions)
+    ) {
       throw new Error('AI response missing required cultural lesson fields');
     }
 
@@ -423,7 +440,7 @@ export async function analyzePronunciation(
   base64Audio: string,
   language: string,
   targetPhrase: string,
-  level: string
+  level: string,
 ): Promise<{
   overallRating: number;
   feedback: string;
@@ -438,7 +455,7 @@ export async function analyzePronunciation(
   try {
     // This is a placeholder - currently Claude doesn't have audio input capabilities
     // In a real implementation, this would use an audio analysis service or future Claude capabilities
-    
+
     // For now, we'll simulate a pronunciation feedback using the target phrase
     const systemPrompt = `
       You are a language pronunciation specialist for ${language}.
@@ -473,10 +490,10 @@ export async function analyzePronunciation(
       model: MODEL,
       max_tokens: 2000,
       messages: [
-        { 
-          role: 'user', 
-          content: `Analyze the pronunciation of this ${level} level student trying to say "${targetPhrase}" in ${language}.`
-        }
+        {
+          role: 'user',
+          content: `Analyze the pronunciation of this ${level} level student trying to say "${targetPhrase}" in ${language}.`,
+        },
       ],
       system: systemPrompt,
     });
@@ -487,12 +504,16 @@ export async function analyzePronunciation(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const feedbackData = JSON.parse(jsonMatch[0]);
 
     // Validate required fields
-    if (feedbackData.overallRating === undefined || !feedbackData.feedback || 
-        !Array.isArray(feedbackData.detailedFeedback) || !Array.isArray(feedbackData.practiceExercises)) {
+    if (
+      feedbackData.overallRating === undefined ||
+      !feedbackData.feedback ||
+      !Array.isArray(feedbackData.detailedFeedback) ||
+      !Array.isArray(feedbackData.practiceExercises)
+    ) {
       throw new Error('AI response missing required pronunciation feedback fields');
     }
 
@@ -515,7 +536,7 @@ export async function createLanguageAssessment(
   language: string,
   level: string,
   skills: string[],
-  questionCount: number = 20
+  questionCount: number = 20,
 ): Promise<{
   language: string;
   level: string;
@@ -573,10 +594,10 @@ export async function createLanguageAssessment(
       model: MODEL,
       max_tokens: 4000,
       messages: [
-        { 
-          role: 'user', 
-          content: `Create a ${level} level ${language} assessment testing these skills: ${skills.join(', ')}`
-        }
+        {
+          role: 'user',
+          content: `Create a ${level} level ${language} assessment testing these skills: ${skills.join(', ')}`,
+        },
       ],
       system: systemPrompt,
     });
@@ -587,11 +608,15 @@ export async function createLanguageAssessment(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const assessmentData = JSON.parse(jsonMatch[0]);
 
     // Validate required fields
-    if (!assessmentData.instructions || !Array.isArray(assessmentData.sections) || !assessmentData.scoringGuide) {
+    if (
+      !assessmentData.instructions ||
+      !Array.isArray(assessmentData.sections) ||
+      !assessmentData.scoringGuide
+    ) {
       throw new Error('AI response missing required assessment fields');
     }
 
@@ -616,7 +641,7 @@ export async function generateLanguageCurriculum(
   level: string,
   goals: string[],
   duration: number,
-  learningStyle: string
+  learningStyle: string,
 ): Promise<{
   language: string;
   level: string;
@@ -691,10 +716,10 @@ export async function generateLanguageCurriculum(
       model: MODEL,
       max_tokens: 4000,
       messages: [
-        { 
-          role: 'user', 
-          content: `Create a ${duration}-week ${level} level ${language} curriculum with these goals: ${goals.join(', ')} for a student with ${learningStyle} learning style.`
-        }
+        {
+          role: 'user',
+          content: `Create a ${duration}-week ${level} level ${language} curriculum with these goals: ${goals.join(', ')} for a student with ${learningStyle} learning style.`,
+        },
       ],
       system: systemPrompt,
     });
@@ -705,12 +730,15 @@ export async function generateLanguageCurriculum(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const curriculumData = JSON.parse(jsonMatch[0]);
 
     // Validate required fields
-    if (!curriculumData.overview || !Array.isArray(curriculumData.weeklyPlans) || 
-        !Array.isArray(curriculumData.resources)) {
+    if (
+      !curriculumData.overview ||
+      !Array.isArray(curriculumData.weeklyPlans) ||
+      !Array.isArray(curriculumData.resources)
+    ) {
       throw new Error('AI response missing required curriculum fields');
     }
 
@@ -728,5 +756,5 @@ export default {
   generateCulturalLesson,
   analyzePronunciation,
   createLanguageAssessment,
-  generateLanguageCurriculum
+  generateLanguageCurriculum,
 };

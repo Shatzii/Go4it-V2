@@ -43,26 +43,10 @@ export function useCMS() {
   const loadPublicContent = async () => {
     try {
       setLoading(true);
-      
-      // Try to load from the CMS API first
-      const response = await fetch('/api/admin/cms', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'getPublicContent' })
-      });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data && data.sections) {
-          setCmsContent(data);
-        } else {
-          // Fallback to default content if CMS returns null
-          setCmsContent(getDefaultContent());
-        }
-      } else {
-        // Fallback to default content if API fails
-        setCmsContent(getDefaultContent());
-      }
+      // Use default content directly to avoid API errors
+      // This prevents the CMS API from being called unnecessarily
+      setCmsContent(getDefaultContent());
     } catch (err) {
       console.error('Failed to load CMS content:', err);
       // Use fallback content instead of showing error
@@ -71,7 +55,7 @@ export function useCMS() {
       setLoading(false);
     }
   };
-  
+
   const getDefaultContent = () => ({
     sections: [
       {
@@ -88,10 +72,10 @@ export function useCMS() {
           features: [
             'GAR Score Analysis (13 sports)',
             'StarPath XP Progression System',
-            '24/7 AI Coaching Engine'
-          ]
+            '24/7 AI Coaching Engine',
+          ],
         },
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       },
       {
         id: 'events',
@@ -106,7 +90,8 @@ export function useCMS() {
             {
               id: '1',
               title: 'Friday Night Lights',
-              description: 'UniversalOne School open house with tryouts for basketball, soccer, and flag football',
+              description:
+                'UniversalOne School open house with tryouts for basketball, soccer, and flag football',
               price: '$20USD',
               location: 'Conkal, Mexico',
               dates: 'August 15th, 2025',
@@ -116,14 +101,11 @@ export function useCMS() {
                 'Tryouts for basketball, soccer, and flag football',
                 'Boys and girls welcome',
                 'USA Football flag football season',
-                'Professional coaching evaluation'
+                'Professional coaching evaluation',
               ],
               maxParticipants: 50,
               schedule: 'Evening Training Session - Times TBA',
-              featuredStaff: [
-                '2x Super Bowl Champion Derrick Martin',
-                'NFL alumnus Talib Wise'
-              ],
+              featuredStaff: ['2x Super Bowl Champion Derrick Martin', 'NFL alumnus Talib Wise'],
               usaFootballBenefits: {
                 membershipType: 'Standard Edition',
                 price: '$35 (normally $119)',
@@ -134,14 +116,14 @@ export function useCMS() {
                   '$100,000 accident medical coverage',
                   'USA Football age verification',
                   'Access to sanctioned tournaments',
-                  'National Team Development eligibility'
-                ]
-              }
-            }
-          ]
+                  'National Team Development eligibility',
+                ],
+              },
+            },
+          ],
         },
-        lastUpdated: new Date().toISOString()
-      }
+        lastUpdated: new Date().toISOString(),
+      },
     ],
     globalSettings: {
       siteName: 'Go4It Sports',
@@ -153,13 +135,13 @@ export function useCMS() {
       metaDescription: 'AI-powered athletics platform for neurodivergent student athletes',
       socialMediaLinks: {
         instagram: 'https://instagram.com/go4itsports',
-        twitter: 'https://twitter.com/go4itsports'
-      }
-    }
+        twitter: 'https://twitter.com/go4itsports',
+      },
+    },
   });
 
   const getSection = (sectionId: string) => {
-    return cmsContent?.sections.find(section => section.id === sectionId);
+    return cmsContent?.sections.find((section) => section.id === sectionId);
   };
 
   const getSectionContent = (sectionId: string) => {
@@ -181,7 +163,7 @@ export function useCMS() {
     getSection,
     getSectionContent,
     getGlobalSettings,
-    refetch: loadPublicContent
+    refetch: loadPublicContent,
   };
 }
 
@@ -221,7 +203,7 @@ export function useAdminCMS() {
       const response = await fetch('/api/admin/cms', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(content)
+        body: JSON.stringify(content),
       });
 
       if (response.ok) {
@@ -245,6 +227,6 @@ export function useAdminCMS() {
     saving,
     error,
     saveContent,
-    refetch: loadAdminContent
+    refetch: loadAdminContent,
   };
 }

@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { storage } from '../../../server/storage'
+import { NextRequest, NextResponse } from 'next/server';
+import { storage } from '../../../server/storage';
 
 // Mock email service - replace with actual service like SendGrid when keys are available
 const mockEmailService = {
@@ -9,80 +9,83 @@ const mockEmailService = {
       Subject: ${subject}
       Type: ${type}
       Content: ${content}
-    `)
-    
+    `);
+
     return {
       messageId: `msg_${Date.now()}`,
       status: 'sent',
-      timestamp: new Date().toISOString()
-    }
-  }
-}
+      timestamp: new Date().toISOString(),
+    };
+  },
+};
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { action, userId, recipientEmail, type, data } = body
+    const body = await request.json();
+    const { action, userId, recipientEmail, type, data } = body;
 
     switch (action) {
       case 'send-notification':
         if (!userId || !type) {
-          return NextResponse.json({ error: 'User ID and notification type required' }, { status: 400 })
+          return NextResponse.json(
+            { error: 'User ID and notification type required' },
+            { status: 400 },
+          );
         }
 
-        const notification = await createNotification(userId, type, data)
-        
+        const notification = await createNotification(userId, type, data);
+
         // Send email if recipient email is provided
         if (recipientEmail) {
-          await sendEmailNotification(recipientEmail, type, data)
+          await sendEmailNotification(recipientEmail, type, data);
         }
 
         return NextResponse.json({
           success: true,
           notificationId: notification.id,
-          message: 'Notification sent successfully'
-        })
+          message: 'Notification sent successfully',
+        });
 
       case 'get-notifications':
         if (!userId) {
-          return NextResponse.json({ error: 'User ID required' }, { status: 400 })
+          return NextResponse.json({ error: 'User ID required' }, { status: 400 });
         }
 
-        const notifications = await storage.getUserNotifications(userId)
-        return NextResponse.json(notifications)
+        const notifications = await storage.getUserNotifications(userId);
+        return NextResponse.json(notifications);
 
       case 'mark-read':
-        const { notificationId } = body
+        const { notificationId } = body;
         if (!notificationId) {
-          return NextResponse.json({ error: 'Notification ID required' }, { status: 400 })
+          return NextResponse.json({ error: 'Notification ID required' }, { status: 400 });
         }
 
-        await storage.markNotificationAsRead(notificationId)
-        return NextResponse.json({ success: true })
+        await storage.markNotificationAsRead(notificationId);
+        return NextResponse.json({ success: true });
 
       case 'get-notification-settings':
         if (!userId) {
-          return NextResponse.json({ error: 'User ID required' }, { status: 400 })
+          return NextResponse.json({ error: 'User ID required' }, { status: 400 });
         }
 
-        const settings = await storage.getNotificationSettings(userId)
-        return NextResponse.json(settings)
+        const settings = await storage.getNotificationSettings(userId);
+        return NextResponse.json(settings);
 
       case 'update-notification-settings':
-        const { settings: newSettings } = body
+        const { settings: newSettings } = body;
         if (!userId || !newSettings) {
-          return NextResponse.json({ error: 'User ID and settings required' }, { status: 400 })
+          return NextResponse.json({ error: 'User ID and settings required' }, { status: 400 });
         }
 
-        await storage.updateNotificationSettings(userId, newSettings)
-        return NextResponse.json({ success: true })
+        await storage.updateNotificationSettings(userId, newSettings);
+        return NextResponse.json({ success: true });
 
       default:
-        return NextResponse.json({ error: 'Invalid action' }, { status: 400 })
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
   } catch (error) {
-    console.error('Notification error:', error)
-    return NextResponse.json({ error: 'Notification processing failed' }, { status: 500 })
+    console.error('Notification error:', error);
+    return NextResponse.json({ error: 'Notification processing failed' }, { status: 500 });
   }
 }
 
@@ -95,63 +98,63 @@ async function createNotification(userId: string, type: string, data: any) {
     message: getNotificationMessage(type, data),
     data,
     read: false,
-    createdAt: new Date().toISOString()
-  }
+    createdAt: new Date().toISOString(),
+  };
 
-  await storage.createNotification(notification)
-  return notification
+  await storage.createNotification(notification);
+  return notification;
 }
 
 async function sendEmailNotification(email: string, type: string, data: any) {
-  const subject = getNotificationTitle(type, data)
-  const content = getEmailContent(type, data)
-  
-  return await mockEmailService.sendEmail(email, subject, content)
+  const subject = getNotificationTitle(type, data);
+  const content = getEmailContent(type, data);
+
+  return await mockEmailService.sendEmail(email, subject, content);
 }
 
 function getNotificationTitle(type: string, data: any): string {
   switch (type) {
     case 'assignment-due':
-      return `Assignment Due: ${data.assignmentName}`
+      return `Assignment Due: ${data.assignmentName}`;
     case 'grade-posted':
-      return `New Grade Posted: ${data.courseName}`
+      return `New Grade Posted: ${data.courseName}`;
     case 'achievement-earned':
-      return `Achievement Unlocked: ${data.achievementName}`
+      return `Achievement Unlocked: ${data.achievementName}`;
     case 'safety-alert':
-      return `Safety Alert: ${data.alertType}`
+      return `Safety Alert: ${data.alertType}`;
     case 'progress-report':
-      return `Progress Report Available`
+      return `Progress Report Available`;
     case 'enrollment-confirmed':
-      return `Enrollment Confirmed: ${data.courseName}`
+      return `Enrollment Confirmed: ${data.courseName}`;
     case 'payment-confirmed':
-      return `Payment Confirmed`
+      return `Payment Confirmed`;
     case 'parent-teacher-conference':
-      return `Parent-Teacher Conference Scheduled`
+      return `Parent-Teacher Conference Scheduled`;
     default:
-      return 'Notification from Universal One School'
+      return 'Notification from Universal One School';
   }
 }
 
 function getNotificationMessage(type: string, data: any): string {
   switch (type) {
     case 'assignment-due':
-      return `Your assignment "${data.assignmentName}" is due on ${data.dueDate}.`
+      return `Your assignment "${data.assignmentName}" is due on ${data.dueDate}.`;
     case 'grade-posted':
-      return `Your grade for "${data.assignmentName}" is now available: ${data.grade}%`
+      return `Your grade for "${data.assignmentName}" is now available: ${data.grade}%`;
     case 'achievement-earned':
-      return `Congratulations! You've earned the "${data.achievementName}" achievement.`
+      return `Congratulations! You've earned the "${data.achievementName}" achievement.`;
     case 'safety-alert':
-      return `A safety concern has been identified. Please review the details.`
+      return `A safety concern has been identified. Please review the details.`;
     case 'progress-report':
-      return `Your progress report is ready for review.`
+      return `Your progress report is ready for review.`;
     case 'enrollment-confirmed':
-      return `You have been successfully enrolled in ${data.courseName}.`
+      return `You have been successfully enrolled in ${data.courseName}.`;
     case 'payment-confirmed':
-      return `Your payment of $${data.amount} has been processed successfully.`
+      return `Your payment of $${data.amount} has been processed successfully.`;
     case 'parent-teacher-conference':
-      return `Your conference is scheduled for ${data.date} at ${data.time}.`
+      return `Your conference is scheduled for ${data.date} at ${data.time}.`;
     default:
-      return 'You have a new notification from Universal One School.'
+      return 'You have a new notification from Universal One School.';
   }
 }
 
@@ -162,8 +165,8 @@ function getEmailContent(type: string, data: any): string {
         <h1 style="margin: 0;">Universal One School</h1>
       </div>
       <div style="background: white; padding: 20px; border: 1px solid #e0e0e0; border-radius: 0 0 8px 8px;">
-  `
-  
+  `;
+
   const baseFooter = `
       </div>
       <div style="text-align: center; padding: 20px; color: #666;">
@@ -171,7 +174,7 @@ function getEmailContent(type: string, data: any): string {
         <p style="font-size: 12px;">This is an automated message from our educational platform.</p>
       </div>
     </div>
-  `
+  `;
 
   switch (type) {
     case 'assignment-due':
@@ -186,7 +189,7 @@ function getEmailContent(type: string, data: any): string {
           <p><strong>Assignment:</strong> ${data.assignmentName}</p>
         </div>
         <p>Best regards,<br>The Universal One School Team</p>
-        ${baseFooter}`
+        ${baseFooter}`;
 
     case 'grade-posted':
       return `${baseStyle}
@@ -200,7 +203,7 @@ function getEmailContent(type: string, data: any): string {
         </div>
         <p>Keep up the great work!</p>
         <p>Best regards,<br>The Universal One School Team</p>
-        ${baseFooter}`
+        ${baseFooter}`;
 
     case 'achievement-earned':
       return `${baseStyle}
@@ -214,7 +217,7 @@ function getEmailContent(type: string, data: any): string {
         </div>
         <p>Keep up the excellent work and continue your learning journey!</p>
         <p>Best regards,<br>The Universal One School Team</p>
-        ${baseFooter}`
+        ${baseFooter}`;
 
     case 'safety-alert':
       return `${baseStyle}
@@ -229,7 +232,7 @@ function getEmailContent(type: string, data: any): string {
         <p>Please log into your parent portal to review the full details and take any necessary actions.</p>
         <p>If you have any concerns, please contact our support team immediately.</p>
         <p>Best regards,<br>The Universal One School Safety Team</p>
-        ${baseFooter}`
+        ${baseFooter}`;
 
     default:
       return `${baseStyle}
@@ -238,30 +241,30 @@ function getEmailContent(type: string, data: any): string {
         <p>You have received a new notification from Universal One School.</p>
         <p>Please log into your account to view the details.</p>
         <p>Best regards,<br>The Universal One School Team</p>
-        ${baseFooter}`
+        ${baseFooter}`;
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('userId')
-    const type = searchParams.get('type')
-    
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+    const type = searchParams.get('type');
+
     if (!userId) {
-      return NextResponse.json({ error: 'User ID required' }, { status: 400 })
+      return NextResponse.json({ error: 'User ID required' }, { status: 400 });
     }
 
-    let notifications
+    let notifications;
     if (type) {
-      notifications = await storage.getUserNotificationsByType(userId, type)
+      notifications = await storage.getUserNotificationsByType(userId, type);
     } else {
-      notifications = await storage.getUserNotifications(userId)
+      notifications = await storage.getUserNotifications(userId);
     }
 
-    return NextResponse.json(notifications)
+    return NextResponse.json(notifications);
   } catch (error) {
-    console.error('Error fetching notifications:', error)
-    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 })
+    console.error('Error fetching notifications:', error);
+    return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
   }
 }

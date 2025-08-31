@@ -3,19 +3,12 @@ import { db } from '@/server/db';
 import { teams, teamRosters, users, videoAnalysis, enrollments } from '@/shared/schema';
 import { eq, desc } from 'drizzle-orm';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const teamId = parseInt(params.id);
 
     // Get team information
-    const team = await db
-      .select()
-      .from(teams)
-      .where(eq(teams.id, teamId))
-      .limit(1);
+    const team = await db.select().from(teams).where(eq(teams.id, teamId)).limit(1);
 
     if (!team.length) {
       return NextResponse.json({ error: 'Team not found' }, { status: 404 });
@@ -88,13 +81,17 @@ export async function GET(
           },
           academics: {
             courses: academicProgress,
-            averageGrade: academicProgress.length > 0
-              ? academicProgress.reduce((sum, course) => sum + (parseFloat(course.currentGrade?.toString() || '0')), 0) / academicProgress.length
-              : null,
-            ncaaEligible: academicProgress.every(course => course.isNcaaEligible),
+            averageGrade:
+              academicProgress.length > 0
+                ? academicProgress.reduce(
+                    (sum, course) => sum + parseFloat(course.currentGrade?.toString() || '0'),
+                    0,
+                  ) / academicProgress.length
+                : null,
+            ncaaEligible: academicProgress.every((course) => course.isNcaaEligible),
           },
         };
-      })
+      }),
     );
 
     return NextResponse.json({
@@ -102,18 +99,19 @@ export async function GET(
       roster: rosterWithPerformance,
       stats: {
         totalPlayers: roster.length,
-        averageGpa: roster.length > 0
-          ? roster.reduce((sum, p) => sum + (parseFloat(p.gpa?.toString() || '0')), 0) / roster.length
-          : 0,
-        eligiblePlayers: roster.filter(p => p.eligibilityStatus === 'eligible').length,
-        scholarshipPlayers: roster.filter(p => p.scholarshipAmount && parseFloat(p.scholarshipAmount.toString()) > 0).length,
+        averageGpa:
+          roster.length > 0
+            ? roster.reduce((sum, p) => sum + parseFloat(p.gpa?.toString() || '0'), 0) /
+              roster.length
+            : 0,
+        eligiblePlayers: roster.filter((p) => p.eligibilityStatus === 'eligible').length,
+        scholarshipPlayers: roster.filter(
+          (p) => p.scholarshipAmount && parseFloat(p.scholarshipAmount.toString()) > 0,
+        ).length,
       },
     });
   } catch (error) {
     console.error('Error fetching team roster:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch team roster' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch team roster' }, { status: 500 });
   }
 }

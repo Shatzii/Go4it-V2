@@ -9,20 +9,24 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
     email: `user${ts}@example.com`,
     password: 'StrongPassw0rd!',
     firstName: 'Test',
-  lastName: 'User',
-  acceptTerms: true
+    lastName: 'User',
+    acceptTerms: true,
   };
 
   console.log('> POST /api/auth/register');
   const res = await fetch(`${BASE_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
   const text = await res.text();
   console.log('Status:', res.status);
   console.log('Set-Cookie:', res.headers.get('set-cookie'));
-  try { console.log('Body:', JSON.stringify(JSON.parse(text), null, 2)); } catch { console.log('Body:', text); }
+  try {
+    console.log('Body:', JSON.stringify(JSON.parse(text), null, 2));
+  } catch {
+    console.log('Body:', text);
+  }
 
   if (!res.ok) process.exit(1);
 
@@ -31,7 +35,11 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
   const me = await fetch(`${BASE_URL}/api/auth/me`, { headers: { Cookie: cookie } });
   const meBody = await me.text();
   console.log('Status:', me.status);
-  try { console.log('Body:', JSON.stringify(JSON.parse(meBody), null, 2)); } catch { console.log('Body:', meBody); }
+  try {
+    console.log('Body:', JSON.stringify(JSON.parse(meBody), null, 2));
+  } catch {
+    console.log('Body:', meBody);
+  }
 
   process.exit(me.ok ? 0 : 2);
 })();

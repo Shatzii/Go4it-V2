@@ -11,37 +11,53 @@ export async function POST(request: Request) {
         social_media: [
           {
             platform: 'Facebook',
-            content: "🌟 Discover your unique learning superpower! At Universal One School, we don't just accommodate neurodivergent learners - we celebrate them. Our AI-powered education adapts to YOUR brain, not the other way around. See how Sarah went from struggling with traditional math to becoming a coding champion! #NeurodivergentPride #PersonalizedLearning",
-            hashtags: ['#NeurodivergentEducation', '#ADHDSupport', '#DyslexiaSuccess', '#AutismAcceptance'],
+            content:
+              "🌟 Discover your unique learning superpower! At Universal One School, we don't just accommodate neurodivergent learners - we celebrate them. Our AI-powered education adapts to YOUR brain, not the other way around. See how Sarah went from struggling with traditional math to becoming a coding champion! #NeurodivergentPride #PersonalizedLearning",
+            hashtags: [
+              '#NeurodivergentEducation',
+              '#ADHDSupport',
+              '#DyslexiaSuccess',
+              '#AutismAcceptance',
+            ],
             callToAction: 'Schedule your personalized campus tour',
-            targetEmotions: ['Hope', 'Empowerment', 'Belonging']
+            targetEmotions: ['Hope', 'Empowerment', 'Belonging'],
           },
           {
             platform: 'Instagram',
-            content: "Behind the scenes: How our AI creates custom learning paths for every student 🧠✨ Watch Marcus transform from math anxiety to calculus confidence using his personalized neurodivergent-friendly curriculum.",
+            content:
+              'Behind the scenes: How our AI creates custom learning paths for every student 🧠✨ Watch Marcus transform from math anxiety to calculus confidence using his personalized neurodivergent-friendly curriculum.',
             format: 'Video Story',
             duration: '60 seconds',
-            visualElements: ['Student success journey', 'AI interface screenshots', 'Happy families']
-          }
+            visualElements: [
+              'Student success journey',
+              'AI interface screenshots',
+              'Happy families',
+            ],
+          },
         ],
         blog_posts: [
           {
-            title: 'Why Traditional Schools Fail Neurodivergent Students (And How We\'re Different)',
+            title: "Why Traditional Schools Fail Neurodivergent Students (And How We're Different)",
             outline: [
               'The one-size-fits-all problem in traditional education',
               'How neurodivergent brains process information differently',
               'Our AI-powered personalization approach',
               'Real success stories from our students',
-              'The future of inclusive education'
+              'The future of inclusive education',
             ],
-            seoKeywords: ['neurodivergent education', 'ADHD school', 'dyslexia support', 'autism education'],
+            seoKeywords: [
+              'neurodivergent education',
+              'ADHD school',
+              'dyslexia support',
+              'autism education',
+            ],
             readingLevel: 'Grade 8',
-            emotionalTone: 'Hopeful and informative'
-          }
+            emotionalTone: 'Hopeful and informative',
+          },
         ],
         email_campaigns: [
           {
-            subject: 'Your child\'s learning differences are their superpowers 💪',
+            subject: "Your child's learning differences are their superpowers 💪",
             preheader: 'Discover education that adapts to their unique brain',
             content: `Dear [Parent Name],
 
@@ -57,9 +73,13 @@ At Universal One School, we don't try to "fix" your child. We build education ar
 Our AI analyzes exactly how your child learns best and creates a personalized curriculum that works WITH their brain, not against it.
 
 Ready to see your child thrive?`,
-            personalizedElements: ['Child\'s name', 'Specific learning difference', 'Local school district reference']
-          }
-        ]
+            personalizedElements: [
+              "Child's name",
+              'Specific learning difference',
+              'Local school district reference',
+            ],
+          },
+        ],
       },
 
       parent_engagement: {
@@ -73,25 +93,33 @@ My son Jake (ADHD + dyslexia) went from hating school to asking for extra homewo
 The best part? They train us parents too. I finally understand how to support Jake's learning at home. 
 
 Feel free to DM me if you want to know more. We're not alone in this journey. ❤️`,
-            authenticity_markers: ['Real parent voice', 'Specific challenges mentioned', 'Emotional vulnerability'],
-            engagement_triggers: ['Community support', 'Success transformation', 'Invitation to connect']
-          }
+            authenticity_markers: [
+              'Real parent voice',
+              'Specific challenges mentioned',
+              'Emotional vulnerability',
+            ],
+            engagement_triggers: [
+              'Community support',
+              'Success transformation',
+              'Invitation to connect',
+            ],
+          },
         ],
         resource_guides: [
           {
-            title: 'The Parent\'s Guide to Advocating for Neurodivergent Education',
+            title: "The Parent's Guide to Advocating for Neurodivergent Education",
             format: 'PDF Download',
             sections: [
-              'Understanding your child\'s learning profile',
+              "Understanding your child's learning profile",
               'Questions to ask potential schools',
               'Red flags to avoid in educational programs',
               'How to prepare for school visits',
-              'Building a support network'
+              'Building a support network',
             ],
             leadMagnet: true,
-            emailCapture: 'Required for download'
-          }
-        ]
+            emailCapture: 'Required for download',
+          },
+        ],
       },
 
       educator_recruitment: {
@@ -109,9 +137,13 @@ At Universal One School, we're reimagining education:
 We're looking for passionate educators who believe every child can thrive with the right support.
 
 Join us in creating the future of inclusive education.`,
-            targeting: ['Special education teachers', 'Burned out educators', 'Progressive teaching advocates'],
-            callToAction: 'Apply now - we\'re hiring for fall 2024'
-          }
+            targeting: [
+              'Special education teachers',
+              'Burned out educators',
+              'Progressive teaching advocates',
+            ],
+            callToAction: "Apply now - we're hiring for fall 2024",
+          },
         ],
         job_descriptions: [
           {
@@ -121,16 +153,16 @@ Join us in creating the future of inclusive education.`,
               'Design personalized learning experiences',
               'Collaborate with interdisciplinary team',
               'Competitive salary + profit sharing',
-              'Comprehensive benefits + student loan assistance'
+              'Comprehensive benefits + student loan assistance',
             ],
             requirements: [
               'Special Education certification',
               'Experience with neurodivergent learners',
               'Growth mindset and tech-positive attitude',
-              'Passion for educational innovation'
-            ]
-          }
-        ]
+              'Passion for educational innovation',
+            ],
+          },
+        ],
       },
 
       athletic_recruitment: {
@@ -151,10 +183,10 @@ Our student-athletes maintain a 4.2 GPA while training at Olympic levels. How?
 
 Your potential is unlimited here.`,
             target_audience: 'Elite young athletes and their families',
-            emotional_appeal: 'Dreams achievable without sacrifice'
-          }
-        ]
-      }
+            emotional_appeal: 'Dreams achievable without sacrifice',
+          },
+        ],
+      },
     };
 
     // AI analysis and optimization recommendations
@@ -162,20 +194,20 @@ Your potential is unlimited here.`,
       optimal_posting_times: {
         Facebook: ['Tuesday 10AM', 'Thursday 2PM', 'Sunday 7PM'],
         Instagram: ['Wednesday 11AM', 'Friday 5PM', 'Saturday 9AM'],
-        LinkedIn: ['Tuesday 8AM', 'Wednesday 12PM', 'Thursday 10AM']
+        LinkedIn: ['Tuesday 8AM', 'Wednesday 12PM', 'Thursday 10AM'],
       },
       content_performance_predictions: {
         engagement_score: 87,
         conversion_probability: 'High (12-18%)',
         viral_potential: 'Moderate (500-2000 shares)',
-        emotional_resonance: 'Very Strong (Hope + Empowerment)'
+        emotional_resonance: 'Very Strong (Hope + Empowerment)',
       },
       a_b_testing_suggestions: [
         'Test emotional vs. analytical messaging',
         'Compare video vs. image content',
         'Experiment with parent voice vs. expert voice',
-        'Try urgency vs. educational approach'
-      ]
+        'Try urgency vs. educational approach',
+      ],
     };
 
     // Content personalization based on audience segments
@@ -189,21 +221,18 @@ Your potential is unlimited here.`,
         'Content reviewed for neurodivergent accessibility',
         'Emotional intelligence analysis completed',
         'SEO optimization applied',
-        'Performance tracking enabled'
+        'Performance tracking enabled',
       ],
       metrics: {
         readabilityScore: 85,
         emotionalImpact: 92,
         conversionOptimization: 88,
-        brandAlignment: 95
-      }
+        brandAlignment: 95,
+      },
     });
   } catch (error) {
     console.error('Error generating marketing content:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate content' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to generate content' }, { status: 500 });
   }
 }
 
@@ -218,15 +247,15 @@ export async function GET() {
           views: 45678,
           shares: 1234,
           conversions: 89,
-          conversionRate: 1.94
+          conversionRate: 1.94,
         },
         {
-          title: 'Parent Testimonial: Marcus\'s Journey',
+          title: "Parent Testimonial: Marcus's Journey",
           type: 'Video',
           views: 78432,
           shares: 2341,
           conversions: 156,
-          conversionRate: 1.99
+          conversionRate: 1.99,
         },
         {
           title: 'Elite Athletic Training + Academic Excellence',
@@ -234,8 +263,8 @@ export async function GET() {
           views: 23456,
           shares: 567,
           conversions: 67,
-          conversionRate: 2.86
-        }
+          conversionRate: 2.86,
+        },
       ],
       contentCalendar: {
         upcoming: [
@@ -243,48 +272,45 @@ export async function GET() {
             date: '2024-07-01',
             content: 'Neurodivergent Student Success Story',
             platform: 'Facebook',
-            status: 'Scheduled'
+            status: 'Scheduled',
           },
           {
             date: '2024-07-03',
             content: 'AI Learning Technology Demo',
             platform: 'YouTube',
-            status: 'In Production'
+            status: 'In Production',
           },
           {
             date: '2024-07-05',
             content: 'Parent Resource Guide Release',
             platform: 'Email Campaign',
-            status: 'Content Review'
-          }
-        ]
+            status: 'Content Review',
+          },
+        ],
       },
       aiInsights: {
         bestPerformingTopics: [
           'Student transformation stories',
           'Neurodivergent pride and acceptance',
           'AI technology demonstrations',
-          'Parent community support'
+          'Parent community support',
         ],
         optimalContentMix: {
           educational: '40%',
           emotional: '35%',
-          promotional: '25%'
+          promotional: '25%',
         },
         audienceEngagement: {
           parents: 'Highest engagement with emotional stories',
           students: 'Prefer interactive and visual content',
-          educators: 'Respond to data and methodology content'
-        }
-      }
+          educators: 'Respond to data and methodology content',
+        },
+      },
     };
 
     return NextResponse.json(contentAnalytics);
   } catch (error) {
     console.error('Error fetching content analytics:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch content analytics' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch content analytics' }, { status: 500 });
   }
 }

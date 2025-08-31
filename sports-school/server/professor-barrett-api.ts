@@ -28,10 +28,10 @@ const upload = multer({
       'application/pdf',
       'application/msword',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain'
+      'text/plain',
     ];
     cb(null, allowedTypes.includes(file.mimetype));
-  }
+  },
 });
 
 // Legal knowledge base for Professor Barrett
@@ -42,28 +42,28 @@ const legalKnowledgeBase = {
       'Federalism',
       'Individual Rights',
       'Due Process',
-      'Equal Protection'
+      'Equal Protection',
     ],
     landmarkCases: [
       'Marbury v. Madison (1803)',
       'Brown v. Board of Education (1954)',
       'Miranda v. Arizona (1966)',
       'Roe v. Wade (1973)',
-      'Citizens United v. FEC (2010)'
-    ]
+      'Citizens United v. FEC (2010)',
+    ],
   },
   criminalLaw: {
     elements: ['Mens Rea', 'Actus Reus', 'Causation', 'Harm'],
-    defenses: ['Self-Defense', 'Insanity', 'Duress', 'Necessity', 'Entrapment']
+    defenses: ['Self-Defense', 'Insanity', 'Duress', 'Necessity', 'Entrapment'],
   },
   contractLaw: {
     formation: ['Offer', 'Acceptance', 'Consideration', 'Mutual Assent'],
-    defenses: ['Fraud', 'Duress', 'Undue Influence', 'Mistake', 'Impossibility']
+    defenses: ['Fraud', 'Duress', 'Undue Influence', 'Mistake', 'Impossibility'],
   },
   tortLaw: {
     intentionalTorts: ['Battery', 'Assault', 'False Imprisonment', 'Trespass'],
-    negligence: ['Duty', 'Breach', 'Causation', 'Damages']
-  }
+    negligence: ['Duty', 'Breach', 'Causation', 'Damages'],
+  },
 };
 
 // Enhanced legal response generation
@@ -87,10 +87,12 @@ Provide a detailed, educational response that would help a law student understan
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20241022',
       max_tokens: 2000,
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: prompt }],
     });
 
-    return response.content[0].type === 'text' ? response.content[0].text : 'I apologize, but I encountered an issue generating a response. Please try again.';
+    return response.content[0].type === 'text'
+      ? response.content[0].text
+      : 'I apologize, but I encountered an issue generating a response. Please try again.';
   } catch (error) {
     console.error('Anthropic API error:', error);
     return 'I apologize, but I encountered a technical issue. Please ensure the AI service is properly configured and try again.';
@@ -108,11 +110,11 @@ router.post('/api/professor-barrett/chat', async (req: Request, res: Response) =
 
     // Analyze message for legal context
     const legalContext = analyzeLegalContext(message);
-    
+
     // Generate response using Anthropic
     const response = await generateLegalResponse(message, {
       conversationHistory: conversationHistory.slice(-5), // Keep last 5 messages for context
-      legalContext
+      legalContext,
     });
 
     // Log conversation for learning analytics
@@ -122,9 +124,8 @@ router.post('/api/professor-barrett/chat', async (req: Request, res: Response) =
       response,
       legalContext,
       timestamp: new Date().toISOString(),
-      professor: 'Barrett'
+      professor: 'Barrett',
     });
-
   } catch (error) {
     console.error('Chat error:', error);
     res.status(500).json({ error: 'Failed to generate response' });
@@ -132,32 +133,35 @@ router.post('/api/professor-barrett/chat', async (req: Request, res: Response) =
 });
 
 // Document analysis endpoint
-router.post('/api/professor-barrett/analyze-document', upload.single('document'), async (req: MulterRequest, res: Response) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No document uploaded' });
+router.post(
+  '/api/professor-barrett/analyze-document',
+  upload.single('document'),
+  async (req: MulterRequest, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No document uploaded' });
+      }
+
+      const filePath = req.file.path;
+      const fileContent = await extractDocumentContent(filePath, req.file.mimetype);
+
+      // Analyze document with legal expertise
+      const analysis = await analyzeLegalDocument(fileContent, req.file.originalname);
+
+      // Clean up uploaded file
+      fs.unlinkSync(filePath);
+
+      res.json({
+        analysis,
+        filename: req.file.originalname,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Document analysis error:', error);
+      res.status(500).json({ error: 'Failed to analyze document' });
     }
-
-    const filePath = req.file.path;
-    const fileContent = await extractDocumentContent(filePath, req.file.mimetype);
-    
-    // Analyze document with legal expertise
-    const analysis = await analyzeLegalDocument(fileContent, req.file.originalname);
-    
-    // Clean up uploaded file
-    fs.unlinkSync(filePath);
-
-    res.json({
-      analysis,
-      filename: req.file.originalname,
-      timestamp: new Date().toISOString()
-    });
-
-  } catch (error) {
-    console.error('Document analysis error:', error);
-    res.status(500).json({ error: 'Failed to analyze document' });
-  }
-});
+  },
+);
 
 // Voice integration endpoint for ElevenLabs
 router.post('/api/professor-barrett/voice-response', async (req: Request, res: Response) => {
@@ -176,9 +180,8 @@ router.post('/api/professor-barrett/voice-response', async (req: Request, res: R
       audioUrl: voiceResponse.audioUrl,
       text: text,
       duration: voiceResponse.duration,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Voice response error:', error);
     res.status(500).json({ error: 'Failed to generate voice response' });
@@ -186,30 +189,33 @@ router.post('/api/professor-barrett/voice-response', async (req: Request, res: R
 });
 
 // Speech-to-text endpoint
-router.post('/api/professor-barrett/speech-to-text', upload.single('audio'), async (req: MulterRequest, res: Response) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No audio file uploaded' });
+router.post(
+  '/api/professor-barrett/speech-to-text',
+  upload.single('audio'),
+  async (req: MulterRequest, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No audio file uploaded' });
+      }
+
+      // Process audio file and convert to text
+      const audioBuffer = fs.readFileSync(req.file.path);
+      const transcript = await elevenLabsVoice.speechToText(audioBuffer);
+
+      // Clean up uploaded file
+      fs.unlinkSync(req.file.path);
+
+      res.json({
+        transcript: transcript.text,
+        confidence: transcript.confidence,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Speech-to-text error:', error);
+      res.status(500).json({ error: 'Failed to process audio' });
     }
-
-    // Process audio file and convert to text
-    const audioBuffer = fs.readFileSync(req.file.path);
-    const transcript = await elevenLabsVoice.speechToText(audioBuffer);
-    
-    // Clean up uploaded file
-    fs.unlinkSync(req.file.path);
-
-    res.json({
-      transcript: transcript.text,
-      confidence: transcript.confidence,
-      timestamp: new Date().toISOString()
-    });
-
-  } catch (error) {
-    console.error('Speech-to-text error:', error);
-    res.status(500).json({ error: 'Failed to process audio' });
-  }
-});
+  },
+);
 
 // Case law research endpoint
 router.post('/api/professor-barrett/research-case', async (req: Request, res: Response) => {
@@ -226,9 +232,8 @@ router.post('/api/professor-barrett/research-case', async (req: Request, res: Re
       caseAnalysis,
       caseName,
       jurisdiction: jurisdiction || 'Federal',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Case research error:', error);
     res.status(500).json({ error: 'Failed to research case' });
@@ -248,9 +253,8 @@ router.post('/api/professor-barrett/bar-exam-question', async (req: Request, res
       explanation: question.explanation,
       subject: subject || 'Constitutional Law',
       difficulty,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Bar exam question error:', error);
     res.status(500).json({ error: 'Failed to generate bar exam question' });
@@ -272,9 +276,8 @@ router.post('/api/professor-barrett/writing-assistance', async (req: Request, re
       assistance,
       documentType: documentType || 'legal memorandum',
       assistanceType: assistanceType || 'review',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Writing assistance error:', error);
     res.status(500).json({ error: 'Failed to provide writing assistance' });
@@ -286,11 +289,11 @@ router.get('/api/professor-barrett/voice-health', async (req: Request, res: Resp
   try {
     const isHealthy = await elevenLabsVoice.healthCheck();
     const quotaInfo = await elevenLabsVoice.getQuotaInfo();
-    
+
     res.json({
       voiceServiceAvailable: isHealthy,
       quotaInfo,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Voice health check error:', error);
@@ -302,10 +305,10 @@ router.get('/api/professor-barrett/voice-health', async (req: Request, res: Resp
 router.get('/api/professor-barrett/voices', async (req: Request, res: Response) => {
   try {
     const voices = await elevenLabsVoice.getAvailableVoices();
-    
+
     res.json({
       voices,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Get voices error:', error);
@@ -324,15 +327,15 @@ router.get('/api/professor-barrett/analytics', async (req: Request, res: Respons
         'Constitutional Law',
         'Criminal Procedure',
         'Contract Law',
-        'Tort Liability'
+        'Tort Liability',
       ],
       studentSatisfaction: 4.8,
-      voiceInteractionRate: 0.67
+      voiceInteractionRate: 0.67,
     };
-    
+
     res.json({
       analytics,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.error('Analytics error:', error);
@@ -348,7 +351,7 @@ function analyzeLegalContext(message: string): any {
     area: 'general' as string,
     concepts: [] as string[],
     cases: [] as string[],
-    statutes: [] as string[]
+    statutes: [] as string[],
   };
 
   // Identify legal area
@@ -371,7 +374,8 @@ function analyzeLegalContext(message: string): any {
 
   // Identify landmark cases mentioned
   if (lowerMessage.includes('miranda')) context.cases.push('Miranda v. Arizona');
-  if (lowerMessage.includes('brown') && lowerMessage.includes('board')) context.cases.push('Brown v. Board of Education');
+  if (lowerMessage.includes('brown') && lowerMessage.includes('board'))
+    context.cases.push('Brown v. Board of Education');
   if (lowerMessage.includes('marbury')) context.cases.push('Marbury v. Madison');
 
   return context;
@@ -382,7 +386,7 @@ async function extractDocumentContent(filePath: string, mimeType: string): Promi
     if (mimeType === 'text/plain') {
       return fs.readFileSync(filePath, 'utf8');
     }
-    
+
     // For PDF and Word documents, you would typically use libraries like pdf-parse or mammoth
     // For now, return a placeholder that indicates the file type
     return `Document content from ${mimeType} file. Content extraction would be implemented with appropriate libraries.`;
@@ -419,7 +423,7 @@ async function generateVoiceResponse(text: string, voiceSettings: any): Promise<
       audioUrl: '/audio/fallback-professor-barrett.mp3',
       duration: Math.ceil(text.length / 10),
       voiceId: 'fallback-voice',
-      error: 'Voice generation failed, using fallback'
+      error: 'Voice generation failed, using fallback',
     };
   }
 }
@@ -430,14 +434,18 @@ async function processAudioToText(audioPath: string): Promise<any> {
   // - Audio file processing
   // - Speech recognition API call
   // - Confidence scoring
-  
+
   return {
     text: 'Audio transcript would be generated here',
-    confidence: 0.95
+    confidence: 0.95,
   };
 }
 
-async function researchCase(caseName: string, jurisdiction?: string, year?: string): Promise<string> {
+async function researchCase(
+  caseName: string,
+  jurisdiction?: string,
+  year?: string,
+): Promise<string> {
   const prompt = `As Professor Barrett, provide comprehensive case analysis for: ${caseName}
 
 Include:
@@ -454,7 +462,13 @@ Provide educational insight suitable for law students.`;
 }
 
 async function generateBarExamQuestion(subject?: string, difficulty?: string): Promise<any> {
-  const areas = ['Constitutional Law', 'Criminal Law', 'Contract Law', 'Tort Law', 'Civil Procedure'];
+  const areas = [
+    'Constitutional Law',
+    'Criminal Law',
+    'Contract Law',
+    'Tort Law',
+    'Civil Procedure',
+  ];
   const selectedSubject = subject || areas[Math.floor(Math.random() * areas.length)];
 
   const prompt = `Create a ${difficulty} difficulty bar exam multiple choice question for ${selectedSubject}.
@@ -468,16 +482,20 @@ Format:
 Make it realistic and educational.`;
 
   const response = await generateLegalResponse(prompt);
-  
+
   // Parse the response to extract question components
   return {
     question: response,
     options: ['A', 'B', 'C', 'D'],
-    explanation: 'Detailed explanation would be parsed from AI response'
+    explanation: 'Detailed explanation would be parsed from AI response',
   };
 }
 
-async function provideLegalWritingAssistance(documentType: string, content: string, assistanceType: string): Promise<string> {
+async function provideLegalWritingAssistance(
+  documentType: string,
+  content: string,
+  assistanceType: string,
+): Promise<string> {
   const prompt = `As Professor Barrett, provide ${assistanceType} assistance for this ${documentType}:
 
 Content: ${content}
@@ -500,9 +518,9 @@ function logConversation(message: string, response: string): void {
     timestamp: new Date().toISOString(),
     message,
     response: response.substring(0, 100) + '...',
-    professor: 'Barrett'
+    professor: 'Barrett',
   };
-  
+
   // In production, this would write to a proper logging system
   console.log('Professor Barrett conversation:', logEntry);
 }

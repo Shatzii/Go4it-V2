@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Users, Trophy, Calendar, BookOpen, Star, Shield } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Users, Trophy, Calendar, BookOpen, Star, Shield } from 'lucide-react';
+import Link from 'next/link';
 
 export default function TeamSportsPage() {
-  const [selectedSport, setSelectedSport] = useState<string | null>(null)
+  const [selectedSport, setSelectedSport] = useState<string | null>(null);
 
   const sports = [
     {
@@ -18,10 +18,15 @@ export default function TeamSportsPage() {
       icon: '🏈',
       color: 'bg-green-500',
       divisions: ['6U', '8U', '10U', '12U', '14U', '16U'],
-      features: ['USA Football Certified', 'No-Contact Safety', 'Official Rules', 'Coach Certification'],
+      features: [
+        'USA Football Certified',
+        'No-Contact Safety',
+        'Official Rules',
+        'Coach Certification',
+      ],
       activeTeams: 12,
       totalPlayers: 186,
-      nextSeason: 'Fall 2025'
+      nextSeason: 'Fall 2025',
     },
     {
       id: 'soccer',
@@ -33,7 +38,7 @@ export default function TeamSportsPage() {
       features: ['FIFA Guidelines', 'Skill Development', 'Position Training', 'Tournament Play'],
       activeTeams: 8,
       totalPlayers: 142,
-      nextSeason: 'Spring 2025'
+      nextSeason: 'Spring 2025',
     },
     {
       id: 'basketball',
@@ -45,9 +50,9 @@ export default function TeamSportsPage() {
       features: ['Fundamental Training', 'Team Strategy', 'League Play', 'Skills Camps'],
       activeTeams: 10,
       totalPlayers: 158,
-      nextSeason: 'Winter 2025'
-    }
-  ]
+      nextSeason: 'Winter 2025',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -63,8 +68,8 @@ export default function TeamSportsPage() {
             </div>
             <h1 className="text-4xl font-bold mb-4">Team Sports Programs</h1>
             <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-              Join our competitive team sports programs featuring Flag Football, Soccer, and Basketball. 
-              Professional coaching, skill development, and team building for all ages.
+              Join our competitive team sports programs featuring Flag Football, Soccer, and
+              Basketball. Professional coaching, skill development, and team building for all ages.
             </p>
           </div>
         </div>
@@ -106,8 +111,8 @@ export default function TeamSportsPage() {
         {/* Sports Programs */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {sports.map((sport) => (
-            <Card 
-              key={sport.id} 
+            <Card
+              key={sport.id}
               className="bg-slate-800 border-slate-700 hover:border-slate-600 transition-all duration-300 cursor-pointer"
               onClick={() => setSelectedSport(sport.id)}
             >
@@ -122,19 +127,21 @@ export default function TeamSportsPage() {
                       </CardDescription>
                     </div>
                   </div>
-                  <Badge className={`${sport.color} text-white`}>
-                    {sport.nextSeason}
-                  </Badge>
+                  <Badge className={`${sport.color} text-white`}>{sport.nextSeason}</Badge>
                 </div>
               </CardHeader>
               <CardContent>
                 <p className="text-slate-300 mb-4">{sport.description}</p>
-                
+
                 <div className="mb-4">
                   <h4 className="font-semibold text-white mb-2">Age Divisions</h4>
                   <div className="flex flex-wrap gap-2">
                     {sport.divisions.map((division) => (
-                      <Badge key={division} variant="outline" className="text-slate-300 border-slate-600">
+                      <Badge
+                        key={division}
+                        variant="outline"
+                        className="text-slate-300 border-slate-600"
+                      >
                         {division}
                       </Badge>
                     ))}
@@ -160,7 +167,10 @@ export default function TeamSportsPage() {
                     </Button>
                   </Link>
                   <Link href={`/team-sports/${sport.id}`}>
-                    <Button variant="outline" className="w-full border-slate-600 text-slate-300 hover:bg-slate-700">
+                    <Button
+                      variant="outline"
+                      className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
+                    >
                       View Teams & Schedule
                     </Button>
                   </Link>
@@ -186,28 +196,36 @@ export default function TeamSportsPage() {
                     <span className="text-white font-bold">1</span>
                   </div>
                   <h3 className="font-semibold text-white mb-2">Choose Sport</h3>
-                  <p className="text-slate-400 text-sm">Select your preferred sport and age division</p>
+                  <p className="text-slate-400 text-sm">
+                    Select your preferred sport and age division
+                  </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-white font-bold">2</span>
                   </div>
                   <h3 className="font-semibold text-white mb-2">Register</h3>
-                  <p className="text-slate-400 text-sm">Complete registration with parent/guardian consent</p>
+                  <p className="text-slate-400 text-sm">
+                    Complete registration with parent/guardian consent
+                  </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-white font-bold">3</span>
                   </div>
                   <h3 className="font-semibold text-white mb-2">Team Assignment</h3>
-                  <p className="text-slate-400 text-sm">Get placed on a team based on age and skill level</p>
+                  <p className="text-slate-400 text-sm">
+                    Get placed on a team based on age and skill level
+                  </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-3">
                     <span className="text-white font-bold">4</span>
                   </div>
                   <h3 className="font-semibold text-white mb-2">Start Playing</h3>
-                  <p className="text-slate-400 text-sm">Attend practices and games with your new team</p>
+                  <p className="text-slate-400 text-sm">
+                    Attend practices and games with your new team
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -215,5 +233,5 @@ export default function TeamSportsPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

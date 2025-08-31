@@ -1,25 +1,38 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Checkbox } from '@/components/ui/checkbox'
-import { 
-  GraduationCap, Users, DollarSign, Calendar, 
-  CheckCircle, Star, Shield, FileText, CreditCard 
-} from 'lucide-react'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  GraduationCap,
+  Users,
+  DollarSign,
+  Calendar,
+  CheckCircle,
+  Star,
+  Shield,
+  FileText,
+  CreditCard,
+} from 'lucide-react';
 
 export default function EnrollmentPortal() {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [selectedProgram, setSelectedProgram] = useState('')
-  const [enrollmentType, setEnrollmentType] = useState('')
+  const [currentStep, setCurrentStep] = useState(1);
+  const [selectedProgram, setSelectedProgram] = useState('');
+  const [enrollmentType, setEnrollmentType] = useState('');
 
   const enrollmentOptions = [
     {
@@ -35,9 +48,9 @@ export default function EnrollmentPortal() {
         'Hands-on lab experiences',
         'Theater/performance facilities',
         'Meal plans available',
-        'Transportation assistance'
+        'Transportation assistance',
       ],
-      color: 'from-green-500 to-emerald-500'
+      color: 'from-green-500 to-emerald-500',
     },
     {
       id: 'hybrid',
@@ -52,9 +65,9 @@ export default function EnrollmentPortal() {
         'Virtual lab simulations',
         'Access to campus events',
         'Study groups both formats',
-        'Flexible scheduling'
+        'Flexible scheduling',
       ],
-      color: 'from-purple-500 to-violet-500'
+      color: 'from-purple-500 to-violet-500',
     },
     {
       id: 'online-premium',
@@ -69,9 +82,9 @@ export default function EnrollmentPortal() {
         'Virtual reality experiences',
         'Digital lab simulations',
         'Online study groups',
-        'Progress tracking'
+        'Progress tracking',
       ],
-      color: 'from-blue-500 to-cyan-500'
+      color: 'from-blue-500 to-cyan-500',
     },
     {
       id: 'online-free',
@@ -86,11 +99,11 @@ export default function EnrollmentPortal() {
         'Self-paced learning',
         'Email support only',
         'No live teacher access',
-        'Basic certificates'
+        'Basic certificates',
       ],
-      color: 'from-gray-500 to-slate-500'
-    }
-  ]
+      color: 'from-gray-500 to-slate-500',
+    },
+  ];
 
   const schools = [
     {
@@ -98,37 +111,37 @@ export default function EnrollmentPortal() {
       name: 'SuperHero School',
       grades: 'K-6',
       description: 'Gamified learning with superhero themes',
-      ai: 'Dean Wonder'
+      ai: 'Dean Wonder',
     },
     {
       id: 'secondary',
       name: 'Stage Prep School',
       grades: '7-12',
       description: 'Theater arts meets academic excellence',
-      ai: 'Dean Sterling'
+      ai: 'Dean Sterling',
     },
     {
       id: 'law',
       name: 'Law School',
       grades: 'College',
       description: 'Professional legal education',
-      ai: 'Professor Barrett'
+      ai: 'Professor Barrett',
     },
     {
       id: 'language',
       name: 'Language Academy',
       grades: 'All Ages',
       description: 'Global language and cultural immersion',
-      ai: 'Professor Lingua'
-    }
-  ]
+      ai: 'Professor Lingua',
+    },
+  ];
 
   const steps = [
     { id: 1, name: 'School Selection', description: 'Choose your educational program' },
     { id: 2, name: 'Enrollment Type', description: 'Select learning format and pricing' },
     { id: 3, name: 'Student Information', description: 'Personal and academic details' },
-    { id: 4, name: 'Payment & Confirmation', description: 'Complete enrollment process' }
-  ]
+    { id: 4, name: 'Payment & Confirmation', description: 'Complete enrollment process' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-purple-900 to-slate-900">
@@ -156,7 +169,7 @@ export default function EnrollmentPortal() {
         </div>
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8 }}
@@ -168,23 +181,29 @@ export default function EnrollmentPortal() {
             <div className="flex items-center justify-between mb-4">
               {steps.map((step, index) => (
                 <div key={step.id} className="flex items-center">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
-                    currentStep >= step.id 
-                      ? 'bg-cyan-500 border-cyan-500 text-black' 
-                      : 'border-slate-600 text-gray-400'
-                  }`}>
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 ${
+                      currentStep >= step.id
+                        ? 'bg-cyan-500 border-cyan-500 text-black'
+                        : 'border-slate-600 text-gray-400'
+                    }`}
+                  >
                     {currentStep > step.id ? <CheckCircle className="h-5 w-5" /> : step.id}
                   </div>
                   <div className="ml-3 hidden sm:block">
-                    <p className={`text-sm font-medium ${currentStep >= step.id ? 'text-cyan-400' : 'text-gray-400'}`}>
+                    <p
+                      className={`text-sm font-medium ${currentStep >= step.id ? 'text-cyan-400' : 'text-gray-400'}`}
+                    >
                       {step.name}
                     </p>
                     <p className="text-xs text-gray-500">{step.description}</p>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className={`hidden sm:block w-16 h-0.5 ml-6 ${
-                      currentStep > step.id ? 'bg-cyan-500' : 'bg-slate-600'
-                    }`} />
+                    <div
+                      className={`hidden sm:block w-16 h-0.5 ml-6 ${
+                        currentStep > step.id ? 'bg-cyan-500' : 'bg-slate-600'
+                      }`}
+                    />
                   )}
                 </div>
               ))}
@@ -205,11 +224,11 @@ export default function EnrollmentPortal() {
             <CardContent>
               <div className="grid md:grid-cols-2 gap-6">
                 {schools.map((school) => (
-                  <Card 
-                    key={school.id} 
+                  <Card
+                    key={school.id}
                     className={`cursor-pointer transition-all ${
-                      selectedProgram === school.id 
-                        ? 'border-cyan-500 bg-cyan-500/10' 
+                      selectedProgram === school.id
+                        ? 'border-cyan-500 bg-cyan-500/10'
                         : 'border-slate-600 hover:border-slate-500'
                     }`}
                     onClick={() => setSelectedProgram(school.id)}
@@ -217,7 +236,9 @@ export default function EnrollmentPortal() {
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <GraduationCap className="h-8 w-8 text-cyan-400" />
-                        {selectedProgram === school.id && <CheckCircle className="h-6 w-6 text-cyan-400" />}
+                        {selectedProgram === school.id && (
+                          <CheckCircle className="h-6 w-6 text-cyan-400" />
+                        )}
                       </div>
                       <h3 className="font-semibold text-white mb-2">{school.name}</h3>
                       <p className="text-sm text-gray-400 mb-1">Grades: {school.grades}</p>
@@ -230,8 +251,8 @@ export default function EnrollmentPortal() {
                 ))}
               </div>
               <div className="mt-6 flex justify-end">
-                <Button 
-                  onClick={() => setCurrentStep(2)} 
+                <Button
+                  onClick={() => setCurrentStep(2)}
                   disabled={!selectedProgram}
                   className="bg-cyan-500 hover:bg-cyan-600 text-black"
                 >
@@ -253,21 +274,25 @@ export default function EnrollmentPortal() {
             <CardContent>
               <div className="grid lg:grid-cols-2 gap-6">
                 {enrollmentOptions.map((option) => (
-                  <Card 
-                    key={option.id} 
+                  <Card
+                    key={option.id}
                     className={`cursor-pointer transition-all ${
-                      enrollmentType === option.id 
-                        ? 'border-cyan-500 bg-cyan-500/10' 
+                      enrollmentType === option.id
+                        ? 'border-cyan-500 bg-cyan-500/10'
                         : 'border-slate-600 hover:border-slate-500'
                     }`}
                     onClick={() => setEnrollmentType(option.id)}
                   >
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
-                        <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${option.color} flex items-center justify-center`}>
+                        <div
+                          className={`w-12 h-12 rounded-lg bg-gradient-to-br ${option.color} flex items-center justify-center`}
+                        >
                           <DollarSign className="h-6 w-6 text-white" />
                         </div>
-                        {enrollmentType === option.id && <CheckCircle className="h-6 w-6 text-cyan-400" />}
+                        {enrollmentType === option.id && (
+                          <CheckCircle className="h-6 w-6 text-cyan-400" />
+                        )}
                       </div>
                       <h3 className="font-semibold text-white mb-2">{option.name}</h3>
                       <p className="text-lg font-bold text-cyan-400 mb-2">{option.price}</p>
@@ -285,11 +310,15 @@ export default function EnrollmentPortal() {
                 ))}
               </div>
               <div className="mt-6 flex justify-between">
-                <Button variant="outline" onClick={() => setCurrentStep(1)} className="border-slate-600 text-gray-300">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(1)}
+                  className="border-slate-600 text-gray-300"
+                >
                   Back
                 </Button>
-                <Button 
-                  onClick={() => setCurrentStep(3)} 
+                <Button
+                  onClick={() => setCurrentStep(3)}
                   disabled={!enrollmentType}
                   className="bg-cyan-500 hover:bg-cyan-600 text-black"
                 >
@@ -311,22 +340,42 @@ export default function EnrollmentPortal() {
             <CardContent className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-gray-300">First Name</Label>
-                  <Input id="firstName" placeholder="Enter first name" className="bg-slate-700 border-slate-600 text-white" />
+                  <Label htmlFor="firstName" className="text-gray-300">
+                    First Name
+                  </Label>
+                  <Input
+                    id="firstName"
+                    placeholder="Enter first name"
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-gray-300">Last Name</Label>
-                  <Input id="lastName" placeholder="Enter last name" className="bg-slate-700 border-slate-600 text-white" />
+                  <Label htmlFor="lastName" className="text-gray-300">
+                    Last Name
+                  </Label>
+                  <Input
+                    id="lastName"
+                    placeholder="Enter last name"
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
                 </div>
               </div>
-              
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="birthDate" className="text-gray-300">Date of Birth</Label>
-                  <Input id="birthDate" type="date" className="bg-slate-700 border-slate-600 text-white" />
+                  <Label htmlFor="birthDate" className="text-gray-300">
+                    Date of Birth
+                  </Label>
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="grade" className="text-gray-300">Current Grade Level</Label>
+                  <Label htmlFor="grade" className="text-gray-300">
+                    Current Grade Level
+                  </Label>
                   <Select>
                     <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                       <SelectValue placeholder="Select grade" />
@@ -351,8 +400,15 @@ export default function EnrollmentPortal() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="parentEmail" className="text-gray-300">Parent/Guardian Email</Label>
-                <Input id="parentEmail" type="email" placeholder="Enter parent email" className="bg-slate-700 border-slate-600 text-white" />
+                <Label htmlFor="parentEmail" className="text-gray-300">
+                  Parent/Guardian Email
+                </Label>
+                <Input
+                  id="parentEmail"
+                  type="email"
+                  placeholder="Enter parent email"
+                  className="bg-slate-700 border-slate-600 text-white"
+                />
               </div>
 
               <div className="space-y-4">
@@ -364,22 +420,28 @@ export default function EnrollmentPortal() {
                     'Autism Spectrum Support',
                     'Gifted/Talented',
                     'English Language Learner',
-                    '504 Plan'
+                    '504 Plan',
                   ].map((support) => (
                     <div key={support} className="flex items-center space-x-2">
                       <Checkbox id={support} />
-                      <Label htmlFor={support} className="text-sm text-gray-300">{support}</Label>
+                      <Label htmlFor={support} className="text-sm text-gray-300">
+                        {support}
+                      </Label>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div className="mt-6 flex justify-between">
-                <Button variant="outline" onClick={() => setCurrentStep(2)} className="border-slate-600 text-gray-300">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(2)}
+                  className="border-slate-600 text-gray-300"
+                >
                   Back
                 </Button>
-                <Button 
-                  onClick={() => setCurrentStep(4)} 
+                <Button
+                  onClick={() => setCurrentStep(4)}
                   className="bg-cyan-500 hover:bg-cyan-600 text-black"
                 >
                   Continue to Payment
@@ -403,15 +465,21 @@ export default function EnrollmentPortal() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-300">School Program:</span>
-                    <span className="text-white">{schools.find(s => s.id === selectedProgram)?.name}</span>
+                    <span className="text-white">
+                      {schools.find((s) => s.id === selectedProgram)?.name}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-300">Enrollment Type:</span>
-                    <span className="text-white">{enrollmentOptions.find(e => e.id === enrollmentType)?.name}</span>
+                    <span className="text-white">
+                      {enrollmentOptions.find((e) => e.id === enrollmentType)?.name}
+                    </span>
                   </div>
                   <div className="flex justify-between font-semibold text-lg">
                     <span className="text-gray-300">Total Cost:</span>
-                    <span className="text-cyan-400">{enrollmentOptions.find(e => e.id === enrollmentType)?.price}</span>
+                    <span className="text-cyan-400">
+                      {enrollmentOptions.find((e) => e.id === enrollmentType)?.price}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -421,22 +489,46 @@ export default function EnrollmentPortal() {
                   <h4 className="font-semibold text-white">Payment Information</h4>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="cardNumber" className="text-gray-300">Card Number</Label>
-                      <Input id="cardNumber" placeholder="1234 5678 9012 3456" className="bg-slate-700 border-slate-600 text-white" />
+                      <Label htmlFor="cardNumber" className="text-gray-300">
+                        Card Number
+                      </Label>
+                      <Input
+                        id="cardNumber"
+                        placeholder="1234 5678 9012 3456"
+                        className="bg-slate-700 border-slate-600 text-white"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="expiry" className="text-gray-300">Expiry Date</Label>
-                      <Input id="expiry" placeholder="MM/YY" className="bg-slate-700 border-slate-600 text-white" />
+                      <Label htmlFor="expiry" className="text-gray-300">
+                        Expiry Date
+                      </Label>
+                      <Input
+                        id="expiry"
+                        placeholder="MM/YY"
+                        className="bg-slate-700 border-slate-600 text-white"
+                      />
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="cvv" className="text-gray-300">CVV</Label>
-                      <Input id="cvv" placeholder="123" className="bg-slate-700 border-slate-600 text-white" />
+                      <Label htmlFor="cvv" className="text-gray-300">
+                        CVV
+                      </Label>
+                      <Input
+                        id="cvv"
+                        placeholder="123"
+                        className="bg-slate-700 border-slate-600 text-white"
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="billingZip" className="text-gray-300">Billing ZIP</Label>
-                      <Input id="billingZip" placeholder="12345" className="bg-slate-700 border-slate-600 text-white" />
+                      <Label htmlFor="billingZip" className="text-gray-300">
+                        Billing ZIP
+                      </Label>
+                      <Input
+                        id="billingZip"
+                        placeholder="12345"
+                        className="bg-slate-700 border-slate-600 text-white"
+                      />
                     </div>
                   </div>
                 </div>
@@ -447,13 +539,19 @@ export default function EnrollmentPortal() {
                   <Shield className="h-6 w-6 text-green-400" />
                   <div>
                     <p className="font-semibold text-green-400">Secure & Texas Compliant</p>
-                    <p className="text-sm text-gray-300">Your information is protected and meets all Texas charter school requirements</p>
+                    <p className="text-sm text-gray-300">
+                      Your information is protected and meets all Texas charter school requirements
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-6 flex justify-between">
-                <Button variant="outline" onClick={() => setCurrentStep(3)} className="border-slate-600 text-gray-300">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(3)}
+                  className="border-slate-600 text-gray-300"
+                >
                   Back
                 </Button>
                 <Button className="bg-green-500 hover:bg-green-600 text-black">
@@ -466,5 +564,5 @@ export default function EnrollmentPortal() {
         )}
       </motion.div>
     </div>
-  )
+  );
 }

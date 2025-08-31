@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Video, 
-  Mic, 
-  MicOff, 
-  VideoOff, 
-  Users, 
-  MessageSquare, 
-  Settings, 
-  Monitor, 
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Video,
+  Mic,
+  MicOff,
+  VideoOff,
+  Users,
+  MessageSquare,
+  Settings,
+  Monitor,
   Phone,
   PhoneOff,
   Camera,
@@ -25,15 +25,15 @@ import {
   Upload,
   Clock,
   Theater,
-  Drama
-} from 'lucide-react'
-import Link from 'next/link'
+  Drama,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function SecondaryVirtualClassroom() {
-  const [isMuted, setIsMuted] = useState(false)
-  const [isVideoOff, setIsVideoOff] = useState(false)
-  const [isScreenSharing, setIsScreenSharing] = useState(false)
-  const [activeTab, setActiveTab] = useState('classroom')
+  const [isMuted, setIsMuted] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [activeTab, setActiveTab] = useState('classroom');
 
   const currentClasses = [
     {
@@ -41,45 +41,57 @@ export default function SecondaryVirtualClassroom() {
       teacher: 'Ms. Shakespeare',
       time: 'Now - 3:30 PM',
       participants: 15,
-      status: 'live'
+      status: 'live',
     },
     {
       title: 'Drama Workshop - Character Development',
       teacher: 'Mr. Stanislavski',
       time: '4:00 PM - 5:30 PM',
       participants: 12,
-      status: 'upcoming'
+      status: 'upcoming',
     },
     {
       title: 'Music Theory - Harmony & Melody',
       teacher: 'Maestro Picasso',
       time: '2:00 PM - 3:00 PM',
       participants: 18,
-      status: 'completed'
-    }
-  ]
+      status: 'completed',
+    },
+  ];
 
   const classResources = [
     { name: 'Romeo & Juliet Script - Act 2', type: 'PDF', size: '2.4 MB' },
     { name: 'Character Analysis Worksheet', type: 'DOC', size: '856 KB' },
     { name: 'Performance Rubric', type: 'PDF', size: '1.2 MB' },
-    { name: 'Rehearsal Schedule', type: 'XLS', size: '643 KB' }
-  ]
+    { name: 'Rehearsal Schedule', type: 'XLS', size: '643 KB' },
+  ];
 
   const participants = [
     { name: 'Emma Thompson', role: 'Student', status: 'online', speaking: false },
     { name: 'James Wilson', role: 'Student', status: 'online', speaking: true },
     { name: 'Sofia Martinez', role: 'Student', status: 'online', speaking: false },
     { name: 'Alex Chen', role: 'Student', status: 'away', speaking: false },
-    { name: 'Ms. Shakespeare', role: 'Teacher', status: 'online', speaking: false }
-  ]
+    { name: 'Ms. Shakespeare', role: 'Teacher', status: 'online', speaking: false },
+  ];
 
   const chatMessages = [
-    { user: 'Ms. Shakespeare', message: 'Welcome to our Romeo and Juliet scene analysis!', time: '2:15 PM' },
-    { user: 'Emma Thompson', message: 'Excited to discuss the balcony scene today', time: '2:16 PM' },
-    { user: 'James Wilson', message: 'I have questions about Romeo\'s motivations', time: '2:17 PM' },
-    { user: 'Ms. Shakespeare', message: 'Great! Let\'s start with that, James', time: '2:18 PM' }
-  ]
+    {
+      user: 'Ms. Shakespeare',
+      message: 'Welcome to our Romeo and Juliet scene analysis!',
+      time: '2:15 PM',
+    },
+    {
+      user: 'Emma Thompson',
+      message: 'Excited to discuss the balcony scene today',
+      time: '2:16 PM',
+    },
+    {
+      user: 'James Wilson',
+      message: "I have questions about Romeo's motivations",
+      time: '2:17 PM',
+    },
+    { user: 'Ms. Shakespeare', message: "Great! Let's start with that, James", time: '2:18 PM' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-red-50">
@@ -92,9 +104,7 @@ export default function SecondaryVirtualClassroom() {
               <p className="text-purple-100 mt-1">S.T.A.G.E Prep School - Interactive Learning</p>
             </div>
             <div className="flex items-center gap-2">
-              <Badge className="bg-green-100 text-green-800">
-                Live Class
-              </Badge>
+              <Badge className="bg-green-100 text-green-800">Live Class</Badge>
               <Badge variant="outline" className="text-white border-white">
                 15 Participants
               </Badge>
@@ -140,33 +150,37 @@ export default function SecondaryVirtualClassroom() {
                     {/* Video Controls */}
                     <div className="flex items-center justify-center gap-4 p-4 bg-gray-100 rounded-lg">
                       <Button
-                        variant={isMuted ? "destructive" : "default"}
+                        variant={isMuted ? 'destructive' : 'default'}
                         size="sm"
                         onClick={() => setIsMuted(!isMuted)}
                       >
                         {isMuted ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
                       </Button>
-                      
+
                       <Button
-                        variant={isVideoOff ? "destructive" : "default"}
+                        variant={isVideoOff ? 'destructive' : 'default'}
                         size="sm"
                         onClick={() => setIsVideoOff(!isVideoOff)}
                       >
-                        {isVideoOff ? <VideoOff className="h-4 w-4" /> : <Camera className="h-4 w-4" />}
+                        {isVideoOff ? (
+                          <VideoOff className="h-4 w-4" />
+                        ) : (
+                          <Camera className="h-4 w-4" />
+                        )}
                       </Button>
-                      
+
                       <Button
-                        variant={isScreenSharing ? "secondary" : "outline"}
+                        variant={isScreenSharing ? 'secondary' : 'outline'}
                         size="sm"
                         onClick={() => setIsScreenSharing(!isScreenSharing)}
                       >
                         <ScreenShare className="h-4 w-4" />
                       </Button>
-                      
+
                       <Button variant="outline" size="sm">
                         <Settings className="h-4 w-4" />
                       </Button>
-                      
+
                       <Button variant="destructive" size="sm">
                         <PhoneOff className="h-4 w-4" />
                         Leave
@@ -190,13 +204,13 @@ export default function SecondaryVirtualClassroom() {
                     <div className="space-y-2">
                       {participants.map((participant, index) => (
                         <div key={index} className="flex items-center gap-2 p-2 rounded">
-                          <div className={`w-2 h-2 rounded-full ${
-                            participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
-                          }`} />
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              participant.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                            }`}
+                          />
                           <span className="text-sm flex-1">{participant.name}</span>
-                          {participant.speaking && (
-                            <Volume2 className="h-3 w-3 text-green-500" />
-                          )}
+                          {participant.speaking && <Volume2 className="h-3 w-3 text-green-500" />}
                           <Badge variant="outline" className="text-xs">
                             {participant.role}
                           </Badge>
@@ -227,9 +241,9 @@ export default function SecondaryVirtualClassroom() {
                       ))}
                     </div>
                     <div className="mt-3 flex gap-2">
-                      <input 
-                        type="text" 
-                        placeholder="Type a message..." 
+                      <input
+                        type="text"
+                        placeholder="Type a message..."
                         className="flex-1 px-3 py-2 border rounded-md text-sm"
                       />
                       <Button size="sm">Send</Button>
@@ -251,17 +265,27 @@ export default function SecondaryVirtualClassroom() {
               <CardContent>
                 <div className="space-y-4">
                   {currentClasses.map((classItem, index) => (
-                    <div key={index} className={`border-2 rounded-lg p-4 ${
-                      classItem.status === 'live' ? 'border-green-200 bg-green-50' :
-                      classItem.status === 'upcoming' ? 'border-blue-200 bg-blue-50' :
-                      'border-gray-200 bg-gray-50'
-                    }`}>
+                    <div
+                      key={index}
+                      className={`border-2 rounded-lg p-4 ${
+                        classItem.status === 'live'
+                          ? 'border-green-200 bg-green-50'
+                          : classItem.status === 'upcoming'
+                            ? 'border-blue-200 bg-blue-50'
+                            : 'border-gray-200 bg-gray-50'
+                      }`}
+                    >
                       <div className="flex items-center justify-between mb-2">
                         <h3 className="font-medium">{classItem.title}</h3>
-                        <Badge variant={
-                          classItem.status === 'live' ? 'default' :
-                          classItem.status === 'upcoming' ? 'secondary' : 'outline'
-                        }>
+                        <Badge
+                          variant={
+                            classItem.status === 'live'
+                              ? 'default'
+                              : classItem.status === 'upcoming'
+                                ? 'secondary'
+                                : 'outline'
+                          }
+                        >
                           {classItem.status}
                         </Badge>
                       </div>
@@ -272,8 +296,11 @@ export default function SecondaryVirtualClassroom() {
                       <div className="flex items-center justify-between mt-3">
                         <span className="text-sm font-medium">{classItem.time}</span>
                         <Button size="sm" disabled={classItem.status === 'completed'}>
-                          {classItem.status === 'live' ? 'Join Now' : 
-                           classItem.status === 'upcoming' ? 'Set Reminder' : 'View Recording'}
+                          {classItem.status === 'live'
+                            ? 'Join Now'
+                            : classItem.status === 'upcoming'
+                              ? 'Set Reminder'
+                              : 'View Recording'}
                         </Button>
                       </div>
                     </div>
@@ -294,12 +321,17 @@ export default function SecondaryVirtualClassroom() {
               <CardContent>
                 <div className="space-y-3">
                   {classResources.map((resource, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <FileText className="h-5 w-5 text-blue-600" />
                         <div>
                           <p className="font-medium">{resource.name}</p>
-                          <p className="text-sm text-gray-600">{resource.type} • {resource.size}</p>
+                          <p className="text-sm text-gray-600">
+                            {resource.type} • {resource.size}
+                          </p>
                         </div>
                       </div>
                       <Button size="sm" variant="outline">
@@ -309,7 +341,7 @@ export default function SecondaryVirtualClassroom() {
                     </div>
                   ))}
                 </div>
-                
+
                 <div className="mt-6 p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-600">Upload your assignments here</p>
@@ -333,11 +365,11 @@ export default function SecondaryVirtualClassroom() {
                 <div className="text-center py-8">
                   <Video className="h-12 w-12 mx-auto mb-4 text-gray-400" />
                   <h3 className="text-lg font-medium mb-2">No Recordings Available</h3>
-                  <p className="text-gray-600 mb-4">Class recordings will appear here after sessions end</p>
+                  <p className="text-gray-600 mb-4">
+                    Class recordings will appear here after sessions end
+                  </p>
                   <Link href="/schools/secondary/assignments">
-                    <Button variant="outline">
-                      View Assignments Instead
-                    </Button>
+                    <Button variant="outline">View Assignments Instead</Button>
                   </Link>
                 </div>
               </CardContent>
@@ -349,17 +381,15 @@ export default function SecondaryVirtualClassroom() {
         <Card className="mt-6 border-purple-200 bg-purple-50">
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="font-medium text-purple-800 mb-4">Need Help with Virtual Classroom?</h3>
+              <h3 className="font-medium text-purple-800 mb-4">
+                Need Help with Virtual Classroom?
+              </h3>
               <div className="flex justify-center gap-4">
                 <Link href="/ai-teachers">
-                  <Button className="bg-purple-500 hover:bg-purple-600">
-                    Ask AI Teacher
-                  </Button>
+                  <Button className="bg-purple-500 hover:bg-purple-600">Ask AI Teacher</Button>
                 </Link>
                 <Link href="/schools/secondary/student-dashboard">
-                  <Button variant="outline">
-                    Back to Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -367,5 +397,5 @@ export default function SecondaryVirtualClassroom() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

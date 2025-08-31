@@ -1,9 +1,9 @@
 /**
  * ShatziiOS Optimized Server
- * 
+ *
  * This is the optimized entry point for the ShatziiOS educational platform with improved
  * startup performance and reliability.
- * 
+ *
  * Key features:
  * - Phased loading of components to improve startup time
  * - Graceful error handling and recovery
@@ -53,7 +53,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error('Express error:', err);
   res.status(500).json({
     error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred' : err.message
+    message: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred' : err.message,
   });
 });
 

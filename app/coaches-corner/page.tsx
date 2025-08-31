@@ -5,9 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Users, Star, Clock, Calendar, Video, MessageCircle,
-  Trophy, Target, Play, CreditCard, Shield, Award
+import {
+  Users,
+  Star,
+  Clock,
+  Calendar,
+  Video,
+  MessageCircle,
+  Trophy,
+  Target,
+  Play,
+  CreditCard,
+  Shield,
+  Award,
 } from 'lucide-react';
 
 interface Coach {
@@ -44,7 +54,7 @@ export default function CoachesCornerPage() {
       bio: 'Former D1 strength coach with expertise in developing elite athletes. Specialized in power development and injury prevention.',
       credentials: ['CSCS Certified', 'USA Weightlifting Level 2', 'NASM-PES'],
       successStories: 45,
-      liveClasses: true
+      liveClasses: true,
     },
     {
       id: 'coach_002',
@@ -59,7 +69,7 @@ export default function CoachesCornerPage() {
       bio: 'Sports psychologist and conditioning specialist focusing on mental toughness and peak performance.',
       credentials: ['ACSM Certified', 'Mental Performance Consultant', 'FMS Level 2'],
       successStories: 67,
-      liveClasses: true
+      liveClasses: true,
     },
     {
       id: 'coach_003',
@@ -74,17 +84,26 @@ export default function CoachesCornerPage() {
       bio: 'Former NFL coach with extensive recruiting connections. Specializes in player development and college placement.',
       credentials: ['NFL Coaching Experience', 'AFCA Member', 'Recruiting Specialist'],
       successStories: 89,
-      liveClasses: false
-    }
+      liveClasses: false,
+    },
   ];
 
-  const specialties = ['All', 'Strength Training', 'Conditioning', 'Speed Development', 'Position Training', 'Recruiting', 'Sport Psychology'];
+  const specialties = [
+    'All',
+    'Strength Training',
+    'Conditioning',
+    'Speed Development',
+    'Position Training',
+    'Recruiting',
+    'Sport Psychology',
+  ];
 
-  const filteredCoaches = selectedFilter === 'all' 
-    ? coaches 
-    : coaches.filter(coach => 
-        coach.specialty.some(spec => spec.toLowerCase().includes(selectedFilter.toLowerCase()))
-      );
+  const filteredCoaches =
+    selectedFilter === 'all'
+      ? coaches
+      : coaches.filter((coach) =>
+          coach.specialty.some((spec) => spec.toLowerCase().includes(selectedFilter.toLowerCase())),
+        );
 
   const bookSession = (coach: Coach, sessionType: 'consultation' | 'training' | 'live_class') => {
     // Integration with Stripe payment system
@@ -93,9 +112,9 @@ export default function CoachesCornerPage() {
       coachName: coach.name,
       sessionType,
       rate: coach.hourlyRate,
-      specialty: coach.specialty[0]
+      specialty: coach.specialty[0],
     };
-    
+
     // Redirect to booking page with coach data
     const params = new URLSearchParams(sessionData as any);
     window.location.href = `/book-session?${params.toString()}`;
@@ -134,10 +153,12 @@ export default function CoachesCornerPage() {
             <Button
               key={specialty}
               onClick={() => setSelectedFilter(specialty === 'All' ? 'all' : specialty)}
-              variant={selectedFilter === (specialty === 'All' ? 'all' : specialty) ? "default" : "outline"}
+              variant={
+                selectedFilter === (specialty === 'All' ? 'all' : specialty) ? 'default' : 'outline'
+              }
               className={`${
                 selectedFilter === (specialty === 'All' ? 'all' : specialty)
-                  ? 'bg-blue-600 hover:bg-blue-700' 
+                  ? 'bg-blue-600 hover:bg-blue-700'
                   : 'border-slate-600 hover:bg-slate-700'
               }`}
             >
@@ -149,7 +170,10 @@ export default function CoachesCornerPage() {
         {/* Coaches Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {filteredCoaches.map((coach) => (
-            <Card key={coach.id} className="bg-slate-800 border-slate-700 hover:border-blue-500/50 transition-all duration-300">
+            <Card
+              key={coach.id}
+              className="bg-slate-800 border-slate-700 hover:border-blue-500/50 transition-all duration-300"
+            >
               <CardHeader>
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center">
@@ -163,11 +187,13 @@ export default function CoachesCornerPage() {
                         <span className="text-sm text-white">{coach.rating}</span>
                         <span className="text-xs text-slate-400">({coach.reviews})</span>
                       </div>
-                      <Badge className={
-                        coach.availability === 'Available' 
-                          ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                          : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-                      }>
+                      <Badge
+                        className={
+                          coach.availability === 'Available'
+                            ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                            : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+                        }
+                      >
                         {coach.availability}
                       </Badge>
                     </div>
@@ -211,16 +237,16 @@ export default function CoachesCornerPage() {
 
                   {/* Action Buttons */}
                   <div className="space-y-2">
-                    <Button 
+                    <Button
                       onClick={() => bookSession(coach, 'consultation')}
                       className="w-full bg-blue-600 hover:bg-blue-700"
                     >
                       <MessageCircle className="w-4 h-4 mr-2" />
                       Book Consultation
                     </Button>
-                    
+
                     <div className="grid grid-cols-2 gap-2">
-                      <Button 
+                      <Button
                         onClick={() => bookSession(coach, 'training')}
                         variant="outline"
                         className="border-slate-600 hover:bg-slate-700"
@@ -228,9 +254,9 @@ export default function CoachesCornerPage() {
                         <Trophy className="w-4 h-4 mr-1" />
                         1-on-1
                       </Button>
-                      
+
                       {coach.liveClasses && (
-                        <Button 
+                        <Button
                           onClick={() => bookSession(coach, 'live_class')}
                           variant="outline"
                           className="border-slate-600 hover:bg-slate-700"
@@ -266,7 +292,9 @@ export default function CoachesCornerPage() {
                       Live
                     </Badge>
                   </div>
-                  <p className="text-sm text-slate-300 mb-3">Master the basics of Olympic lifting with proper form and technique</p>
+                  <p className="text-sm text-slate-300 mb-3">
+                    Master the basics of Olympic lifting with proper form and technique
+                  </p>
                   <div className="text-xs text-slate-400 mb-3">
                     <div className="flex items-center gap-2">
                       <Clock className="w-3 h-3" />
@@ -295,7 +323,9 @@ export default function CoachesCornerPage() {
                       Scheduled
                     </Badge>
                   </div>
-                  <p className="text-sm text-slate-300 mb-3">Build mental resilience and peak performance mindset</p>
+                  <p className="text-sm text-slate-300 mb-3">
+                    Build mental resilience and peak performance mindset
+                  </p>
                   <div className="text-xs text-slate-400 mb-3">
                     <div className="flex items-center gap-2">
                       <Clock className="w-3 h-3" />
@@ -324,7 +354,9 @@ export default function CoachesCornerPage() {
                       Premium
                     </Badge>
                   </div>
-                  <p className="text-sm text-slate-300 mb-3">Navigate the college recruiting process with expert guidance</p>
+                  <p className="text-sm text-slate-300 mb-3">
+                    Navigate the college recruiting process with expert guidance
+                  </p>
                   <div className="text-xs text-slate-400 mb-3">
                     <div className="flex items-center gap-2">
                       <Clock className="w-3 h-3" />
@@ -350,7 +382,9 @@ export default function CoachesCornerPage() {
         {/* Call to Action */}
         <Card className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500/30">
           <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">Ready to Work with Elite Coaches?</h3>
+            <h3 className="text-2xl font-bold text-white mb-4">
+              Ready to Work with Elite Coaches?
+            </h3>
             <p className="text-slate-300 text-lg mb-6">
               Get personalized training, expert advice, and accelerate your athletic development
             </p>
@@ -359,8 +393,8 @@ export default function CoachesCornerPage() {
                 <CreditCard className="w-5 h-5 mr-2" />
                 Browse All Coaches
               </Button>
-              <Button 
-                onClick={() => window.location.href = '/live-classes'}
+              <Button
+                onClick={() => (window.location.href = '/live-classes')}
                 variant="outline"
                 className="border-slate-600 text-slate-300 px-8 py-3"
               >

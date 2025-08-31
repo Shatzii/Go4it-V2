@@ -7,12 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Wand2, 
-  Eye, 
-  Save, 
-  Download, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Wand2,
+  Eye,
+  Save,
+  Download,
   Upload,
   Palette,
   Layout,
@@ -21,7 +27,7 @@ import {
   Video,
   Music,
   Settings,
-  Sparkles
+  Sparkles,
 } from 'lucide-react';
 
 interface ContentTemplate {
@@ -40,7 +46,7 @@ const contentTemplates: ContentTemplate[] = [
     description: 'Interactive superhero-themed lesson with ADHD-friendly features',
     category: 'Primary Education',
     preview: '/templates/superhero-preview.jpg',
-    neurodivergentSupport: true
+    neurodivergentSupport: true,
   },
   {
     id: 'theater-workshop',
@@ -48,7 +54,7 @@ const contentTemplates: ContentTemplate[] = [
     description: 'Stage prep lesson with performance tracking',
     category: 'Secondary Education',
     preview: '/templates/theater-preview.jpg',
-    neurodivergentSupport: true
+    neurodivergentSupport: true,
   },
   {
     id: 'legal-case-study',
@@ -56,7 +62,7 @@ const contentTemplates: ContentTemplate[] = [
     description: 'Law school case analysis with visual aids',
     category: 'Higher Education',
     preview: '/templates/legal-preview.jpg',
-    neurodivergentSupport: false
+    neurodivergentSupport: false,
   },
   {
     id: 'language-immersion',
@@ -64,15 +70,31 @@ const contentTemplates: ContentTemplate[] = [
     description: 'Immersive language learning with cultural context',
     category: 'Language Learning',
     preview: '/templates/language-preview.jpg',
-    neurodivergentSupport: true
-  }
+    neurodivergentSupport: true,
+  },
 ];
 
 const neurodivergentAdaptations = [
-  { id: 'dyslexia', label: 'Dyslexia Support', description: 'OpenDyslexic font, increased spacing, high contrast' },
-  { id: 'adhd', label: 'ADHD Features', description: 'Focus mode, break reminders, minimal distractions' },
-  { id: 'autism', label: 'Autism Accommodations', description: 'Sensory breaks, visual schedules, clear structure' },
-  { id: 'processing', label: 'Processing Aids', description: 'Extra time, step-by-step instructions, audio support' }
+  {
+    id: 'dyslexia',
+    label: 'Dyslexia Support',
+    description: 'OpenDyslexic font, increased spacing, high contrast',
+  },
+  {
+    id: 'adhd',
+    label: 'ADHD Features',
+    description: 'Focus mode, break reminders, minimal distractions',
+  },
+  {
+    id: 'autism',
+    label: 'Autism Accommodations',
+    description: 'Sensory breaks, visual schedules, clear structure',
+  },
+  {
+    id: 'processing',
+    label: 'Processing Aids',
+    description: 'Extra time, step-by-step instructions, audio support',
+  },
 ];
 
 export default function ContentCreatorPage() {
@@ -113,10 +135,13 @@ Welcome to this innovative learning experience! This content has been specially 
 3. **Hands-on Practice** - Apply what you've learned
 
 ### Neurodivergent Adaptations
-${selectedAdaptations.map(id => {
-        const adaptation = neurodivergentAdaptations.find(a => a.id === id);
-        return adaptation ? `- **${adaptation.label}**: ${adaptation.description}` : '';
-      }).filter(Boolean).join('\n')}
+${selectedAdaptations
+  .map((id) => {
+    const adaptation = neurodivergentAdaptations.find((a) => a.id === id);
+    return adaptation ? `- **${adaptation.label}**: ${adaptation.description}` : '';
+  })
+  .filter(Boolean)
+  .join('\n')}
 
 ### Assessment
 - Formative assessments throughout
@@ -200,8 +225,8 @@ ${selectedAdaptations.map(id => {
                 <label className="text-sm font-medium mb-2 block">Content Template</label>
                 <div className="space-y-2">
                   {contentTemplates.map((template) => (
-                    <Card 
-                      key={template.id} 
+                    <Card
+                      key={template.id}
                       className={`cursor-pointer transition-all hover:shadow-md ${
                         selectedTemplate === template.id ? 'ring-2 ring-blue-500' : ''
                       }`}
@@ -296,19 +321,23 @@ ${selectedAdaptations.map(id => {
 
             <TabsContent value="adaptations" className="space-y-4">
               <div>
-                <label className="text-sm font-medium mb-3 block">Neurodivergent Support Features</label>
+                <label className="text-sm font-medium mb-3 block">
+                  Neurodivergent Support Features
+                </label>
                 <div className="space-y-3">
                   {neurodivergentAdaptations.map((adaptation) => (
-                    <Card 
+                    <Card
                       key={adaptation.id}
                       className={`cursor-pointer transition-all ${
-                        selectedAdaptations.includes(adaptation.id) ? 'ring-2 ring-green-500 bg-green-50' : ''
+                        selectedAdaptations.includes(adaptation.id)
+                          ? 'ring-2 ring-green-500 bg-green-50'
+                          : ''
                       }`}
                       onClick={() => {
-                        setSelectedAdaptations(prev => 
-                          prev.includes(adaptation.id) 
-                            ? prev.filter(id => id !== adaptation.id)
-                            : [...prev, adaptation.id]
+                        setSelectedAdaptations((prev) =>
+                          prev.includes(adaptation.id)
+                            ? prev.filter((id) => id !== adaptation.id)
+                            : [...prev, adaptation.id],
                         );
                       }}
                     >
@@ -352,7 +381,8 @@ ${selectedAdaptations.map(id => {
                         AI is Creating Your Content
                       </h3>
                       <p className="text-gray-500 dark:text-gray-400">
-                        Generating personalized educational content with neurodivergent adaptations...
+                        Generating personalized educational content with neurodivergent
+                        adaptations...
                       </p>
                     </div>
                   </div>
@@ -385,7 +415,7 @@ ${selectedAdaptations.map(id => {
                     <div className="text-white mt-4">
                       {`const educationalContent = {
   title: "${contentTitle || 'Educational Content'}",
-  adaptations: [${selectedAdaptations.map(a => `"${a}"`).join(', ')}],
+  adaptations: [${selectedAdaptations.map((a) => `"${a}"`).join(', ')}],
   interactive: true,
   accessibility: "WCAG 2.1 AA",
   neurodivergentSupport: true
@@ -412,7 +442,7 @@ ${selectedAdaptations.map(id => {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card>
                     <CardHeader>
                       <CardTitle className="text-lg">Layout Preview</CardTitle>

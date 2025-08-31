@@ -1,135 +1,149 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useParams } from 'next/navigation'
-import { CheckCircle, MapPin, Calendar, Trophy, TrendingUp, Star, Award, ExternalLink, ArrowLeft } from 'lucide-react'
-import Link from 'next/link'
-import Image from 'next/image'
+import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import {
+  CheckCircle,
+  MapPin,
+  Calendar,
+  Trophy,
+  TrendingUp,
+  Star,
+  Award,
+  ExternalLink,
+  ArrowLeft,
+} from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
 
 interface AthleteProfile {
-  id: string
-  name: string
-  position: string
-  sport: string
-  classYear: string
+  id: string;
+  name: string;
+  position: string;
+  sport: string;
+  classYear: string;
   rankings: {
-    rivals: number
-    espn: number
-    sports247: number
-    on3: number
-    composite: number
-  }
+    rivals: number;
+    espn: number;
+    sports247: number;
+    on3: number;
+    composite: number;
+  };
   physicals: {
-    height: string
-    weight: string
-    wingspan?: string
-    fortyTime?: string
-  }
+    height: string;
+    weight: string;
+    wingspan?: string;
+    fortyTime?: string;
+  };
   academics: {
-    gpa: number
-    sat?: number
-    act?: number
-    coreGPA?: number
-  }
+    gpa: number;
+    sat?: number;
+    act?: number;
+    coreGPA?: number;
+  };
   school: {
-    current: string
-    state: string
-    committed?: string
-    offers: string[]
-    visits: string[]
-  }
+    current: string;
+    state: string;
+    committed?: string;
+    offers: string[];
+    visits: string[];
+  };
   stats: {
-    season: string
-    [key: string]: any
-  }
+    season: string;
+    [key: string]: any;
+  };
   contact: {
-    email?: string
-    phone?: string
+    email?: string;
+    phone?: string;
     social: {
-      twitter?: string
-      instagram?: string
-      hudl?: string
-      tiktok?: string
-    }
-  }
+      twitter?: string;
+      instagram?: string;
+      hudl?: string;
+      tiktok?: string;
+    };
+  };
   highlights: {
     videos: Array<{
-      url: string
-      title: string
-      platform: string
-      views: number
-    }>
-    images: string[]
-  }
+      url: string;
+      title: string;
+      platform: string;
+      views: number;
+    }>;
+    images: string[];
+  };
   recruiting: {
-    status: 'open' | 'committed' | 'signed'
-    timeline: string
-    topSchools: string[]
-    recruitingNotes: string
-  }
+    status: 'open' | 'committed' | 'signed';
+    timeline: string;
+    topSchools: string[];
+    recruitingNotes: string;
+  };
   sources: Array<{
-    platform: string
-    url: string
-    lastUpdated: string
-    confidence: number
-  }>
+    platform: string;
+    url: string;
+    lastUpdated: string;
+    confidence: number;
+  }>;
 }
 
 export default function AthleteProfilePage() {
-  const params = useParams()
-  const [athlete, setAthlete] = useState<AthleteProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const params = useParams();
+  const [athlete, setAthlete] = useState<AthleteProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchAthlete = async () => {
       try {
-        const response = await fetch('/api/recruiting/athletes/database')
+        const response = await fetch('/api/recruiting/athletes/database');
         if (response.ok) {
-          const data = await response.json()
+          const data = await response.json();
           if (data.success && data.athletes) {
-            const foundAthlete = data.athletes.find((a: AthleteProfile) => a.id === params.id)
+            const foundAthlete = data.athletes.find((a: AthleteProfile) => a.id === params.id);
             if (foundAthlete) {
-              setAthlete(foundAthlete)
+              setAthlete(foundAthlete);
             } else {
-              setError('Athlete not found')
+              setError('Athlete not found');
             }
           }
         }
       } catch (err) {
-        setError('Failed to load athlete profile')
+        setError('Failed to load athlete profile');
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
     if (params.id) {
-      fetchAthlete()
+      fetchAthlete();
     }
-  }, [params.id])
+  }, [params.id]);
 
   const calculateGARScore = (athlete: AthleteProfile) => {
-    if (!athlete) return 75
-    
-    const rankingScore = Math.max(100 - (athlete.rankings.composite * 2), 60)
-    const academicBonus = athlete.academics.gpa > 3.5 ? 5 : 0
-    const commitmentBonus = athlete.recruiting.status === 'committed' ? 3 : 0
-    
-    return Math.min(rankingScore + academicBonus + commitmentBonus, 100)
-  }
+    if (!athlete) return 75;
+
+    const rankingScore = Math.max(100 - athlete.rankings.composite * 2, 60);
+    const academicBonus = athlete.academics.gpa > 3.5 ? 5 : 0;
+    const commitmentBonus = athlete.recruiting.status === 'committed' ? 3 : 0;
+
+    return Math.min(rankingScore + academicBonus + commitmentBonus, 100);
+  };
 
   const getAthleteImage = (athlete: AthleteProfile) => {
     if (athlete.highlights.images && athlete.highlights.images.length > 0) {
-      return athlete.highlights.images[0]
+      return athlete.highlights.images[0];
     }
     const sportImages = {
-      'Basketball': 'https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
-      'Soccer': 'https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
-      'American Football': 'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
-      'Track & Field': 'https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60'
-    }
-    return sportImages[athlete.sport] || sportImages['Basketball']
-  }
+      Basketball:
+        'https://images.unsplash.com/photo-1627245076516-93e232cba261?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YmFza2V0YmFsbCUyMHBsYXllcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
+      Soccer:
+        'https://images.unsplash.com/photo-1511067007398-7e4b9499a637?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
+      'American Football':
+        'https://images.unsplash.com/photo-1566577739112-5180d4bf9390?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=60',
+      'Track & Field':
+        'https://images.unsplash.com/photo-1527334919515-b8dee906a34b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8dHJhY2slMjBmaWVsZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60',
+    };
+    return sportImages[athlete.sport] || sportImages['Basketball'];
+  };
 
   if (loading) {
     return (
@@ -139,7 +153,7 @@ export default function AthleteProfilePage() {
           <p className="text-slate-300">Loading athlete profile...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (error || !athlete) {
@@ -147,7 +161,9 @@ export default function AthleteProfilePage() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Athlete Not Found</h1>
-          <p className="text-slate-300 mb-6">{error || 'The athlete profile you requested could not be found.'}</p>
+          <p className="text-slate-300 mb-6">
+            {error || 'The athlete profile you requested could not be found.'}
+          </p>
           <Link
             href="/"
             className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg transition-colors inline-flex items-center gap-2"
@@ -157,10 +173,10 @@ export default function AthleteProfilePage() {
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
-  const garScore = calculateGARScore(athlete)
+  const garScore = calculateGARScore(athlete);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -203,8 +219,10 @@ export default function AthleteProfilePage() {
             <div className="space-y-6">
               <div>
                 <h1 className="text-4xl font-bold text-white mb-2">{athlete.name}</h1>
-                <p className="text-xl text-slate-300 mb-4">{athlete.position} • {athlete.sport}</p>
-                
+                <p className="text-xl text-slate-300 mb-4">
+                  {athlete.position} • {athlete.sport}
+                </p>
+
                 <div className="flex items-center gap-4 text-sm text-slate-400">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
@@ -387,7 +405,10 @@ export default function AthleteProfilePage() {
               <h3 className="text-lg font-semibold text-white mb-4">College Offers</h3>
               <div className="grid grid-cols-2 gap-2">
                 {athlete.school.offers.map((offer, index) => (
-                  <div key={index} className="bg-slate-700/50 px-3 py-2 rounded-lg text-sm text-white">
+                  <div
+                    key={index}
+                    className="bg-slate-700/50 px-3 py-2 rounded-lg text-sm text-white"
+                  >
                     {offer}
                   </div>
                 ))}
@@ -399,7 +420,10 @@ export default function AthleteProfilePage() {
               <h3 className="text-lg font-semibold text-white mb-4">Official Visits</h3>
               <div className="space-y-2">
                 {athlete.school.visits.map((visit, index) => (
-                  <div key={index} className="bg-slate-700/50 px-3 py-2 rounded-lg text-sm text-white">
+                  <div
+                    key={index}
+                    className="bg-slate-700/50 px-3 py-2 rounded-lg text-sm text-white"
+                  >
                     {visit}
                   </div>
                 ))}
@@ -415,5 +439,5 @@ export default function AthleteProfilePage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

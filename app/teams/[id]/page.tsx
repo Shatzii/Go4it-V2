@@ -3,11 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  ArrowLeft, 
-  Users, 
-  Trophy, 
-  TrendingUp, 
+import {
+  ArrowLeft,
+  Users,
+  Trophy,
+  TrendingUp,
   GraduationCap,
   Calendar,
   MapPin,
@@ -16,7 +16,7 @@ import {
   BookOpen,
   CheckCircle,
   AlertCircle,
-  Star
+  Star,
 } from 'lucide-react';
 
 interface TeamMember {
@@ -74,7 +74,7 @@ interface TeamData {
 export default function TeamPage() {
   const params = useParams();
   const teamId = params?.id as string;
-  
+
   const [teamData, setTeamData] = useState<TeamData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,12 +90,12 @@ export default function TeamPage() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(`/api/teams/${teamId}/roster`);
       if (!response.ok) {
         throw new Error('Failed to fetch team data');
       }
-      
+
       const data = await response.json();
       setTeamData(data);
     } catch (err) {
@@ -253,45 +253,61 @@ export default function TeamPage() {
                   </thead>
                   <tbody>
                     {roster.map((member) => (
-                      <tr key={member.id} className="border-b border-slate-700/50 hover:bg-slate-700/30">
+                      <tr
+                        key={member.id}
+                        className="border-b border-slate-700/50 hover:bg-slate-700/30"
+                      >
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                              {member.firstName?.[0]}{member.lastName?.[0]}
+                              {member.firstName?.[0]}
+                              {member.lastName?.[0]}
                             </div>
                             <div>
-                              <div className="text-white font-medium">{member.firstName} {member.lastName}</div>
+                              <div className="text-white font-medium">
+                                {member.firstName} {member.lastName}
+                              </div>
                               <div className="text-slate-400 text-sm">{member.email}</div>
                             </div>
-                            {member.isVerified && (
-                              <Star className="h-4 w-4 text-yellow-400" />
-                            )}
+                            {member.isVerified && <Star className="h-4 w-4 text-yellow-400" />}
                           </div>
                         </td>
                         <td className="py-3 px-4 text-slate-300">{member.position || 'N/A'}</td>
                         <td className="py-3 px-4 text-slate-300">{member.jerseyNumber || '-'}</td>
                         <td className="py-3 px-4">
-                          <span className={`${
-                            member.gpa >= 3.5 ? 'text-green-400' : 
-                            member.gpa >= 3.0 ? 'text-yellow-400' : 'text-red-400'
-                          }`}>
+                          <span
+                            className={`${
+                              member.gpa >= 3.5
+                                ? 'text-green-400'
+                                : member.gpa >= 3.0
+                                  ? 'text-yellow-400'
+                                  : 'text-red-400'
+                            }`}
+                          >
                             {member.gpa?.toFixed(2) || 'N/A'}
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`${
-                            (member.performance?.latestGarScore || member.garScore) >= 80 ? 'text-green-400' : 
-                            (member.performance?.latestGarScore || member.garScore) >= 60 ? 'text-yellow-400' : 'text-red-400'
-                          }`}>
+                          <span
+                            className={`${
+                              (member.performance?.latestGarScore || member.garScore) >= 80
+                                ? 'text-green-400'
+                                : (member.performance?.latestGarScore || member.garScore) >= 60
+                                  ? 'text-yellow-400'
+                                  : 'text-red-400'
+                            }`}
+                          >
                             {member.performance?.latestGarScore || member.garScore || 'N/A'}
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            member.eligibilityStatus === 'eligible' 
-                              ? 'bg-green-900/30 text-green-400' 
-                              : 'bg-red-900/30 text-red-400'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              member.eligibilityStatus === 'eligible'
+                                ? 'bg-green-900/30 text-green-400'
+                                : 'bg-red-900/30 text-red-400'
+                            }`}
+                          >
                             {member.eligibilityStatus}
                           </span>
                         </td>
@@ -313,21 +329,32 @@ export default function TeamPage() {
               </h3>
               <div className="space-y-4">
                 {roster.map((member) => (
-                  <div key={member.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                        {member.firstName?.[0]}{member.lastName?.[0]}
+                        {member.firstName?.[0]}
+                        {member.lastName?.[0]}
                       </div>
                       <div>
-                        <div className="text-white font-medium">{member.firstName} {member.lastName}</div>
+                        <div className="text-white font-medium">
+                          {member.firstName} {member.lastName}
+                        </div>
                         <div className="text-slate-400 text-sm">{member.position}</div>
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className={`text-lg font-semibold ${
-                        (member.performance?.latestGarScore || member.garScore) >= 80 ? 'text-green-400' : 
-                        (member.performance?.latestGarScore || member.garScore) >= 60 ? 'text-yellow-400' : 'text-red-400'
-                      }`}>
+                      <div
+                        className={`text-lg font-semibold ${
+                          (member.performance?.latestGarScore || member.garScore) >= 80
+                            ? 'text-green-400'
+                            : (member.performance?.latestGarScore || member.garScore) >= 60
+                              ? 'text-yellow-400'
+                              : 'text-red-400'
+                        }`}
+                      >
                         {member.performance?.latestGarScore || member.garScore || 'N/A'}
                       </div>
                       <div className="text-slate-400 text-sm">GAR Score</div>
@@ -351,7 +378,7 @@ export default function TeamPage() {
                     <li>• High team chemistry indicators</li>
                   </ul>
                 </div>
-                
+
                 <div className="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
                   <h4 className="text-yellow-400 font-medium mb-2">Areas for Improvement</h4>
                   <ul className="text-yellow-300 text-sm space-y-1">
@@ -374,13 +401,19 @@ export default function TeamPage() {
               </h3>
               <div className="space-y-4">
                 {roster.map((member) => (
-                  <div key={member.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                  <div
+                    key={member.id}
+                    className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg"
+                  >
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                        {member.firstName?.[0]}{member.lastName?.[0]}
+                        {member.firstName?.[0]}
+                        {member.lastName?.[0]}
                       </div>
                       <div>
-                        <div className="text-white font-medium">{member.firstName} {member.lastName}</div>
+                        <div className="text-white font-medium">
+                          {member.firstName} {member.lastName}
+                        </div>
                         <div className="text-slate-400 text-sm">
                           {member.academics?.ncaaEligible ? (
                             <span className="text-green-400">NCAA Eligible</span>
@@ -391,10 +424,15 @@ export default function TeamPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className={`text-lg font-semibold ${
-                        member.gpa >= 3.5 ? 'text-green-400' : 
-                        member.gpa >= 3.0 ? 'text-yellow-400' : 'text-red-400'
-                      }`}>
+                      <div
+                        className={`text-lg font-semibold ${
+                          member.gpa >= 3.5
+                            ? 'text-green-400'
+                            : member.gpa >= 3.0
+                              ? 'text-yellow-400'
+                              : 'text-red-400'
+                        }`}
+                      >
                         {member.gpa?.toFixed(2) || 'N/A'}
                       </div>
                       <div className="text-slate-400 text-sm">GPA</div>
@@ -427,21 +465,21 @@ export default function TeamPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-slate-300">NCAA Eligible Players</span>
                     <span className="text-green-400 font-semibold">
-                      {roster.filter(m => m.academics?.ncaaEligible).length}/{roster.length}
+                      {roster.filter((m) => m.academics?.ncaaEligible).length}/{roster.length}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-slate-300">Players Above 3.5 GPA</span>
                     <span className="text-green-400 font-semibold">
-                      {roster.filter(m => m.gpa >= 3.5).length}
+                      {roster.filter((m) => m.gpa >= 3.5).length}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-slate-300">Academic Support Needed</span>
                     <span className="text-yellow-400 font-semibold">
-                      {roster.filter(m => m.gpa < 3.0).length}
+                      {roster.filter((m) => m.gpa < 3.0).length}
                     </span>
                   </div>
                 </div>

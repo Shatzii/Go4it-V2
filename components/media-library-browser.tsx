@@ -2,7 +2,14 @@
 
 import React, { useState, useMemo } from 'react';
 import { Search, Filter, Image, Video, FileText, Download, Eye, Star } from 'lucide-react';
-import { mediaLibrary, documentLibrary, MediaAsset, getAssetsByCategory, getAssetsByType, searchAssets } from '../lib/media-library';
+import {
+  mediaLibrary,
+  documentLibrary,
+  MediaAsset,
+  getAssetsByCategory,
+  getAssetsByType,
+  searchAssets,
+} from '../lib/media-library';
 
 interface MediaLibraryBrowserProps {
   onAssetSelect?: (asset: MediaAsset) => void;
@@ -12,15 +19,17 @@ interface MediaLibraryBrowserProps {
   typeFilter?: MediaAsset['type'];
 }
 
-export function MediaLibraryBrowser({ 
-  onAssetSelect, 
-  selectedAssets = [], 
+export function MediaLibraryBrowser({
+  onAssetSelect,
+  selectedAssets = [],
   multiSelect = false,
   categoryFilter,
-  typeFilter 
+  typeFilter,
 }: MediaLibraryBrowserProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<MediaAsset['category'] | 'all'>(categoryFilter || 'all');
+  const [selectedCategory, setSelectedCategory] = useState<MediaAsset['category'] | 'all'>(
+    categoryFilter || 'all',
+  );
   const [selectedType, setSelectedType] = useState<MediaAsset['type'] | 'all'>(typeFilter || 'all');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
@@ -36,12 +45,12 @@ export function MediaLibraryBrowser({
 
     // Apply category filter
     if (selectedCategory !== 'all') {
-      assets = assets.filter(asset => asset.category === selectedCategory);
+      assets = assets.filter((asset) => asset.category === selectedCategory);
     }
 
     // Apply type filter
     if (selectedType !== 'all') {
-      assets = assets.filter(asset => asset.type === selectedType);
+      assets = assets.filter((asset) => asset.type === selectedType);
     }
 
     return assets;
@@ -73,9 +82,7 @@ export function MediaLibraryBrowser({
     <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">Media Library</h2>
-        <div className="text-slate-400 text-sm">
-          {filteredAssets.length} assets
-        </div>
+        <div className="text-slate-400 text-sm">{filteredAssets.length} assets</div>
       </div>
 
       {/* Search and Filters */}
@@ -148,7 +155,9 @@ export function MediaLibraryBrowser({
               key={asset.id}
               onClick={() => handleAssetClick(asset)}
               className={`relative bg-slate-900 rounded-lg border cursor-pointer transition-all hover:border-blue-500 hover:scale-105 ${
-                isSelected(asset.id) ? 'border-blue-500 ring-2 ring-blue-500/50' : 'border-slate-600'
+                isSelected(asset.id)
+                  ? 'border-blue-500 ring-2 ring-blue-500/50'
+                  : 'border-slate-600'
               }`}
             >
               {/* Asset Preview */}
@@ -215,17 +224,15 @@ export function MediaLibraryBrowser({
               key={asset.id}
               onClick={() => handleAssetClick(asset)}
               className={`flex items-center gap-4 p-4 bg-slate-900 rounded-lg border cursor-pointer transition-all hover:border-blue-500 ${
-                isSelected(asset.id) ? 'border-blue-500 ring-2 ring-blue-500/50' : 'border-slate-600'
+                isSelected(asset.id)
+                  ? 'border-blue-500 ring-2 ring-blue-500/50'
+                  : 'border-slate-600'
               }`}
             >
-              <div className="flex-shrink-0">
-                {getTypeIcon(asset.type)}
-              </div>
+              <div className="flex-shrink-0">{getTypeIcon(asset.type)}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-white font-medium truncate">
-                    {asset.originalName}
-                  </h3>
+                  <h3 className="text-white font-medium truncate">{asset.originalName}</h3>
                   <span className="text-xs text-slate-400 uppercase tracking-wide">
                     {asset.type}
                   </span>
@@ -245,12 +252,8 @@ export function MediaLibraryBrowser({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-slate-400">
-                  {asset.category}
-                </span>
-                {isSelected(asset.id) && (
-                  <Star className="w-5 h-5 text-blue-500 fill-current" />
-                )}
+                <span className="text-xs text-slate-400">{asset.category}</span>
+                {isSelected(asset.id) && <Star className="w-5 h-5 text-blue-500 fill-current" />}
               </div>
             </div>
           ))}
@@ -263,7 +266,9 @@ export function MediaLibraryBrowser({
           <Image className="w-16 h-16 text-slate-600 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-slate-400 mb-2">No assets found</h3>
           <p className="text-slate-500">
-            {searchQuery ? 'Try adjusting your search or filters' : 'No assets match the current filters'}
+            {searchQuery
+              ? 'Try adjusting your search or filters'
+              : 'No assets match the current filters'}
           </p>
         </div>
       )}

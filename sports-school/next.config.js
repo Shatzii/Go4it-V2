@@ -7,7 +7,14 @@ const nextConfig = {
     // Handle client-side code properly
     esmExternals: false,
   },
-  serverExternalPackages: ['@anthropic-ai/sdk', 'pg', 'postgres', 'bcryptjs', 'jsonwebtoken', 'react-error-boundary'],
+  serverExternalPackages: [
+    '@anthropic-ai/sdk',
+    'pg',
+    'postgres',
+    'bcryptjs',
+    'jsonwebtoken',
+    'react-error-boundary',
+  ],
   webpack: (config, { dev, isServer }) => {
     // Handle fallbacks for client-side
     if (!isServer) {
@@ -36,11 +43,11 @@ const nextConfig = {
 
     // Handle circular dependencies
     config.plugins = config.plugins || [];
-    
+
     // Reduce bundle size
     config.resolve.alias = {
       ...config.resolve.alias,
-      'react': 'react',
+      react: 'react',
       'react-dom': 'react-dom',
     };
 
@@ -51,7 +58,7 @@ const nextConfig = {
   },
   reactStrictMode: false, // Temporarily disable to reduce hydration warnings
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production'
+    removeConsole: process.env.NODE_ENV === 'production',
   },
   // Configuration for development and production
   trailingSlash: false,
@@ -79,14 +86,14 @@ const nextConfig = {
           },
         ],
       },
-    ]
+    ];
   },
 
   // Handle cross-origin dev requests
   allowedDevOrigins: [
     'localhost:5000',
     '*.replit.dev',
-    '7d947685-4822-49bb-b809-9366fbacb987-00-sveh9l0tive3.worf.replit.dev'
+    '7d947685-4822-49bb-b809-9366fbacb987-00-sveh9l0tive3.worf.replit.dev',
   ],
 
   // Skip build-time optimizations that cause timeouts
@@ -101,15 +108,15 @@ const nextConfig = {
   poweredByHeader: false,
   generateEtags: false,
   compress: false,
-  
+
   // Static generation handling
   generateBuildId: () => 'build-' + Date.now(),
-  
+
   // Disable source maps for faster builds
   productionBrowserSourceMaps: false,
-  
+
   // Force dynamic rendering for all pages
   output: 'standalone',
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

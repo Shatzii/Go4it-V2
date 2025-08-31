@@ -1,17 +1,17 @@
 import { Pool } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { eq } from 'drizzle-orm';
-import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 
-import { 
+import {
   users,
   apiKeys,
   type User,
   type InsertUser,
   type ApiKey,
-  type InsertApiKey
-} from "@shared/schema";
+  type InsertApiKey,
+} from '@shared/schema';
 
 import { pool, db } from './db';
 
@@ -22,13 +22,13 @@ const PostgresSessionStore = connectPgSimple(session);
 export interface IAuthStorage {
   // Session store
   sessionStore: session.SessionStore;
-  
+
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(userId: number, userData: Partial<InsertUser>): Promise<User | undefined>;
-  
+
   // API Key operations
   getApiKeys(): Promise<ApiKey[]>;
   getApiKey(id: number): Promise<ApiKey | undefined>;
@@ -43,9 +43,9 @@ export class AuthStorage implements IAuthStorage {
   // Session Store
   sessionStore = new PostgresSessionStore({
     pool,
-    createTableIfMissing: true
+    createTableIfMissing: true,
   });
-  
+
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     try {
@@ -79,18 +79,14 @@ export class AuthStorage implements IAuthStorage {
 
   async updateUser(userId: number, userData: Partial<InsertUser>): Promise<User | undefined> {
     try {
-      const [user] = await db
-        .update(users)
-        .set(userData)
-        .where(eq(users.id, userId))
-        .returning();
+      const [user] = await db.update(users).set(userData).where(eq(users.id, userId)).returning();
       return user;
     } catch (error) {
       console.error('Error in updateUser:', error);
       return undefined;
     }
   }
-  
+
   // API Key operations
   async getApiKeys(): Promise<ApiKey[]> {
     try {
@@ -100,7 +96,7 @@ export class AuthStorage implements IAuthStorage {
       return [];
     }
   }
-  
+
   async getApiKey(id: number): Promise<ApiKey | undefined> {
     try {
       const [apiKey] = await db.select().from(apiKeys).where(eq(apiKeys.id, id));
@@ -110,7 +106,7 @@ export class AuthStorage implements IAuthStorage {
       return undefined;
     }
   }
-  
+
   async getApiKeyByName(name: string): Promise<ApiKey | undefined> {
     try {
       const [apiKey] = await db.select().from(apiKeys).where(eq(apiKeys.name, name));
@@ -120,7 +116,7 @@ export class AuthStorage implements IAuthStorage {
       return undefined;
     }
   }
-  
+
   async createApiKey(apiKeyData: InsertApiKey): Promise<ApiKey> {
     try {
       const [apiKey] = await db.insert(apiKeys).values(apiKeyData).returning();
@@ -130,7 +126,7 @@ export class AuthStorage implements IAuthStorage {
       throw new Error(`Failed to create API key: ${error.message}`);
     }
   }
-  
+
   async updateApiKey(id: number, apiKeyData: Partial<InsertApiKey>): Promise<ApiKey | undefined> {
     try {
       const [apiKey] = await db
@@ -144,7 +140,7 @@ export class AuthStorage implements IAuthStorage {
       return undefined;
     }
   }
-  
+
   async deleteApiKey(id: number): Promise<boolean> {
     try {
       await db.delete(apiKeys).where(eq(apiKeys.id, id));

@@ -63,14 +63,15 @@ export class ModelEncryptionManager {
     const os = require('os');
     const cpuInfo = os.cpus()[0];
     const networkInterfaces = os.networkInterfaces();
-    
-    const fingerprint = crypto.createHash('sha256')
+
+    const fingerprint = crypto
+      .createHash('sha256')
       .update(cpuInfo.model)
       .update(os.platform())
       .update(os.arch())
       .update(JSON.stringify(networkInterfaces))
       .digest('hex');
-    
+
     return fingerprint;
   }
 
@@ -80,12 +81,12 @@ export class ModelEncryptionManager {
     modelName: string,
     features: string[] = [],
     maxActivations: number = 1,
-    validityDays: number = 365
+    validityDays: number = 365,
   ): Promise<ModelLicense> {
     const licenseId = crypto.randomUUID();
     const encryptionKey = crypto.randomBytes(this.keyLength).toString('hex');
     const licenseKey = this.generateLicenseKey(licenseId, userId, modelName);
-    
+
     const license: ModelLicense = {
       id: licenseId,
       userId,
@@ -99,7 +100,7 @@ export class ModelEncryptionManager {
       hardwareFingerprint: this.generateHardwareFingerprint(),
       features,
       isActive: true,
-      lastValidation: new Date()
+      lastValidation: new Date(),
     };
 
     await this.saveLicense(license);
@@ -109,15 +110,18 @@ export class ModelEncryptionManager {
   // Generate a secure license key
   private generateLicenseKey(licenseId: string, userId: number, modelName: string): string {
     const payload = `${licenseId}:${userId}:${modelName}:${Date.now()}`;
-    const signature = crypto.createHmac('sha256', process.env.LICENSE_SECRET || 'go4it-sports-default-secret')
+    const signature = crypto
+      .createHmac('sha256', process.env.LICENSE_SECRET || 'go4it-sports-default-secret')
       .update(payload)
       .digest('hex');
-    
+
     return `${Buffer.from(payload).toString('base64')}.${signature}`;
   }
 
   // Validate license key
-  async validateLicense(licenseKey: string): Promise<{ valid: boolean; license?: ModelLicense; error?: string }> {
+  async validateLicense(
+    licenseKey: string,
+  ): Promise<{ valid: boolean; license?: ModelLicense; error?: string }> {
     try {
       const [encodedPayload, signature] = licenseKey.split('.');
       if (!encodedPayload || !signature) {
@@ -125,7 +129,8 @@ export class ModelEncryptionManager {
       }
 
       const payload = Buffer.from(encodedPayload, 'base64').toString();
-      const expectedSignature = crypto.createHmac('sha256', process.env.LICENSE_SECRET || 'go4it-sports-default-secret')
+      const expectedSignature = crypto
+        .createHmac('sha256', process.env.LICENSE_SECRET || 'go4it-sports-default-secret')
         .update(payload)
         .digest('hex');
 
@@ -135,7 +140,7 @@ export class ModelEncryptionManager {
 
       const [licenseId] = payload.split(':');
       const license = await this.loadLicense(licenseId);
-      
+
       if (!license) {
         return { valid: false, error: 'License not found' };
       }
@@ -167,30 +172,30 @@ export class ModelEncryptionManager {
   async encryptModel(
     modelData: Buffer,
     license: ModelLicense,
-    metadata: EncryptedModel['metadata']
+    metadata: EncryptedModel['metadata'],
   ): Promise<EncryptedModel> {
     const key = Buffer.from(license.encryptionKey, 'hex');
     const iv = crypto.randomBytes(this.ivLength);
-    
+
     const cipher = crypto.createCipherGCM(this.algorithm, key, iv);
-    
+
     const encryptedChunks: Buffer[] = [];
     encryptedChunks.push(cipher.update(modelData));
     encryptedChunks.push(cipher.final());
-    
+
     const tag = cipher.getAuthTag();
     const encryptedData = Buffer.concat([iv, tag, ...encryptedChunks]);
-    
+
     const encryptedModel: EncryptedModel = {
       modelName: license.modelName,
       encryptedData,
       metadata: {
         ...metadata,
-        checksum: crypto.createHash('sha256').update(modelData).digest('hex')
+        checksum: crypto.createHash('sha256').update(modelData).digest('hex'),
       },
       licenseId: license.id,
       encryptionAlgorithm: this.algorithm,
-      createdAt: new Date()
+      createdAt: new Date(),
     };
 
     return encryptedModel;
@@ -200,41 +205,41 @@ export class ModelEncryptionManager {
   async decryptModel(encryptedModel: EncryptedModel, license: ModelLicense): Promise<Buffer> {
     const key = Buffer.from(license.encryptionKey, 'hex');
     const encryptedData = encryptedModel.encryptedData;
-    
+
     const iv = encryptedData.subarray(0, this.ivLength);
     const tag = encryptedData.subarray(this.ivLength, this.ivLength + this.tagLength);
     const encrypted = encryptedData.subarray(this.ivLength + this.tagLength);
-    
+
     const decipher = crypto.createDecipherGCM(this.algorithm, key, iv);
     decipher.setAuthTag(tag);
-    
+
     const decryptedChunks: Buffer[] = [];
     decryptedChunks.push(decipher.update(encrypted));
     decryptedChunks.push(decipher.final());
-    
+
     const decryptedData = Buffer.concat(decryptedChunks);
-    
+
     // Verify checksum
     const checksum = crypto.createHash('sha256').update(decryptedData).digest('hex');
     if (checksum !== encryptedModel.metadata.checksum) {
       throw new Error('Model integrity check failed');
     }
-    
+
     return decryptedData;
   }
 
   // Save encrypted model to disk
   async saveEncryptedModel(encryptedModel: EncryptedModel): Promise<string> {
     await this.initializeDirectories();
-    
+
     const fileName = `${encryptedModel.modelName.replace(/\s+/g, '-').toLowerCase()}.enc`;
     const filePath = path.join(this.modelsPath, fileName);
-    
+
     const modelData = {
       ...encryptedModel,
-      encryptedData: encryptedModel.encryptedData.toString('base64')
+      encryptedData: encryptedModel.encryptedData.toString('base64'),
     };
-    
+
     await writeFile(filePath, JSON.stringify(modelData, null, 2));
     return filePath;
   }
@@ -244,16 +249,16 @@ export class ModelEncryptionManager {
     try {
       const fileName = `${modelName.replace(/\s+/g, '-').toLowerCase()}.enc`;
       const filePath = path.join(this.modelsPath, fileName);
-      
+
       await access(filePath);
       const data = await readFile(filePath, 'utf8');
       const parsed = JSON.parse(data);
-      
+
       return {
         ...parsed,
         encryptedData: Buffer.from(parsed.encryptedData, 'base64'),
         metadata: parsed.metadata,
-        createdAt: new Date(parsed.createdAt)
+        createdAt: new Date(parsed.createdAt),
       };
     } catch (error) {
       return null;
@@ -263,10 +268,10 @@ export class ModelEncryptionManager {
   // Save license to disk
   private async saveLicense(license: ModelLicense): Promise<void> {
     await this.initializeDirectories();
-    
+
     const fileName = `${license.id}.license`;
     const filePath = path.join(this.licensePath, fileName);
-    
+
     await writeFile(filePath, JSON.stringify(license, null, 2));
   }
 
@@ -275,16 +280,16 @@ export class ModelEncryptionManager {
     try {
       const fileName = `${licenseId}.license`;
       const filePath = path.join(this.licensePath, fileName);
-      
+
       await access(filePath);
       const data = await readFile(filePath, 'utf8');
       const parsed = JSON.parse(data);
-      
+
       return {
         ...parsed,
         expirationDate: new Date(parsed.expirationDate),
         activationDate: new Date(parsed.activationDate),
-        lastValidation: new Date(parsed.lastValidation)
+        lastValidation: new Date(parsed.lastValidation),
       };
     } catch (error) {
       return null;
@@ -294,7 +299,7 @@ export class ModelEncryptionManager {
   // Activate license (increment activation count)
   async activateLicense(licenseId: string): Promise<{ success: boolean; error?: string }> {
     const license = await this.loadLicense(licenseId);
-    
+
     if (!license) {
       return { success: false, error: 'License not found' };
     }
@@ -305,21 +310,21 @@ export class ModelEncryptionManager {
 
     license.currentActivations++;
     await this.saveLicense(license);
-    
+
     return { success: true };
   }
 
   // Deactivate license
   async deactivateLicense(licenseId: string): Promise<{ success: boolean; error?: string }> {
     const license = await this.loadLicense(licenseId);
-    
+
     if (!license) {
       return { success: false, error: 'License not found' };
     }
 
     license.isActive = false;
     await this.saveLicense(license);
-    
+
     return { success: true };
   }
 
@@ -330,7 +335,7 @@ export class ModelEncryptionManager {
     status: string;
   }> {
     const license = await this.loadLicense(licenseId);
-    
+
     if (!license) {
       return { valid: false, status: 'not_found' };
     }
@@ -357,18 +362,18 @@ export class ModelEncryptionManager {
       const licenses: ModelLicense[] = [];
       const fs = require('fs');
       const files = fs.readdirSync(this.licensePath);
-      
+
       for (const file of files) {
         if (file.endsWith('.license')) {
           const licenseId = file.replace('.license', '');
           const license = await this.loadLicense(licenseId);
-          
+
           if (license && license.userId === userId) {
             licenses.push(license);
           }
         }
       }
-      
+
       return licenses;
     } catch (error) {
       return [];

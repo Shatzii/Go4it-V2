@@ -1,16 +1,16 @@
 /**
  * ShatziiOS Accessibility Settings Panel
- * 
+ *
  * This script provides a user interface for adjusting accessibility settings.
  */
 
 // Initialize the accessibility panel when the document is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Create and initialize the panel
-  const accessibilityPanel = (function() {
+  const accessibilityPanel = (function () {
     // Cache DOM elements
     let panel, toggleButton;
-    
+
     /**
      * Create the accessibility panel
      */
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
       panel.setAttribute('role', 'dialog');
       panel.setAttribute('aria-modal', 'true');
       panel.setAttribute('aria-hidden', 'true');
-      
+
       // Create the panel content
       panel.innerHTML = `
         <div class="accessibility-panel-content">
@@ -123,10 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
       `;
-      
+
       // Add the panel to the DOM
       document.body.appendChild(panel);
-      
+
       // Create the toggle button
       toggleButton = document.createElement('button');
       toggleButton.className = 'accessibility-toggle-button';
@@ -142,11 +142,11 @@ document.addEventListener('DOMContentLoaded', function() {
         </svg>
       `;
       document.body.appendChild(toggleButton);
-      
+
       // Add the styles for the panel
       addStyles();
     }
-    
+
     /**
      * Add styles for the accessibility panel
      */
@@ -436,38 +436,38 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         }
       `;
-      
+
       document.head.appendChild(style);
     }
-    
+
     /**
      * Bind events to panel elements
      */
     function bindEvents() {
       // Toggle panel
-      toggleButton.addEventListener('click', function() {
+      toggleButton.addEventListener('click', function () {
         togglePanel();
       });
-      
+
       // Close panel
-      panel.querySelector('.accessibility-panel-close').addEventListener('click', function() {
+      panel.querySelector('.accessibility-panel-close').addEventListener('click', function () {
         closePanel();
       });
-      
+
       // Close panel on escape key
-      document.addEventListener('keydown', function(e) {
+      document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && panel.getAttribute('aria-hidden') === 'false') {
           closePanel();
         }
       });
-      
+
       // Mode preset buttons
       const presetButtons = panel.querySelectorAll('.preset-button');
-      presetButtons.forEach(button => {
-        button.addEventListener('click', function() {
+      presetButtons.forEach((button) => {
+        button.addEventListener('click', function () {
           const mode = this.getAttribute('data-mode');
           // Remove active class from all buttons
-          presetButtons.forEach(btn => btn.classList.remove('active'));
+          presetButtons.forEach((btn) => btn.classList.remove('active'));
           // Add active class to clicked button
           this.classList.add('active');
           // Apply the mode
@@ -475,68 +475,68 @@ document.addEventListener('DOMContentLoaded', function() {
           updateUIFromSettings();
         });
       });
-      
+
       // Font size controls
-      panel.querySelector('#increase-font').addEventListener('click', function() {
+      panel.querySelector('#increase-font').addEventListener('click', function () {
         window.ShatziiAccessibility.increaseFontSize(1);
         updateUIFromSettings();
       });
-      
-      panel.querySelector('#decrease-font').addEventListener('click', function() {
+
+      panel.querySelector('#decrease-font').addEventListener('click', function () {
         window.ShatziiAccessibility.decreaseFontSize(1);
         updateUIFromSettings();
       });
-      
+
       // Font family selector
-      panel.querySelector('#font-family').addEventListener('change', function() {
+      panel.querySelector('#font-family').addEventListener('change', function () {
         window.ShatziiAccessibility.updateSettings({ font: this.value });
         updateUIFromSettings();
       });
-      
+
       // Line spacing control
       const lineSpacingInput = panel.querySelector('#line-spacing');
       const lineSpacingValue = panel.querySelector('#line-spacing-value');
-      
-      lineSpacingInput.addEventListener('input', function() {
+
+      lineSpacingInput.addEventListener('input', function () {
         lineSpacingValue.textContent = this.value;
         window.ShatziiAccessibility.updateSettings({ lineHeight: parseFloat(this.value) });
       });
-      
+
       // Letter spacing control
       const letterSpacingInput = panel.querySelector('#letter-spacing');
       const letterSpacingValue = panel.querySelector('#letter-spacing-value');
-      
-      letterSpacingInput.addEventListener('input', function() {
+
+      letterSpacingInput.addEventListener('input', function () {
         const value = parseFloat(this.value);
         const displayValue = value === 0 ? 'Normal' : `${value.toFixed(2)}em`;
         letterSpacingValue.textContent = displayValue;
-        window.ShatziiAccessibility.updateSettings({ 
-          letterSpacing: value === 0 ? 'normal' : `${value.toFixed(2)}em` 
+        window.ShatziiAccessibility.updateSettings({
+          letterSpacing: value === 0 ? 'normal' : `${value.toFixed(2)}em`,
         });
       });
-      
+
       // Reading ruler toggle
-      panel.querySelector('#reading-ruler').addEventListener('change', function() {
+      panel.querySelector('#reading-ruler').addEventListener('change', function () {
         window.ShatziiAccessibility.updateSettings({ useReadingRuler: this.checked });
       });
-      
+
       // Reduced motion toggle
-      panel.querySelector('#reduced-motion').addEventListener('change', function() {
+      panel.querySelector('#reduced-motion').addEventListener('change', function () {
         window.ShatziiAccessibility.updateSettings({ reducedMotion: this.checked });
       });
-      
+
       // Reset button
-      panel.querySelector('#reset-accessibility').addEventListener('click', function() {
+      panel.querySelector('#reset-accessibility').addEventListener('click', function () {
         window.ShatziiAccessibility.resetSettings();
         updateUIFromSettings();
       });
-      
+
       // Listen for settings changes from other sources
-      document.addEventListener('accessibility-changed', function() {
+      document.addEventListener('accessibility-changed', function () {
         updateUIFromSettings();
       });
     }
-    
+
     /**
      * Toggle the panel visibility
      */
@@ -544,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const isHidden = panel.getAttribute('aria-hidden') === 'true';
       panel.setAttribute('aria-hidden', isHidden ? 'false' : 'true');
       toggleButton.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
-      
+
       if (isHidden) {
         // Focus the first interactive element when opening
         setTimeout(() => {
@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
       }
     }
-    
+
     /**
      * Close the panel
      */
@@ -562,35 +562,35 @@ document.addEventListener('DOMContentLoaded', function() {
       // Return focus to the toggle button
       toggleButton.focus();
     }
-    
+
     /**
      * Update UI elements based on current settings
      */
     function updateUIFromSettings() {
       const settings = window.ShatziiAccessibility.getSettings();
-      
+
       // Update preset buttons
       const presetButtons = panel.querySelectorAll('.preset-button');
-      presetButtons.forEach(button => {
+      presetButtons.forEach((button) => {
         button.classList.toggle('active', button.getAttribute('data-mode') === settings.mode);
       });
-      
+
       // Update font size display
       panel.querySelector('#font-size-value').textContent = `${settings.fontSize}px`;
-      
+
       // Update font family selector
       panel.querySelector('#font-family').value = settings.font;
-      
+
       // Update line spacing
       const lineSpacingInput = panel.querySelector('#line-spacing');
       const lineSpacingValue = panel.querySelector('#line-spacing-value');
       lineSpacingInput.value = settings.lineHeight;
       lineSpacingValue.textContent = settings.lineHeight;
-      
+
       // Update letter spacing
       const letterSpacingInput = panel.querySelector('#letter-spacing');
       const letterSpacingValue = panel.querySelector('#letter-spacing-value');
-      
+
       if (settings.letterSpacing === 'normal') {
         letterSpacingInput.value = 0;
         letterSpacingValue.textContent = 'Normal';
@@ -599,14 +599,14 @@ document.addEventListener('DOMContentLoaded', function() {
         letterSpacingInput.value = value;
         letterSpacingValue.textContent = `${value.toFixed(2)}em`;
       }
-      
+
       // Update reading ruler toggle
       panel.querySelector('#reading-ruler').checked = settings.useReadingRuler;
-      
+
       // Update reduced motion toggle
       panel.querySelector('#reduced-motion').checked = settings.reducedMotion;
     }
-    
+
     /**
      * Initialize the panel
      */
@@ -614,30 +614,30 @@ document.addEventListener('DOMContentLoaded', function() {
       createPanel();
       bindEvents();
       updateUIFromSettings();
-      
+
       // Apply translations if i18n is available
       if (window.ShatziiI18n) {
         window.ShatziiI18n.applyTranslations();
       }
-      
+
       // Listen for language changes to update translations
-      document.addEventListener('language-changed', function() {
+      document.addEventListener('language-changed', function () {
         if (window.ShatziiI18n) {
           window.ShatziiI18n.applyTranslations();
         }
       });
     }
-    
+
     return {
       init: init,
-      openPanel: function() { 
+      openPanel: function () {
         panel.setAttribute('aria-hidden', 'false');
         toggleButton.setAttribute('aria-expanded', 'true');
       },
-      closePanel: closePanel
+      closePanel: closePanel,
     };
   })();
-  
+
   // Initialize the panel
   accessibilityPanel.init();
 });

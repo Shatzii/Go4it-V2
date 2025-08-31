@@ -1,173 +1,195 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Download, Upload, Play, Pause, Settings, Shield, Key, Server, Cloud, Brain, Zap, Lock, Unlock } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import {
+  Download,
+  Upload,
+  Play,
+  Pause,
+  Settings,
+  Shield,
+  Key,
+  Server,
+  Cloud,
+  Brain,
+  Zap,
+  Lock,
+  Unlock,
+} from 'lucide-react';
 
 interface AIModel {
-  id: string
-  name: string
-  type: 'cloud' | 'local' | 'hybrid'
-  provider: 'openai' | 'anthropic' | 'ollama' | 'huggingface' | 'custom'
-  size: string
-  capabilities: string[]
+  id: string;
+  name: string;
+  type: 'cloud' | 'local' | 'hybrid';
+  provider: 'openai' | 'anthropic' | 'ollama' | 'huggingface' | 'custom';
+  size: string;
+  capabilities: string[];
   requirements: {
-    ram: string
-    storage: string
-    gpu?: string
-  }
-  isDownloaded: boolean
-  isActive: boolean
-  isEncrypted: boolean
+    ram: string;
+    storage: string;
+    gpu?: string;
+  };
+  isDownloaded: boolean;
+  isActive: boolean;
+  isEncrypted: boolean;
   license?: {
-    id: string
-    type: string
-    expirationDate: Date
-    activations: number
-    maxActivations: number
-  }
+    id: string;
+    type: string;
+    expirationDate: Date;
+    activations: number;
+    maxActivations: number;
+  };
   performance: {
-    speed: number
-    accuracy: number
-    resourceUsage: number
-  }
-  lastUsed?: Date
+    speed: number;
+    accuracy: number;
+    resourceUsage: number;
+  };
+  lastUsed?: Date;
 }
 
 interface ModelLicense {
-  id: string
-  modelId: string
-  type: 'trial' | 'standard' | 'premium' | 'enterprise'
-  key: string
-  expirationDate: Date
-  activations: number
-  maxActivations: number
-  isActive: boolean
-  features: string[]
+  id: string;
+  modelId: string;
+  type: 'trial' | 'standard' | 'premium' | 'enterprise';
+  key: string;
+  expirationDate: Date;
+  activations: number;
+  maxActivations: number;
+  isActive: boolean;
+  features: string[];
 }
 
 export function AdvancedAIModelManager() {
-  const [models, setModels] = useState<AIModel[]>([])
-  const [licenses, setLicenses] = useState<ModelLicense[]>([])
-  const [activeTab, setActiveTab] = useState('models')
-  const [selectedModel, setSelectedModel] = useState<AIModel | null>(null)
-  const [isDownloading, setIsDownloading] = useState<string | null>(null)
-  const [downloadProgress, setDownloadProgress] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [showLicenseDialog, setShowLicenseDialog] = useState(false)
-  const [licenseKey, setLicenseKey] = useState('')
+  const [models, setModels] = useState<AIModel[]>([]);
+  const [licenses, setLicenses] = useState<ModelLicense[]>([]);
+  const [activeTab, setActiveTab] = useState('models');
+  const [selectedModel, setSelectedModel] = useState<AIModel | null>(null);
+  const [isDownloading, setIsDownloading] = useState<string | null>(null);
+  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [showLicenseDialog, setShowLicenseDialog] = useState(false);
+  const [licenseKey, setLicenseKey] = useState('');
 
   useEffect(() => {
-    fetchModels()
-    fetchLicenses()
-  }, [])
+    fetchModels();
+    fetchLicenses();
+  }, []);
 
   const fetchModels = async () => {
     try {
-      const response = await fetch('/api/ai/models')
+      const response = await fetch('/api/ai/models');
       if (response.ok) {
-        const data = await response.json()
-        setModels(data.models)
+        const data = await response.json();
+        setModels(data.models);
       }
     } catch (error) {
-      console.error('Failed to fetch models:', error)
+      console.error('Failed to fetch models:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const fetchLicenses = async () => {
     try {
-      const response = await fetch('/api/ai/licenses')
+      const response = await fetch('/api/ai/licenses');
       if (response.ok) {
-        const data = await response.json()
-        setLicenses(data.licenses)
+        const data = await response.json();
+        setLicenses(data.licenses);
       }
     } catch (error) {
-      console.error('Failed to fetch licenses:', error)
+      console.error('Failed to fetch licenses:', error);
     }
-  }
+  };
 
   const downloadModel = async (modelId: string) => {
-    setIsDownloading(modelId)
-    setDownloadProgress(0)
+    setIsDownloading(modelId);
+    setDownloadProgress(0);
 
     try {
       const response = await fetch(`/api/ai/models/${modelId}/download`, {
-        method: 'POST'
-      })
+        method: 'POST',
+      });
 
       if (response.ok) {
         // Simulate download progress
         const interval = setInterval(() => {
-          setDownloadProgress(prev => {
+          setDownloadProgress((prev) => {
             if (prev >= 100) {
-              clearInterval(interval)
-              setIsDownloading(null)
-              fetchModels()
-              return 100
+              clearInterval(interval);
+              setIsDownloading(null);
+              fetchModels();
+              return 100;
             }
-            return prev + Math.random() * 15
-          })
-        }, 500)
+            return prev + Math.random() * 15;
+          });
+        }, 500);
       }
     } catch (error) {
-      console.error('Failed to download model:', error)
-      setIsDownloading(null)
+      console.error('Failed to download model:', error);
+      setIsDownloading(null);
     }
-  }
+  };
 
   const activateModel = async (modelId: string) => {
     try {
       const response = await fetch(`/api/ai/models/${modelId}/activate`, {
-        method: 'POST'
-      })
+        method: 'POST',
+      });
 
       if (response.ok) {
-        await fetchModels()
+        await fetchModels();
       }
     } catch (error) {
-      console.error('Failed to activate model:', error)
+      console.error('Failed to activate model:', error);
     }
-  }
+  };
 
   const validateLicense = async (key: string) => {
     try {
       const response = await fetch('/api/ai/licenses/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key })
-      })
+        body: JSON.stringify({ key }),
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        await fetchLicenses()
-        await fetchModels()
-        setShowLicenseDialog(false)
-        setLicenseKey('')
-        return data
+        const data = await response.json();
+        await fetchLicenses();
+        await fetchModels();
+        setShowLicenseDialog(false);
+        setLicenseKey('');
+        return data;
       }
     } catch (error) {
-      console.error('Failed to validate license:', error)
+      console.error('Failed to validate license:', error);
     }
-  }
+  };
 
   const getModelTypeIcon = (type: string) => {
     switch (type) {
-      case 'cloud': return <Cloud className="w-5 h-5" />
-      case 'local': return <Server className="w-5 h-5" />
-      case 'hybrid': return <Zap className="w-5 h-5" />
-      default: return <Brain className="w-5 h-5" />
+      case 'cloud':
+        return <Cloud className="w-5 h-5" />;
+      case 'local':
+        return <Server className="w-5 h-5" />;
+      case 'hybrid':
+        return <Zap className="w-5 h-5" />;
+      default:
+        return <Brain className="w-5 h-5" />;
     }
-  }
+  };
 
   const getModelTypeColor = (type: string) => {
     switch (type) {
-      case 'cloud': return 'text-blue-500'
-      case 'local': return 'text-green-500'
-      case 'hybrid': return 'text-purple-500'
-      default: return 'text-gray-500'
+      case 'cloud':
+        return 'text-blue-500';
+      case 'local':
+        return 'text-green-500';
+      case 'hybrid':
+        return 'text-purple-500';
+      default:
+        return 'text-gray-500';
     }
-  }
+  };
 
   const renderModels = () => (
     <div className="space-y-6">
@@ -195,12 +217,12 @@ export function AdvancedAIModelManager() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {model.isEncrypted && (
-                  <Lock className="w-4 h-4 text-yellow-500" />
-                )}
-                <div className={`w-3 h-3 rounded-full ${
-                  model.isActive ? 'bg-green-500' : 'bg-gray-500'
-                }`}></div>
+                {model.isEncrypted && <Lock className="w-4 h-4 text-yellow-500" />}
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    model.isActive ? 'bg-green-500' : 'bg-gray-500'
+                  }`}
+                ></div>
               </div>
             </div>
 
@@ -229,10 +251,7 @@ export function AdvancedAIModelManager() {
               <h4 className="text-sm font-medium text-white mb-2">Capabilities</h4>
               <div className="flex flex-wrap gap-1">
                 {model.capabilities.map((capability, index) => (
-                  <span
-                    key={index}
-                    className="px-2 py-1 bg-slate-700 text-xs text-white rounded"
-                  >
+                  <span key={index} className="px-2 py-1 bg-slate-700 text-xs text-white rounded">
                     {capability}
                   </span>
                 ))}
@@ -354,7 +373,7 @@ export function AdvancedAIModelManager() {
         ))}
       </div>
     </div>
-  )
+  );
 
   const renderLicenses = () => (
     <div className="space-y-6">
@@ -379,15 +398,19 @@ export function AdvancedAIModelManager() {
                   <p className="text-sm text-slate-400">Model ID: {license.modelId}</p>
                 </div>
               </div>
-              <div className={`w-3 h-3 rounded-full ${
-                license.isActive ? 'bg-green-500' : 'bg-gray-500'
-              }`}></div>
+              <div
+                className={`w-3 h-3 rounded-full ${
+                  license.isActive ? 'bg-green-500' : 'bg-gray-500'
+                }`}
+              ></div>
             </div>
 
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Activations:</span>
-                <span className="text-white">{license.activations}/{license.maxActivations}</span>
+                <span className="text-white">
+                  {license.activations}/{license.maxActivations}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Expires:</span>
@@ -425,14 +448,14 @@ export function AdvancedAIModelManager() {
         ))}
       </div>
     </div>
-  )
+  );
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -451,7 +474,7 @@ export function AdvancedAIModelManager() {
           <nav className="flex space-x-8">
             {[
               { id: 'models', label: 'Models', icon: Brain },
-              { id: 'licenses', label: 'Licenses', icon: Key }
+              { id: 'licenses', label: 'Licenses', icon: Key },
             ].map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
@@ -496,8 +519,8 @@ export function AdvancedAIModelManager() {
             <div className="p-6 border-t border-slate-700 flex gap-3">
               <button
                 onClick={() => {
-                  setShowLicenseDialog(false)
-                  setLicenseKey('')
+                  setShowLicenseDialog(false);
+                  setLicenseKey('');
                 }}
                 className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-lg transition-colors"
               >
@@ -515,5 +538,5 @@ export function AdvancedAIModelManager() {
         </div>
       )}
     </div>
-  )
+  );
 }

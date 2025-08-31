@@ -1,6 +1,6 @@
 /**
  * ShatziiOS Educational Platform - Optimized Startup
- * 
+ *
  * This script immediately opens port 5000 to pass workflow checks,
  * then starts the optimized production server.
  */
@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Port ${PORT} opened at ${new Date().toISOString()}`);
   console.log('Starting optimized server...');
-  
+
   // Start the production server with optimizations
   setTimeout(() => {
     // Use tsx to run the production server
@@ -29,25 +29,25 @@ server.listen(PORT, '0.0.0.0', () => {
         ...process.env,
         PORT: PORT.toString(),
         // Add optimization flags
-        NODE_OPTIONS: '--max-old-space-size=12288' // Set heap limit to 12GB (leaving some room)
-      }
+        NODE_OPTIONS: '--max-old-space-size=12288', // Set heap limit to 12GB (leaving some room)
+      },
     });
-    
+
     // Handle server process events
     serverProcess.on('error', (error) => {
       console.error('Error starting server:', error);
       process.exit(1);
     });
-    
+
     // Forward signals
-    ['SIGINT', 'SIGTERM'].forEach(signal => {
+    ['SIGINT', 'SIGTERM'].forEach((signal) => {
       process.on(signal, () => {
         if (!serverProcess.killed) {
           serverProcess.kill(signal);
         }
       });
     });
-    
+
     // Clean up if the child exits
     serverProcess.on('exit', (code, signal) => {
       console.log(`Server process exited with code ${code} and signal ${signal}`);

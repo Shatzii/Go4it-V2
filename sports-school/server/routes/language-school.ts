@@ -1,6 +1,6 @@
 /**
  * Language School API Routes
- * 
+ *
  * This module contains the API routes for the Language School functionality.
  */
 
@@ -17,27 +17,27 @@ export const router = Router();
 router.get('/courses', async (_req: Request, res: Response) => {
   try {
     const courses = await storage.getLanguageCourses();
-    
+
     // Add module count to each course
     const coursesWithModuleCount = await Promise.all(
       courses.map(async (course) => {
         const modules = await storage.getLanguageModules(course.id);
         return {
           ...course,
-          moduleCount: modules.length
+          moduleCount: modules.length,
         };
-      })
+      }),
     );
-    
+
     res.json({
       success: true,
-      courses: coursesWithModuleCount
+      courses: coursesWithModuleCount,
     });
   } catch (error) {
     console.error('Error fetching language courses:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch language courses'
+      message: 'Failed to fetch language courses',
     });
   }
 });
@@ -51,28 +51,28 @@ router.get('/courses/:courseId', async (req: Request, res: Response) => {
   try {
     const courseId = req.params.courseId;
     const course = await storage.getLanguageCourseById(courseId);
-    
+
     if (!course) {
       return res.status(404).json({
         success: false,
-        message: 'Language course not found'
+        message: 'Language course not found',
       });
     }
-    
+
     const modules = await storage.getLanguageModules(courseId);
-    
+
     res.json({
       success: true,
       course: {
         ...course,
-        moduleCount: modules.length
-      }
+        moduleCount: modules.length,
+      },
     });
   } catch (error) {
     console.error('Error fetching language course:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch language course'
+      message: 'Failed to fetch language course',
     });
   }
 });
@@ -86,30 +86,30 @@ router.get('/courses/:courseId/modules', async (req: Request, res: Response) => 
   try {
     const courseId = req.params.courseId;
     const modules = await storage.getLanguageModules(courseId);
-    
+
     // Add mission count to each module
     const modulesWithMissionCount = await Promise.all(
       modules.map(async (module) => {
         const missions = await storage.getLanguageMissions(module.id);
         return {
           ...module,
-          missionCount: missions.length
+          missionCount: missions.length,
         };
-      })
+      }),
     );
-    
+
     // Sort modules by orderIndex
     const sortedModules = modulesWithMissionCount.sort((a, b) => a.orderIndex - b.orderIndex);
-    
+
     res.json({
       success: true,
-      modules: sortedModules
+      modules: sortedModules,
     });
   } catch (error) {
     console.error('Error fetching language modules:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch language modules'
+      message: 'Failed to fetch language modules',
     });
   }
 });
@@ -123,28 +123,28 @@ router.get('/modules/:moduleId', async (req: Request, res: Response) => {
   try {
     const moduleId = req.params.moduleId;
     const module = await storage.getLanguageModuleById(moduleId);
-    
+
     if (!module) {
       return res.status(404).json({
         success: false,
-        message: 'Language module not found'
+        message: 'Language module not found',
       });
     }
-    
+
     const missions = await storage.getLanguageMissions(moduleId);
-    
+
     res.json({
       success: true,
       module: {
         ...module,
-        missionCount: missions.length
-      }
+        missionCount: missions.length,
+      },
     });
   } catch (error) {
     console.error('Error fetching language module:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch language module'
+      message: 'Failed to fetch language module',
     });
   }
 });
@@ -158,19 +158,19 @@ router.get('/modules/:moduleId/missions', async (req: Request, res: Response) =>
   try {
     const moduleId = req.params.moduleId;
     const missions = await storage.getLanguageMissions(moduleId);
-    
+
     // Sort missions by orderIndex
     const sortedMissions = missions.sort((a, b) => a.orderIndex - b.orderIndex);
-    
+
     res.json({
       success: true,
-      missions: sortedMissions
+      missions: sortedMissions,
     });
   } catch (error) {
     console.error('Error fetching language missions:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch language missions'
+      message: 'Failed to fetch language missions',
     });
   }
 });
@@ -184,23 +184,23 @@ router.get('/missions/:missionId', async (req: Request, res: Response) => {
   try {
     const missionId = req.params.missionId;
     const mission = await storage.getLanguageMissionById(missionId);
-    
+
     if (!mission) {
       return res.status(404).json({
         success: false,
-        message: 'Language mission not found'
+        message: 'Language mission not found',
       });
     }
-    
+
     res.json({
       success: true,
-      mission
+      mission,
     });
   } catch (error) {
     console.error('Error fetching language mission:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch language mission'
+      message: 'Failed to fetch language mission',
     });
   }
 });
@@ -213,27 +213,27 @@ router.get('/missions/:missionId', async (req: Request, res: Response) => {
 router.get('/vocabulary-lists', async (req: Request, res: Response) => {
   try {
     const lists = await storage.getVocabularyLists();
-    
+
     // Add word count to each list
     const listsWithWordCount = await Promise.all(
       lists.map(async (list) => {
         const words = await storage.getVocabularyWords(list.id);
         return {
           ...list,
-          wordCount: words.length
+          wordCount: words.length,
         };
-      })
+      }),
     );
-    
+
     res.json({
       success: true,
-      vocabularyLists: listsWithWordCount
+      vocabularyLists: listsWithWordCount,
     });
   } catch (error) {
     console.error('Error fetching vocabulary lists:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch vocabulary lists'
+      message: 'Failed to fetch vocabulary lists',
     });
   }
 });
@@ -247,28 +247,28 @@ router.get('/vocabulary-lists/:listId', async (req: Request, res: Response) => {
   try {
     const listId = req.params.listId;
     const list = await storage.getVocabularyListById(listId);
-    
+
     if (!list) {
       return res.status(404).json({
         success: false,
-        message: 'Vocabulary list not found'
+        message: 'Vocabulary list not found',
       });
     }
-    
+
     const words = await storage.getVocabularyWords(listId);
-    
+
     res.json({
       success: true,
       vocabularyList: {
         ...list,
-        wordCount: words.length
-      }
+        wordCount: words.length,
+      },
     });
   } catch (error) {
     console.error('Error fetching vocabulary list:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch vocabulary list'
+      message: 'Failed to fetch vocabulary list',
     });
   }
 });
@@ -282,16 +282,16 @@ router.get('/vocabulary-lists/:listId/words', async (req: Request, res: Response
   try {
     const listId = req.params.listId;
     const words = await storage.getVocabularyWords(listId);
-    
+
     res.json({
       success: true,
-      words
+      words,
     });
   } catch (error) {
     console.error('Error fetching vocabulary words:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch vocabulary words'
+      message: 'Failed to fetch vocabulary words',
     });
   }
 });
@@ -305,16 +305,16 @@ router.get('/user/:userId/progress', async (req: Request, res: Response) => {
   try {
     const userId = req.params.userId;
     const progress = await storage.getUserLanguageProgress(userId);
-    
+
     res.json({
       success: true,
-      progress
+      progress,
     });
   } catch (error) {
     console.error('Error fetching user language progress:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch user language progress'
+      message: 'Failed to fetch user language progress',
     });
   }
 });
@@ -328,16 +328,16 @@ router.get('/user/:userId/vocabulary-progress', async (req: Request, res: Respon
   try {
     const userId = req.params.userId;
     const progress = await storage.getUserVocabularyProgress(userId);
-    
+
     res.json({
       success: true,
-      vocabularyProgress: progress
+      vocabularyProgress: progress,
     });
   } catch (error) {
     console.error('Error fetching user vocabulary progress:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch user vocabulary progress'
+      message: 'Failed to fetch user vocabulary progress',
     });
   }
 });

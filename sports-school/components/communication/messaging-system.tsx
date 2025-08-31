@@ -1,20 +1,20 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Send, 
-  Paperclip, 
-  Search, 
-  Star, 
-  Archive, 
-  Trash2, 
+import { useState, useEffect, useRef } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Send,
+  Paperclip,
+  Search,
+  Star,
+  Archive,
+  Trash2,
   MoreVertical,
   Phone,
   Video,
@@ -25,78 +25,78 @@ import {
   MessageCircle,
   Clock,
   Check,
-  CheckCheck
-} from 'lucide-react'
+  CheckCheck,
+} from 'lucide-react';
 
 interface Message {
-  id: string
-  senderId: string
-  senderName: string
-  senderRole: 'student' | 'parent' | 'teacher' | 'admin'
-  receiverId: string
-  content: string
-  subject?: string
-  timestamp: Date
-  isRead: boolean
-  priority: 'low' | 'normal' | 'high' | 'urgent'
-  attachments?: Attachment[]
-  replyToId?: string
-  threadId: string
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'student' | 'parent' | 'teacher' | 'admin';
+  receiverId: string;
+  content: string;
+  subject?: string;
+  timestamp: Date;
+  isRead: boolean;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  attachments?: Attachment[];
+  replyToId?: string;
+  threadId: string;
 }
 
 interface Attachment {
-  id: string
-  fileName: string
-  fileSize: string
-  fileType: string
-  downloadUrl: string
+  id: string;
+  fileName: string;
+  fileSize: string;
+  fileType: string;
+  downloadUrl: string;
 }
 
 interface Conversation {
-  id: string
-  participants: Participant[]
-  lastMessage: Message
-  unreadCount: number
-  isPinned: boolean
-  isMuted: boolean
-  type: 'direct' | 'group' | 'announcement'
-  subject?: string
+  id: string;
+  participants: Participant[];
+  lastMessage: Message;
+  unreadCount: number;
+  isPinned: boolean;
+  isMuted: boolean;
+  type: 'direct' | 'group' | 'announcement';
+  subject?: string;
 }
 
 interface Participant {
-  id: string
-  name: string
-  role: 'student' | 'parent' | 'teacher' | 'admin'
-  avatar?: string
-  status: 'online' | 'offline' | 'away'
+  id: string;
+  name: string;
+  role: 'student' | 'parent' | 'teacher' | 'admin';
+  avatar?: string;
+  status: 'online' | 'offline' | 'away';
 }
 
 export default function MessagingSystem() {
-  const [conversations, setConversations] = useState<Conversation[]>([])
-  const [selectedConversation, setSelectedConversation] = useState<string | null>(null)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [newMessage, setNewMessage] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showCompose, setShowCompose] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showCompose, setShowCompose] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadConversations()
-  }, [])
+    loadConversations();
+  }, []);
 
   useEffect(() => {
     if (selectedConversation) {
-      loadMessages(selectedConversation)
+      loadMessages(selectedConversation);
     }
-  }, [selectedConversation])
+  }, [selectedConversation]);
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const loadConversations = async () => {
     // Mock data - in production, fetch from API
@@ -105,7 +105,7 @@ export default function MessagingSystem() {
         id: 'conv_1',
         participants: [
           { id: 'teacher_1', name: 'Ms. Johnson', role: 'teacher', status: 'online' },
-          { id: 'parent_1', name: 'Maria Rodriguez', role: 'parent', status: 'online' }
+          { id: 'parent_1', name: 'Maria Rodriguez', role: 'parent', status: 'online' },
         ],
         lastMessage: {
           id: 'msg_1',
@@ -113,22 +113,23 @@ export default function MessagingSystem() {
           senderName: 'Ms. Johnson',
           senderRole: 'teacher',
           receiverId: 'parent_1',
-          content: 'Emma had an excellent performance in today\'s theater workshop. She\'s really developing her stage presence!',
+          content:
+            "Emma had an excellent performance in today's theater workshop. She's really developing her stage presence!",
           timestamp: new Date(Date.now() - 30 * 60 * 1000),
           isRead: false,
           priority: 'normal',
-          threadId: 'thread_1'
+          threadId: 'thread_1',
         },
         unreadCount: 1,
         isPinned: false,
         isMuted: false,
         type: 'direct',
-        subject: 'Emma\'s Progress Update'
+        subject: "Emma's Progress Update",
       },
       {
         id: 'conv_2',
         participants: [
-          { id: 'admin_1', name: 'School Administration', role: 'admin', status: 'online' }
+          { id: 'admin_1', name: 'School Administration', role: 'admin', status: 'online' },
         ],
         lastMessage: {
           id: 'msg_2',
@@ -136,23 +137,24 @@ export default function MessagingSystem() {
           senderName: 'School Administration',
           senderRole: 'admin',
           receiverId: 'all_parents',
-          content: 'Reminder: Parent-teacher conferences are scheduled for next week. Please check your calendar for your assigned time slot.',
+          content:
+            'Reminder: Parent-teacher conferences are scheduled for next week. Please check your calendar for your assigned time slot.',
           timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
           isRead: true,
           priority: 'high',
-          threadId: 'thread_2'
+          threadId: 'thread_2',
         },
         unreadCount: 0,
         isPinned: true,
         isMuted: false,
         type: 'announcement',
-        subject: 'Parent-Teacher Conference Reminder'
+        subject: 'Parent-Teacher Conference Reminder',
       },
       {
         id: 'conv_3',
         participants: [
           { id: 'tutor_1', name: 'Dean Wonder', role: 'teacher', status: 'away' },
-          { id: 'student_1', name: 'Lucas Rodriguez', role: 'student', status: 'online' }
+          { id: 'student_1', name: 'Lucas Rodriguez', role: 'student', status: 'online' },
         ],
         lastMessage: {
           id: 'msg_3',
@@ -160,21 +162,22 @@ export default function MessagingSystem() {
           senderName: 'Lucas Rodriguez',
           senderRole: 'student',
           receiverId: 'tutor_1',
-          content: 'Thanks for helping me with the math problem! I understand fractions much better now.',
+          content:
+            'Thanks for helping me with the math problem! I understand fractions much better now.',
           timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
           isRead: true,
           priority: 'normal',
-          threadId: 'thread_3'
+          threadId: 'thread_3',
         },
         unreadCount: 0,
         isPinned: false,
         isMuted: false,
         type: 'direct',
-        subject: 'Math Tutoring Session'
-      }
-    ]
-    setConversations(mockConversations)
-  }
+        subject: 'Math Tutoring Session',
+      },
+    ];
+    setConversations(mockConversations);
+  };
 
   const loadMessages = async (conversationId: string) => {
     // Mock messages for the conversation
@@ -185,11 +188,11 @@ export default function MessagingSystem() {
         senderName: 'Ms. Johnson',
         senderRole: 'teacher',
         receiverId: 'parent_1',
-        content: 'Hello Maria! I wanted to reach out about Emma\'s progress in our theater program.',
+        content: "Hello Maria! I wanted to reach out about Emma's progress in our theater program.",
         timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
         isRead: true,
         priority: 'normal',
-        threadId: 'thread_1'
+        threadId: 'thread_1',
       },
       {
         id: 'msg_2',
@@ -197,11 +200,12 @@ export default function MessagingSystem() {
         senderName: 'Maria Rodriguez',
         senderRole: 'parent',
         receiverId: 'teacher_1',
-        content: 'Hi Ms. Johnson! I\'d love to hear about how Emma is doing. She talks about your class all the time at home.',
+        content:
+          "Hi Ms. Johnson! I'd love to hear about how Emma is doing. She talks about your class all the time at home.",
         timestamp: new Date(Date.now() - 90 * 60 * 1000),
         isRead: true,
         priority: 'normal',
-        threadId: 'thread_1'
+        threadId: 'thread_1',
       },
       {
         id: 'msg_3',
@@ -209,18 +213,19 @@ export default function MessagingSystem() {
         senderName: 'Ms. Johnson',
         senderRole: 'teacher',
         receiverId: 'parent_1',
-        content: 'Emma had an excellent performance in today\'s theater workshop. She\'s really developing her stage presence! Her confidence has grown tremendously, and she\'s becoming a natural leader in group exercises.',
+        content:
+          "Emma had an excellent performance in today's theater workshop. She's really developing her stage presence! Her confidence has grown tremendously, and she's becoming a natural leader in group exercises.",
         timestamp: new Date(Date.now() - 30 * 60 * 1000),
         isRead: false,
         priority: 'normal',
-        threadId: 'thread_1'
-      }
-    ]
-    setMessages(mockMessages)
-  }
+        threadId: 'thread_1',
+      },
+    ];
+    setMessages(mockMessages);
+  };
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !selectedConversation) return
+    if (!newMessage.trim() || !selectedConversation) return;
 
     const message: Message = {
       id: `msg_${Date.now()}`,
@@ -232,60 +237,71 @@ export default function MessagingSystem() {
       timestamp: new Date(),
       isRead: false,
       priority: 'normal',
-      threadId: 'thread_1'
-    }
+      threadId: 'thread_1',
+    };
 
-    setMessages(prev => [...prev, message])
-    setNewMessage('')
+    setMessages((prev) => [...prev, message]);
+    setNewMessage('');
 
     // Update conversation last message
-    setConversations(prev => 
-      prev.map(conv => 
-        conv.id === selectedConversation 
-          ? { ...conv, lastMessage: message }
-          : conv
-      )
-    )
-  }
+    setConversations((prev) =>
+      prev.map((conv) =>
+        conv.id === selectedConversation ? { ...conv, lastMessage: message } : conv,
+      ),
+    );
+  };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'text-red-600'
-      case 'high': return 'text-orange-600'
-      case 'normal': return 'text-gray-600'
-      case 'low': return 'text-gray-400'
-      default: return 'text-gray-600'
+      case 'urgent':
+        return 'text-red-600';
+      case 'high':
+        return 'text-orange-600';
+      case 'normal':
+        return 'text-gray-600';
+      case 'low':
+        return 'text-gray-400';
+      default:
+        return 'text-gray-600';
     }
-  }
+  };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
-      case 'teacher': return '👨‍🏫'
-      case 'student': return '🎓'
-      case 'parent': return '👨‍👩‍👧‍👦'
-      case 'admin': return '🏫'
-      default: return '👤'
+      case 'teacher':
+        return '👨‍🏫';
+      case 'student':
+        return '🎓';
+      case 'parent':
+        return '👨‍👩‍👧‍👦';
+      case 'admin':
+        return '🏫';
+      default:
+        return '👤';
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'online': return 'bg-green-500'
-      case 'away': return 'bg-yellow-500'
-      case 'offline': return 'bg-gray-400'
-      default: return 'bg-gray-400'
+      case 'online':
+        return 'bg-green-500';
+      case 'away':
+        return 'bg-yellow-500';
+      case 'offline':
+        return 'bg-gray-400';
+      default:
+        return 'bg-gray-400';
     }
-  }
+  };
 
-  const filteredConversations = conversations.filter(conv =>
-    conv.participants.some(p => 
-      p.name.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || 
-    conv.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    conv.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredConversations = conversations.filter(
+    (conv) =>
+      conv.participants.some((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      conv.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.lastMessage.content.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
-  const selectedConv = conversations.find(c => c.id === selectedConversation)
+  const selectedConv = conversations.find((c) => c.id === selectedConversation);
 
   return (
     <div className="h-full flex">
@@ -337,45 +353,57 @@ export default function MessagingSystem() {
                           {getRoleIcon(conversation.participants[0]?.role)}
                         </AvatarFallback>
                       </Avatar>
-                      <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(conversation.participants[0]?.status)}`} />
+                      <div
+                        className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${getStatusColor(conversation.participants[0]?.status)}`}
+                      />
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <h3 className="font-medium text-sm truncate">
-                          {conversation.type === 'group' ? conversation.subject : conversation.participants[0]?.name}
+                          {conversation.type === 'group'
+                            ? conversation.subject
+                            : conversation.participants[0]?.name}
                         </h3>
                         <div className="flex items-center space-x-1">
-                          {conversation.isPinned && <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />}
+                          {conversation.isPinned && (
+                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                          )}
                           {conversation.unreadCount > 0 && (
-                            <Badge variant="default" className="h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center">
+                            <Badge
+                              variant="default"
+                              className="h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
+                            >
                               {conversation.unreadCount}
                             </Badge>
                           )}
                         </div>
                       </div>
-                      
+
                       <p className="text-xs text-gray-600 mb-1">
                         {conversation.subject && conversation.type !== 'direct' && (
                           <span className="font-medium">{conversation.subject}</span>
                         )}
                       </p>
-                      
+
                       <p className="text-sm text-gray-700 truncate">
                         {conversation.lastMessage.content}
                       </p>
-                      
+
                       <div className="flex items-center justify-between mt-1">
                         <span className="text-xs text-gray-500">
-                          {conversation.lastMessage.timestamp.toLocaleTimeString([], { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
+                          {conversation.lastMessage.timestamp.toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
                           })}
                         </span>
                         <div className="flex items-center space-x-1">
                           {conversation.isMuted && <BellOff className="h-3 w-3 text-gray-400" />}
-                          <span className={`text-xs ${getPriorityColor(conversation.lastMessage.priority)}`}>
-                            {conversation.lastMessage.priority !== 'normal' && conversation.lastMessage.priority}
+                          <span
+                            className={`text-xs ${getPriorityColor(conversation.lastMessage.priority)}`}
+                          >
+                            {conversation.lastMessage.priority !== 'normal' &&
+                              conversation.lastMessage.priority}
                           </span>
                         </div>
                       </div>
@@ -410,20 +438,20 @@ export default function MessagingSystem() {
             <div className="p-4 border-b bg-white flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-10 w-10">
-                  <AvatarFallback>
-                    {getRoleIcon(selectedConv.participants[0]?.role)}
-                  </AvatarFallback>
+                  <AvatarFallback>{getRoleIcon(selectedConv.participants[0]?.role)}</AvatarFallback>
                 </Avatar>
                 <div>
                   <h3 className="font-medium">
-                    {selectedConv.type === 'group' ? selectedConv.subject : selectedConv.participants[0]?.name}
+                    {selectedConv.type === 'group'
+                      ? selectedConv.subject
+                      : selectedConv.participants[0]?.name}
                   </h3>
                   <p className="text-sm text-gray-600">
                     {selectedConv.participants[0]?.role} • {selectedConv.participants[0]?.status}
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Button variant="ghost" size="sm">
                   <Phone className="h-4 w-4" />
@@ -447,11 +475,13 @@ export default function MessagingSystem() {
                   key={message.id}
                   className={`flex ${message.senderId === 'current_user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                    message.senderId === 'current_user'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <div
+                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.senderId === 'current_user'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
                     {message.senderId !== 'current_user' && (
                       <div className="flex items-center space-x-2 mb-1">
                         <span className="text-sm font-medium">{message.senderName}</span>
@@ -465,7 +495,7 @@ export default function MessagingSystem() {
                       <span className="text-xs opacity-70">
                         {message.timestamp.toLocaleTimeString([], {
                           hour: '2-digit',
-                          minute: '2-digit'
+                          minute: '2-digit',
                         })}
                       </span>
                       {message.senderId === 'current_user' && (
@@ -508,11 +538,13 @@ export default function MessagingSystem() {
             <div className="text-center">
               <MessageCircle className="h-12 w-12 mx-auto text-gray-400 mb-4" />
               <h3 className="text-lg font-medium text-gray-600 mb-2">Select a conversation</h3>
-              <p className="text-gray-500">Choose a conversation from the sidebar to start messaging</p>
+              <p className="text-gray-500">
+                Choose a conversation from the sidebar to start messaging
+              </p>
             </div>
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

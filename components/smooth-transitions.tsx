@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, Home, User, Settings, LogOut } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react';
+// import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronRight, Home, User, Settings, LogOut } from 'lucide-react';
 
 interface SmoothTransitionProps {
-  children: React.ReactNode
-  className?: string
-  delay?: number
-  duration?: number
-  direction?: 'up' | 'down' | 'left' | 'right'
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+  duration?: number;
+  direction?: 'up' | 'down' | 'left' | 'right';
 }
 
 export function SmoothTransition({
@@ -17,13 +17,9 @@ export function SmoothTransition({
   className = '',
   delay = 0,
   duration = 0.5,
-  direction = 'up'
+  direction = 'up',
 }: SmoothTransitionProps) {
-  return (
-    <div className={className}>
-      {children}
-    </div>
-  )
+  return <div className={className}>{children}</div>;
 }
 
 export function PageTransition({ children }: { children: React.ReactNode }) {
@@ -34,15 +30,21 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
       exit={{ opacity: 0, y: -20 }}
       transition={{
         duration: 0.3,
-        ease: 'easeInOut'
+        ease: 'easeInOut',
       }}
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
-export function StaggeredList({ children, className = '' }: { children: React.ReactNode[]; className?: string }) {
+export function StaggeredList({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode[];
+  className?: string;
+}) {
   return (
     <motion.div
       className={className}
@@ -52,9 +54,9 @@ export function StaggeredList({ children, className = '' }: { children: React.Re
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.1
-          }
-        }
+            staggerChildren: 0.1,
+          },
+        },
       }}
     >
       {children.map((child, index) => (
@@ -62,17 +64,23 @@ export function StaggeredList({ children, className = '' }: { children: React.Re
           key={index}
           variants={{
             hidden: { opacity: 0, y: 20 },
-            visible: { opacity: 1, y: 0 }
+            visible: { opacity: 1, y: 0 },
           }}
         >
           {child}
         </motion.div>
       ))}
     </motion.div>
-  )
+  );
 }
 
-export function SlideInCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+export function SlideInCard({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
     <motion.div
       className={className}
@@ -82,15 +90,23 @@ export function SlideInCard({ children, className = '' }: { children: React.Reac
       transition={{
         type: 'spring',
         stiffness: 100,
-        damping: 15
+        damping: 15,
       }}
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
-export function FadeInUp({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+export function FadeInUp({
+  children,
+  delay = 0,
+  className = '',
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
   return (
     <motion.div
       className={className}
@@ -99,15 +115,23 @@ export function FadeInUp({ children, delay = 0, className = '' }: { children: Re
       transition={{
         duration: 0.6,
         delay,
-        ease: 'easeOut'
+        ease: 'easeOut',
       }}
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
-export function ScaleIn({ children, delay = 0, className = '' }: { children: React.ReactNode; delay?: number; className?: string }) {
+export function ScaleIn({
+  children,
+  delay = 0,
+  className = '',
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
   return (
     <motion.div
       className={className}
@@ -116,25 +140,25 @@ export function ScaleIn({ children, delay = 0, className = '' }: { children: Rea
       transition={{
         duration: 0.4,
         delay,
-        ease: 'easeOut'
+        ease: 'easeOut',
       }}
     >
       {children}
     </motion.div>
-  )
+  );
 }
 
 // Enhanced Navigation with smooth transitions
 export function EnhancedNavigation() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [activeItem, setActiveItem] = useState('dashboard')
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState('dashboard');
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
     { id: 'profile', label: 'Profile', icon: User, href: '/profile' },
     { id: 'settings', label: 'Settings', icon: Settings, href: '/settings' },
-    { id: 'logout', label: 'Logout', icon: LogOut, href: '/auth' }
-  ]
+    { id: 'logout', label: 'Logout', icon: LogOut, href: '/auth' },
+  ];
 
   return (
     <div className="relative">
@@ -144,10 +168,7 @@ export function EnhancedNavigation() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <motion.div
-          animate={{ rotate: isOpen ? 90 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.div animate={{ rotate: isOpen ? 90 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronRight className="w-5 h-5" />
         </motion.div>
       </motion.button>
@@ -184,7 +205,7 @@ export function EnhancedNavigation() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 // Enhanced Button with smooth interactions
@@ -195,29 +216,30 @@ export function EnhancedButton({
   size = 'md',
   disabled = false,
   loading = false,
-  className = ''
+  className = '',
 }: {
-  children: React.ReactNode
-  onClick?: () => void
-  variant?: 'primary' | 'secondary' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
-  disabled?: boolean
-  loading?: boolean
-  className?: string
+  children: React.ReactNode;
+  onClick?: () => void;
+  variant?: 'primary' | 'secondary' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  loading?: boolean;
+  className?: string;
 }) {
-  const baseClasses = 'font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2'
-  
+  const baseClasses =
+    'font-medium rounded-lg transition-all duration-200 flex items-center justify-center space-x-2';
+
   const variants = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800',
     secondary: 'bg-slate-600 text-white hover:bg-slate-700 active:bg-slate-800',
-    outline: 'border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white'
-  }
-  
+    outline: 'border border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white',
+  };
+
   const sizes = {
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base'
-  }
+    lg: 'px-6 py-3 text-base',
+  };
 
   return (
     <motion.button
@@ -238,7 +260,7 @@ export function EnhancedButton({
       )}
       {children}
     </motion.button>
-  )
+  );
 }
 
 // Smooth Progress Bar
@@ -252,5 +274,5 @@ export function SmoothProgress({ value, className = '' }: { value: number; class
         transition={{ duration: 0.5, ease: 'easeOut' }}
       />
     </div>
-  )
+  );
 }

@@ -30,12 +30,12 @@ function DefaultLoadingComponent() {
   );
 }
 
-export function SafeDynamicLoader({ 
-  children, 
-  fallbackTitle = "Component Loading Error",
-  fallbackMessage = "This component failed to load properly.",
+export function SafeDynamicLoader({
+  children,
+  fallbackTitle = 'Component Loading Error',
+  fallbackMessage = 'This component failed to load properly.',
   loadingComponent = <DefaultLoadingComponent />,
-  className 
+  className,
 }: SafeDynamicLoaderProps) {
   return (
     <DeploymentErrorBoundary
@@ -43,9 +43,7 @@ export function SafeDynamicLoader({
       fallbackMessage={fallbackMessage}
       className={className}
     >
-      <Suspense fallback={loadingComponent}>
-        {children}
-      </Suspense>
+      <Suspense fallback={loadingComponent}>{children}</Suspense>
     </DeploymentErrorBoundary>
   );
 }
@@ -57,7 +55,7 @@ export function createSafeDynamicImport<T = any>(
     fallbackTitle?: string;
     fallbackMessage?: string;
     loadingComponent?: ReactNode;
-  } = {}
+  } = {},
 ) {
   return dynamic(importFn, {
     ssr: false,

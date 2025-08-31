@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function StudentManagement() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedGrade, setSelectedGrade] = useState('all')
-  const [selectedSchool, setSelectedSchool] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedGrade, setSelectedGrade] = useState('all');
+  const [selectedSchool, setSelectedSchool] = useState('all');
 
   // Sample student data - would come from API
   const students = [
@@ -21,7 +21,7 @@ export default function StudentManagement() {
       iepStatus: true,
       attendanceRate: 96.2,
       parentEmail: 'parent@example.com',
-      enrollmentDate: '2024-08-15'
+      enrollmentDate: '2024-08-15',
     },
     {
       id: '2',
@@ -34,7 +34,7 @@ export default function StudentManagement() {
       iepStatus: false,
       attendanceRate: 98.5,
       parentEmail: 'parent2@example.com',
-      enrollmentDate: '2024-08-15'
+      enrollmentDate: '2024-08-15',
     },
     {
       id: '3',
@@ -47,18 +47,18 @@ export default function StudentManagement() {
       iepStatus: true,
       attendanceRate: 94.8,
       parentEmail: 'parent3@example.com',
-      enrollmentDate: '2024-08-15'
-    }
-  ]
+      enrollmentDate: '2024-08-15',
+    },
+  ];
 
-  const filteredStudents = students.filter(student => {
+  const filteredStudents = students.filter((student) => {
     const matchesSearch = `${student.firstName} ${student.lastName} ${student.studentId}`
       .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-    const matchesGrade = selectedGrade === 'all' || student.grade === selectedGrade
-    const matchesSchool = selectedSchool === 'all' || student.school === selectedSchool
-    return matchesSearch && matchesGrade && matchesSchool
-  })
+      .includes(searchTerm.toLowerCase());
+    const matchesGrade = selectedGrade === 'all' || student.grade === selectedGrade;
+    const matchesSchool = selectedSchool === 'all' || student.school === selectedSchool;
+    return matchesSearch && matchesGrade && matchesSchool;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -66,7 +66,10 @@ export default function StudentManagement() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/admin/dashboard" className="text-indigo-600 font-semibold text-lg hover:text-indigo-500">
+            <Link
+              href="/admin/dashboard"
+              className="text-indigo-600 font-semibold text-lg hover:text-indigo-500"
+            >
               ← Admin Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Student Information System</h1>
@@ -91,7 +94,7 @@ export default function StudentManagement() {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -99,11 +102,13 @@ export default function StudentManagement() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Active Students</p>
-                <p className="text-2xl font-bold text-gray-900">{students.filter(s => s.status === 'active').length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {students.filter((s) => s.status === 'active').length}
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -111,11 +116,13 @@ export default function StudentManagement() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">IEP Students</p>
-                <p className="text-2xl font-bold text-gray-900">{students.filter(s => s.iepStatus).length}</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {students.filter((s) => s.iepStatus).length}
+                </p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-lg">
@@ -124,7 +131,10 @@ export default function StudentManagement() {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Avg Attendance</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {(students.reduce((acc, s) => acc + s.attendanceRate, 0) / students.length).toFixed(1)}%
+                  {(
+                    students.reduce((acc, s) => acc + s.attendanceRate, 0) / students.length
+                  ).toFixed(1)}
+                  %
                 </p>
               </div>
             </div>
@@ -136,7 +146,9 @@ export default function StudentManagement() {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Search Students</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Search Students
+                </label>
                 <input
                   type="text"
                   placeholder="Name or Student ID..."
@@ -145,7 +157,7 @@ export default function StudentManagement() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Grade Level</label>
                 <select
@@ -169,7 +181,7 @@ export default function StudentManagement() {
                   <option value="12">12th Grade</option>
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">School</label>
                 <select
@@ -184,7 +196,7 @@ export default function StudentManagement() {
                   <option value="language-school">Language Learning School</option>
                 </select>
               </div>
-              
+
               <div className="flex items-end">
                 <button className="w-full bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
                   Apply Filters
@@ -234,7 +246,8 @@ export default function StudentManagement() {
                         <div className="flex-shrink-0 h-10 w-10">
                           <div className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                             <span className="text-sm font-medium text-indigo-600">
-                              {student.firstName.charAt(0)}{student.lastName.charAt(0)}
+                              {student.firstName.charAt(0)}
+                              {student.lastName.charAt(0)}
                             </span>
                           </div>
                         </div>
@@ -242,9 +255,7 @@ export default function StudentManagement() {
                           <div className="text-sm font-medium text-gray-900">
                             {student.firstName} {student.lastName}
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {student.parentEmail}
-                          </div>
+                          <div className="text-sm text-gray-500">{student.parentEmail}</div>
                         </div>
                       </div>
                     </td>
@@ -255,15 +266,17 @@ export default function StudentManagement() {
                       {student.grade}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {student.school.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      {student.school.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          student.status === 'active' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            student.status === 'active'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}
+                        >
                           {student.status}
                         </span>
                         {student.iepStatus && (
@@ -276,8 +289,8 @@ export default function StudentManagement() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       <div className="flex items-center">
                         <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                          <div 
-                            className="bg-green-500 h-2 rounded-full" 
+                          <div
+                            className="bg-green-500 h-2 rounded-full"
                             style={{ width: `${student.attendanceRate}%` }}
                           ></div>
                         </div>
@@ -286,15 +299,9 @@ export default function StudentManagement() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex space-x-2">
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          View
-                        </button>
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          Edit
-                        </button>
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                          Records
-                        </button>
+                        <button className="text-indigo-600 hover:text-indigo-900">View</button>
+                        <button className="text-indigo-600 hover:text-indigo-900">Edit</button>
+                        <button className="text-indigo-600 hover:text-indigo-900">Records</button>
                       </div>
                     </td>
                   </tr>
@@ -339,13 +346,22 @@ export default function StudentManagement() {
           <div className="bg-white p-6 rounded-lg shadow-sm border">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h3>
             <div className="space-y-3">
-              <Link href="/admin/enrollment" className="block w-full text-left p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+              <Link
+                href="/admin/enrollment"
+                className="block w-full text-left p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              >
                 ✏️ New Enrollment
               </Link>
-              <Link href="/admin/attendance" className="block w-full text-left p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+              <Link
+                href="/admin/attendance"
+                className="block w-full text-left p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              >
                 📅 Take Attendance
               </Link>
-              <Link href="/admin/gradebook" className="block w-full text-left p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+              <Link
+                href="/admin/gradebook"
+                className="block w-full text-left p-3 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              >
                 📚 View Gradebook
               </Link>
             </div>
@@ -353,5 +369,5 @@ export default function StudentManagement() {
         </div>
       </div>
     </div>
-  )
+  );
 }

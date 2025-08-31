@@ -111,62 +111,62 @@ export type InsertUserMiniGameActivity = z.infer<typeof insertUserMiniGameActivi
 
 // Predefined game types with associated metadata
 export const miniGameTypes = [
-  { 
-    type: 'flashcard', 
-    name: 'Flashcards Challenge', 
+  {
+    type: 'flashcard',
+    name: 'Flashcards Challenge',
     description: 'Test your knowledge with interactive flashcards',
     icon: '🎴',
     defaultTimeLimit: 120,
   },
-  { 
-    type: 'quiz', 
-    name: 'Quick Quiz', 
+  {
+    type: 'quiz',
+    name: 'Quick Quiz',
     description: 'Answer multiple-choice questions to test your knowledge',
     icon: '❓',
     defaultTimeLimit: 180,
   },
-  { 
-    type: 'matching', 
-    name: 'Matching Game', 
+  {
+    type: 'matching',
+    name: 'Matching Game',
     description: 'Match related items to build connections',
     icon: '🔄',
     defaultTimeLimit: 120,
   },
-  { 
-    type: 'memory', 
-    name: 'Memory Challenge', 
+  {
+    type: 'memory',
+    name: 'Memory Challenge',
     description: 'Find matching pairs to test your memory',
     icon: '🧠',
     defaultTimeLimit: 180,
   },
-  { 
-    type: 'puzzle', 
-    name: 'Learning Puzzle', 
-    description: 'Solve puzzles related to what you\'ve learned',
+  {
+    type: 'puzzle',
+    name: 'Learning Puzzle',
+    description: "Solve puzzles related to what you've learned",
     icon: '🧩',
     defaultTimeLimit: 300,
   },
-  { 
-    type: 'sorting', 
-    name: 'Sorting Challenge', 
+  {
+    type: 'sorting',
+    name: 'Sorting Challenge',
     description: 'Sort items into their correct categories',
     icon: '📊',
     defaultTimeLimit: 120,
   },
-  { 
-    type: 'wordsearch', 
-    name: 'Word Search', 
+  {
+    type: 'wordsearch',
+    name: 'Word Search',
     description: 'Find hidden words related to your learning topic',
     icon: '🔍',
     defaultTimeLimit: 240,
   },
-  { 
-    type: 'crossword', 
-    name: 'Learning Crossword', 
-    description: 'Complete a crossword puzzle using what you\'ve learned',
+  {
+    type: 'crossword',
+    name: 'Learning Crossword',
+    description: "Complete a crossword puzzle using what you've learned",
     icon: '📝',
     defaultTimeLimit: 300,
-  }
+  },
 ];
 
 // Interface for game analytics and stats

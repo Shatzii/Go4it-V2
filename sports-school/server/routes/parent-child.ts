@@ -1,11 +1,11 @@
-import { Router, Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import { z } from "zod";
-import { db } from "../db";
-import { insertUserSchema, users } from "../../shared/schema";
-import { parentChildRelationships, insertParentChildRelationshipSchema } from "../../shared/schema";
-import { curriculumPlans, insertCurriculumPlanSchema } from "../../shared/schema";
-import { learningSchedules, insertLearningScheduleSchema } from "../../shared/schema";
+import { Router, Request, Response } from 'express';
+import bcrypt from 'bcryptjs';
+import { z } from 'zod';
+import { db } from '../db';
+import { insertUserSchema, users } from '../../shared/schema';
+import { parentChildRelationships, insertParentChildRelationshipSchema } from '../../shared/schema';
+import { curriculumPlans, insertCurriculumPlanSchema } from '../../shared/schema';
+import { learningSchedules, insertLearningScheduleSchema } from '../../shared/schema';
 
 export const router = Router();
 
@@ -19,23 +19,21 @@ router.post('/register/parent', async (req: Request, res: Response) => {
       email: z.string().email(),
       full_name: z.string().min(3),
       phone_number: z.string().optional(),
-      role: z.literal("parent")
+      role: z.literal('parent'),
     });
 
     const validatedData = schema.parse(req.body);
-    
+
     // Check if user already exists
     const existingUser = await db.query.users.findFirst({
-      where: (users, { eq, or }) => or(
-        eq(users.username, validatedData.username),
-        eq(users.email, validatedData.email)
-      )
+      where: (users, { eq, or }) =>
+        or(eq(users.username, validatedData.username), eq(users.email, validatedData.email)),
     });
 
     if (existingUser) {
-      return res.status(400).json({ 
-        error: "User already exists", 
-        message: "A user with this username or email already exists."
+      return res.status(400).json({
+        error: 'User already exists',
+        message: 'A user with this username or email already exists.',
       });
     }
 
@@ -49,38 +47,37 @@ router.post('/register/parent', async (req: Request, res: Response) => {
       password: hashedPassword,
       email: validatedData.email,
       full_name: validatedData.full_name,
-      phone_number: validatedData.phone_number || "",
+      phone_number: validatedData.phone_number || '',
       role: validatedData.role,
-      avatarType: "explorer" as const, // Default avatar
+      avatarType: 'explorer' as const, // Default avatar
       level: 1,
       xp: 0,
-      mood: "happy" as const,
+      mood: 'happy' as const,
       active: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const insertResult = await db.insert(users).values(userData).returning();
-    
+
     if (!insertResult || insertResult.length === 0) {
-      return res.status(500).json({ error: "Failed to create user" });
+      return res.status(500).json({ error: 'Failed to create user' });
     }
 
     const user = insertResult[0];
-    
+
     // Return user data without password
     const { password, ...userWithoutPassword } = user;
-    
-    res.status(201).json({ 
-      message: "Parent account created successfully",
-      user: userWithoutPassword
-    });
 
+    res.status(201).json({
+      message: 'Parent account created successfully',
+      user: userWithoutPassword,
+    });
   } catch (error) {
-    console.error("Parent registration error:", error);
-    res.status(500).json({ 
-      error: "Server error", 
-      message: "An error occurred during registration."
+    console.error('Parent registration error:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'An error occurred during registration.',
     });
   }
 });
@@ -99,28 +96,28 @@ router.post('/parent/add-child', async (req: Request, res: Response) => {
         grade: z.string(),
         neurodivergent: z.boolean().optional(),
         neurodivergenceType: z.string().optional(),
-        interests: z.array(z.string()).optional()
-      })
+        interests: z.array(z.string()).optional(),
+      }),
     });
 
     const validatedData = schema.parse(req.body);
-    
+
     // Check if parent exists
     const parent = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, validatedData.parentId)
+      where: (users, { eq }) => eq(users.id, validatedData.parentId),
     });
 
     if (!parent || parent.role !== 'parent') {
-      return res.status(404).json({ error: "Parent not found" });
+      return res.status(404).json({ error: 'Parent not found' });
     }
 
     // Check if child username already exists
     const existingUser = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.username, validatedData.childData.username)
+      where: (users, { eq }) => eq(users.username, validatedData.childData.username),
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: "Username already exists" });
+      return res.status(400).json({ error: 'Username already exists' });
     }
 
     // Hash password
@@ -131,13 +128,13 @@ router.post('/parent/add-child', async (req: Request, res: Response) => {
     const childData = {
       username: validatedData.childData.username,
       password: hashedPassword,
-      email: "", // Children don't need emails
+      email: '', // Children don't need emails
       full_name: validatedData.childData.full_name,
-      role: "student" as const,
-      avatarType: "explorer" as const, // Default avatar
+      role: 'student' as const,
+      avatarType: 'explorer' as const, // Default avatar
       level: 1,
       xp: 0,
-      mood: "happy" as const,
+      mood: 'happy' as const,
       active: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -145,16 +142,16 @@ router.post('/parent/add-child', async (req: Request, res: Response) => {
         age: validatedData.childData.age,
         grade: validatedData.childData.grade,
         neurodivergent: validatedData.childData.neurodivergent || false,
-        neurodivergenceType: validatedData.childData.neurodivergenceType || "",
-        interests: validatedData.childData.interests || []
-      })
+        neurodivergenceType: validatedData.childData.neurodivergenceType || '',
+        interests: validatedData.childData.interests || [],
+      }),
     };
 
     // Insert child user
     const insertResult = await db.insert(users).values(childData).returning();
-    
+
     if (!insertResult || insertResult.length === 0) {
-      return res.status(500).json({ error: "Failed to create child account" });
+      return res.status(500).json({ error: 'Failed to create child account' });
     }
 
     const child = insertResult[0];
@@ -163,27 +160,26 @@ router.post('/parent/add-child', async (req: Request, res: Response) => {
     const relationshipData = {
       parentId: validatedData.parentId,
       childId: child.id,
-      relationshipType: "parent-child",
+      relationshipType: 'parent-child',
       active: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     await db.insert(parentChildRelationships).values(relationshipData);
 
     // Return child data without password
     const { password, ...childWithoutPassword } = child;
-    
-    res.status(201).json({
-      message: "Child account created successfully",
-      child: childWithoutPassword
-    });
 
+    res.status(201).json({
+      message: 'Child account created successfully',
+      child: childWithoutPassword,
+    });
   } catch (error) {
-    console.error("Add child error:", error);
-    res.status(500).json({ 
-      error: "Server error", 
-      message: "An error occurred while adding the child."
+    console.error('Add child error:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'An error occurred while adding the child.',
     });
   }
 });
@@ -192,37 +188,37 @@ router.post('/parent/add-child', async (req: Request, res: Response) => {
 router.get('/parent/:parentId/children', async (req: Request, res: Response) => {
   try {
     const parentId = parseInt(req.params.parentId);
-    
+
     if (isNaN(parentId)) {
-      return res.status(400).json({ error: "Invalid parent ID" });
+      return res.status(400).json({ error: 'Invalid parent ID' });
     }
 
     // Check if parent exists
     const parent = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, parentId)
+      where: (users, { eq }) => eq(users.id, parentId),
     });
 
     if (!parent || parent.role !== 'parent') {
-      return res.status(404).json({ error: "Parent not found" });
+      return res.status(404).json({ error: 'Parent not found' });
     }
 
     // Get parent-child relationships
     const relationships = await db.query.parentChildRelationships.findMany({
-      where: (parentChildRelationships, { eq }) => eq(parentChildRelationships.parentId, parentId)
+      where: (parentChildRelationships, { eq }) => eq(parentChildRelationships.parentId, parentId),
     });
 
     // Get children data
     const childrenData = await Promise.all(
       relationships.map(async (rel) => {
         const child = await db.query.users.findFirst({
-          where: (users, { eq }) => eq(users.id, rel.childId)
+          where: (users, { eq }) => eq(users.id, rel.childId),
         });
 
         if (!child) return null;
 
         // Remove password
         const { password, ...childWithoutPassword } = child;
-        
+
         // Parse metadata
         let metadata = {};
         try {
@@ -230,28 +226,27 @@ router.get('/parent/:parentId/children', async (req: Request, res: Response) => 
             metadata = JSON.parse(child.metadata as string);
           }
         } catch (e) {
-          console.error("Error parsing child metadata:", e);
+          console.error('Error parsing child metadata:', e);
         }
 
         return {
           ...childWithoutPassword,
-          ...metadata
+          ...metadata,
         };
-      })
+      }),
     );
 
     // Filter out nulls
     const children = childrenData.filter(Boolean);
-    
-    res.status(200).json({
-      children
-    });
 
+    res.status(200).json({
+      children,
+    });
   } catch (error) {
-    console.error("Get children error:", error);
-    res.status(500).json({ 
-      error: "Server error", 
-      message: "An error occurred while retrieving children data."
+    console.error('Get children error:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'An error occurred while retrieving children data.',
     });
   }
 });
@@ -260,18 +255,18 @@ router.get('/parent/:parentId/children', async (req: Request, res: Response) => 
 router.patch('/child/:childId', async (req: Request, res: Response) => {
   try {
     const childId = parseInt(req.params.childId);
-    
+
     if (isNaN(childId)) {
-      return res.status(400).json({ error: "Invalid child ID" });
+      return res.status(400).json({ error: 'Invalid child ID' });
     }
 
     // Check if child exists
     const child = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, childId)
+      where: (users, { eq }) => eq(users.id, childId),
     });
 
     if (!child || child.role !== 'student') {
-      return res.status(404).json({ error: "Child not found" });
+      return res.status(404).json({ error: 'Child not found' });
     }
 
     // Parse existing metadata
@@ -281,7 +276,7 @@ router.patch('/child/:childId', async (req: Request, res: Response) => {
         metadata = JSON.parse(child.metadata as string);
       }
     } catch (e) {
-      console.error("Error parsing child metadata:", e);
+      console.error('Error parsing child metadata:', e);
     }
 
     // Update user data with new values
@@ -289,9 +284,9 @@ router.patch('/child/:childId', async (req: Request, res: Response) => {
       ...req.body,
       metadata: JSON.stringify({
         ...metadata,
-        ...req.body.metadata
+        ...req.body.metadata,
       }),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     // Remove metadata from main body if it exists
@@ -300,19 +295,19 @@ router.patch('/child/:childId', async (req: Request, res: Response) => {
     }
 
     // Update child record
-    await db.update(users)
+    await db
+      .update(users)
       .set(updatedData)
       .where(({ id }) => id.equals(childId));
 
     res.status(200).json({
-      message: "Child information updated successfully"
+      message: 'Child information updated successfully',
     });
-
   } catch (error) {
-    console.error("Update child error:", error);
-    res.status(500).json({ 
-      error: "Server error", 
-      message: "An error occurred while updating the child information."
+    console.error('Update child error:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'An error occurred while updating the child information.',
     });
   }
 });
@@ -331,27 +326,27 @@ router.post('/parent/curriculum-plan', async (req: Request, res: Response) => {
       startDate: z.string(),
       endDate: z.string(),
       goals: z.array(z.string()),
-      subjects: z.array(z.string())
+      subjects: z.array(z.string()),
     });
 
     const validatedData = schema.parse(req.body);
-    
+
     // Check if parent exists
     const parent = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, validatedData.parentId)
+      where: (users, { eq }) => eq(users.id, validatedData.parentId),
     });
 
     if (!parent || parent.role !== 'parent') {
-      return res.status(404).json({ error: "Parent not found" });
+      return res.status(404).json({ error: 'Parent not found' });
     }
 
     // Check if child exists
     const child = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, validatedData.childId)
+      where: (users, { eq }) => eq(users.id, validatedData.childId),
     });
 
     if (!child || child.role !== 'student') {
-      return res.status(404).json({ error: "Child not found" });
+      return res.status(404).json({ error: 'Child not found' });
     }
 
     // Create curriculum plan
@@ -368,27 +363,26 @@ router.post('/parent/curriculum-plan', async (req: Request, res: Response) => {
       subjects: JSON.stringify(validatedData.subjects),
       active: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const insertResult = await db.insert(curriculumPlans).values(planData).returning();
-    
+
     if (!insertResult || insertResult.length === 0) {
-      return res.status(500).json({ error: "Failed to create curriculum plan" });
+      return res.status(500).json({ error: 'Failed to create curriculum plan' });
     }
 
     const plan = insertResult[0];
-    
-    res.status(201).json({
-      message: "Curriculum plan created successfully",
-      plan
-    });
 
+    res.status(201).json({
+      message: 'Curriculum plan created successfully',
+      plan,
+    });
   } catch (error) {
-    console.error("Create curriculum plan error:", error);
-    res.status(500).json({ 
-      error: "Server error", 
-      message: "An error occurred while creating the curriculum plan."
+    console.error('Create curriculum plan error:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'An error occurred while creating the curriculum plan.',
     });
   }
 });
@@ -397,34 +391,33 @@ router.post('/parent/curriculum-plan', async (req: Request, res: Response) => {
 router.get('/child/:childId/schedule', async (req: Request, res: Response) => {
   try {
     const childId = parseInt(req.params.childId);
-    
+
     if (isNaN(childId)) {
-      return res.status(400).json({ error: "Invalid child ID" });
+      return res.status(400).json({ error: 'Invalid child ID' });
     }
 
     // Check if child exists
     const child = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, childId)
+      where: (users, { eq }) => eq(users.id, childId),
     });
 
     if (!child || child.role !== 'student') {
-      return res.status(404).json({ error: "Child not found" });
+      return res.status(404).json({ error: 'Child not found' });
     }
 
     // Get learning schedules for the child
     const schedules = await db.query.learningSchedules.findMany({
-      where: (learningSchedules, { eq }) => eq(learningSchedules.childId, childId)
-    });
-    
-    res.status(200).json({
-      schedules
+      where: (learningSchedules, { eq }) => eq(learningSchedules.childId, childId),
     });
 
+    res.status(200).json({
+      schedules,
+    });
   } catch (error) {
-    console.error("Get schedule error:", error);
-    res.status(500).json({ 
-      error: "Server error", 
-      message: "An error occurred while retrieving the schedule."
+    console.error('Get schedule error:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'An error occurred while retrieving the schedule.',
     });
   }
 });
@@ -442,18 +435,18 @@ router.post('/child/schedule', async (req: Request, res: Response) => {
       startTime: z.string(),
       endTime: z.string(),
       description: z.string().optional(),
-      resourceLinks: z.array(z.string()).optional()
+      resourceLinks: z.array(z.string()).optional(),
     });
 
     const validatedData = schema.parse(req.body);
-    
+
     // Check if child exists
     const child = await db.query.users.findFirst({
-      where: (users, { eq }) => eq(users.id, validatedData.childId)
+      where: (users, { eq }) => eq(users.id, validatedData.childId),
     });
 
     if (!child || child.role !== 'student') {
-      return res.status(404).json({ error: "Child not found" });
+      return res.status(404).json({ error: 'Child not found' });
     }
 
     // Create schedule item
@@ -465,33 +458,32 @@ router.post('/child/schedule', async (req: Request, res: Response) => {
       subject: validatedData.subject,
       startTime: validatedData.startTime,
       endTime: validatedData.endTime,
-      description: validatedData.description || "",
+      description: validatedData.description || '',
       resourceLinks: JSON.stringify(validatedData.resourceLinks || []),
       progress: 0,
       completed: false,
       active: true,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     const insertResult = await db.insert(learningSchedules).values(scheduleData).returning();
-    
+
     if (!insertResult || insertResult.length === 0) {
-      return res.status(500).json({ error: "Failed to create schedule item" });
+      return res.status(500).json({ error: 'Failed to create schedule item' });
     }
 
     const schedule = insertResult[0];
-    
-    res.status(201).json({
-      message: "Schedule item created successfully",
-      schedule
-    });
 
+    res.status(201).json({
+      message: 'Schedule item created successfully',
+      schedule,
+    });
   } catch (error) {
-    console.error("Create schedule error:", error);
-    res.status(500).json({ 
-      error: "Server error", 
-      message: "An error occurred while creating the schedule item."
+    console.error('Create schedule error:', error);
+    res.status(500).json({
+      error: 'Server error',
+      message: 'An error occurred while creating the schedule item.',
     });
   }
 });

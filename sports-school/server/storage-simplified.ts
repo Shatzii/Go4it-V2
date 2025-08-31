@@ -1,11 +1,11 @@
 import { Pool } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
 import { eq } from 'drizzle-orm';
-import session from "express-session";
-import connectPgSimple from "connect-pg-simple";
+import session from 'express-session';
+import connectPgSimple from 'connect-pg-simple';
 import { randomBytes } from 'crypto';
 
-import { 
+import {
   users,
   apiKeys,
   learningStyleResults,
@@ -26,8 +26,8 @@ import {
   type ParentChildRelationship,
   type InsertParentChildRelationship,
   type GeneratedContent,
-  type InsertGeneratedContent
-} from "@shared/schema";
+  type InsertGeneratedContent,
+} from '@shared/schema';
 
 import { pool, db } from './db';
 
@@ -38,13 +38,13 @@ const PostgresSessionStore = connectPgSimple(session);
 export interface IStorage {
   // Session store
   sessionStore: session.SessionStore;
-  
+
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(userId: number, userData: Partial<InsertUser>): Promise<User | undefined>;
-  
+
   // API Key operations
   getApiKeys(): Promise<ApiKey[]>;
   getApiKey(id: number): Promise<ApiKey | undefined>;
@@ -52,30 +52,41 @@ export interface IStorage {
   createApiKey(apiKey: InsertApiKey): Promise<ApiKey>;
   updateApiKey(id: number, apiKey: Partial<InsertApiKey>): Promise<ApiKey | undefined>;
   deleteApiKey(id: number): Promise<boolean>;
-  
+
   // Learning style assessment operations
   getLearningStyleResults(userId: number): Promise<LearningStyleResult[]>;
   getLearningStyleResult(id: number): Promise<LearningStyleResult | undefined>;
   createLearningStyleResult(result: InsertLearningStyleResult): Promise<LearningStyleResult>;
-  updateLearningStyleResult(id: number, result: Partial<InsertLearningStyleResult>): Promise<LearningStyleResult | undefined>;
-  
+  updateLearningStyleResult(
+    id: number,
+    result: Partial<InsertLearningStyleResult>,
+  ): Promise<LearningStyleResult | undefined>;
+
   // Neurotype assessment operations
   getNeurotypeResults(userId: number): Promise<NeurotypeResult[]>;
   getNeurotypeResult(id: number): Promise<NeurotypeResult | undefined>;
   createNeurotypeResult(result: InsertNeurotypeResult): Promise<NeurotypeResult>;
-  updateNeurotypeResult(id: number, result: Partial<InsertNeurotypeResult>): Promise<NeurotypeResult | undefined>;
-  
+  updateNeurotypeResult(
+    id: number,
+    result: Partial<InsertNeurotypeResult>,
+  ): Promise<NeurotypeResult | undefined>;
+
   // Learning profile operations
   getLearningProfiles(userId: number): Promise<LearningProfile[]>;
   getLearningProfile(id: number): Promise<LearningProfile | undefined>;
   createLearningProfile(profile: InsertLearningProfile): Promise<LearningProfile>;
-  updateLearningProfile(id: number, profile: Partial<InsertLearningProfile>): Promise<LearningProfile | undefined>;
-  
+  updateLearningProfile(
+    id: number,
+    profile: Partial<InsertLearningProfile>,
+  ): Promise<LearningProfile | undefined>;
+
   // Parent-child relationship operations
   getChildUsers(parentUserId: number): Promise<User[]>;
   getParentUsers(childUserId: number): Promise<User[]>;
-  createParentChildRelationship(relationship: InsertParentChildRelationship): Promise<ParentChildRelationship>;
-  
+  createParentChildRelationship(
+    relationship: InsertParentChildRelationship,
+  ): Promise<ParentChildRelationship>;
+
   // Generated content operations
   getGeneratedContents(userId: number): Promise<GeneratedContent[]>;
   getGeneratedContent(id: number): Promise<GeneratedContent | undefined>;
@@ -87,9 +98,9 @@ export class DatabaseStorage implements IStorage {
   // Session Store
   sessionStore = new PostgresSessionStore({
     pool,
-    createTableIfMissing: true
+    createTableIfMissing: true,
   });
-  
+
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     try {
@@ -123,18 +134,14 @@ export class DatabaseStorage implements IStorage {
 
   async updateUser(userId: number, userData: Partial<InsertUser>): Promise<User | undefined> {
     try {
-      const [user] = await db
-        .update(users)
-        .set(userData)
-        .where(eq(users.id, userId))
-        .returning();
+      const [user] = await db.update(users).set(userData).where(eq(users.id, userId)).returning();
       return user;
     } catch (error) {
       console.error('Error in updateUser:', error);
       return undefined;
     }
   }
-  
+
   // API Key operations
   async getApiKeys(): Promise<ApiKey[]> {
     try {
@@ -144,7 +151,7 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
+
   async getApiKey(id: number): Promise<ApiKey | undefined> {
     try {
       const [apiKey] = await db.select().from(apiKeys).where(eq(apiKeys.id, id));
@@ -154,7 +161,7 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   async getApiKeyByName(name: string): Promise<ApiKey | undefined> {
     try {
       const [apiKey] = await db.select().from(apiKeys).where(eq(apiKeys.name, name));
@@ -164,14 +171,14 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   async createApiKey(apiKeyData: InsertApiKey): Promise<ApiKey> {
     try {
       // Generate a random API key if one is not provided
       if (!apiKeyData.key) {
         apiKeyData.key = randomBytes(32).toString('hex');
       }
-      
+
       const [apiKey] = await db.insert(apiKeys).values(apiKeyData).returning();
       return apiKey;
     } catch (error) {
@@ -179,7 +186,7 @@ export class DatabaseStorage implements IStorage {
       throw new Error(`Failed to create API key: ${error.message}`);
     }
   }
-  
+
   async updateApiKey(id: number, apiKeyData: Partial<InsertApiKey>): Promise<ApiKey | undefined> {
     try {
       const [apiKey] = await db
@@ -193,7 +200,7 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   async deleteApiKey(id: number): Promise<boolean> {
     try {
       await db.delete(apiKeys).where(eq(apiKeys.id, id));
@@ -203,7 +210,7 @@ export class DatabaseStorage implements IStorage {
       return false;
     }
   }
-  
+
   // Learning style assessment operations
   async getLearningStyleResults(userId: number): Promise<LearningStyleResult[]> {
     try {
@@ -216,7 +223,7 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
   }
-  
+
   async getLearningStyleResult(id: number): Promise<LearningStyleResult | undefined> {
     try {
       const [result] = await db
@@ -229,21 +236,23 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
-  async createLearningStyleResult(resultData: InsertLearningStyleResult): Promise<LearningStyleResult> {
+
+  async createLearningStyleResult(
+    resultData: InsertLearningStyleResult,
+  ): Promise<LearningStyleResult> {
     try {
-      const [result] = await db
-        .insert(learningStyleResults)
-        .values(resultData)
-        .returning();
+      const [result] = await db.insert(learningStyleResults).values(resultData).returning();
       return result;
     } catch (error) {
       console.error('Error in createLearningStyleResult:', error);
       throw new Error(`Failed to create learning style result: ${error.message}`);
     }
   }
-  
-  async updateLearningStyleResult(id: number, resultData: Partial<InsertLearningStyleResult>): Promise<LearningStyleResult | undefined> {
+
+  async updateLearningStyleResult(
+    id: number,
+    resultData: Partial<InsertLearningStyleResult>,
+  ): Promise<LearningStyleResult | undefined> {
     try {
       const [result] = await db
         .update(learningStyleResults)
@@ -256,47 +265,41 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   // Neurotype assessment operations
   async getNeurotypeResults(userId: number): Promise<NeurotypeResult[]> {
     try {
-      return await db
-        .select()
-        .from(neurotypeResults)
-        .where(eq(neurotypeResults.userId, userId));
+      return await db.select().from(neurotypeResults).where(eq(neurotypeResults.userId, userId));
     } catch (error) {
       console.error('Error in getNeurotypeResults:', error);
       return [];
     }
   }
-  
+
   async getNeurotypeResult(id: number): Promise<NeurotypeResult | undefined> {
     try {
-      const [result] = await db
-        .select()
-        .from(neurotypeResults)
-        .where(eq(neurotypeResults.id, id));
+      const [result] = await db.select().from(neurotypeResults).where(eq(neurotypeResults.id, id));
       return result;
     } catch (error) {
       console.error('Error in getNeurotypeResult:', error);
       return undefined;
     }
   }
-  
+
   async createNeurotypeResult(resultData: InsertNeurotypeResult): Promise<NeurotypeResult> {
     try {
-      const [result] = await db
-        .insert(neurotypeResults)
-        .values(resultData)
-        .returning();
+      const [result] = await db.insert(neurotypeResults).values(resultData).returning();
       return result;
     } catch (error) {
       console.error('Error in createNeurotypeResult:', error);
       throw new Error(`Failed to create neurotype result: ${error.message}`);
     }
   }
-  
-  async updateNeurotypeResult(id: number, resultData: Partial<InsertNeurotypeResult>): Promise<NeurotypeResult | undefined> {
+
+  async updateNeurotypeResult(
+    id: number,
+    resultData: Partial<InsertNeurotypeResult>,
+  ): Promise<NeurotypeResult | undefined> {
     try {
       const [result] = await db
         .update(neurotypeResults)
@@ -309,47 +312,41 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   // Learning profile operations
   async getLearningProfiles(userId: number): Promise<LearningProfile[]> {
     try {
-      return await db
-        .select()
-        .from(learningProfiles)
-        .where(eq(learningProfiles.userId, userId));
+      return await db.select().from(learningProfiles).where(eq(learningProfiles.userId, userId));
     } catch (error) {
       console.error('Error in getLearningProfiles:', error);
       return [];
     }
   }
-  
+
   async getLearningProfile(id: number): Promise<LearningProfile | undefined> {
     try {
-      const [profile] = await db
-        .select()
-        .from(learningProfiles)
-        .where(eq(learningProfiles.id, id));
+      const [profile] = await db.select().from(learningProfiles).where(eq(learningProfiles.id, id));
       return profile;
     } catch (error) {
       console.error('Error in getLearningProfile:', error);
       return undefined;
     }
   }
-  
+
   async createLearningProfile(profileData: InsertLearningProfile): Promise<LearningProfile> {
     try {
-      const [profile] = await db
-        .insert(learningProfiles)
-        .values(profileData)
-        .returning();
+      const [profile] = await db.insert(learningProfiles).values(profileData).returning();
       return profile;
     } catch (error) {
       console.error('Error in createLearningProfile:', error);
       throw new Error(`Failed to create learning profile: ${error.message}`);
     }
   }
-  
-  async updateLearningProfile(id: number, profileData: Partial<InsertLearningProfile>): Promise<LearningProfile | undefined> {
+
+  async updateLearningProfile(
+    id: number,
+    profileData: Partial<InsertLearningProfile>,
+  ): Promise<LearningProfile | undefined> {
     try {
       const [profile] = await db
         .update(learningProfiles)
@@ -362,7 +359,7 @@ export class DatabaseStorage implements IStorage {
       return undefined;
     }
   }
-  
+
   // Parent-child relationship operations
   async getChildUsers(parentUserId: number): Promise<User[]> {
     try {
@@ -370,51 +367,45 @@ export class DatabaseStorage implements IStorage {
         .select()
         .from(parentChildRelationships)
         .where(eq(parentChildRelationships.parentId, parentUserId));
-      
+
       if (relationships.length === 0) return [];
-      
-      const childIds = relationships.map(rel => rel.childId);
-      
+
+      const childIds = relationships.map((rel) => rel.childId);
+
       return await db
         .select()
         .from(users)
-        .where(
-          childIds.length > 0 
-            ? eq(users.id, childIds[0]) 
-            : eq(users.id, -1)
-        );
+        .where(childIds.length > 0 ? eq(users.id, childIds[0]) : eq(users.id, -1));
     } catch (error) {
       console.error('Error in getChildUsers:', error);
       return [];
     }
   }
-  
+
   async getParentUsers(childUserId: number): Promise<User[]> {
     try {
       const relationships = await db
         .select()
         .from(parentChildRelationships)
         .where(eq(parentChildRelationships.childId, childUserId));
-      
+
       if (relationships.length === 0) return [];
-      
-      const parentIds = relationships.map(rel => rel.parentId);
-      
+
+      const parentIds = relationships.map((rel) => rel.parentId);
+
       return await db
         .select()
         .from(users)
-        .where(
-          parentIds.length > 0 
-            ? eq(users.id, parentIds[0]) 
-            : eq(users.id, -1)
-        );
+        .where(parentIds.length > 0 ? eq(users.id, parentIds[0]) : eq(users.id, -1));
     } catch (error) {
       console.error('Error in getParentUsers:', error);
       return [];
     }
   }
-  
-  async createParentChildRelationship(relationshipData: InsertParentChildRelationship): Promise<ParentChildRelationship> {
+
+  async createParentChildRelationship(
+    relationshipData: InsertParentChildRelationship,
+  ): Promise<ParentChildRelationship> {
     try {
       const [relationship] = await db
         .insert(parentChildRelationships)
@@ -426,39 +417,30 @@ export class DatabaseStorage implements IStorage {
       throw new Error(`Failed to create parent-child relationship: ${error.message}`);
     }
   }
-  
+
   // Generated content operations
   async getGeneratedContents(userId: number): Promise<GeneratedContent[]> {
     try {
-      return await db
-        .select()
-        .from(generatedContent)
-        .where(eq(generatedContent.userId, userId));
+      return await db.select().from(generatedContent).where(eq(generatedContent.userId, userId));
     } catch (error) {
       console.error('Error in getGeneratedContents:', error);
       return [];
     }
   }
-  
+
   async getGeneratedContent(id: number): Promise<GeneratedContent | undefined> {
     try {
-      const [content] = await db
-        .select()
-        .from(generatedContent)
-        .where(eq(generatedContent.id, id));
+      const [content] = await db.select().from(generatedContent).where(eq(generatedContent.id, id));
       return content;
     } catch (error) {
       console.error('Error in getGeneratedContent:', error);
       return undefined;
     }
   }
-  
+
   async createGeneratedContent(contentData: InsertGeneratedContent): Promise<GeneratedContent> {
     try {
-      const [content] = await db
-        .insert(generatedContent)
-        .values(contentData)
-        .returning();
+      const [content] = await db.insert(generatedContent).values(contentData).returning();
       return content;
     } catch (error) {
       console.error('Error in createGeneratedContent:', error);

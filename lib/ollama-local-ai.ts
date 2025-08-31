@@ -23,14 +23,16 @@ export class OllamaLocalAI {
 
   async initialize(): Promise<void> {
     console.log('Initializing Ollama local AI connection...');
-    
+
     try {
       // Check if Ollama is running
       const response = await fetch(`${this.baseUrl}/api/tags`);
       if (response.ok) {
         const models = await response.json();
-        console.log(`Ollama available with models: ${models.models?.map((m: any) => m.name).join(', ')}`);
-        
+        console.log(
+          `Ollama available with models: ${models.models?.map((m: any) => m.name).join(', ')}`,
+        );
+
         // Select best available model
         this.selectBestModel(models.models || []);
         this.isAvailable = true;
@@ -48,7 +50,7 @@ export class OllamaLocalAI {
 
     try {
       const systemPrompt = this.buildSportsAnalysisPrompt(prompt);
-      
+
       const response = await fetch(`${this.baseUrl}/api/generate`, {
         method: 'POST',
         headers: {
@@ -62,9 +64,9 @@ export class OllamaLocalAI {
           options: {
             temperature: 0.7,
             top_p: 0.9,
-            max_tokens: 1000
-          }
-        })
+            max_tokens: 1000,
+          },
+        }),
       });
 
       if (!response.ok) {
@@ -72,14 +74,13 @@ export class OllamaLocalAI {
       }
 
       const result: OllamaResponse = await response.json();
-      
+
       // Update context for conversation continuity
       if (result.context) {
         this.contextHistory = result.context;
       }
 
       return result.response;
-      
     } catch (error) {
       console.error('Ollama analysis failed:', error);
       return this.generateFallbackAnalysis(prompt);
@@ -91,7 +92,7 @@ export class OllamaLocalAI {
       sport: sport,
       poseData: analysisData.poseData,
       videoMetrics: analysisData.metrics,
-      previousAnalysis: analysisData.previousFeedback
+      previousAnalysis: analysisData.previousFeedback,
     };
 
     const systemPrompt = `You are an elite sports performance coach with 20+ years of experience in ${sport}. 
@@ -123,7 +124,7 @@ Write as if speaking directly to the athlete in an encouraging, professional ton
     return await this.generateSportsAnalysis({
       sport,
       poseData: prompt.poseData,
-      videoMetrics: prompt.videoMetrics
+      videoMetrics: prompt.videoMetrics,
     });
   }
 
@@ -155,11 +156,15 @@ Focus on evidence-based recommendations specific to ${sport} athletes.`;
     return await this.generateSportsAnalysis({
       sport,
       poseData: biomechanicsData,
-      videoMetrics: {}
+      videoMetrics: {},
     });
   }
 
-  async generatePerformanceComparison(athleteData: any, benchmarkLevel: string, sport: string): Promise<string> {
+  async generatePerformanceComparison(
+    athleteData: any,
+    benchmarkLevel: string,
+    sport: string,
+  ): Promise<string> {
     const systemPrompt = `You are a sports analytics expert specializing in performance benchmarking.
 
 Compare this athlete's performance against ${benchmarkLevel} standards:
@@ -183,22 +188,16 @@ Be specific with numbers and actionable insights.`;
     return await this.generateSportsAnalysis({
       sport,
       poseData: athleteData,
-      videoMetrics: {}
+      videoMetrics: {},
     });
   }
 
   private selectBestModel(availableModels: any[]): void {
     // Priority order of models (best to fallback)
-    const modelPriority = [
-      'llama2:70b',
-      'llama2:13b', 
-      'llama2:7b',
-      'mistral:7b',
-      'codellama:7b'
-    ];
+    const modelPriority = ['llama2:70b', 'llama2:13b', 'llama2:7b', 'mistral:7b', 'codellama:7b'];
 
     for (const preferredModel of modelPriority) {
-      if (availableModels.some(m => m.name === preferredModel)) {
+      if (availableModels.some((m) => m.name === preferredModel)) {
         this.model = preferredModel;
         console.log(`Selected model: ${this.model}`);
         return;
@@ -292,7 +291,7 @@ Note: This analysis is generated using baseline algorithms. For enhanced insight
     try {
       const response = await fetch(`${this.baseUrl}/api/tags`, {
         method: 'GET',
-        timeout: 5000
+        timeout: 5000,
       });
       return response.ok;
     } catch {

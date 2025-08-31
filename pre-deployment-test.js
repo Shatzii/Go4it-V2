@@ -18,7 +18,7 @@ const testResults = {
   passed: 0,
   failed: 0,
   total: 0,
-  details: []
+  details: [],
 };
 
 // Helper function to make HTTP requests
@@ -32,12 +32,12 @@ function makeRequest(url, options = {}) {
     const req = protocol.request(url, options, (res) => {
       clearTimeout(timeout);
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
         resolve({
           statusCode: res.statusCode,
           headers: res.headers,
-          data: data
+          data: data,
         });
       });
     });
@@ -83,7 +83,11 @@ async function testPageEndpoints() {
       if (response.statusCode === 200) {
         results.push({ page, passed: true, message: `Page ${page} loads correctly` });
       } else {
-        results.push({ page, passed: false, message: `Page ${page} returned ${response.statusCode}` });
+        results.push({
+          page,
+          passed: false,
+          message: `Page ${page} returned ${response.statusCode}`,
+        });
       }
     } catch (error) {
       results.push({ page, passed: false, message: `Page ${page} error: ${error.message}` });
@@ -101,13 +105,13 @@ async function testAPIEndpoints() {
     { url: '/api/ai/models', method: 'GET', expectAuth: true },
     { url: '/api/performance/metrics', method: 'GET', expectAuth: true },
     { url: '/api/notifications', method: 'GET', expectAuth: true },
-    { 
-      url: '/api/search', 
-      method: 'POST', 
+    {
+      url: '/api/search',
+      method: 'POST',
       expectAuth: true,
       body: JSON.stringify({ query: 'test', filters: { type: 'all' } }),
-      headers: { 'Content-Type': 'application/json' }
-    }
+      headers: { 'Content-Type': 'application/json' },
+    },
   ];
 
   const results = [];
@@ -117,35 +121,35 @@ async function testAPIEndpoints() {
       const options = {
         method: endpoint.method,
         headers: endpoint.headers || {},
-        body: endpoint.body
+        body: endpoint.body,
       };
 
       const response = await makeRequest(`${BASE_URL}${endpoint.url}`, options);
-      
+
       if (endpoint.expectAuth && response.statusCode === 401) {
-        results.push({ 
-          endpoint: endpoint.url, 
-          passed: true, 
-          message: `${endpoint.url} properly secured (401 as expected)` 
+        results.push({
+          endpoint: endpoint.url,
+          passed: true,
+          message: `${endpoint.url} properly secured (401 as expected)`,
         });
       } else if (!endpoint.expectAuth && response.statusCode === 200) {
-        results.push({ 
-          endpoint: endpoint.url, 
-          passed: true, 
-          message: `${endpoint.url} responding correctly` 
+        results.push({
+          endpoint: endpoint.url,
+          passed: true,
+          message: `${endpoint.url} responding correctly`,
         });
       } else {
-        results.push({ 
-          endpoint: endpoint.url, 
-          passed: false, 
-          message: `${endpoint.url} unexpected response: ${response.statusCode}` 
+        results.push({
+          endpoint: endpoint.url,
+          passed: false,
+          message: `${endpoint.url} unexpected response: ${response.statusCode}`,
         });
       }
     } catch (error) {
-      results.push({ 
-        endpoint: endpoint.url, 
-        passed: false, 
-        message: `${endpoint.url} error: ${error.message}` 
+      results.push({
+        endpoint: endpoint.url,
+        passed: false,
+        message: `${endpoint.url} error: ${error.message}`,
       });
     }
   }
@@ -182,7 +186,7 @@ async function testFileStructure() {
     'public/sw.js',
     'lib/db.ts',
     'lib/auth.ts',
-    'shared/schema.ts'
+    'shared/schema.ts',
   ];
 
   const results = [];
@@ -214,23 +218,23 @@ async function testBuildProcess() {
 // Main test runner
 async function runTests() {
   console.log('🚀 Starting Go4It Sports Platform Pre-Deployment Tests\n');
-  
+
   const tests = [
     { name: 'Health Endpoint', test: testHealthEndpoint },
     { name: 'Page Endpoints', test: testPageEndpoints },
     { name: 'API Endpoints', test: testAPIEndpoints },
     { name: 'Database Connection', test: testDatabaseConnection },
     { name: 'File Structure', test: testFileStructure },
-    { name: 'Build Process', test: testBuildProcess }
+    { name: 'Build Process', test: testBuildProcess },
   ];
 
   for (const { name, test } of tests) {
     console.log(`\n📋 Running ${name} tests...`);
     const result = await test();
-    
+
     if (Array.isArray(result)) {
       // Multiple test results
-      result.forEach(r => {
+      result.forEach((r) => {
         testResults.total++;
         if (r.passed) {
           testResults.passed++;
@@ -272,7 +276,7 @@ async function runTests() {
 }
 
 // Run tests
-runTests().catch(error => {
+runTests().catch((error) => {
   console.error('Test runner error:', error);
   process.exit(1);
 });

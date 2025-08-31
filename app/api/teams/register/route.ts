@@ -1,32 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const registrationData = await request.json()
-    
+    const registrationData = await request.json();
+
     // Validate required fields
     const requiredFields = [
-      'firstName', 'lastName', 'dateOfBirth', 'preferredDivision',
-      'parentFirstName', 'parentLastName', 'parentPhone', 'parentEmail'
-    ]
-    
+      'firstName',
+      'lastName',
+      'dateOfBirth',
+      'preferredDivision',
+      'parentFirstName',
+      'parentLastName',
+      'parentPhone',
+      'parentEmail',
+    ];
+
     for (const field of requiredFields) {
       if (!registrationData[field]) {
-        return NextResponse.json({
-          success: false,
-          error: `Missing required field: ${field}`
-        }, { status: 400 })
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Missing required field: ${field}`,
+          },
+          { status: 400 },
+        );
       }
     }
 
     // Generate registration ID
-    const registrationId = `TR-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-    
+    const registrationId = `TR-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+
     // Calculate age from date of birth
-    const birthDate = new Date(registrationData.dateOfBirth)
-    const today = new Date()
-    const age = today.getFullYear() - birthDate.getFullYear()
-    
+    const birthDate = new Date(registrationData.dateOfBirth);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear();
+
     // Determine cost based on division
     const divisionCosts: { [key: string]: number } = {
       '6u': 150,
@@ -34,10 +43,10 @@ export async function POST(request: NextRequest) {
       '10u': 200,
       '12u': 225,
       '14u': 250,
-      '16u': 275
-    }
-    
-    const cost = divisionCosts[registrationData.preferredDivision] || 200
+      '16u': 275,
+    };
+
+    const cost = divisionCosts[registrationData.preferredDivision] || 200;
 
     // Create registration record
     const registration = {
@@ -48,22 +57,22 @@ export async function POST(request: NextRequest) {
       status: 'pending-review',
       registrationDate: new Date().toISOString(),
       teamAssignment: null, // Will be assigned later by admin
-      paymentStatus: 'pending'
-    }
+      paymentStatus: 'pending',
+    };
 
     // In production, you would:
     // 1. Save to database
     // 2. Send confirmation email
     // 3. Notify coaches for team placement
     // 4. Process payment
-    
-    console.log('New team registration:', registration)
+
+    console.log('New team registration:', registration);
 
     // Send confirmation email (simulated)
-    await sendRegistrationConfirmation(registration)
-    
+    await sendRegistrationConfirmation(registration);
+
     // Notify coaches for team placement (simulated)
-    await notifyCoachesForPlacement(registration)
+    await notifyCoachesForPlacement(registration);
 
     return NextResponse.json({
       success: true,
@@ -76,18 +85,20 @@ export async function POST(request: NextRequest) {
           'Team placement review (1-2 business days)',
           'Email confirmation with team assignment',
           'Payment instructions will be sent',
-          'Practice schedule and team information'
-        ]
-      }
-    })
-
+          'Practice schedule and team information',
+        ],
+      },
+    });
   } catch (error) {
-    console.error('Team registration error:', error)
-    return NextResponse.json({
-      success: false,
-      error: 'Registration failed. Please try again.',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    console.error('Team registration error:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Registration failed. Please try again.',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -116,11 +127,11 @@ async function sendRegistrationConfirmation(registration: any) {
       Questions? Contact us at teams@go4itsports.com
       
       Welcome to Go4It Sports!
-    `
-  }
-  
-  console.log('Registration confirmation email sent:', emailContent)
-  return true
+    `,
+  };
+
+  console.log('Registration confirmation email sent:', emailContent);
+  return true;
 }
 
 async function notifyCoachesForPlacement(registration: any) {
@@ -139,9 +150,9 @@ async function notifyCoachesForPlacement(registration: any) {
       
       Please review and assign to appropriate team.
       Registration ID: ${registration.id}
-    `
-  }
-  
-  console.log('Coach notification sent:', coachNotification)
-  return true
+    `,
+  };
+
+  console.log('Coach notification sent:', coachNotification);
+  return true;
 }

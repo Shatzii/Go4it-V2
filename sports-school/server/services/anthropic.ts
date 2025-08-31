@@ -21,14 +21,16 @@ export function getTextFromResponse(content: any[]): string {
  */
 export async function generateChatResponse(
   messages: Array<{ role: 'user' | 'assistant'; content: string }>,
-  systemPrompt?: string
+  systemPrompt?: string,
 ): Promise<string> {
   try {
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1500,
       messages: messages,
-      system: systemPrompt || "You are an educational AI assistant specialized in helping neurodivergent learners. Be clear, patient, and adapt your teaching style to the student's needs.",
+      system:
+        systemPrompt ||
+        "You are an educational AI assistant specialized in helping neurodivergent learners. Be clear, patient, and adapt your teaching style to the student's needs.",
     });
 
     return getTextFromResponse(response.content);
@@ -50,7 +52,7 @@ export async function analyzeLearningProgress(
   studentText: string,
   subject: string,
   gradeLevel: string,
-  learningObjectives: string
+  learningObjectives: string,
 ): Promise<{
   proficiencyLevel: number;
   strengthAreas: string[];
@@ -81,10 +83,10 @@ export async function analyzeLearningProgress(
       model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1500,
       messages: [
-        { 
-          role: 'user', 
-          content: `Here is my work for analysis:\n\n${studentText}`
-        }
+        {
+          role: 'user',
+          content: `Here is my work for analysis:\n\n${studentText}`,
+        },
       ],
       system: systemPrompt,
     });
@@ -95,14 +97,16 @@ export async function analyzeLearningProgress(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const analysisData = JSON.parse(jsonMatch[0]);
 
     // Ensure we have all required fields
-    if (!analysisData.proficiencyLevel || 
-        !analysisData.strengthAreas || 
-        !analysisData.improvementAreas || 
-        !analysisData.feedback) {
+    if (
+      !analysisData.proficiencyLevel ||
+      !analysisData.strengthAreas ||
+      !analysisData.improvementAreas ||
+      !analysisData.feedback
+    ) {
       throw new Error('AI response missing required assessment fields');
     }
 
@@ -110,7 +114,7 @@ export async function analyzeLearningProgress(
       proficiencyLevel: Math.min(5, Math.max(1, analysisData.proficiencyLevel)), // Ensure between 1-5
       strengthAreas: analysisData.strengthAreas,
       improvementAreas: analysisData.improvementAreas,
-      feedback: analysisData.feedback
+      feedback: analysisData.feedback,
     };
   } catch (error) {
     console.error('Error analyzing learning progress:', error);
@@ -136,7 +140,7 @@ export async function generateLearningPlan(
   learningStyle: string,
   neurotype: string,
   currentKnowledge: string,
-  learningGoals: string
+  learningGoals: string,
 ): Promise<{
   recommendedActivities: string[];
   suggestedResources: string[];
@@ -187,14 +191,16 @@ export async function generateLearningPlan(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const planData = JSON.parse(jsonMatch[0]);
 
     // Ensure we have all required fields
-    if (!planData.recommendedActivities || 
-        !planData.suggestedResources || 
-        !planData.milestones || 
-        !planData.adaptations) {
+    if (
+      !planData.recommendedActivities ||
+      !planData.suggestedResources ||
+      !planData.milestones ||
+      !planData.adaptations
+    ) {
       throw new Error('AI response missing required learning plan fields');
     }
 
@@ -202,7 +208,7 @@ export async function generateLearningPlan(
       recommendedActivities: planData.recommendedActivities,
       suggestedResources: planData.suggestedResources,
       milestones: planData.milestones,
-      adaptations: planData.adaptations
+      adaptations: planData.adaptations,
     };
   } catch (error) {
     console.error('Error generating learning plan:', error);
@@ -218,29 +224,33 @@ export async function generateLearningPlan(
  */
 export async function analyzeImageForEducation(
   base64Image: string,
-  instructions: string
+  instructions: string,
 ): Promise<string> {
   try {
     const response = await anthropic.messages.create({
-      model: "claude-3-7-sonnet-20250219",
+      model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1500,
-      messages: [{
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: instructions || "Analyze this image and provide educational content suitable for students."
-          },
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: "image/jpeg",
-              data: base64Image
-            }
-          }
-        ]
-      }]
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text:
+                instructions ||
+                'Analyze this image and provide educational content suitable for students.',
+            },
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: 'image/jpeg',
+                data: base64Image,
+              },
+            },
+          ],
+        },
+      ],
     });
 
     return getTextFromResponse(response.content);
@@ -260,19 +270,19 @@ export async function analyzeImageForEducation(
 export async function generateQuiz(
   topic: string,
   difficulty: number,
-  questionCount: number = 5
+  questionCount: number = 5,
 ): Promise<{
   questions: Array<{
     question: string;
     options?: string[];
     answer: string;
     explanation: string;
-  }>
+  }>;
 }> {
   try {
     const difficultyLevel = Math.min(5, Math.max(1, difficulty));
     const count = Math.min(10, Math.max(1, questionCount));
-    
+
     const systemPrompt = `
       You are a specialized educational quiz creator.
       Generate a quiz on the topic "${topic}" with a difficulty level of ${difficultyLevel}/5 and ${count} questions.
@@ -298,10 +308,10 @@ export async function generateQuiz(
       model: 'claude-3-7-sonnet-20250219',
       max_tokens: 2500,
       messages: [
-        { 
-          role: 'user', 
-          content: `Please create a quiz on "${topic}" with ${count} questions at difficulty level ${difficultyLevel}/5.`
-        }
+        {
+          role: 'user',
+          content: `Please create a quiz on "${topic}" with ${count} questions at difficulty level ${difficultyLevel}/5.`,
+        },
       ],
       system: systemPrompt,
     });
@@ -312,11 +322,15 @@ export async function generateQuiz(
     if (!jsonMatch) {
       throw new Error('Could not parse JSON from AI response');
     }
-    
+
     const quizData = JSON.parse(jsonMatch[0]);
 
     // Validate quiz structure
-    if (!quizData.questions || !Array.isArray(quizData.questions) || quizData.questions.length === 0) {
+    if (
+      !quizData.questions ||
+      !Array.isArray(quizData.questions) ||
+      quizData.questions.length === 0
+    ) {
       throw new Error('AI response missing valid questions array');
     }
 
@@ -332,5 +346,5 @@ export default {
   analyzeLearningProgress,
   generateLearningPlan,
   analyzeImageForEducation,
-  generateQuiz
+  generateQuiz,
 };

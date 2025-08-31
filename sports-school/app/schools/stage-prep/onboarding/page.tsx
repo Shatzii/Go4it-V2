@@ -7,10 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Theater, Music, Palette, BookOpen, 
-  Calendar, Users, Star, Award,
-  Clock, Target, Heart
+import {
+  Theater,
+  Music,
+  Palette,
+  BookOpen,
+  Calendar,
+  Users,
+  Star,
+  Award,
+  Clock,
+  Target,
+  Heart,
 } from 'lucide-react';
 
 // Client component for interactive onboarding
@@ -23,7 +31,7 @@ export default function StagePrepOnboarding() {
     artisticInterest: '',
     experience: '',
     goals: '',
-    accommodations: ''
+    accommodations: '',
   });
 
   const handleNext = () => {
@@ -75,31 +83,51 @@ export default function StagePrepOnboarding() {
         <Card className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-purple-400">
-              {currentStep === 1 && <><Users className="w-5 h-5" /> Student Information</>}
-              {currentStep === 2 && <><Palette className="w-5 h-5" /> Artistic Interests</>}
-              {currentStep === 3 && <><Target className="w-5 h-5" /> Goals & Experience</>}
-              {currentStep === 4 && <><Heart className="w-5 h-5" /> Accommodations & Support</>}
+              {currentStep === 1 && (
+                <>
+                  <Users className="w-5 h-5" /> Student Information
+                </>
+              )}
+              {currentStep === 2 && (
+                <>
+                  <Palette className="w-5 h-5" /> Artistic Interests
+                </>
+              )}
+              {currentStep === 3 && (
+                <>
+                  <Target className="w-5 h-5" /> Goals & Experience
+                </>
+              )}
+              {currentStep === 4 && (
+                <>
+                  <Heart className="w-5 h-5" /> Accommodations & Support
+                </>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {currentStep === 1 && (
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="studentName" className="text-purple-300">Student Name</Label>
+                  <Label htmlFor="studentName" className="text-purple-300">
+                    Student Name
+                  </Label>
                   <Input
                     id="studentName"
                     value={formData.studentName}
-                    onChange={(e) => setFormData({...formData, studentName: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, studentName: e.target.value })}
                     placeholder="Enter student's full name"
                     className="bg-purple-500/10 border-purple-400 text-white placeholder:text-purple-300"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="grade" className="text-purple-300">Grade Level</Label>
+                  <Label htmlFor="grade" className="text-purple-300">
+                    Grade Level
+                  </Label>
                   <select
                     id="grade"
                     value={formData.grade}
-                    onChange={(e) => setFormData({...formData, grade: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, grade: e.target.value })}
                     className="w-full p-2 bg-purple-500/10 border border-purple-400 rounded text-white"
                   >
                     <option value="">Select grade...</option>
@@ -112,10 +140,13 @@ export default function StagePrepOnboarding() {
                   </select>
                 </div>
                 <div className="bg-purple-500/10 p-4 rounded-lg">
-                  <h3 className="font-semibold text-purple-300 mb-2">About S.T.A.G.E Prep Academy</h3>
+                  <h3 className="font-semibold text-purple-300 mb-2">
+                    About S.T.A.G.E Prep Academy
+                  </h3>
                   <p className="text-sm text-purple-200">
-                    Our academy focuses on theatrical arts, performance, and creative expression. 
-                    Students develop skills in acting, directing, set design, and theatrical production.
+                    Our academy focuses on theatrical arts, performance, and creative expression.
+                    Students develop skills in acting, directing, set design, and theatrical
+                    production.
                   </p>
                 </div>
               </div>
@@ -130,17 +161,19 @@ export default function StagePrepOnboarding() {
                       { value: 'acting', label: 'Acting', icon: Theater },
                       { value: 'directing', label: 'Directing', icon: Star },
                       { value: 'music', label: 'Musical Theater', icon: Music },
-                      { value: 'design', label: 'Set Design', icon: Palette }
-                    ].map(interest => (
+                      { value: 'design', label: 'Set Design', icon: Palette },
+                    ].map((interest) => (
                       <Button
                         key={interest.value}
                         variant="outline"
                         className={`h-20 flex flex-col items-center gap-2 ${
-                          formData.artisticInterest === interest.value 
-                            ? 'bg-purple-500/20 border-purple-400' 
+                          formData.artisticInterest === interest.value
+                            ? 'bg-purple-500/20 border-purple-400'
                             : 'bg-purple-500/10 border-purple-400 hover:bg-purple-500/20'
                         }`}
-                        onClick={() => setFormData({...formData, artisticInterest: interest.value})}
+                        onClick={() =>
+                          setFormData({ ...formData, artisticInterest: interest.value })
+                        }
                       >
                         <interest.icon className="w-6 h-6 text-purple-300" />
                         <span className="text-xs text-purple-200">{interest.label}</span>
@@ -163,21 +196,25 @@ export default function StagePrepOnboarding() {
             {currentStep === 3 && (
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="experience" className="text-purple-300">Previous Experience</Label>
+                  <Label htmlFor="experience" className="text-purple-300">
+                    Previous Experience
+                  </Label>
                   <textarea
                     id="experience"
                     value={formData.experience}
-                    onChange={(e) => setFormData({...formData, experience: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
                     placeholder="Tell us about any theater experience, performances, or related activities..."
                     className="w-full p-3 bg-purple-500/10 border border-purple-400 rounded text-white placeholder:text-purple-300 h-24"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="goals" className="text-purple-300">Academic and Artistic Goals</Label>
+                  <Label htmlFor="goals" className="text-purple-300">
+                    Academic and Artistic Goals
+                  </Label>
                   <textarea
                     id="goals"
                     value={formData.goals}
-                    onChange={(e) => setFormData({...formData, goals: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, goals: e.target.value })}
                     placeholder="What do you hope to achieve this year? College prep, specific skills, career goals..."
                     className="w-full p-3 bg-purple-500/10 border border-purple-400 rounded text-white placeholder:text-purple-300 h-24"
                   />
@@ -188,11 +225,13 @@ export default function StagePrepOnboarding() {
             {currentStep === 4 && (
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="accommodations" className="text-purple-300">Learning Accommodations</Label>
+                  <Label htmlFor="accommodations" className="text-purple-300">
+                    Learning Accommodations
+                  </Label>
                   <textarea
                     id="accommodations"
                     value={formData.accommodations}
-                    onChange={(e) => setFormData({...formData, accommodations: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, accommodations: e.target.value })}
                     placeholder="Any learning differences, accommodations, or support needs we should know about..."
                     className="w-full p-3 bg-purple-500/10 border border-purple-400 rounded text-white placeholder:text-purple-300 h-24"
                   />
@@ -209,7 +248,8 @@ export default function StagePrepOnboarding() {
                 <div className="bg-green-500/10 p-4 rounded-lg border border-green-400">
                   <h3 className="font-semibold text-green-300 mb-2">Ready to Begin!</h3>
                   <p className="text-sm text-green-200">
-                    Your personalized learning schedule will be generated based on your interests and goals.
+                    Your personalized learning schedule will be generated based on your interests
+                    and goals.
                   </p>
                 </div>
               </div>

@@ -4,19 +4,30 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { 
-  BookOpen, Heart, Shield, Calendar, 
-  MessageCircle, TrendingUp, Trophy, Star,
-  GraduationCap, DollarSign, Users
+import {
+  BookOpen,
+  Heart,
+  Shield,
+  Calendar,
+  MessageCircle,
+  TrendingUp,
+  Trophy,
+  Star,
+  GraduationCap,
+  DollarSign,
+  Users,
 } from 'lucide-react';
-import { SafeDynamicLoader, createSafeDynamicImport } from '@/components/dynamic/safe-dynamic-loader';
+import {
+  SafeDynamicLoader,
+  createSafeDynamicImport,
+} from '@/components/dynamic/safe-dynamic-loader';
 
 // Safe dynamic imports for better production builds
 const QuickLinks = createSafeDynamicImport(
-  () => import('@/components/dashboard/quick-links').then(mod => ({ default: mod.QuickLinks })),
+  () => import('@/components/dashboard/quick-links').then((mod) => ({ default: mod.QuickLinks })),
   {
-    fallbackTitle: "Quick Links Error",
-    fallbackMessage: "Unable to load quick links component",
+    fallbackTitle: 'Quick Links Error',
+    fallbackMessage: 'Unable to load quick links component',
     loadingComponent: (
       <Card className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border-indigo-500">
         <CardHeader>
@@ -24,21 +35,22 @@ const QuickLinks = createSafeDynamicImport(
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-20 bg-indigo-500/10 rounded-lg animate-pulse"></div>
             ))}
           </div>
         </CardContent>
       </Card>
-    )
-  }
+    ),
+  },
 );
 
 const ClassCreator = createSafeDynamicImport(
-  () => import('@/components/dashboard/class-creator').then(mod => ({ default: mod.ClassCreator })),
+  () =>
+    import('@/components/dashboard/class-creator').then((mod) => ({ default: mod.ClassCreator })),
   {
-    fallbackTitle: "Class Creator Error",
-    fallbackMessage: "Unable to load class creator component",
+    fallbackTitle: 'Class Creator Error',
+    fallbackMessage: 'Unable to load class creator component',
     loadingComponent: (
       <Card className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-500">
         <CardHeader>
@@ -51,8 +63,8 @@ const ClassCreator = createSafeDynamicImport(
           </div>
         </CardContent>
       </Card>
-    )
-  }
+    ),
+  },
 );
 
 // Force dynamic rendering for this page to prevent static generation issues
@@ -96,9 +108,12 @@ export default function SecondaryParentDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
             { name: 'Jordan', grade: '10th Grade', gpa: 3.8, track: 'College Prep', progress: 85 },
-            { name: 'Taylor', grade: '12th Grade', gpa: 3.9, track: 'AP Advanced', progress: 92 }
+            { name: 'Taylor', grade: '12th Grade', gpa: 3.9, track: 'AP Advanced', progress: 92 },
           ].map((child, index) => (
-            <Card key={index} className="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border-purple-500">
+            <Card
+              key={index}
+              className="bg-gradient-to-br from-purple-500/20 to-indigo-500/20 border-purple-500"
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-purple-400">
                   <Avatar className="w-8 h-8">

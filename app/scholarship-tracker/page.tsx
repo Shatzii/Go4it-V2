@@ -5,10 +5,26 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { DollarSign, Calendar, Trophy, Target, TrendingUp, AlertCircle, CheckCircle, Clock, Award } from 'lucide-react';
+import {
+  DollarSign,
+  Calendar,
+  Trophy,
+  Target,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Award,
+} from 'lucide-react';
 
 interface Scholarship {
   id: string;
@@ -47,7 +63,7 @@ export default function ScholarshipTrackerPage() {
     totalValue: 0,
     pendingApplications: 0,
     successRate: 0,
-    averageAmount: 0
+    averageAmount: 0,
   });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('available');
@@ -60,7 +76,7 @@ export default function ScholarshipTrackerPage() {
     try {
       const response = await fetch('/api/scholarships');
       const data = await response.json();
-      
+
       if (data.success) {
         setScholarships(data.scholarships);
         setTracker(data.tracker);
@@ -74,31 +90,46 @@ export default function ScholarshipTrackerPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'available': return 'bg-blue-500';
-      case 'applied': return 'bg-yellow-500';
-      case 'pending': return 'bg-orange-500';
-      case 'awarded': return 'bg-green-500';
-      case 'declined': return 'bg-red-500';
-      default: return 'bg-slate-500';
+      case 'available':
+        return 'bg-blue-500';
+      case 'applied':
+        return 'bg-yellow-500';
+      case 'pending':
+        return 'bg-orange-500';
+      case 'awarded':
+        return 'bg-green-500';
+      case 'declined':
+        return 'bg-red-500';
+      default:
+        return 'bg-slate-500';
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'athletic': return 'bg-red-500';
-      case 'academic': return 'bg-blue-500';
-      case 'need-based': return 'bg-green-500';
-      case 'merit': return 'bg-purple-500';
-      default: return 'bg-slate-500';
+      case 'athletic':
+        return 'bg-red-500';
+      case 'academic':
+        return 'bg-blue-500';
+      case 'need-based':
+        return 'bg-green-500';
+      case 'merit':
+        return 'bg-purple-500';
+      default:
+        return 'bg-slate-500';
     }
   };
 
   const getCompetitivenessColor = (level: string) => {
     switch (level) {
-      case 'low': return 'text-green-400';
-      case 'medium': return 'text-yellow-400';
-      case 'high': return 'text-red-400';
-      default: return 'text-slate-400';
+      case 'low':
+        return 'text-green-400';
+      case 'medium':
+        return 'text-yellow-400';
+      case 'high':
+        return 'text-red-400';
+      default:
+        return 'text-slate-400';
     }
   };
 
@@ -107,11 +138,11 @@ export default function ScholarshipTrackerPage() {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(amount);
   };
 
-  const filteredScholarships = scholarships.filter(s => {
+  const filteredScholarships = scholarships.filter((s) => {
     if (activeTab === 'available') return s.status === 'available';
     if (activeTab === 'applied') return s.status === 'applied' || s.status === 'pending';
     if (activeTab === 'awarded') return s.status === 'awarded';
@@ -135,11 +166,11 @@ export default function ScholarshipTrackerPage() {
             <DollarSign className="w-5 h-5 mr-2" />
             SCHOLARSHIP TRACKER
           </Badge>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
             SCHOLARSHIP OPPORTUNITIES
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
             Track, apply, and manage your scholarship applications in one place
           </p>
@@ -176,7 +207,9 @@ export default function ScholarshipTrackerPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-400">Total Value</p>
-                  <p className="text-2xl font-bold text-yellow-400">{formatCurrency(tracker.totalValue)}</p>
+                  <p className="text-2xl font-bold text-yellow-400">
+                    {formatCurrency(tracker.totalValue)}
+                  </p>
                 </div>
                 <DollarSign className="w-8 h-8 text-yellow-400" />
               </div>
@@ -208,8 +241,11 @@ export default function ScholarshipTrackerPage() {
           <TabsContent value={activeTab} className="space-y-6">
             {/* Scholarships Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredScholarships.map(scholarship => (
-                <Card key={scholarship.id} className="bg-slate-800 border-slate-700 hover:border-yellow-500/50 transition-all duration-300">
+              {filteredScholarships.map((scholarship) => (
+                <Card
+                  key={scholarship.id}
+                  className="bg-slate-800 border-slate-700 hover:border-yellow-500/50 transition-all duration-300"
+                >
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -247,7 +283,10 @@ export default function ScholarshipTrackerPage() {
                       <h4 className="font-semibold text-white mb-2 text-sm">Requirements:</h4>
                       <div className="space-y-1">
                         {scholarship.requirements.slice(0, 3).map((req, index) => (
-                          <div key={index} className="flex items-center gap-2 text-xs text-slate-300">
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 text-xs text-slate-300"
+                          >
                             <CheckCircle className="w-3 h-3 text-green-400" />
                             {req}
                           </div>
@@ -258,15 +297,21 @@ export default function ScholarshipTrackerPage() {
                     {/* Eligibility */}
                     <div className="grid grid-cols-3 gap-4 mb-4">
                       <div className="text-center">
-                        <div className="text-sm font-semibold text-blue-400">{scholarship.eligibility.gpa}</div>
+                        <div className="text-sm font-semibold text-blue-400">
+                          {scholarship.eligibility.gpa}
+                        </div>
                         <div className="text-xs text-slate-400">Min GPA</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-sm font-semibold text-green-400">{scholarship.eligibility.testScore}</div>
+                        <div className="text-sm font-semibold text-green-400">
+                          {scholarship.eligibility.testScore}
+                        </div>
                         <div className="text-xs text-slate-400">Min SAT</div>
                       </div>
                       <div className="text-center">
-                        <div className={`text-sm font-semibold ${getCompetitivenessColor(scholarship.competitiveness)}`}>
+                        <div
+                          className={`text-sm font-semibold ${getCompetitivenessColor(scholarship.competitiveness)}`}
+                        >
                           {scholarship.competitiveness.toUpperCase()}
                         </div>
                         <div className="text-xs text-slate-400">Competition</div>
@@ -279,7 +324,8 @@ export default function ScholarshipTrackerPage() {
                       <span className="text-sm text-slate-300">
                         Deadline: {new Date(scholarship.deadline).toLocaleDateString()}
                       </span>
-                      {new Date(scholarship.deadline) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) && (
+                      {new Date(scholarship.deadline) <
+                        new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) && (
                         <AlertCircle className="w-4 h-4 text-red-400" />
                       )}
                     </div>
@@ -287,7 +333,10 @@ export default function ScholarshipTrackerPage() {
                     {/* Actions */}
                     <div className="flex gap-2">
                       {scholarship.status === 'available' && (
-                        <Button size="sm" className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black">
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-black"
+                        >
                           <Target className="w-3 h-3 mr-1" />
                           Apply Now
                         </Button>
@@ -358,7 +407,9 @@ export default function ScholarshipTrackerPage() {
                 <div>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm text-slate-300">Financial Goal</span>
-                    <span className="text-sm text-slate-300">{formatCurrency(tracker.totalValue)}/{formatCurrency(100000)}</span>
+                    <span className="text-sm text-slate-300">
+                      {formatCurrency(tracker.totalValue)}/{formatCurrency(100000)}
+                    </span>
                   </div>
                   <Progress value={(tracker.totalValue / 100000) * 100} className="h-2" />
                 </div>
@@ -372,9 +423,7 @@ export default function ScholarshipTrackerPage() {
           <Card className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500/30 max-w-2xl mx-auto">
             <CardContent className="p-8">
               <DollarSign className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold mb-4 text-white">
-                Maximize Your Scholarships
-              </h3>
+              <h3 className="text-2xl font-bold mb-4 text-white">Maximize Your Scholarships</h3>
               <p className="text-slate-300 mb-6">
                 Get personalized recommendations and deadline reminders to never miss an opportunity
               </p>
@@ -382,9 +431,7 @@ export default function ScholarshipTrackerPage() {
                 <Button className="bg-yellow-500 hover:bg-yellow-600 text-black">
                   Get Recommendations
                 </Button>
-                <Button variant="outline">
-                  Set Reminders
-                </Button>
+                <Button variant="outline">Set Reminders</Button>
               </div>
             </CardContent>
           </Card>

@@ -24,10 +24,13 @@ export async function POST(request: NextRequest) {
       .limit(1);
 
     if (!coupon.length) {
-      return NextResponse.json({
-        valid: false,
-        error: 'Coupon code not found',
-      }, { status: 404 });
+      return NextResponse.json(
+        {
+          valid: false,
+          error: 'Coupon code not found',
+        },
+        { status: 404 },
+      );
     }
 
     const couponData = coupon[0];
@@ -35,49 +38,71 @@ export async function POST(request: NextRequest) {
 
     // Check if coupon is active
     if (!couponData.isActive) {
-      return NextResponse.json({
-        valid: false,
-        error: 'This coupon is no longer active',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          valid: false,
+          error: 'This coupon is no longer active',
+        },
+        { status: 400 },
+      );
     }
 
     // Check validity dates
     if (couponData.validFrom > now) {
-      return NextResponse.json({
-        valid: false,
-        error: 'This coupon is not yet valid',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          valid: false,
+          error: 'This coupon is not yet valid',
+        },
+        { status: 400 },
+      );
     }
 
     if (couponData.validUntil && couponData.validUntil < now) {
-      return NextResponse.json({
-        valid: false,
-        error: 'This coupon has expired',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          valid: false,
+          error: 'This coupon has expired',
+        },
+        { status: 400 },
+      );
     }
 
     // Check usage limits
     if (couponData.maxUses && couponData.currentUses >= couponData.maxUses) {
-      return NextResponse.json({
-        valid: false,
-        error: 'This coupon has reached its usage limit',
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          valid: false,
+          error: 'This coupon has reached its usage limit',
+        },
+        { status: 400 },
+      );
     }
 
     // Check plan eligibility
-    if (planId && couponData.applicablePlans?.length && !couponData.applicablePlans.includes(planId)) {
-      return NextResponse.json({
-        valid: false,
-        error: 'This coupon is not valid for the selected plan',
-      }, { status: 400 });
+    if (
+      planId &&
+      couponData.applicablePlans?.length &&
+      !couponData.applicablePlans.includes(planId)
+    ) {
+      return NextResponse.json(
+        {
+          valid: false,
+          error: 'This coupon is not valid for the selected plan',
+        },
+        { status: 400 },
+      );
     }
 
     // Check minimum amount
     if (amount && couponData.minimumAmount && amount < parseFloat(couponData.minimumAmount)) {
-      return NextResponse.json({
-        valid: false,
-        error: `Minimum order amount of $${couponData.minimumAmount} required`,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          valid: false,
+          error: `Minimum order amount of $${couponData.minimumAmount} required`,
+        },
+        { status: 400 },
+      );
     }
 
     // Check if user has already used this coupon (if user ID provided)
@@ -85,17 +110,17 @@ export async function POST(request: NextRequest) {
       const existingUsage = await db
         .select()
         .from(couponUsage)
-        .where(and(
-          eq(couponUsage.couponId, couponData.id),
-          eq(couponUsage.userId, userId)
-        ))
+        .where(and(eq(couponUsage.couponId, couponData.id), eq(couponUsage.userId, userId)))
         .limit(1);
 
       if (existingUsage.length > 0) {
-        return NextResponse.json({
-          valid: false,
-          error: 'You have already used this coupon',
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            valid: false,
+            error: 'You have already used this coupon',
+          },
+          { status: 400 },
+        );
       }
     }
 
@@ -127,21 +152,26 @@ export async function POST(request: NextRequest) {
         finalAmount: (orderAmount - discountAmount).toFixed(2),
       },
     });
-
   } catch (error) {
     console.error('Coupon validation error:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        valid: false,
-        error: 'Invalid request data',
-        details: error.errors,
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          valid: false,
+          error: 'Invalid request data',
+          details: error.errors,
+        },
+        { status: 400 },
+      );
     }
 
-    return NextResponse.json({
-      valid: false,
-      error: 'Internal server error',
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        valid: false,
+        error: 'Internal server error',
+      },
+      { status: 500 },
+    );
   }
 }

@@ -5,73 +5,114 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Mail, Phone, RefreshCw, CheckCircle, AlertCircle, Search, Clock, Users, Database } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  School,
+  Users,
+  Database,
+  Search,
+  Filter,
+  CheckCircle,
+  Globe,
+  MapPin,
+  Trophy,
+} from 'lucide-react';
 
 interface Coach {
-  id: string;
-  name: string;
-  position: string;
-  school: string;
+  coachId: string;
+  firstName: string;
+  lastName: string;
+  title: string;
   sport: string;
-  email: string;
-  phone: string;
-  verified: boolean;
-  confidence: number;
-  lastUpdated: string;
-  responseRate: number;
-  recruitingArea: string;
-  primaryContact: boolean;
-  socialMedia?: {
-    twitter: string;
-    linkedin: string;
-  };
+  gender: string;
+  email?: string;
+  phone?: string;
+  officePhone?: string;
+  recruitingEmail?: string;
+  yearsAtSchool?: number;
+  totalYearsCoaching?: number;
+  recruitingTerritory?: string[];
+  recruitingFocus?: string[];
+  preferredContactMethod?: string;
+  twitterHandle?: string;
+  linkedinProfile?: string;
+  contactVerified: boolean;
+  lastVerified?: string;
+  responseRate?: number;
+
+  // College information
+  collegeId: string;
+  collegeName: string;
+  collegeShortName?: string;
+  mascot?: string;
+  division: string;
+  subdivision?: string;
+  conference?: string;
+  city: string;
+  state: string;
+  type: string;
+  enrollment?: number;
+  website?: string;
+  athleticsWebsite?: string;
+  athleticDirector?: string;
+  athleticDirectorEmail?: string;
+  athleticDirectorPhone?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  contactsVerified: boolean;
 }
 
-interface UpdateStatus {
-  running: boolean;
-  progress: number;
-  lastUpdate: string;
-  nextUpdate: string;
-  updatedCount: number;
-  errorCount: number;
+interface CoachStats {
+  totalCoaches: number;
+  verifiedContacts: number;
+  divisions: Record<string, number>;
+  topSports: { sport: string; count: number }[];
 }
 
-export default function CoachContactsPage() {
+export default function ComprehensiveCoachContactsPage() {
   const [coaches, setCoaches] = useState<Coach[]>([]);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [updateStatus, setUpdateStatus] = useState<UpdateStatus>({
-    running: false,
-    progress: 0,
-    lastUpdate: '',
-    nextUpdate: '',
-    updatedCount: 0,
-    errorCount: 0
-  });
+  const [stats, setStats] = useState<CoachStats | null>(null);
   const [filters, setFilters] = useState({
-    school: '',
+    division: '',
+    state: '',
     sport: '',
-    position: '',
-    verified: '',
-    search: ''
+    gender: '',
+    conference: '',
+    search: '',
   });
-  const [activeTab, setActiveTab] = useState('contacts');
+  const [activeTab, setActiveTab] = useState('search');
 
   useEffect(() => {
     fetchCoaches();
-    fetchUpdateStatus();
   }, []);
 
   const fetchCoaches = async () => {
+    setLoading(true);
     try {
-      const response = await fetch('/api/recruiting/contacts');
+      const queryParams = new URLSearchParams();
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value) queryParams.append(key, value);
+      });
+      queryParams.append('limit', '100');
+
+      const response = await fetch(`/api/coaches/comprehensive?${queryParams}`);
       const data = await response.json();
-      
+
       if (data.success) {
-        setCoaches(data.contacts);
+        setCoaches(data.coaches);
+        setStats(data.statistics);
+      } else {
+        console.error('Failed to fetch coaches:', data.error);
       }
     } catch (error) {
       console.error('Error fetching coaches:', error);
@@ -80,483 +121,501 @@ export default function CoachContactsPage() {
     }
   };
 
-  const fetchUpdateStatus = async () => {
-    try {
-      const response = await fetch('/api/recruiting/contacts/auto-update');
-      const data = await response.json();
-      
-      if (data.success) {
-        setUpdateStatus(prev => ({
-          ...prev,
-          lastUpdate: data.lastUpdate,
-          nextUpdate: data.nextUpdate || 'Scheduled for next Sunday'
-        }));
-      }
-    } catch (error) {
-      console.error('Error fetching update status:', error);
+  const handleFilterChange = (key: string, value: string) => {
+    // Convert "all" value to empty string for API calls
+    const apiValue = value === 'all' ? '' : value;
+    setFilters((prev) => ({ ...prev, [key]: apiValue }));
+  };
+
+  const searchCoaches = () => {
+    fetchCoaches();
+  };
+
+  const resetFilters = () => {
+    setFilters({
+      division: '',
+      state: '',
+      sport: '',
+      gender: '',
+      conference: '',
+      search: '',
+    });
+    setTimeout(fetchCoaches, 100);
+  };
+
+  const getContactMethods = (coach: Coach) => {
+    const methods = [];
+    if (coach.email) methods.push({ type: 'email', value: coach.email, primary: true });
+    if (coach.recruitingEmail && coach.recruitingEmail !== coach.email) {
+      methods.push({ type: 'recruiting-email', value: coach.recruitingEmail, primary: false });
     }
-  };
-
-  const triggerUpdate = async () => {
-    setUpdating(true);
-    try {
-      const response = await fetch('/api/recruiting/contacts/auto-update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          schools: filters.school ? [filters.school] : null,
-          sports: filters.sport ? [filters.sport] : null,
-          forceUpdate: true
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        setUpdateStatus(prev => ({
-          ...prev,
-          running: false,
-          progress: 100,
-          updatedCount: data.updated,
-          errorCount: data.errors?.length || 0,
-          lastUpdate: new Date().toISOString()
-        }));
-        
-        // Refresh the contacts list
-        await fetchCoaches();
-      }
-    } catch (error) {
-      console.error('Error updating contacts:', error);
-    } finally {
-      setUpdating(false);
+    if (coach.phone) methods.push({ type: 'phone', value: coach.phone, primary: true });
+    if (coach.officePhone && coach.officePhone !== coach.phone) {
+      methods.push({ type: 'office-phone', value: coach.officePhone, primary: false });
     }
+    return methods;
   };
 
-  const verifyContact = async (coachId: string) => {
-    try {
-      const coach = coaches.find(c => c.id === coachId);
-      if (!coach) return;
-      
-      const response = await fetch('/api/recruiting/contacts/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contacts: [coach],
-          verificationType: ['email', 'phone', 'social']
-        })
-      });
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        // Update the coach's verification status
-        setCoaches(prev => prev.map(c => 
-          c.id === coachId 
-            ? { ...c, verified: true, confidence: Math.floor(Math.random() * 30) + 70 }
-            : c
-        ));
-      }
-    } catch (error) {
-      console.error('Error verifying contact:', error);
-    }
+  const getDivisionColor = (division: string) => {
+    const colors = {
+      D1: 'bg-red-100 text-red-800',
+      D2: 'bg-blue-100 text-blue-800',
+      D3: 'bg-green-100 text-green-800',
+      NAIA: 'bg-purple-100 text-purple-800',
+      NJCAA: 'bg-orange-100 text-orange-800',
+    };
+    return colors[division as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
-  const contactCoach = (coach: Coach, method: 'email' | 'phone') => {
-    if (method === 'email') {
-      window.open(`mailto:${coach.email}?subject=Recruiting Interest - Go4It Sports Platform`);
-    } else if (method === 'phone') {
-      window.open(`tel:${coach.phone}`);
-    }
+  const getGenderColor = (gender: string) => {
+    const colors = {
+      men: 'bg-blue-50 text-blue-700',
+      women: 'bg-pink-50 text-pink-700',
+      coed: 'bg-purple-50 text-purple-700',
+    };
+    return colors[gender as keyof typeof colors] || 'bg-gray-50 text-gray-700';
   };
-
-  const filteredCoaches = coaches.filter(coach => {
-    if (filters.school && coach.school !== filters.school) return false;
-    if (filters.sport && coach.sport !== filters.sport) return false;
-    if (filters.position && coach.position !== filters.position) return false;
-    if (filters.verified && coach.verified.toString() !== filters.verified) return false;
-    if (filters.search && !coach.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
-    return true;
-  });
-
-  const getVerificationColor = (verified: boolean, confidence: number) => {
-    if (!verified) return 'text-red-400';
-    if (confidence >= 80) return 'text-green-400';
-    if (confidence >= 60) return 'text-yellow-400';
-    return 'text-orange-400';
-  };
-
-  const getPositionColor = (position: string) => {
-    if (position.includes('Head')) return 'bg-red-500';
-    if (position.includes('Assistant')) return 'bg-blue-500';
-    if (position.includes('Recruiting')) return 'bg-green-500';
-    return 'bg-slate-500';
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading coach contacts...</div>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <Badge className="mb-6 bg-green-500 text-white font-bold text-lg px-6 py-2">
-            <Database className="w-5 h-5 mr-2" />
-            COACH CONTACTS
-          </Badge>
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-            VERIFIED COACH DATABASE
-          </h1>
-          
-          <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-            Real-time coach contact database with automated weekly updates and verification
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Header */}
+      <div className="border-b border-slate-700">
+        <div className="container mx-auto px-6 py-8">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/20">
+              <Database className="h-8 w-8 text-blue-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Comprehensive Coach Contacts</h1>
+              <p className="text-slate-400">
+                Access ALL NCAA (D1, D2, D3), NAIA, and Junior College coaching contacts
+              </p>
+            </div>
+          </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-400">Total Coaches</p>
-                  <p className="text-2xl font-bold text-green-400">{coaches.length}</p>
-                </div>
-                <Users className="w-8 h-8 text-green-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-400">Verified</p>
-                  <p className="text-2xl font-bold text-blue-400">
-                    {coaches.filter(c => c.verified).length}
-                  </p>
-                </div>
-                <CheckCircle className="w-8 h-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-400">Schools</p>
-                  <p className="text-2xl font-bold text-purple-400">
-                    {new Set(coaches.map(c => c.school)).size}
-                  </p>
-                </div>
-                <Database className="w-8 h-8 text-purple-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800 border-slate-700">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-400">Last Updated</p>
-                  <p className="text-2xl font-bold text-orange-400">
-                    {updateStatus.lastUpdate ? 'Today' : 'Never'}
-                  </p>
-                </div>
-                <Clock className="w-8 h-8 text-orange-400" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="contacts">Coach Contacts</TabsTrigger>
-            <TabsTrigger value="auto-update">Auto-Update System</TabsTrigger>
-            <TabsTrigger value="verification">Verification Tools</TabsTrigger>
-          </TabsList>
-
-          {/* Contacts Tab */}
-          <TabsContent value="contacts" className="space-y-6">
-            {/* Filters */}
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Search className="w-5 h-5" />
-                  Filter Coaches
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                  <Input
-                    placeholder="Search coaches..."
-                    value={filters.search}
-                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                    className="bg-slate-700 border-slate-600"
-                  />
-                  <Select value={filters.school} onValueChange={(value) => setFilters(prev => ({ ...prev, school: value }))}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600">
-                      <SelectValue placeholder="School" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Schools</SelectItem>
-                      <SelectItem value="UCLA">UCLA</SelectItem>
-                      <SelectItem value="Duke University">Duke</SelectItem>
-                      <SelectItem value="Stanford">Stanford</SelectItem>
-                      <SelectItem value="Texas">Texas</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={filters.sport} onValueChange={(value) => setFilters(prev => ({ ...prev, sport: value }))}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600">
-                      <SelectValue placeholder="Sport" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Sports</SelectItem>
-                      <SelectItem value="Basketball">Basketball</SelectItem>
-                      <SelectItem value="Baseball">Baseball</SelectItem>
-                      <SelectItem value="Soccer">Soccer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={filters.position} onValueChange={(value) => setFilters(prev => ({ ...prev, position: value }))}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600">
-                      <SelectValue placeholder="Position" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Positions</SelectItem>
-                      <SelectItem value="Head Coach">Head Coach</SelectItem>
-                      <SelectItem value="Assistant Coach">Assistant Coach</SelectItem>
-                      <SelectItem value="Recruiting Coordinator">Recruiting Coordinator</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Select value={filters.verified} onValueChange={(value) => setFilters(prev => ({ ...prev, verified: value }))}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600">
-                      <SelectValue placeholder="Verification" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All</SelectItem>
-                      <SelectItem value="true">Verified</SelectItem>
-                      <SelectItem value="false">Unverified</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Coaches List */}
-            <div className="space-y-4">
-              {filteredCoaches.map(coach => (
-                <Card key={coach.id} className="bg-slate-800 border-slate-700 hover:border-green-500/50 transition-all duration-300">
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold text-white text-lg">{coach.name}</h3>
-                          <Badge className={`${getPositionColor(coach.position)} text-white`}>
-                            {coach.position}
-                          </Badge>
-                          {coach.primaryContact && (
-                            <Badge className="bg-yellow-500 text-black">PRIMARY</Badge>
-                          )}
-                        </div>
-                        
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="text-sm text-slate-300">
-                            <span className="font-medium">{coach.school}</span> • {coach.sport}
-                          </div>
-                          <div className="text-sm text-slate-400">
-                            {coach.recruitingArea}
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="flex items-center gap-2">
-                            <Mail className="w-4 h-4 text-blue-400" />
-                            <span className="text-sm text-slate-300">{coach.email}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-green-400" />
-                            <span className="text-sm text-slate-300">{coach.phone}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${coach.verified ? 'bg-green-400' : 'bg-red-400'}`} />
-                            <span className={`text-sm ${getVerificationColor(coach.verified, coach.confidence)}`}>
-                              {coach.verified ? `Verified (${coach.confidence}%)` : 'Unverified'}
-                            </span>
-                          </div>
-                        </div>
+          {/* Stats Overview */}
+          {stats && (
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <Users className="h-5 w-5 text-blue-400" />
+                    <div>
+                      <div className="text-2xl font-bold text-white">
+                        {stats.totalCoaches.toLocaleString()}
                       </div>
+                      <div className="text-xs text-slate-400">Total Coaches</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          className="bg-blue-500 hover:bg-blue-600"
-                          onClick={() => contactCoach(coach, 'email')}
-                        >
-                          <Mail className="w-3 h-3 mr-1" />
-                          Email
-                        </Button>
-                        <Button
-                          size="sm"
-                          className="bg-green-500 hover:bg-green-600"
-                          onClick={() => contactCoach(coach, 'phone')}
-                        >
-                          <Phone className="w-3 h-3 mr-1" />
-                          Call
-                        </Button>
-                        {!coach.verified && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => verifyContact(coach.id)}
-                          >
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            Verify
-                          </Button>
-                        )}
+              <Card className="bg-slate-800/50 border-slate-700">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-green-400" />
+                    <div>
+                      <div className="text-2xl font-bold text-white">
+                        {stats.verifiedContacts.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-slate-400">Verified</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {Object.entries(stats.divisions).map(([division, count]) => (
+                <Card key={division} className="bg-slate-800/50 border-slate-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="h-5 w-5 text-yellow-400" />
+                      <div>
+                        <div className="text-2xl font-bold text-white">
+                          {count.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-slate-400">{division}</div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
-          </TabsContent>
+          )}
+        </div>
+      </div>
 
-          {/* Auto-Update Tab */}
-          <TabsContent value="auto-update" className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
+      {/* Content */}
+      <div className="container mx-auto px-6 py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="bg-slate-800/50 border-slate-700">
+            <TabsTrigger value="search" className="data-[state=active]:bg-slate-700">
+              <Search className="h-4 w-4 mr-2" />
+              Search Coaches
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-slate-700">
+              <Database className="h-4 w-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="search" className="space-y-6">
+            {/* Search Filters */}
+            <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <RefreshCw className="w-5 h-5" />
-                  Automated Update System
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Filter className="h-5 w-5" />
+                  Search & Filter
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Search</label>
+                    <Input
+                      placeholder="Coach name, school, city..."
+                      value={filters.search}
+                      onChange={(e) => handleFilterChange('search', e.target.value)}
+                      className="bg-slate-700 border-slate-600 text-white"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Division</label>
+                    <Select
+                      value={filters.division}
+                      onValueChange={(value) => handleFilterChange('division', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="All divisions" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Divisions</SelectItem>
+                        <SelectItem value="D1">NCAA Division I</SelectItem>
+                        <SelectItem value="D2">NCAA Division II</SelectItem>
+                        <SelectItem value="D3">NCAA Division III</SelectItem>
+                        <SelectItem value="NAIA">NAIA</SelectItem>
+                        <SelectItem value="NJCAA">NJCAA (Junior College)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">State</label>
+                    <Select
+                      value={filters.state}
+                      onValueChange={(value) => handleFilterChange('state', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="All states" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All States</SelectItem>
+                        <SelectItem value="Alabama">Alabama</SelectItem>
+                        <SelectItem value="California">California</SelectItem>
+                        <SelectItem value="Florida">Florida</SelectItem>
+                        <SelectItem value="Georgia">Georgia</SelectItem>
+                        <SelectItem value="Illinois">Illinois</SelectItem>
+                        <SelectItem value="Indiana">Indiana</SelectItem>
+                        <SelectItem value="Iowa">Iowa</SelectItem>
+                        <SelectItem value="Kansas">Kansas</SelectItem>
+                        <SelectItem value="Louisiana">Louisiana</SelectItem>
+                        <SelectItem value="Massachusetts">Massachusetts</SelectItem>
+                        <SelectItem value="Michigan">Michigan</SelectItem>
+                        <SelectItem value="North Carolina">North Carolina</SelectItem>
+                        <SelectItem value="Ohio">Ohio</SelectItem>
+                        <SelectItem value="Texas">Texas</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Sport</label>
+                    <Select
+                      value={filters.sport}
+                      onValueChange={(value) => handleFilterChange('sport', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="All sports" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Sports</SelectItem>
+                        <SelectItem value="football">Football</SelectItem>
+                        <SelectItem value="basketball">Basketball</SelectItem>
+                        <SelectItem value="baseball">Baseball</SelectItem>
+                        <SelectItem value="softball">Softball</SelectItem>
+                        <SelectItem value="soccer">Soccer</SelectItem>
+                        <SelectItem value="track and field">Track & Field</SelectItem>
+                        <SelectItem value="swimming">Swimming</SelectItem>
+                        <SelectItem value="tennis">Tennis</SelectItem>
+                        <SelectItem value="golf">Golf</SelectItem>
+                        <SelectItem value="volleyball">Volleyball</SelectItem>
+                        <SelectItem value="wrestling">Wrestling</SelectItem>
+                        <SelectItem value="lacrosse">Lacrosse</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Gender</label>
+                    <Select
+                      value={filters.gender}
+                      onValueChange={(value) => handleFilterChange('gender', value)}
+                    >
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="All programs" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Programs</SelectItem>
+                        <SelectItem value="men">Men's Programs</SelectItem>
+                        <SelectItem value="women">Women's Programs</SelectItem>
+                        <SelectItem value="coed">Coed Programs</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-300">Conference</label>
+                    <Input
+                      placeholder="SEC, Big Ten, ACC..."
+                      value={filters.conference}
+                      onChange={(e) => handleFilterChange('conference', e.target.value)}
+                      className="bg-slate-700 border-slate-600 text-white"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button
+                    onClick={searchCoaches}
+                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={loading}
+                  >
+                    <Search className="h-4 w-4 mr-2" />
+                    {loading ? 'Searching...' : 'Search Coaches'}
+                  </Button>
+                  <Button
+                    onClick={resetFilters}
+                    variant="outline"
+                    className="border-slate-600 text-slate-300"
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Results */}
+            <Card className="bg-slate-800/50 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white">
+                  Coach Contacts ({coaches.length.toLocaleString()} results)
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="font-semibold text-white mb-2">Update Schedule</h3>
-                      <p className="text-sm text-slate-300 mb-4">
-                        Automatically updates every Sunday at 2:00 AM EST
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400">Last Update:</span>
-                          <span className="text-green-400">
-                            {updateStatus.lastUpdate ? new Date(updateStatus.lastUpdate).toLocaleDateString() : 'Never'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400">Next Update:</span>
-                          <span className="text-blue-400">{updateStatus.nextUpdate}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <h3 className="font-semibold text-white mb-2">Data Sources</h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-slate-300">Athletic Department Websites</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-slate-300">Official Staff Directories</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-slate-300">Media Guides</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                          <span className="text-sm text-slate-300">Press Releases</span>
-                        </div>
-                      </div>
-                    </div>
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="text-slate-400">Loading comprehensive coach database...</div>
                   </div>
-
-                  <div className="border-t border-slate-700 pt-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-white">Manual Update</h3>
-                      <Button
-                        onClick={triggerUpdate}
-                        disabled={updating}
-                        className="bg-green-500 hover:bg-green-600"
+                ) : coaches.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400">
+                    No coaches found matching your criteria. Try adjusting your filters.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {coaches.map((coach) => (
+                      <Card
+                        key={coach.coachId}
+                        className="bg-slate-700/50 border-slate-600 hover:border-slate-500 transition-colors"
                       >
-                        {updating ? (
-                          <>
-                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                            Updating...
-                          </>
-                        ) : (
-                          <>
-                            <RefreshCw className="w-4 h-4 mr-2" />
-                            Update Now
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                    
-                    {updating && (
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-slate-400">Progress:</span>
-                          <span className="text-blue-400">{updateStatus.progress}%</span>
-                        </div>
-                        <Progress value={updateStatus.progress} className="h-2" />
-                      </div>
-                    )}
+                        <CardContent className="p-6">
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Coach Info */}
+                            <div className="space-y-3">
+                              <div className="flex items-start justify-between">
+                                <div>
+                                  <h3 className="text-lg font-bold text-white">
+                                    {coach.firstName} {coach.lastName}
+                                  </h3>
+                                  <p className="text-slate-300">{coach.title}</p>
+                                  <div className="flex gap-2 mt-2">
+                                    <Badge className={getDivisionColor(coach.division)}>
+                                      {coach.division}
+                                    </Badge>
+                                    <Badge className={getGenderColor(coach.gender)}>
+                                      {coach.gender}'s {coach.sport}
+                                    </Badge>
+                                  </div>
+                                </div>
+                                {coach.contactVerified && (
+                                  <Badge className="bg-green-100 text-green-800">
+                                    <CheckCircle className="h-3 w-3 mr-1" />
+                                    Verified
+                                  </Badge>
+                                )}
+                              </div>
+
+                              {/* Experience */}
+                              {(coach.yearsAtSchool || coach.totalYearsCoaching) && (
+                                <div className="text-sm text-slate-400">
+                                  {coach.yearsAtSchool && `${coach.yearsAtSchool} years at school`}
+                                  {coach.yearsAtSchool && coach.totalYearsCoaching && ' • '}
+                                  {coach.totalYearsCoaching &&
+                                    `${coach.totalYearsCoaching} total coaching`}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* College Info */}
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2">
+                                <School className="h-4 w-4 text-slate-400" />
+                                <div>
+                                  <h4 className="font-semibold text-white">
+                                    {coach.collegeShortName || coach.collegeName}
+                                  </h4>
+                                  {coach.mascot && (
+                                    <p className="text-sm text-slate-400">{coach.mascot}</p>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2 text-sm text-slate-400">
+                                <MapPin className="h-4 w-4" />
+                                {coach.city}, {coach.state}
+                              </div>
+
+                              {coach.conference && (
+                                <Badge
+                                  variant="outline"
+                                  className="border-slate-500 text-slate-300"
+                                >
+                                  {coach.conference}
+                                </Badge>
+                              )}
+
+                              {coach.enrollment && (
+                                <div className="text-sm text-slate-400">
+                                  {coach.enrollment.toLocaleString()} students
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Contact Methods */}
+                            <div className="space-y-3">
+                              <h5 className="font-medium text-white">Contact Information</h5>
+                              <div className="space-y-2">
+                                {getContactMethods(coach).map((method, index) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    {method.type.includes('email') ? (
+                                      <Mail className="h-4 w-4 text-slate-400" />
+                                    ) : (
+                                      <Phone className="h-4 w-4 text-slate-400" />
+                                    )}
+                                    <div>
+                                      <div className="text-sm text-white">{method.value}</div>
+                                      <div className="text-xs text-slate-400">
+                                        {method.type === 'email' && 'Primary Email'}
+                                        {method.type === 'recruiting-email' && 'Recruiting Email'}
+                                        {method.type === 'phone' && 'Phone'}
+                                        {method.type === 'office-phone' && 'Office Phone'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Social Media */}
+                              {(coach.twitterHandle || coach.linkedinProfile) && (
+                                <div className="pt-2 space-y-1">
+                                  {coach.twitterHandle && (
+                                    <div className="text-sm text-slate-400">
+                                      Twitter: @{coach.twitterHandle}
+                                    </div>
+                                  )}
+                                  {coach.linkedinProfile && (
+                                    <div className="text-sm text-slate-400">
+                                      LinkedIn: {coach.linkedinProfile}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Recruiting Info */}
+                              {coach.recruitingTerritory &&
+                                coach.recruitingTerritory.length > 0 && (
+                                  <div className="pt-2">
+                                    <div className="text-xs text-slate-400 mb-1">
+                                      Recruiting Territory
+                                    </div>
+                                    <div className="text-sm text-slate-300">
+                                      {coach.recruitingTerritory.join(', ')}
+                                    </div>
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
-                </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
 
-          {/* Verification Tab */}
-          <TabsContent value="verification" className="space-y-6">
-            <Card className="bg-slate-800 border-slate-700">
+          <TabsContent value="analytics" className="space-y-6">
+            <Card className="bg-slate-800/50 border-slate-700">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  Contact Verification
-                </CardTitle>
+                <CardTitle className="text-white">Database Analytics</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12">
-                  <CheckCircle className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-4">Email & Phone Verification</h3>
-                  <p className="text-slate-400 mb-6">
-                    Advanced verification system with email deliverability and phone validation
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-slate-700 rounded-lg">
-                      <h4 className="font-semibold text-white mb-2">Email Verification</h4>
-                      <p className="text-sm text-slate-400">
-                        Validates email format and deliverability
-                      </p>
+                {stats ? (
+                  <div className="space-y-6">
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="text-lg font-semibold text-white mb-4">
+                          Division Breakdown
+                        </h4>
+                        <div className="space-y-2">
+                          {Object.entries(stats.divisions).map(([division, count]) => (
+                            <div key={division} className="flex justify-between items-center">
+                              <Badge className={getDivisionColor(division)}>{division}</Badge>
+                              <span className="text-white font-medium">
+                                {count.toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-lg font-semibold text-white mb-4">Top Sports</h4>
+                        <div className="space-y-2">
+                          {stats.topSports.map((sport, index) => (
+                            <div key={index} className="flex justify-between items-center">
+                              <span className="text-slate-300 capitalize">{sport.sport}</span>
+                              <span className="text-white font-medium">
+                                {sport.count.toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <div className="p-4 bg-slate-700 rounded-lg">
-                      <h4 className="font-semibold text-white mb-2">Phone Validation</h4>
-                      <p className="text-sm text-slate-400">
-                        Checks phone number format and carrier
-                      </p>
-                    </div>
-                    <div className="p-4 bg-slate-700 rounded-lg">
-                      <h4 className="font-semibold text-white mb-2">Social Media</h4>
-                      <p className="text-sm text-slate-400">
-                        Finds coach profiles on social platforms
+
+                    <div className="p-4 bg-slate-700/50 rounded-lg">
+                      <h4 className="text-lg font-semibold text-white mb-2">Coverage Summary</h4>
+                      <p className="text-slate-300">
+                        Our comprehensive database includes coaching contacts from all NCAA
+                        divisions (D1, D2, D3), NAIA institutions, and Junior Colleges (NJCAA). This
+                        provides student athletes with access to thousands of coaching contacts
+                        across all competitive levels and geographic regions.
                       </p>
                     </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="text-slate-400">Loading analytics...</div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

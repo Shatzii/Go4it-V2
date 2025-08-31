@@ -94,7 +94,7 @@ export function useSMSNotifications(): SMSNotificationHook {
       const response = await fetch('/api/payments/sms-notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -115,7 +115,7 @@ export function useSMSNotifications(): SMSNotificationHook {
       const response = await fetch('/api/gar/sms-notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -136,7 +136,7 @@ export function useSMSNotifications(): SMSNotificationHook {
       const response = await fetch('/api/coaches/session-notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -157,7 +157,7 @@ export function useSMSNotifications(): SMSNotificationHook {
       const response = await fetch('/api/emergency/sms-alerts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -178,7 +178,7 @@ export function useSMSNotifications(): SMSNotificationHook {
       const response = await fetch('/api/camps/sms-notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -199,7 +199,7 @@ export function useSMSNotifications(): SMSNotificationHook {
       const response = await fetch('/api/recruiting/sms-notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -220,7 +220,7 @@ export function useSMSNotifications(): SMSNotificationHook {
       const response = await fetch('/api/gamification/sms-notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
 
       const result = await response.json();
@@ -244,6 +244,6 @@ export function useSMSNotifications(): SMSNotificationHook {
     sendRecruitingUpdate,
     sendGameNotification,
     isSending,
-    lastResult
+    lastResult,
   };
 }

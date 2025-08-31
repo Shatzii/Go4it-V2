@@ -13,7 +13,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
-    
+
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
             currency: 'usd',
             product_data: {
               name: 'The Verified 100 - Lifetime Membership',
-              description: 'Lifetime access to GAR Score testing, AI coaching, and all future features. Limited to first 100 athletes.',
+              description:
+                'Lifetime access to GAR Score testing, AI coaching, and all future features. Limited to first 100 athletes.',
               images: ['https://go4itsports.org/verified-100-badge.png'],
             },
             unit_amount: 10000, // $100 in cents
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
         membershipType: 'verified100',
         eventId: eventId || 'vienna-july-2025',
         membershipTier: 'lifetime',
-        grantedAt: new Date().toISOString()
+        grantedAt: new Date().toISOString(),
       },
       customer_email: user.email,
     });
@@ -57,9 +58,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url: session.url });
   } catch (error: any) {
     console.error('Lifetime membership creation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create lifetime membership' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create lifetime membership' }, { status: 500 });
   }
 }

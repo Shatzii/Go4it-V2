@@ -6,414 +6,451 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { 
-  GraduationCap, Globe, Brain, Users, Star, Calendar,
-  BookOpen, Zap, Target, Award, ChevronRight, MapPin,
-  Clock, Eye, Heart, Lightbulb, Puzzle, Music,
-  Palette, Calculator, Microscope, Search, Atom,
-  TreePine, Home, Gamepad2, Crown, Sword
+import {
+  GraduationCap,
+  Globe,
+  Brain,
+  Users,
+  Star,
+  Calendar,
+  BookOpen,
+  Zap,
+  Target,
+  Award,
+  ChevronRight,
+  MapPin,
+  Clock,
+  Eye,
+  Heart,
+  Lightbulb,
+  Puzzle,
+  Music,
+  Palette,
+  Calculator,
+  Microscope,
+  Search,
+  Atom,
+  TreePine,
+  Home,
+  Gamepad2,
+  Crown,
+  Sword,
 } from 'lucide-react';
 
 // Comprehensive Program Overview
 const programOverview = {
-  title: "Universal One School: Revolutionary K-12 Human-Centered Education",
-  mission: "Transform education through interdisciplinary learning rooted in human stories, ensuring every student succeeds regardless of neurotype or learning style",
-  compliance: ["All 50 US States", "Austria", "Mexico", "International Standards"],
+  title: 'Universal One School: Revolutionary K-12 Human-Centered Education',
+  mission:
+    'Transform education through interdisciplinary learning rooted in human stories, ensuring every student succeeds regardless of neurotype or learning style',
+  compliance: ['All 50 US States', 'Austria', 'Mexico', 'International Standards'],
   totalStudents: 2847,
   successRate: 97.8,
   collegeAcceptance: 100,
   neurodivergentSupport: 89,
   vrImplementation: 98,
-  outdoorIntegration: 94
+  outdoorIntegration: 94,
 };
 
 // 15 Innovation Features Integrated
 const innovationFeatures = [
   {
     id: 1,
-    title: "Neural-Adaptive Learning Algorithms",
+    title: 'Neural-Adaptive Learning Algorithms',
     description: "AI automatically adjusts content delivery based on each student's neurotype",
-    implementation: "Real-time learning style detection and content adaptation",
+    implementation: 'Real-time learning style detection and content adaptation',
     icon: Brain,
-    color: "purple",
-    status: "Active"
+    color: 'purple',
+    status: 'Active',
   },
   {
     id: 2,
-    title: "Global Virtual Reality Field Trips",
-    description: "Students visit historical sites through immersive VR experiences",
-    implementation: "Partnership with 47 historical sites for authentic VR reconstruction",
+    title: 'Global Virtual Reality Field Trips',
+    description: 'Students visit historical sites through immersive VR experiences',
+    implementation: 'Partnership with 47 historical sites for authentic VR reconstruction',
     icon: Eye,
-    color: "cyan",
-    status: "Active"
+    color: 'cyan',
+    status: 'Active',
   },
   {
     id: 3,
-    title: "Multi-Language Immersion Through History",
-    description: "Learn languages naturally through historical and cultural context",
-    implementation: "Spanish via Aztec studies, German via Scientific Revolution, Arabic via Islamic Golden Age",
+    title: 'Multi-Language Immersion Through History',
+    description: 'Learn languages naturally through historical and cultural context',
+    implementation:
+      'Spanish via Aztec studies, German via Scientific Revolution, Arabic via Islamic Golden Age',
     icon: Globe,
-    color: "green",
-    status: "Active"
+    color: 'green',
+    status: 'Active',
   },
   {
     id: 4,
-    title: "Peer-to-Peer Global Collaboration",
-    description: "Students worldwide collaborate on historical projects in real-time",
-    implementation: "Live collaboration between Dallas, Vienna, and Merida campuses",
+    title: 'Peer-to-Peer Global Collaboration',
+    description: 'Students worldwide collaborate on historical projects in real-time',
+    implementation: 'Live collaboration between Dallas, Vienna, and Merida campuses',
     icon: Users,
-    color: "blue",
-    status: "Active"
+    color: 'blue',
+    status: 'Active',
   },
   {
     id: 5,
-    title: "Micro-Credentialing Achievement System",
-    description: "Skills-based progression with specific competency badges",
-    implementation: "Digital badges for 127 historical and cross-subject competencies",
+    title: 'Micro-Credentialing Achievement System',
+    description: 'Skills-based progression with specific competency badges',
+    implementation: 'Digital badges for 127 historical and cross-subject competencies',
     icon: Award,
-    color: "yellow",
-    status: "Active"
+    color: 'yellow',
+    status: 'Active',
   },
   {
     id: 6,
-    title: "Family Integration Learning Pods",
-    description: "Parents become learning facilitators through guided activities",
-    implementation: "Family cooking historical recipes, creating period crafts, role-playing cultural exchanges",
+    title: 'Family Integration Learning Pods',
+    description: 'Parents become learning facilitators through guided activities',
+    implementation:
+      'Family cooking historical recipes, creating period crafts, role-playing cultural exchanges',
     icon: Heart,
-    color: "pink",
-    status: "Active"
+    color: 'pink',
+    status: 'Active',
   },
   {
     id: 7,
-    title: "Real-World Problem Solving Through History",
-    description: "Tackle current issues using historical wisdom and examples",
-    implementation: "Modern water scarcity solved through ancient irrigation, climate adaptation via historical civilizations",
+    title: 'Real-World Problem Solving Through History',
+    description: 'Tackle current issues using historical wisdom and examples',
+    implementation:
+      'Modern water scarcity solved through ancient irrigation, climate adaptation via historical civilizations',
     icon: Lightbulb,
-    color: "orange",
-    status: "Active"
+    color: 'orange',
+    status: 'Active',
   },
   {
     id: 8,
-    title: "Sensory-Rich Learning Environments",
-    description: "Multi-sensory approach for neurodivergent students",
-    implementation: "Textured timeline walls, scented historical periods, musical eras, taste experiences",
+    title: 'Sensory-Rich Learning Environments',
+    description: 'Multi-sensory approach for neurodivergent students',
+    implementation:
+      'Textured timeline walls, scented historical periods, musical eras, taste experiences',
     icon: Palette,
-    color: "red",
-    status: "Active"
+    color: 'red',
+    status: 'Active',
   },
   {
     id: 9,
-    title: "Community Expert Integration",
-    description: "Local historians, scientists, and artists as regular contributors",
-    implementation: "Weekly expert sessions with 23 community professionals per campus",
+    title: 'Community Expert Integration',
+    description: 'Local historians, scientists, and artists as regular contributors',
+    implementation: 'Weekly expert sessions with 23 community professionals per campus',
     icon: Users,
-    color: "teal",
-    status: "Active"
+    color: 'teal',
+    status: 'Active',
   },
   {
     id: 10,
-    title: "Adaptive Assessment Through Demonstration",
-    description: "Project-based assessment instead of traditional testing",
-    implementation: "Build medieval castles, perform historical plays, recreate scientific experiments",
+    title: 'Adaptive Assessment Through Demonstration',
+    description: 'Project-based assessment instead of traditional testing',
+    implementation:
+      'Build medieval castles, perform historical plays, recreate scientific experiments',
     icon: Target,
-    color: "indigo",
-    status: "Active"
+    color: 'indigo',
+    status: 'Active',
   },
   {
     id: 11,
-    title: "Time-Travel Narrative Learning",
-    description: "Students become time travelers with personal avatars",
-    implementation: "Immersive storytelling with decision-making and consequence-based learning",
+    title: 'Time-Travel Narrative Learning',
+    description: 'Students become time travelers with personal avatars',
+    implementation: 'Immersive storytelling with decision-making and consequence-based learning',
     icon: Clock,
-    color: "violet",
-    status: "Active"
+    color: 'violet',
+    status: 'Active',
   },
   {
     id: 12,
-    title: "Therapeutic Learning Integration",
-    description: "Education becomes therapeutic intervention for special needs",
-    implementation: "Occupational therapy via historical crafts, speech therapy via storytelling",
+    title: 'Therapeutic Learning Integration',
+    description: 'Education becomes therapeutic intervention for special needs',
+    implementation: 'Occupational therapy via historical crafts, speech therapy via storytelling',
     icon: Heart,
-    color: "rose",
-    status: "Active"
+    color: 'rose',
+    status: 'Active',
   },
   {
     id: 13,
-    title: "Entrepreneurial Historical Simulation",
-    description: "Students create businesses based on historical innovations",
-    implementation: "Run medieval guilds, manage Renaissance workshops, operate Industrial Revolution factories",
+    title: 'Entrepreneurial Historical Simulation',
+    description: 'Students create businesses based on historical innovations',
+    implementation:
+      'Run medieval guilds, manage Renaissance workshops, operate Industrial Revolution factories',
     icon: Crown,
-    color: "amber",
-    status: "Active"
+    color: 'amber',
+    status: 'Active',
   },
   {
     id: 14,
-    title: "Environmental Time-Lapse Learning",
+    title: 'Environmental Time-Lapse Learning',
     description: "Track human activities' impact on landscapes over time",
-    implementation: "Watch forests become cities, observe agricultural development, see climate adaptation",
+    implementation:
+      'Watch forests become cities, observe agricultural development, see climate adaptation',
     icon: TreePine,
-    color: "emerald",
-    status: "Active"
+    color: 'emerald',
+    status: 'Active',
   },
   {
     id: 15,
-    title: "Future-Forward Historical Application",
-    description: "Connect every historical lesson to future careers and innovations",
-    implementation: "Ancient engineering to modern architecture, historical pandemics to public health careers",
+    title: 'Future-Forward Historical Application',
+    description: 'Connect every historical lesson to future careers and innovations',
+    implementation:
+      'Ancient engineering to modern architecture, historical pandemics to public health careers',
     icon: Search,
-    color: "sky",
-    status: "Active"
-  }
+    color: 'sky',
+    status: 'Active',
+  },
 ];
 
 // Complete K-12 Grade Structure
 const gradeStructure = [
   {
-    level: "K-2 (Ages 5-7)",
-    title: "Foundation Explorers",
-    focus: "Sensory Learning Through Human Stories",
-    vrTime: "45 minutes",
-    outdoorTime: "7+ hours",
+    level: 'K-2 (Ages 5-7)',
+    title: 'Foundation Explorers',
+    focus: 'Sensory Learning Through Human Stories',
+    vrTime: '45 minutes',
+    outdoorTime: '7+ hours',
     standards: {
-      us: ["Common Core ELA K-2", "Common Core Math K-2", "NGSS K-2", "Social Studies Standards"],
-      austria: ["Austrian Primary Curriculum", "European Language Framework"],
-      mexico: ["SEP Preescolar-Primaria", "Mexican National Standards"]
+      us: ['Common Core ELA K-2', 'Common Core Math K-2', 'NGSS K-2', 'Social Studies Standards'],
+      austria: ['Austrian Primary Curriculum', 'European Language Framework'],
+      mexico: ['SEP Preescolar-Primaria', 'Mexican National Standards'],
     },
     subjects: {
       mathematics: [
-        "Number recognition through ancient counting systems",
-        "Basic addition via historical trade scenarios",
-        "Shape recognition through historical architecture",
-        "Measurement using historical tools and methods"
+        'Number recognition through ancient counting systems',
+        'Basic addition via historical trade scenarios',
+        'Shape recognition through historical architecture',
+        'Measurement using historical tools and methods',
       ],
       languageArts: [
-        "Phonics through historical character names",
-        "Basic reading via period-appropriate stories",
-        "Oral storytelling of historical events",
-        "Beginning writing through historical journals"
+        'Phonics through historical character names',
+        'Basic reading via period-appropriate stories',
+        'Oral storytelling of historical events',
+        'Beginning writing through historical journals',
       ],
       science: [
-        "Basic observation skills through historical exploration",
-        "Simple experiments recreating historical discoveries",
-        "Nature awareness through historical environmental changes",
-        "Introduction to scientific method via historical examples"
+        'Basic observation skills through historical exploration',
+        'Simple experiments recreating historical discoveries',
+        'Nature awareness through historical environmental changes',
+        'Introduction to scientific method via historical examples',
       ],
       socialStudies: [
-        "Community helpers throughout history",
-        "Basic geography through historical migration",
-        "Cultural awareness via historical civilizations",
-        "Understanding time and chronology"
-      ]
+        'Community helpers throughout history',
+        'Basic geography through historical migration',
+        'Cultural awareness via historical civilizations',
+        'Understanding time and chronology',
+      ],
     },
     neurodivergentSupport: [
-      "Sensory integration through textured historical materials",
-      "Visual supports with historical timeline graphics",
-      "Flexible pacing with interest-based learning paths",
-      "Movement breaks integrated into historical role-play"
-    ]
+      'Sensory integration through textured historical materials',
+      'Visual supports with historical timeline graphics',
+      'Flexible pacing with interest-based learning paths',
+      'Movement breaks integrated into historical role-play',
+    ],
   },
   {
-    level: "3-5 (Ages 8-10)",
-    title: "Cultural Investigators", 
-    focus: "Cross-Subject Exploration Through Civilizations",
-    vrTime: "60 minutes",
-    outdoorTime: "6+ hours",
+    level: '3-5 (Ages 8-10)',
+    title: 'Cultural Investigators',
+    focus: 'Cross-Subject Exploration Through Civilizations',
+    vrTime: '60 minutes',
+    outdoorTime: '6+ hours',
     standards: {
-      us: ["Common Core ELA 3-5", "Common Core Math 3-5", "NGSS 3-5", "C3 Social Studies"],
-      austria: ["Austrian Elementary Standards", "European Qualifications Framework"],
-      mexico: ["SEP Primaria 3-5", "Mexican Education Standards"]
+      us: ['Common Core ELA 3-5', 'Common Core Math 3-5', 'NGSS 3-5', 'C3 Social Studies'],
+      austria: ['Austrian Elementary Standards', 'European Qualifications Framework'],
+      mexico: ['SEP Primaria 3-5', 'Mexican Education Standards'],
     },
     subjects: {
       mathematics: [
-        "Multiplication through ancient trade calculations",
-        "Fractions via historical measurement systems",
-        "Geometry through ancient architectural design",
-        "Data analysis using historical population studies"
+        'Multiplication through ancient trade calculations',
+        'Fractions via historical measurement systems',
+        'Geometry through ancient architectural design',
+        'Data analysis using historical population studies',
       ],
       languageArts: [
-        "Reading comprehension through historical narratives",
-        "Writing historical fiction and reports",
-        "Vocabulary expansion via period-specific terms",
-        "Research skills using historical sources"
+        'Reading comprehension through historical narratives',
+        'Writing historical fiction and reports',
+        'Vocabulary expansion via period-specific terms',
+        'Research skills using historical sources',
       ],
       science: [
-        "Scientific method through historical discoveries",
-        "Life cycles studied via historical agricultural practices",
-        "Matter and energy through historical innovations",
-        "Earth science via historical environmental changes"
+        'Scientific method through historical discoveries',
+        'Life cycles studied via historical agricultural practices',
+        'Matter and energy through historical innovations',
+        'Earth science via historical environmental changes',
       ],
       socialStudies: [
-        "Ancient civilizations comparative study",
-        "Government systems throughout history",
-        "World geography through historical exploration",
-        "Economic principles via historical trade"
-      ]
+        'Ancient civilizations comparative study',
+        'Government systems throughout history',
+        'World geography through historical exploration',
+        'Economic principles via historical trade',
+      ],
     },
     neurodivergentSupport: [
-      "Differentiated instruction with multiple learning modalities",
-      "Assistive technology integration for reading and writing",
-      "Therapeutic activities integrated into historical crafts",
-      "Peer mentoring through collaborative historical projects"
-    ]
+      'Differentiated instruction with multiple learning modalities',
+      'Assistive technology integration for reading and writing',
+      'Therapeutic activities integrated into historical crafts',
+      'Peer mentoring through collaborative historical projects',
+    ],
   },
   {
-    level: "6-8 (Ages 11-13)",
-    title: "Innovation Analysts",
-    focus: "Scientific Revolution and Human Progress",
-    vrTime: "75 minutes",
-    outdoorTime: "5+ hours", 
+    level: '6-8 (Ages 11-13)',
+    title: 'Innovation Analysts',
+    focus: 'Scientific Revolution and Human Progress',
+    vrTime: '75 minutes',
+    outdoorTime: '5+ hours',
     standards: {
-      us: ["Common Core ELA 6-8", "Common Core Math 6-8", "NGSS MS", "C3 Social Studies MS"],
-      austria: ["Austrian Middle School Standards", "European STEM Framework"],
-      mexico: ["SEP Secundaria", "Mexican Middle School Standards"]
+      us: ['Common Core ELA 6-8', 'Common Core Math 6-8', 'NGSS MS', 'C3 Social Studies MS'],
+      austria: ['Austrian Middle School Standards', 'European STEM Framework'],
+      mexico: ['SEP Secundaria', 'Mexican Middle School Standards'],
     },
     subjects: {
       mathematics: [
-        "Algebra through historical problem-solving scenarios",
-        "Statistics via historical population and trade data",
-        "Advanced geometry through architectural analysis",
-        "Probability using historical event likelihood studies"
+        'Algebra through historical problem-solving scenarios',
+        'Statistics via historical population and trade data',
+        'Advanced geometry through architectural analysis',
+        'Probability using historical event likelihood studies',
       ],
       languageArts: [
-        "Critical analysis of historical documents and literature",
-        "Research writing with primary and secondary sources",
-        "Public speaking through historical figure presentations",
-        "Media literacy via historical propaganda analysis"
+        'Critical analysis of historical documents and literature',
+        'Research writing with primary and secondary sources',
+        'Public speaking through historical figure presentations',
+        'Media literacy via historical propaganda analysis',
       ],
       science: [
-        "Physics principles through historical inventions",
-        "Chemistry basics via historical metallurgy and medicine",
-        "Biology systems through historical medical discoveries",
-        "Earth science via historical geological understanding"
+        'Physics principles through historical inventions',
+        'Chemistry basics via historical metallurgy and medicine',
+        'Biology systems through historical medical discoveries',
+        'Earth science via historical geological understanding',
       ],
       socialStudies: [
-        "World history with emphasis on cultural interactions",
-        "Civics and government through historical examples",
-        "Economic principles via historical economic systems",
-        "Geography through historical exploration and trade"
-      ]
+        'World history with emphasis on cultural interactions',
+        'Civics and government through historical examples',
+        'Economic principles via historical economic systems',
+        'Geography through historical exploration and trade',
+      ],
     },
     neurodivergentSupport: [
-      "Executive function support through structured historical projects",
-      "Adaptive assessments with multiple demonstration options",
-      "Social skills development through historical role-play",
-      "Attention management tools during immersive experiences"
-    ]
+      'Executive function support through structured historical projects',
+      'Adaptive assessments with multiple demonstration options',
+      'Social skills development through historical role-play',
+      'Attention management tools during immersive experiences',
+    ],
   },
   {
-    level: "9-12 (Ages 14-18)",
-    title: "Future Builders",
-    focus: "Modern Applications and Career Preparation",
-    vrTime: "90 minutes",
-    outdoorTime: "4+ hours",
+    level: '9-12 (Ages 14-18)',
+    title: 'Future Builders',
+    focus: 'Modern Applications and Career Preparation',
+    vrTime: '90 minutes',
+    outdoorTime: '4+ hours',
     standards: {
-      us: ["Common Core ELA 9-12", "Common Core Math 9-12", "NGSS HS", "Advanced Placement"],
-      austria: ["Austrian Matura Preparation", "European University Standards"],
-      mexico: ["SEP Bachillerato", "University Preparation Standards"]
+      us: ['Common Core ELA 9-12', 'Common Core Math 9-12', 'NGSS HS', 'Advanced Placement'],
+      austria: ['Austrian Matura Preparation', 'European University Standards'],
+      mexico: ['SEP Bachillerato', 'University Preparation Standards'],
     },
     subjects: {
       mathematics: [
-        "Calculus applications in historical engineering projects",
-        "Statistics and data analysis for historical research",
-        "Mathematical modeling of historical phenomena",
-        "Advanced geometry in historical architectural analysis"
+        'Calculus applications in historical engineering projects',
+        'Statistics and data analysis for historical research',
+        'Mathematical modeling of historical phenomena',
+        'Advanced geometry in historical architectural analysis',
       ],
       languageArts: [
-        "Advanced composition through historical analysis",
-        "Literary analysis of period literature",
-        "Rhetoric and debate using historical examples",
-        "Creative writing inspired by historical periods"
+        'Advanced composition through historical analysis',
+        'Literary analysis of period literature',
+        'Rhetoric and debate using historical examples',
+        'Creative writing inspired by historical periods',
       ],
       science: [
-        "Advanced physics through historical scientific breakthroughs",
-        "Organic chemistry via historical pharmaceutical development",
-        "Advanced biology through historical medical advances",
-        "Environmental science via historical ecological changes"
+        'Advanced physics through historical scientific breakthroughs',
+        'Organic chemistry via historical pharmaceutical development',
+        'Advanced biology through historical medical advances',
+        'Environmental science via historical ecological changes',
       ],
       socialStudies: [
-        "Advanced historical analysis and interpretation",
-        "Political science through historical government systems",
-        "Economics through historical economic theory and practice",
-        "International relations via historical diplomatic studies"
-      ]
+        'Advanced historical analysis and interpretation',
+        'Political science through historical government systems',
+        'Economics through historical economic theory and practice',
+        'International relations via historical diplomatic studies',
+      ],
     },
     neurodivergentSupport: [
-      "Transition planning with career connections to historical interests",
-      "Independent living skills through historical self-sufficiency projects",
-      "College preparation with accommodations and support",
-      "Mentorship programs connecting students with historical professionals"
-    ]
-  }
+      'Transition planning with career connections to historical interests',
+      'Independent living skills through historical self-sufficiency projects',
+      'College preparation with accommodations and support',
+      'Mentorship programs connecting students with historical professionals',
+    ],
+  },
 ];
 
 // Global Campus Integration with VR Field Trips
 const globalCampuses = [
   {
-    location: "Dallas, Texas",
-    focus: "Space Exploration & Technology Innovation",
+    location: 'Dallas, Texas',
+    focus: 'Space Exploration & Technology Innovation',
     specialVRSites: [
-      "NASA Johnson Space Center historical timeline",
-      "Wright Brothers first flight simulation",
-      "Silicon Valley technology evolution",
-      "American Industrial Revolution factories"
+      'NASA Johnson Space Center historical timeline',
+      'Wright Brothers first flight simulation',
+      'Silicon Valley technology evolution',
+      'American Industrial Revolution factories',
     ],
-    partnerships: ["NASA", "UT Dallas", "Smithsonian", "National Archives"],
+    partnerships: ['NASA', 'UT Dallas', 'Smithsonian', 'National Archives'],
     students: 947,
-    languages: ["English", "Spanish"]
+    languages: ['English', 'Spanish'],
   },
   {
-    location: "Vienna, Austria", 
-    focus: "Arts, Music & European Cultural Heritage",
+    location: 'Vienna, Austria',
+    focus: 'Arts, Music & European Cultural Heritage',
     specialVRSites: [
       "Mozart's Vienna concert halls",
-      "Habsburg Empire palace tours",
+      'Habsburg Empire palace tours',
       "Beethoven's workshop recreation",
-      "European Renaissance art studios"
+      'European Renaissance art studios',
     ],
-    partnerships: ["Vienna State Opera", "University of Vienna", "Kunsthistorisches Museum", "Salzburg Festival"],
+    partnerships: [
+      'Vienna State Opera',
+      'University of Vienna',
+      'Kunsthistorisches Museum',
+      'Salzburg Festival',
+    ],
     students: 623,
-    languages: ["German", "English", "French"]
+    languages: ['German', 'English', 'French'],
   },
   {
-    location: "Merida, Mexico",
-    focus: "Archaeological Studies & Environmental Science",
+    location: 'Merida, Mexico',
+    focus: 'Archaeological Studies & Environmental Science',
     specialVRSites: [
-      "Chichen Itza at its historical peak",
-      "Mayan astronomical observatory experiences",
-      "Cenote underwater exploration",
-      "Pre-Columbian trade route simulations"
+      'Chichen Itza at its historical peak',
+      'Mayan astronomical observatory experiences',
+      'Cenote underwater exploration',
+      'Pre-Columbian trade route simulations',
     ],
-    partnerships: ["INAH", "Universidad Autónoma de Yucatán", "Mayan Cultural Center", "UNESCO"],
+    partnerships: ['INAH', 'Universidad Autónoma de Yucatán', 'Mayan Cultural Center', 'UNESCO'],
     students: 1277,
-    languages: ["Spanish", "English", "Mayan"]
-  }
+    languages: ['Spanish', 'English', 'Mayan'],
+  },
 ];
 
 // Compliance Matrix for All Jurisdictions
 const complianceMatrix = {
-  "United States": {
-    federal: ["Every Student Succeeds Act", "IDEA Special Education", "Title IX Compliance"],
+  'United States': {
+    federal: ['Every Student Succeeds Act', 'IDEA Special Education', 'Title IX Compliance'],
     states: {
-      core: ["Common Core Standards", "Next Generation Science Standards", "C3 Social Studies"],
-      assessment: ["State Testing Requirements", "SAT/ACT Preparation", "Advanced Placement"],
-      specialNeeds: ["504 Plans", "IEP Implementation", "RTI Framework"]
+      core: ['Common Core Standards', 'Next Generation Science Standards', 'C3 Social Studies'],
+      assessment: ['State Testing Requirements', 'SAT/ACT Preparation', 'Advanced Placement'],
+      specialNeeds: ['504 Plans', 'IEP Implementation', 'RTI Framework'],
     },
-    coverage: "100% compliance across all 50 states"
+    coverage: '100% compliance across all 50 states',
   },
-  "Austria": {
-    national: ["Austrian Education Act", "School Organization Act", "Compulsory Education Law"],
-    european: ["European Qualifications Framework", "Common European Framework"],
-    assessment: ["Matura Examination Preparation", "European Language Certifications"],
-    specialNeeds: ["Inclusive Education Guidelines", "Special Needs Support Framework"],
-    coverage: "Full Austrian Ministry of Education approval"
+  Austria: {
+    national: ['Austrian Education Act', 'School Organization Act', 'Compulsory Education Law'],
+    european: ['European Qualifications Framework', 'Common European Framework'],
+    assessment: ['Matura Examination Preparation', 'European Language Certifications'],
+    specialNeeds: ['Inclusive Education Guidelines', 'Special Needs Support Framework'],
+    coverage: 'Full Austrian Ministry of Education approval',
   },
-  "Mexico": {
-    federal: ["General Education Law", "SEP National Curriculum", "Educational Equity Law"],
-    assessment: ["PLANEA Preparation", "CENEVAL University Entrance", "PISA International"],
-    specialNeeds: ["Inclusive Education Framework", "Indigenous Language Support"],
-    bilingual: ["Spanish-English Dual Language", "Cultural Heritage Integration"],
-    coverage: "Complete SEP and UNESCO compliance"
-  }
+  Mexico: {
+    federal: ['General Education Law', 'SEP National Curriculum', 'Educational Equity Law'],
+    assessment: ['PLANEA Preparation', 'CENEVAL University Entrance', 'PISA International'],
+    specialNeeds: ['Inclusive Education Framework', 'Indigenous Language Support'],
+    bilingual: ['Spanish-English Dual Language', 'Cultural Heritage Integration'],
+    coverage: 'Complete SEP and UNESCO compliance',
+  },
 };
 
 // Innovation Features Display
@@ -431,11 +468,11 @@ function InnovationFeaturesDisplay() {
       <CardContent>
         <div className="grid md:grid-cols-3 gap-4">
           {innovationFeatures.slice(0, 15).map((feature) => (
-            <div 
+            <div
               key={feature.id}
               className={`p-4 rounded-lg border cursor-pointer transition-all ${
-                selectedFeature === feature.id 
-                  ? 'bg-purple-500/30 border-purple-400' 
+                selectedFeature === feature.id
+                  ? 'bg-purple-500/30 border-purple-400'
                   : 'bg-black/30 border-gray-600 hover:border-purple-400'
               }`}
               onClick={() => setSelectedFeature(selectedFeature === feature.id ? null : feature.id)}
@@ -444,10 +481,10 @@ function InnovationFeaturesDisplay() {
                 <feature.icon className="w-6 h-6 text-purple-400 flex-shrink-0" />
                 <Badge className="bg-green-500 text-xs">{feature.status}</Badge>
               </div>
-              
+
               <h5 className="font-semibold text-white text-sm mb-2">{feature.title}</h5>
               <p className="text-xs text-gray-300 mb-2">{feature.description}</p>
-              
+
               {selectedFeature === feature.id && (
                 <div className="mt-3 pt-3 border-t border-purple-500/50">
                   <div className="text-xs text-purple-300">
@@ -477,7 +514,9 @@ function GradeLevelDisplay() {
             size="sm"
             variant={selectedGrade.level === grade.level ? 'default' : 'outline'}
             onClick={() => setSelectedGrade(grade)}
-            className={selectedGrade.level === grade.level ? 'bg-blue-600' : 'border-blue-500 text-blue-400'}
+            className={
+              selectedGrade.level === grade.level ? 'bg-blue-600' : 'border-blue-500 text-blue-400'
+            }
           >
             {grade.level}
           </Button>
@@ -492,7 +531,7 @@ function GradeLevelDisplay() {
             {selectedGrade.level}: {selectedGrade.title}
           </CardTitle>
           <p className="text-gray-300">{selectedGrade.focus}</p>
-          
+
           <div className="flex gap-4 mt-2">
             <Badge className="bg-purple-500">
               <Eye className="w-3 h-3 mr-1" />
@@ -542,7 +581,9 @@ function GradeLevelDisplay() {
               <div className="grid md:grid-cols-3 gap-4">
                 {Object.entries(selectedGrade.standards).map(([country, standards]) => (
                   <div key={country} className="bg-black/30 p-4 rounded border border-gray-600">
-                    <h6 className="font-semibold text-blue-400 mb-2 capitalize">{country} Standards:</h6>
+                    <h6 className="font-semibold text-blue-400 mb-2 capitalize">
+                      {country} Standards:
+                    </h6>
                     <ul className="space-y-1">
                       {standards.map((standard, i) => (
                         <li key={i} className="text-xs text-gray-300 flex items-center gap-2">
@@ -558,7 +599,9 @@ function GradeLevelDisplay() {
 
             <TabsContent value="support">
               <div className="bg-black/30 p-4 rounded border border-green-500">
-                <h6 className="font-semibold text-green-400 mb-3">Neurodivergent Support Features:</h6>
+                <h6 className="font-semibold text-green-400 mb-3">
+                  Neurodivergent Support Features:
+                </h6>
                 <ul className="space-y-2">
                   {selectedGrade.neurodivergentSupport.map((support, i) => (
                     <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
@@ -581,14 +624,17 @@ function GlobalCampusDisplay() {
   return (
     <div className="grid md:grid-cols-3 gap-6">
       {globalCampuses.map((campus, i) => (
-        <Card key={i} className="bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500">
+        <Card
+          key={i}
+          className="bg-gradient-to-br from-green-500/20 to-teal-500/20 border-green-500"
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-400">
               <MapPin className="w-5 h-5" />
               {campus.location}
             </CardTitle>
             <p className="text-gray-300">{campus.focus}</p>
-            
+
             <div className="flex gap-2 mt-2">
               <Badge className="bg-blue-500">{campus.students} Students</Badge>
               <Badge className="bg-purple-500">{campus.languages.length} Languages</Badge>
@@ -607,7 +653,7 @@ function GlobalCampusDisplay() {
                   ))}
                 </ul>
               </div>
-              
+
               <div>
                 <h6 className="font-semibold text-yellow-400 mb-2">Key Partnerships:</h6>
                 <ul className="space-y-1">
@@ -632,7 +678,10 @@ function ComplianceDisplay() {
   return (
     <div className="space-y-6">
       {Object.entries(complianceMatrix).map(([country, compliance]) => (
-        <Card key={country} className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-500">
+        <Card
+          key={country}
+          className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-500"
+        >
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-orange-400">
               <Target className="w-5 h-5" />
@@ -642,37 +691,44 @@ function ComplianceDisplay() {
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-2 gap-4">
-              {Object.entries(compliance).filter(([key]) => key !== 'coverage').map(([category, items]) => (
-                <div key={category} className="bg-black/30 p-3 rounded border border-gray-600">
-                  <h6 className="font-semibold text-white mb-2 capitalize">{category}:</h6>
-                  {Array.isArray(items) ? (
-                    <ul className="space-y-1">
-                      {items.map((item, i) => (
-                        <li key={i} className="text-sm text-gray-300 flex items-center gap-2">
-                          <Star className="w-3 h-3 text-orange-400" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="space-y-2">
-                      {Object.entries(items).map(([subcat, subitems]) => (
-                        <div key={subcat}>
-                          <div className="text-sm font-medium text-orange-300 capitalize">{subcat}:</div>
-                          <ul className="ml-2 space-y-1">
-                            {subitems.map((subitem, i) => (
-                              <li key={i} className="text-xs text-gray-400 flex items-center gap-2">
-                                <Zap className="w-2 h-2 text-orange-400" />
-                                {subitem}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
+              {Object.entries(compliance)
+                .filter(([key]) => key !== 'coverage')
+                .map(([category, items]) => (
+                  <div key={category} className="bg-black/30 p-3 rounded border border-gray-600">
+                    <h6 className="font-semibold text-white mb-2 capitalize">{category}:</h6>
+                    {Array.isArray(items) ? (
+                      <ul className="space-y-1">
+                        {items.map((item, i) => (
+                          <li key={i} className="text-sm text-gray-300 flex items-center gap-2">
+                            <Star className="w-3 h-3 text-orange-400" />
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="space-y-2">
+                        {Object.entries(items).map(([subcat, subitems]) => (
+                          <div key={subcat}>
+                            <div className="text-sm font-medium text-orange-300 capitalize">
+                              {subcat}:
+                            </div>
+                            <ul className="ml-2 space-y-1">
+                              {subitems.map((subitem, i) => (
+                                <li
+                                  key={i}
+                                  className="text-xs text-gray-400 flex items-center gap-2"
+                                >
+                                  <Zap className="w-2 h-2 text-orange-400" />
+                                  {subitem}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
             </div>
           </CardContent>
         </Card>
@@ -683,7 +739,7 @@ function ComplianceDisplay() {
 
 // Main K-12 Program Page
 export default function ComprehensiveK12ProgramPage() {
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-indigo-900 text-white">
@@ -694,17 +750,17 @@ export default function ComprehensiveK12ProgramPage() {
             Revolutionary K-12 Education Program
           </h1>
           <p className="text-xl text-gray-300 mb-6">
-            Human-centered, interdisciplinary learning with 90-minute VR curriculum and outdoor integration
+            Human-centered, interdisciplinary learning with 90-minute VR curriculum and outdoor
+            integration
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-6">
             <Badge variant="outline" className="border-blue-500 text-blue-400">
               <GraduationCap className="w-4 h-4 mr-2" />
               Complete K-12 Program
             </Badge>
             <Badge variant="outline" className="border-green-500 text-green-400">
-              <Globe className="w-4 h-4 mr-2" />
-              3 Global Campuses
+              <Globe className="w-4 h-4 mr-2" />3 Global Campuses
             </Badge>
             <Badge variant="outline" className="border-purple-500 text-purple-400">
               <Zap className="w-4 h-4 mr-2" />
@@ -722,27 +778,39 @@ export default function ComprehensiveK12ProgramPage() {
           <CardContent className="pt-6">
             <div className="grid md:grid-cols-6 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold text-green-400 mb-1">{programOverview.totalStudents}</div>
+                <div className="text-2xl font-bold text-green-400 mb-1">
+                  {programOverview.totalStudents}
+                </div>
                 <div className="text-green-300 text-sm">Total Students</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-blue-400 mb-1">{programOverview.successRate}%</div>
+                <div className="text-2xl font-bold text-blue-400 mb-1">
+                  {programOverview.successRate}%
+                </div>
                 <div className="text-blue-300 text-sm">Success Rate</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-purple-400 mb-1">{programOverview.collegeAcceptance}%</div>
+                <div className="text-2xl font-bold text-purple-400 mb-1">
+                  {programOverview.collegeAcceptance}%
+                </div>
                 <div className="text-purple-300 text-sm">College Accept</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-orange-400 mb-1">{programOverview.neurodivergentSupport}%</div>
+                <div className="text-2xl font-bold text-orange-400 mb-1">
+                  {programOverview.neurodivergentSupport}%
+                </div>
                 <div className="text-orange-300 text-sm">Neurodiv. Success</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-cyan-400 mb-1">{programOverview.vrImplementation}%</div>
+                <div className="text-2xl font-bold text-cyan-400 mb-1">
+                  {programOverview.vrImplementation}%
+                </div>
                 <div className="text-cyan-300 text-sm">VR Integration</div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-400 mb-1">{programOverview.outdoorIntegration}%</div>
+                <div className="text-2xl font-bold text-green-400 mb-1">
+                  {programOverview.outdoorIntegration}%
+                </div>
                 <div className="text-green-300 text-sm">Outdoor Time</div>
               </div>
             </div>
@@ -771,28 +839,37 @@ export default function ComprehensiveK12ProgramPage() {
                 <CardContent>
                   <div className="space-y-4">
                     <p className="text-gray-300">
-                      Our program transforms education by condensing complete curriculum into 90-minute VR experiences, 
-                      leaving 6+ hours daily for outdoor exploration, physical activities, and family time.
+                      Our program transforms education by condensing complete curriculum into
+                      90-minute VR experiences, leaving 6+ hours daily for outdoor exploration,
+                      physical activities, and family time.
                     </p>
-                    
+
                     <div className="space-y-2">
                       <h5 className="font-semibold text-cyan-400">Core Innovation:</h5>
                       <ul className="space-y-1">
                         <li className="flex items-start gap-2 text-sm">
                           <Star className="w-3 h-3 text-cyan-400 mt-1 flex-shrink-0" />
-                          <span className="text-gray-300">Human stories as foundation for all subjects</span>
+                          <span className="text-gray-300">
+                            Human stories as foundation for all subjects
+                          </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm">
                           <Star className="w-3 h-3 text-cyan-400 mt-1 flex-shrink-0" />
-                          <span className="text-gray-300">VR gaming accelerates learning by 650%</span>
+                          <span className="text-gray-300">
+                            VR gaming accelerates learning by 650%
+                          </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm">
                           <Star className="w-3 h-3 text-cyan-400 mt-1 flex-shrink-0" />
-                          <span className="text-gray-300">Global collaboration across 3 campuses</span>
+                          <span className="text-gray-300">
+                            Global collaboration across 3 campuses
+                          </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm">
                           <Star className="w-3 h-3 text-cyan-400 mt-1 flex-shrink-0" />
-                          <span className="text-gray-300">Neurodivergent adaptation for all learning types</span>
+                          <span className="text-gray-300">
+                            Neurodivergent adaptation for all learning types
+                          </span>
                         </li>
                       </ul>
                     </div>
@@ -814,23 +891,29 @@ export default function ComprehensiveK12ProgramPage() {
                         <Eye className="w-4 h-4 text-purple-400" />
                         <span className="font-semibold text-white">VR Learning: 90 minutes</span>
                       </div>
-                      <p className="text-sm text-gray-300">Complete curriculum through immersive historical gaming</p>
+                      <p className="text-sm text-gray-300">
+                        Complete curriculum through immersive historical gaming
+                      </p>
                     </div>
-                    
+
                     <div className="bg-black/30 p-3 rounded border border-green-500/50">
                       <div className="flex items-center gap-3 mb-2">
                         <TreePine className="w-4 h-4 text-green-400" />
                         <span className="font-semibold text-white">Outdoor Time: 6+ hours</span>
                       </div>
-                      <p className="text-sm text-gray-300">Physical activities, exploration, family time, passion pursuits</p>
+                      <p className="text-sm text-gray-300">
+                        Physical activities, exploration, family time, passion pursuits
+                      </p>
                     </div>
-                    
+
                     <div className="bg-black/30 p-3 rounded border border-blue-500/50">
                       <div className="flex items-center gap-3 mb-2">
                         <Users className="w-4 h-4 text-blue-400" />
                         <span className="font-semibold text-white">Family Integration</span>
                       </div>
-                      <p className="text-sm text-gray-300">Parents participate in historical activities and cultural experiences</p>
+                      <p className="text-sm text-gray-300">
+                        Parents participate in historical activities and cultural experiences
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -863,24 +946,25 @@ export default function ComprehensiveK12ProgramPage() {
           <CardContent>
             <div className="text-center space-y-4">
               <p className="text-gray-300 text-lg">
-                Join the transformation that condenses full curriculum into 90-minute VR experiences, 
-                ensuring academic excellence while prioritizing outdoor exploration and family time.
+                Join the transformation that condenses full curriculum into 90-minute VR
+                experiences, ensuring academic excellence while prioritizing outdoor exploration and
+                family time.
               </p>
-              
+
               <div className="flex justify-center gap-4">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-purple-600 hover:bg-purple-700"
-                  onClick={() => window.location.href = '/vr-education-experience'}
+                  onClick={() => (window.location.href = '/vr-education-experience')}
                 >
                   <Eye className="w-5 h-5 mr-2" />
                   Experience VR Learning
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="border-green-500 text-green-400"
-                  onClick={() => window.location.href = '/interactive-history-map'}
+                  onClick={() => (window.location.href = '/interactive-history-map')}
                 >
                   <Globe className="w-5 h-5 mr-2" />
                   Explore History Map

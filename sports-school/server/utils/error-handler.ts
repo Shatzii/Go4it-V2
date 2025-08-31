@@ -11,26 +11,26 @@ import { serverErrorResponse, badRequestResponse } from './response';
  */
 export const handleApiError = (res: Response, error: unknown): Response => {
   console.error('API Error:', error);
-  
+
   // Handle Zod validation errors
   if (error instanceof ZodError) {
     const validationError = fromZodError(error);
     return badRequestResponse(res, validationError.message);
   }
-  
+
   // Handle custom status code errors
   if (error instanceof Error && 'statusCode' in error) {
     const statusCodeError = error as Error & { statusCode: number };
     return res.status(statusCodeError.statusCode).json({
       success: false,
-      message: statusCodeError.message
+      message: statusCodeError.message,
     });
   }
-  
+
   // Handle generic errors
   return serverErrorResponse(
-    res, 
-    error instanceof Error ? error.message : 'An unexpected error occurred'
+    res,
+    error instanceof Error ? error.message : 'An unexpected error occurred',
   );
 };
 
@@ -40,7 +40,10 @@ export const handleApiError = (res: Response, error: unknown): Response => {
  * @param statusCode HTTP status code
  * @returns Error object with statusCode property
  */
-export const createError = (message: string, statusCode: number): Error & { statusCode: number } => {
+export const createError = (
+  message: string,
+  statusCode: number,
+): Error & { statusCode: number } => {
   const error = new Error(message) as Error & { statusCode: number };
   error.statusCode = statusCode;
   return error;
@@ -51,7 +54,9 @@ export const createError = (message: string, statusCode: number): Error & { stat
  * @param message Error message
  * @returns Error object with 404 status code
  */
-export const createNotFoundError = (message: string = 'Resource not found'): Error & { statusCode: number } => {
+export const createNotFoundError = (
+  message: string = 'Resource not found',
+): Error & { statusCode: number } => {
   return createError(message, 404);
 };
 
@@ -60,7 +65,9 @@ export const createNotFoundError = (message: string = 'Resource not found'): Err
  * @param message Error message
  * @returns Error object with 401 status code
  */
-export const createUnauthorizedError = (message: string = 'Unauthorized access'): Error & { statusCode: number } => {
+export const createUnauthorizedError = (
+  message: string = 'Unauthorized access',
+): Error & { statusCode: number } => {
   return createError(message, 401);
 };
 
@@ -69,7 +76,9 @@ export const createUnauthorizedError = (message: string = 'Unauthorized access')
  * @param message Error message
  * @returns Error object with 403 status code
  */
-export const createForbiddenError = (message: string = 'Access forbidden'): Error & { statusCode: number } => {
+export const createForbiddenError = (
+  message: string = 'Access forbidden',
+): Error & { statusCode: number } => {
   return createError(message, 403);
 };
 
@@ -78,7 +87,9 @@ export const createForbiddenError = (message: string = 'Access forbidden'): Erro
  * @param message Error message
  * @returns Error object with 400 status code
  */
-export const createValidationError = (message: string = 'Validation error'): Error & { statusCode: number } => {
+export const createValidationError = (
+  message: string = 'Validation error',
+): Error & { statusCode: number } => {
   return createError(message, 400);
 };
 
@@ -89,7 +100,7 @@ export const createValidationError = (message: string = 'Validation error'): Err
  */
 export const logError = (error: unknown, context: string): void => {
   console.error(`Error in ${context}:`, error);
-  
+
   if (error instanceof Error) {
     console.error(`  Message: ${error.message}`);
     console.error(`  Stack: ${error.stack}`);

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,13 +17,11 @@ export default function SocialMediaSafetyPage() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Shield className="h-12 w-12 text-blue-600" />
-            <h1 className="text-4xl font-bold text-gray-900">
-              Social Media Safety Center
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900">Social Media Safety Center</h1>
           </div>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comprehensive AI-powered social media monitoring and digital citizenship protection 
-            for students and families
+            Comprehensive AI-powered social media monitoring and digital citizenship protection for
+            students and families
           </p>
           <div className="flex items-center justify-center gap-2 mt-4">
             <Badge className="bg-green-100 text-green-800 border-green-200">
@@ -88,9 +86,7 @@ export default function SocialMediaSafetyPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-gray-600 mb-3">
-                Proactive safety measures with:
-              </p>
+              <p className="text-sm text-gray-600 mb-3">Proactive safety measures with:</p>
               <ul className="text-sm space-y-1 text-gray-600">
                 <li>• Risk trend analysis</li>
                 <li>• Early warning system</li>
@@ -144,33 +140,38 @@ export default function SocialMediaSafetyPage() {
                             <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                               <h5 className="font-medium text-red-900">Predator Risk Detection</h5>
                               <p className="text-sm text-red-700">
-                                98.7% accuracy in identifying grooming patterns, manipulation tactics, 
-                                and inappropriate contact attempts.
+                                98.7% accuracy in identifying grooming patterns, manipulation
+                                tactics, and inappropriate contact attempts.
                               </p>
                             </div>
                             <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                              <h5 className="font-medium text-orange-900">Cyberbullying Analysis</h5>
+                              <h5 className="font-medium text-orange-900">
+                                Cyberbullying Analysis
+                              </h5>
                               <p className="text-sm text-orange-700">
-                                Multi-modal detection of harassment, threats, social exclusion, 
-                                and coordinated attacks.
+                                Multi-modal detection of harassment, threats, social exclusion, and
+                                coordinated attacks.
                               </p>
                             </div>
                             <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                               <h5 className="font-medium text-blue-900">Content Appropriateness</h5>
                               <p className="text-sm text-blue-700">
-                                Age-appropriate content filtering with educational standards compliance.
+                                Age-appropriate content filtering with educational standards
+                                compliance.
                               </p>
                             </div>
                             <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                              <h5 className="font-medium text-purple-900">Mental Health Indicators</h5>
+                              <h5 className="font-medium text-purple-900">
+                                Mental Health Indicators
+                              </h5>
                               <p className="text-sm text-purple-700">
-                                Early detection of depression, anxiety, self-harm risks, 
-                                and immediate intervention triggers.
+                                Early detection of depression, anxiety, self-harm risks, and
+                                immediate intervention triggers.
                               </p>
                             </div>
                           </div>
                         </div>
-                        
+
                         <div>
                           <h4 className="font-semibold mb-3">Technical Implementation</h4>
                           <div className="space-y-3">
@@ -218,17 +219,19 @@ export default function SocialMediaSafetyPage() {
                           { name: 'YouTube', icon: '📺', risk: 'Low' },
                           { name: 'WhatsApp', icon: '💬', risk: 'Medium' },
                           { name: 'Facebook', icon: '👥', risk: 'Low' },
-                          { name: 'Twitter/X', icon: '🐦', risk: 'Medium' }
+                          { name: 'Twitter/X', icon: '🐦', risk: 'Medium' },
                         ].map((platform) => (
                           <div key={platform.name} className="p-3 border rounded-lg text-center">
                             <div className="text-2xl mb-2">{platform.icon}</div>
                             <div className="font-medium text-sm">{platform.name}</div>
-                            <Badge 
-                              variant="outline" 
+                            <Badge
+                              variant="outline"
                               className={`text-xs mt-1 ${
-                                platform.risk === 'High' ? 'border-red-200 text-red-700' :
-                                platform.risk === 'Medium' ? 'border-yellow-200 text-yellow-700' :
-                                'border-green-200 text-green-700'
+                                platform.risk === 'High'
+                                  ? 'border-red-200 text-red-700'
+                                  : platform.risk === 'Medium'
+                                    ? 'border-yellow-200 text-yellow-700'
+                                    : 'border-green-200 text-green-700'
                               }`}
                             >
                               {platform.risk} Risk
@@ -255,25 +258,29 @@ export default function SocialMediaSafetyPage() {
                 <li className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                   <div>
-                    <strong>Multi-School Deployment:</strong> Scalable across 1000+ students with centralized management
+                    <strong>Multi-School Deployment:</strong> Scalable across 1000+ students with
+                    centralized management
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-green-600 rounded-full mt-2"></div>
                   <div>
-                    <strong>White-Label Solutions:</strong> Brandable platform for district-wide implementation
+                    <strong>White-Label Solutions:</strong> Brandable platform for district-wide
+                    implementation
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-purple-600 rounded-full mt-2"></div>
                   <div>
-                    <strong>API Integration:</strong> Connect with existing school information systems
+                    <strong>API Integration:</strong> Connect with existing school information
+                    systems
                   </div>
                 </li>
                 <li className="flex items-start gap-2">
                   <div className="w-2 h-2 bg-orange-600 rounded-full mt-2"></div>
                   <div>
-                    <strong>Custom Training:</strong> AI models trained on institution-specific safety policies
+                    <strong>Custom Training:</strong> AI models trained on institution-specific
+                    safety policies
                   </div>
                 </li>
               </ul>
@@ -288,7 +295,9 @@ export default function SocialMediaSafetyPage() {
               <div className="space-y-4">
                 <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <h4 className="font-semibold text-blue-900">Student Self-Hosting</h4>
-                  <p className="text-sm text-blue-700">$299-$1,299 per license with device management</p>
+                  <p className="text-sm text-blue-700">
+                    $299-$1,299 per license with device management
+                  </p>
                 </div>
                 <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                   <h4 className="font-semibold text-green-900">Enterprise Licensing</h4>

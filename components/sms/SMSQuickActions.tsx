@@ -12,14 +12,17 @@ interface SMSQuickActionsProps {
   contextData?: any;
 }
 
-export default function SMSQuickActions({ context = 'general', contextData }: SMSQuickActionsProps) {
+export default function SMSQuickActions({
+  context = 'general',
+  contextData,
+}: SMSQuickActionsProps) {
   const [lastSent, setLastSent] = useState<string>('');
-  const { 
-    sendPaymentConfirmation, 
-    sendGARUpdate, 
-    sendCoachReminder, 
+  const {
+    sendPaymentConfirmation,
+    sendGARUpdate,
+    sendCoachReminder,
     sendEmergencyAlert,
-    isSending 
+    isSending,
   } = useSMSNotifications();
 
   const quickActions = {
@@ -29,8 +32,8 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
         icon: <MessageSquare className="w-4 h-4" />,
         action: () => handlePaymentConfirmation(),
         variant: 'default' as const,
-        disabled: !contextData?.amount || !contextData?.customerPhone
-      }
+        disabled: !contextData?.amount || !contextData?.customerPhone,
+      },
     ],
     gar: [
       {
@@ -38,8 +41,8 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
         icon: <Trophy className="w-4 h-4" />,
         action: () => handleGARUpdate(),
         variant: 'default' as const,
-        disabled: !contextData?.garScore || !contextData?.athletePhone
-      }
+        disabled: !contextData?.garScore || !contextData?.athletePhone,
+      },
     ],
     coaching: [
       {
@@ -47,8 +50,8 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
         icon: <Calendar className="w-4 h-4" />,
         action: () => handleCoachReminder(),
         variant: 'default' as const,
-        disabled: !contextData?.sessionTime || !contextData?.athletePhone
-      }
+        disabled: !contextData?.sessionTime || !contextData?.athletePhone,
+      },
     ],
     emergency: [
       {
@@ -56,8 +59,8 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
         icon: <AlertTriangle className="w-4 h-4" />,
         action: () => handleEmergencyAlert(),
         variant: 'destructive' as const,
-        disabled: !contextData?.message || !contextData?.affectedUsers
-      }
+        disabled: !contextData?.message || !contextData?.affectedUsers,
+      },
     ],
     recruiting: [
       {
@@ -65,8 +68,8 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
         icon: <Users className="w-4 h-4" />,
         action: () => handleRecruitingAlert(),
         variant: 'default' as const,
-        disabled: !contextData?.schoolName || !contextData?.athletePhone
-      }
+        disabled: !contextData?.schoolName || !contextData?.athletePhone,
+      },
     ],
     general: [
       {
@@ -74,34 +77,34 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
         icon: <MessageSquare className="w-4 h-4" />,
         action: () => sendQuickSMS('payment'),
         variant: 'outline' as const,
-        disabled: false
+        disabled: false,
       },
       {
         label: 'Quick GAR SMS',
         icon: <Trophy className="w-4 h-4" />,
         action: () => sendQuickSMS('gar'),
         variant: 'outline' as const,
-        disabled: false
+        disabled: false,
       },
       {
         label: 'Emergency Alert',
         icon: <AlertTriangle className="w-4 h-4" />,
         action: () => sendQuickSMS('emergency'),
         variant: 'destructive' as const,
-        disabled: false
-      }
-    ]
+        disabled: false,
+      },
+    ],
   };
 
   const handlePaymentConfirmation = async () => {
     if (!contextData?.customerPhone || !contextData?.amount) return;
-    
+
     const success = await sendPaymentConfirmation({
       customerPhone: contextData.customerPhone,
       amount: contextData.amount,
       description: contextData.description || 'Go4It Sports Payment',
       status: 'succeeded',
-      paymentIntentId: contextData.paymentIntentId
+      paymentIntentId: contextData.paymentIntentId,
     });
 
     if (success) {
@@ -111,14 +114,14 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
 
   const handleGARUpdate = async () => {
     if (!contextData?.athletePhone || !contextData?.garScore) return;
-    
+
     const success = await sendGARUpdate({
       athletePhone: contextData.athletePhone,
       parentPhone: contextData.parentPhone,
       athleteName: contextData.athleteName || 'Athlete',
       garScore: contextData.garScore,
       improvements: contextData.improvements || ['Keep up the great work!'],
-      videoTitle: contextData.videoTitle || 'Training Video'
+      videoTitle: contextData.videoTitle || 'Training Video',
     });
 
     if (success) {
@@ -128,7 +131,7 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
 
   const handleCoachReminder = async () => {
     if (!contextData?.athletePhone || !contextData?.sessionTime) return;
-    
+
     const success = await sendCoachReminder({
       athletePhone: contextData.athletePhone,
       coachName: contextData.coachName || 'Your Coach',
@@ -136,7 +139,7 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
       sessionTime: contextData.sessionTime,
       sessionType: contextData.sessionType || 'Training Session',
       notificationType: 'reminder',
-      sessionId: contextData.sessionId
+      sessionId: contextData.sessionId,
     });
 
     if (success) {
@@ -146,12 +149,12 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
 
   const handleEmergencyAlert = async () => {
     if (!contextData?.message || !contextData?.affectedUsers) return;
-    
+
     const success = await sendEmergencyAlert({
       alertType: contextData.alertType || 'General Alert',
       message: contextData.message,
       affectedUsers: contextData.affectedUsers,
-      severity: contextData.severity || 'medium'
+      severity: contextData.severity || 'medium',
     });
 
     if (success) {
@@ -207,7 +210,8 @@ export default function SMSQuickActions({ context = 'general', contextData }: SM
 
         {context !== 'general' && contextData && (
           <div className="mt-3 p-2 bg-slate-700 rounded text-xs text-slate-300">
-            <strong>Context Data:</strong> {JSON.stringify(contextData, null, 2).substring(0, 100)}...
+            <strong>Context Data:</strong> {JSON.stringify(contextData, null, 2).substring(0, 100)}
+            ...
           </div>
         )}
       </CardContent>

@@ -1,69 +1,61 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { AdvancedVideoAnalyzer } from '@/components/video/advanced-video-analyzer'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Brain, 
-  Video, 
-  Zap, 
-  Target,
-  TrendingUp,
-  Award,
-  Activity,
-  PlayCircle
-} from 'lucide-react'
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { AdvancedVideoAnalyzer } from '@/components/video/advanced-video-analyzer';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Brain, Video, Zap, Target, TrendingUp, Award, Activity, PlayCircle } from 'lucide-react';
 
 export default function TestVideoAnalysisPage() {
-  const [selectedSport, setSelectedSport] = useState('basketball')
-  const [analysisResults, setAnalysisResults] = useState<any>(null)
+  const [selectedSport, setSelectedSport] = useState('basketball');
+  const [analysisResults, setAnalysisResults] = useState<any>(null);
 
   const sampleVideos = [
     {
       url: '/videos/basketball-sample.mp4',
       title: 'Basketball Shooting Form',
       sport: 'basketball',
-      description: 'Analyzing shooting technique and form'
+      description: 'Analyzing shooting technique and form',
     },
     {
-      url: '/videos/football-sample.mp4', 
+      url: '/videos/football-sample.mp4',
       title: 'Football Passing Mechanics',
       sport: 'football',
-      description: 'Quarterback throwing motion analysis'
+      description: 'Quarterback throwing motion analysis',
     },
     {
       url: '/videos/soccer-sample.mp4',
       title: 'Soccer Ball Control',
-      sport: 'soccer', 
-      description: 'First touch and dribbling technique'
-    }
-  ]
+      sport: 'soccer',
+      description: 'First touch and dribbling technique',
+    },
+  ];
 
   const features = [
     {
       icon: Brain,
       title: 'AI Computer Vision',
-      description: 'Real-time pose detection with 25+ body points tracked at sub-centimeter accuracy'
+      description:
+        'Real-time pose detection with 25+ body points tracked at sub-centimeter accuracy',
     },
     {
       icon: Activity,
-      title: 'Biomechanical Analysis', 
-      description: 'Full kinetic chain analysis for injury prevention and technique optimization'
+      title: 'Biomechanical Analysis',
+      description: 'Full kinetic chain analysis for injury prevention and technique optimization',
     },
     {
       icon: Target,
       title: 'Performance Prediction',
-      description: 'ML algorithms predict future performance based on movement patterns'
+      description: 'ML algorithms predict future performance based on movement patterns',
     },
     {
       icon: Zap,
       title: 'Real-time Processing',
-      description: 'Sub-100ms video analysis faster than any current platform'
-    }
-  ]
+      description: 'Sub-100ms video analysis faster than any current platform',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-900 text-white p-6">
@@ -74,7 +66,7 @@ export default function TestVideoAnalysisPage() {
             Next-Generation Video Analysis
           </h1>
           <p className="text-xl text-slate-400 max-w-3xl mx-auto">
-            Experience the future of sports performance analysis with AI-powered computer vision, 
+            Experience the future of sports performance analysis with AI-powered computer vision,
             biomechanical insights, and predictive analytics
           </p>
           <div className="flex items-center justify-center gap-2">
@@ -96,7 +88,10 @@ export default function TestVideoAnalysisPage() {
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-slate-800/50 border-slate-700 hover:border-primary/50 transition-colors">
+            <Card
+              key={index}
+              className="bg-slate-800/50 border-slate-700 hover:border-primary/50 transition-colors"
+            >
               <CardContent className="p-6 text-center">
                 <feature.icon className="w-8 h-8 text-primary mx-auto mb-3" />
                 <h3 className="font-semibold text-white mb-2">{feature.title}</h3>
@@ -120,15 +115,18 @@ export default function TestVideoAnalysisPage() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {sampleVideos.map((video, index) => (
-                <Card key={index} className="bg-slate-700/50 border-slate-600 hover:border-primary/50 transition-colors cursor-pointer">
+                <Card
+                  key={index}
+                  className="bg-slate-700/50 border-slate-600 hover:border-primary/50 transition-colors cursor-pointer"
+                >
                   <CardContent className="p-4">
                     <div className="aspect-video bg-slate-800 rounded-lg mb-3 flex items-center justify-center">
                       <PlayCircle className="w-12 h-12 text-slate-500" />
                     </div>
                     <h4 className="font-medium text-white mb-1">{video.title}</h4>
                     <p className="text-sm text-slate-400 mb-3">{video.description}</p>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       onClick={() => setSelectedSport(video.sport)}
                       className="w-full"
                     >
@@ -150,24 +148,15 @@ export default function TestVideoAnalysisPage() {
           </TabsList>
 
           <TabsContent value="basketball">
-            <AdvancedVideoAnalyzer
-              sport="basketball"
-              onAnalysisComplete={setAnalysisResults}
-            />
+            <AdvancedVideoAnalyzer sport="basketball" onAnalysisComplete={setAnalysisResults} />
           </TabsContent>
 
           <TabsContent value="football">
-            <AdvancedVideoAnalyzer
-              sport="football"
-              onAnalysisComplete={setAnalysisResults}
-            />
+            <AdvancedVideoAnalyzer sport="football" onAnalysisComplete={setAnalysisResults} />
           </TabsContent>
 
           <TabsContent value="soccer">
-            <AdvancedVideoAnalyzer
-              sport="soccer"
-              onAnalysisComplete={setAnalysisResults}
-            />
+            <AdvancedVideoAnalyzer sport="soccer" onAnalysisComplete={setAnalysisResults} />
           </TabsContent>
         </Tabs>
 
@@ -186,7 +175,9 @@ export default function TestVideoAnalysisPage() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-white mb-3">Current Industry Standards</h3>
+                  <h3 className="text-lg font-semibold text-white mb-3">
+                    Current Industry Standards
+                  </h3>
                   <div className="space-y-2 text-slate-400">
                     <div className="flex justify-between">
                       <span>Processing Speed</span>
@@ -206,7 +197,7 @@ export default function TestVideoAnalysisPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Competitive Platforms</h3>
                   <div className="space-y-2 text-sm text-slate-400">
@@ -220,7 +211,9 @@ export default function TestVideoAnalysisPage() {
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-primary mb-3">Go4It Next-Gen Platform</h3>
+                  <h3 className="text-lg font-semibold text-primary mb-3">
+                    Go4It Next-Gen Platform
+                  </h3>
                   <div className="space-y-2 text-slate-300">
                     <div className="flex justify-between">
                       <span>Processing Speed</span>
@@ -262,9 +255,9 @@ export default function TestVideoAnalysisPage() {
               Ready to Transform Your Athletic Development?
             </h2>
             <p className="text-slate-300 mb-6 max-w-2xl mx-auto">
-              Join the next generation of sports technology. Get AI-powered insights, 
-              personalized coaching, and recruitment opportunities designed specifically 
-              for your unique athletic journey.
+              Join the next generation of sports technology. Get AI-powered insights, personalized
+              coaching, and recruitment opportunities designed specifically for your unique athletic
+              journey.
             </p>
             <div className="flex items-center justify-center gap-4">
               <Button size="lg" className="bg-primary hover:bg-primary/90">
@@ -278,5 +271,5 @@ export default function TestVideoAnalysisPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

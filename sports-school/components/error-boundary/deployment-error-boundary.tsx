@@ -13,13 +13,13 @@ interface DeploymentErrorBoundaryProps {
   className?: string;
 }
 
-function DeploymentErrorFallback({ 
-  error, 
-  resetErrorBoundary, 
-  fallbackTitle = "Component Error",
-  fallbackMessage = "This component failed to load during deployment."
-}: { 
-  error: Error; 
+function DeploymentErrorFallback({
+  error,
+  resetErrorBoundary,
+  fallbackTitle = 'Component Error',
+  fallbackMessage = 'This component failed to load during deployment.',
+}: {
+  error: Error;
   resetErrorBoundary: () => void;
   fallbackTitle?: string;
   fallbackMessage?: string;
@@ -36,7 +36,7 @@ function DeploymentErrorFallback({
         <p className="text-red-300 mb-4">{fallbackMessage}</p>
         <div className="space-y-2">
           <p className="text-xs text-red-200">Error: {error.message}</p>
-          <Button 
+          <Button
             onClick={resetErrorBoundary}
             className="w-full bg-red-600 hover:bg-red-700"
             size="sm"
@@ -50,11 +50,11 @@ function DeploymentErrorFallback({
   );
 }
 
-export function DeploymentErrorBoundary({ 
-  children, 
-  fallbackTitle, 
-  fallbackMessage, 
-  className 
+export function DeploymentErrorBoundary({
+  children,
+  fallbackTitle,
+  fallbackMessage,
+  className,
 }: DeploymentErrorBoundaryProps) {
   return (
     <ErrorBoundary
@@ -69,9 +69,7 @@ export function DeploymentErrorBoundary({
         console.error('Deployment Error Boundary caught an error:', error, errorInfo);
       }}
     >
-      <div className={className}>
-        {children}
-      </div>
+      <div className={className}>{children}</div>
     </ErrorBoundary>
   );
 }

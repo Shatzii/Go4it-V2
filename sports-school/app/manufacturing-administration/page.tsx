@@ -5,204 +5,220 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Factory, Tablet, Globe, DollarSign, Truck,
-  Settings, Users, CheckCircle, Star, Target,
-  Package, ShoppingCart, BarChart, Clock,
-  Shield, Award, Zap, Monitor, Camera
+import {
+  Factory,
+  Tablet,
+  Globe,
+  DollarSign,
+  Truck,
+  Settings,
+  Users,
+  CheckCircle,
+  Star,
+  Target,
+  Package,
+  ShoppingCart,
+  BarChart,
+  Clock,
+  Shield,
+  Award,
+  Zap,
+  Monitor,
+  Camera,
 } from 'lucide-react';
 
 // Custom Educational Tablet Specifications
 const customTabletSpecs = {
-  "Universal Learning Tablet Pro": {
+  'Universal Learning Tablet Pro': {
     displaySpecs: {
-      "Screen Size": "10.1-12 inch options",
-      "Resolution": "2K (2560×1600) or 4K available",
-      "Touch Response": "Multi-touch with palm rejection",
-      "Brightness": "500+ nits for outdoor learning",
-      "Eye Protection": "Blue light filter, flicker-free"
+      'Screen Size': '10.1-12 inch options',
+      Resolution: '2K (2560×1600) or 4K available',
+      'Touch Response': 'Multi-touch with palm rejection',
+      Brightness: '500+ nits for outdoor learning',
+      'Eye Protection': 'Blue light filter, flicker-free',
     },
     educationalFeatures: {
-      "Stylus Support": "Pressure-sensitive for drawing and note-taking",
-      "Parental Controls": "Built-in educational content filtering",
-      "Offline Learning": "32GB+ local content storage",
-      "Family Accounts": "Up to 6 user profiles with progress tracking",
-      "Durability": "Drop-resistant case, reinforced corners"
+      'Stylus Support': 'Pressure-sensitive for drawing and note-taking',
+      'Parental Controls': 'Built-in educational content filtering',
+      'Offline Learning': '32GB+ local content storage',
+      'Family Accounts': 'Up to 6 user profiles with progress tracking',
+      Durability: 'Drop-resistant case, reinforced corners',
     },
     techSpecs: {
-      "Processor": "Octa-core ARM or equivalent",
-      "RAM": "6-8GB for smooth multitasking",
-      "Storage": "128GB+ with microSD expansion",
-      "Battery": "12+ hour learning sessions",
-      "Cameras": "Front + rear for AR learning experiences",
-      "Audio": "Stereo speakers + headphone jack",
-      "Connectivity": "WiFi 6, optional 4G/5G"
+      Processor: 'Octa-core ARM or equivalent',
+      RAM: '6-8GB for smooth multitasking',
+      Storage: '128GB+ with microSD expansion',
+      Battery: '12+ hour learning sessions',
+      Cameras: 'Front + rear for AR learning experiences',
+      Audio: 'Stereo speakers + headphone jack',
+      Connectivity: 'WiFi 6, optional 4G/5G',
     },
-    targetCost: "$120-180 manufacturing",
-    targetPrice: "$299-499 retail",
-    margin: "40-60% profit margin"
-  }
+    targetCost: '$120-180 manufacturing',
+    targetPrice: '$299-499 retail',
+    margin: '40-60% profit margin',
+  },
 };
 
 // Asian Manufacturing Strategy
 const manufacturingStrategy = {
   primaryRegions: [
     {
-      region: "Shenzhen, China",
-      advantages: ["Lowest cost", "Massive scale", "Component ecosystem", "Fast prototyping"],
-      manufacturers: ["Foxconn", "BYD", "Huaqin", "Wingtech"],
-      costStructure: "$100-140 per unit",
-      moq: "1,000-5,000 units",
-      leadTime: "45-60 days",
-      qualityLevel: "High volume, good quality",
+      region: 'Shenzhen, China',
+      advantages: ['Lowest cost', 'Massive scale', 'Component ecosystem', 'Fast prototyping'],
+      manufacturers: ['Foxconn', 'BYD', 'Huaqin', 'Wingtech'],
+      costStructure: '$100-140 per unit',
+      moq: '1,000-5,000 units',
+      leadTime: '45-60 days',
+      qualityLevel: 'High volume, good quality',
       icon: Factory,
-      color: "blue"
+      color: 'blue',
     },
     {
-      region: "Taiwan",
-      advantages: ["Premium quality", "Advanced tech", "Reliable supply chain", "Innovation"],
-      manufacturers: ["Quanta", "Compal", "Inventec", "Wistron"],
-      costStructure: "$130-170 per unit", 
-      moq: "500-2,000 units",
-      leadTime: "60-75 days",
-      qualityLevel: "Premium quality, advanced features",
+      region: 'Taiwan',
+      advantages: ['Premium quality', 'Advanced tech', 'Reliable supply chain', 'Innovation'],
+      manufacturers: ['Quanta', 'Compal', 'Inventec', 'Wistron'],
+      costStructure: '$130-170 per unit',
+      moq: '500-2,000 units',
+      leadTime: '60-75 days',
+      qualityLevel: 'Premium quality, advanced features',
       icon: Award,
-      color: "purple"
+      color: 'purple',
     },
     {
-      region: "South Korea",
-      advantages: ["Cutting-edge displays", "Premium components", "Quality focus"],
-      manufacturers: ["Samsung ODM", "LG Electronics"],
-      costStructure: "$150-200 per unit",
-      moq: "1,000-3,000 units", 
-      leadTime: "75-90 days",
-      qualityLevel: "Premium quality, latest technology",
+      region: 'South Korea',
+      advantages: ['Cutting-edge displays', 'Premium components', 'Quality focus'],
+      manufacturers: ['Samsung ODM', 'LG Electronics'],
+      costStructure: '$150-200 per unit',
+      moq: '1,000-3,000 units',
+      leadTime: '75-90 days',
+      qualityLevel: 'Premium quality, latest technology',
       icon: Monitor,
-      color: "green"
+      color: 'green',
     },
     {
-      region: "Vietnam/India",
-      advantages: ["Lower labor costs", "Growing ecosystem", "Government incentives"],
-      manufacturers: ["Foxconn Vietnam", "Samsung Vietnam", "Indian ODMs"],
-      costStructure: "$110-150 per unit",
-      moq: "2,000-10,000 units",
-      leadTime: "60-90 days", 
-      qualityLevel: "Good quality, cost-focused",
+      region: 'Vietnam/India',
+      advantages: ['Lower labor costs', 'Growing ecosystem', 'Government incentives'],
+      manufacturers: ['Foxconn Vietnam', 'Samsung Vietnam', 'Indian ODMs'],
+      costStructure: '$110-150 per unit',
+      moq: '2,000-10,000 units',
+      leadTime: '60-90 days',
+      qualityLevel: 'Good quality, cost-focused',
       icon: Globe,
-      color: "orange"
-    }
+      color: 'orange',
+    },
   ],
   recommendedApproach: {
-    phase1: "Start with Shenzhen for cost and speed (1,000-5,000 units)",
-    phase2: "Scale with Vietnam/India for volume (10,000+ units)",
-    phase3: "Premium variant in Taiwan for advanced features",
-    timeline: "6 months prototype → 3 months production → ongoing manufacturing"
-  }
+    phase1: 'Start with Shenzhen for cost and speed (1,000-5,000 units)',
+    phase2: 'Scale with Vietnam/India for volume (10,000+ units)',
+    phase3: 'Premium variant in Taiwan for advanced features',
+    timeline: '6 months prototype → 3 months production → ongoing manufacturing',
+  },
 };
 
 // Administration and Business Operations
 const administrationPlan = {
   manufacturing: {
-    "Product Development": [
-      "Custom tablet specification and design",
-      "Educational software optimization", 
-      "Quality testing and certification",
-      "Regulatory compliance (FCC, CE, RoHS)"
+    'Product Development': [
+      'Custom tablet specification and design',
+      'Educational software optimization',
+      'Quality testing and certification',
+      'Regulatory compliance (FCC, CE, RoHS)',
     ],
-    "Supply Chain Management": [
-      "Manufacturer selection and contracts",
-      "Component sourcing and inventory",
-      "Quality control and inspections",
-      "Logistics and shipping coordination"
+    'Supply Chain Management': [
+      'Manufacturer selection and contracts',
+      'Component sourcing and inventory',
+      'Quality control and inspections',
+      'Logistics and shipping coordination',
     ],
-    "Operations": [
-      "Order management and fulfillment",
-      "Customer support and warranties",
-      "Returns and repair services",
-      "Inventory management and forecasting"
-    ]
+    Operations: [
+      'Order management and fulfillment',
+      'Customer support and warranties',
+      'Returns and repair services',
+      'Inventory management and forecasting',
+    ],
   },
   business: {
-    "Financial Planning": [
-      "Manufacturing cost budgeting",
-      "Pricing strategy optimization",
-      "Cash flow management for inventory",
-      "Revenue projections and scaling"
+    'Financial Planning': [
+      'Manufacturing cost budgeting',
+      'Pricing strategy optimization',
+      'Cash flow management for inventory',
+      'Revenue projections and scaling',
     ],
-    "Legal and Compliance": [
-      "Manufacturing agreements",
-      "Intellectual property protection", 
-      "Product liability insurance",
-      "International trade compliance"
+    'Legal and Compliance': [
+      'Manufacturing agreements',
+      'Intellectual property protection',
+      'Product liability insurance',
+      'International trade compliance',
     ],
-    "Marketing and Sales": [
-      "Product positioning and branding",
-      "Channel partner relationships",
-      "Direct-to-consumer sales platform",
-      "Educational market penetration strategy"
-    ]
-  }
+    'Marketing and Sales': [
+      'Product positioning and branding',
+      'Channel partner relationships',
+      'Direct-to-consumer sales platform',
+      'Educational market penetration strategy',
+    ],
+  },
 };
 
 // Cost Analysis and Projections
 const costAnalysis = {
   manufacturingCosts: {
-    "Components": "$80-120 (display, processor, memory, etc.)",
-    "Assembly": "$15-25 (labor and overhead)",
-    "Packaging": "$3-5 (box, accessories, documentation)",
-    "Quality Control": "$2-5 (testing and certification)",
-    "Shipping": "$8-15 (factory to warehouse)",
-    "Total Manufacturing": "$108-170 per unit"
+    Components: '$80-120 (display, processor, memory, etc.)',
+    Assembly: '$15-25 (labor and overhead)',
+    Packaging: '$3-5 (box, accessories, documentation)',
+    'Quality Control': '$2-5 (testing and certification)',
+    Shipping: '$8-15 (factory to warehouse)',
+    'Total Manufacturing': '$108-170 per unit',
   },
   businessCosts: {
-    "R&D and Design": "$50,000-100,000 one-time",
-    "Tooling and Setup": "$25,000-50,000 one-time", 
-    "Certification": "$15,000-30,000 one-time",
-    "Initial Inventory": "$200,000-500,000 (2,000-5,000 units)",
-    "Working Capital": "$100,000-300,000 ongoing"
+    'R&D and Design': '$50,000-100,000 one-time',
+    'Tooling and Setup': '$25,000-50,000 one-time',
+    Certification: '$15,000-30,000 one-time',
+    'Initial Inventory': '$200,000-500,000 (2,000-5,000 units)',
+    'Working Capital': '$100,000-300,000 ongoing',
   },
   revenueProjections: {
-    "Year 1": "2,000 units × $399 = $798,000 revenue",
-    "Year 2": "10,000 units × $349 = $3,490,000 revenue",
-    "Year 3": "25,000 units × $299 = $7,475,000 revenue",
-    "Profit Margins": "40-60% gross margin, 25-35% net margin"
-  }
+    'Year 1': '2,000 units × $399 = $798,000 revenue',
+    'Year 2': '10,000 units × $349 = $3,490,000 revenue',
+    'Year 3': '25,000 units × $299 = $7,475,000 revenue',
+    'Profit Margins': '40-60% gross margin, 25-35% net margin',
+  },
 };
 
 // Quality and Feature Differentiation
 const productDifferentiation = {
   educationalOptimizations: [
     {
-      feature: "Learning-Optimized Display",
-      description: "Eye-safe blue light filtering, anti-glare coating, adjustable color temperature",
-      benefit: "Reduces eye strain during long learning sessions",
-      cost: "+$8-12 per unit"
+      feature: 'Learning-Optimized Display',
+      description:
+        'Eye-safe blue light filtering, anti-glare coating, adjustable color temperature',
+      benefit: 'Reduces eye strain during long learning sessions',
+      cost: '+$8-12 per unit',
     },
     {
-      feature: "Educational Software Suite",
-      description: "Pre-installed learning apps, parental controls, progress tracking",
-      benefit: "Ready-to-use educational experience out of the box",
-      cost: "+$5-10 per unit in licensing"
+      feature: 'Educational Software Suite',
+      description: 'Pre-installed learning apps, parental controls, progress tracking',
+      benefit: 'Ready-to-use educational experience out of the box',
+      cost: '+$5-10 per unit in licensing',
     },
     {
-      feature: "Rugged Educational Design",
-      description: "Drop-resistant corners, spill-resistant keyboard, reinforced screen",
-      benefit: "Survives typical classroom and home use",
-      cost: "+$10-15 per unit"
+      feature: 'Rugged Educational Design',
+      description: 'Drop-resistant corners, spill-resistant keyboard, reinforced screen',
+      benefit: 'Survives typical classroom and home use',
+      cost: '+$10-15 per unit',
     },
     {
-      feature: "Family Learning Features",
-      description: "Multi-user profiles, collaborative apps, family dashboard",
-      benefit: "Enables whole family participation in learning",
-      cost: "+$3-5 per unit in software"
+      feature: 'Family Learning Features',
+      description: 'Multi-user profiles, collaborative apps, family dashboard',
+      benefit: 'Enables whole family participation in learning',
+      cost: '+$3-5 per unit in software',
     },
     {
-      feature: "Offline Learning Capability",
-      description: "Large local storage, downloadable content, offline mode",
-      benefit: "Learning continues without internet connectivity",
-      cost: "+$5-8 per unit for extra storage"
-    }
-  ]
+      feature: 'Offline Learning Capability',
+      description: 'Large local storage, downloadable content, offline mode',
+      benefit: 'Learning continues without internet connectivity',
+      cost: '+$5-8 per unit for extra storage',
+    },
+  ],
 };
 
 // Manufacturing Strategy Display
@@ -217,16 +233,18 @@ function ManufacturingStrategyDisplay() {
             <Factory className="w-5 h-5" />
             Custom Tablet Manufacturing Strategy
           </CardTitle>
-          <p className="text-gray-300">Build our own educational tablets with Asian manufacturers for optimal cost and quality</p>
+          <p className="text-gray-300">
+            Build our own educational tablets with Asian manufacturers for optimal cost and quality
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-6">
             {manufacturingStrategy.primaryRegions.map((region, i) => {
               const IconComponent = region.icon;
               const isSelected = selectedRegion === region.region;
-              
+
               return (
-                <Card 
+                <Card
                   key={i}
                   className={`bg-gradient-to-br from-${region.color}-500/20 to-${region.color}-600/20 border-${region.color}-500 cursor-pointer transition-all ${
                     isSelected ? 'ring-2 ring-white/50' : ''
@@ -238,14 +256,16 @@ function ManufacturingStrategyDisplay() {
                       <div className="flex items-center gap-3">
                         <IconComponent className={`w-8 h-8 text-${region.color}-400`} />
                         <div>
-                          <CardTitle className={`text-${region.color}-400`}>{region.region}</CardTitle>
+                          <CardTitle className={`text-${region.color}-400`}>
+                            {region.region}
+                          </CardTitle>
                           <p className="text-gray-400 text-sm">{region.qualityLevel}</p>
                         </div>
                       </div>
                       <Badge className="bg-green-500">{region.costStructure}</Badge>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent>
                     <div className="space-y-3">
                       <div className="grid grid-cols-2 gap-2 text-sm">
@@ -254,7 +274,7 @@ function ManufacturingStrategyDisplay() {
                         <span className="text-gray-400">Lead Time:</span>
                         <span className="text-white">{region.leadTime}</span>
                       </div>
-                      
+
                       <div>
                         <h6 className="font-semibold text-blue-400 mb-2">Key Advantages:</h6>
                         <ul className="space-y-1">
@@ -266,26 +286,35 @@ function ManufacturingStrategyDisplay() {
                           ))}
                         </ul>
                       </div>
-                      
+
                       {isSelected && (
                         <div className="mt-4 space-y-3 border-t border-gray-600 pt-4">
                           <div>
                             <h6 className="font-semibold text-purple-400 mb-2">All Advantages:</h6>
                             <ul className="space-y-1">
                               {region.advantages.map((advantage, j) => (
-                                <li key={j} className="text-sm text-gray-300 flex items-start gap-2">
+                                <li
+                                  key={j}
+                                  className="text-sm text-gray-300 flex items-start gap-2"
+                                >
                                   <Star className="w-3 h-3 text-purple-400 mt-0.5 flex-shrink-0" />
                                   {advantage}
                                 </li>
                               ))}
                             </ul>
                           </div>
-                          
+
                           <div>
-                            <h6 className="font-semibold text-orange-400 mb-2">Recommended Manufacturers:</h6>
+                            <h6 className="font-semibold text-orange-400 mb-2">
+                              Recommended Manufacturers:
+                            </h6>
                             <div className="flex flex-wrap gap-1">
                               {region.manufacturers.map((manufacturer, j) => (
-                                <Badge key={j} variant="outline" className="text-xs border-orange-500 text-orange-300">
+                                <Badge
+                                  key={j}
+                                  variant="outline"
+                                  className="text-xs border-orange-500 text-orange-300"
+                                >
                                   {manufacturer}
                                 </Badge>
                               ))}
@@ -299,13 +328,19 @@ function ManufacturingStrategyDisplay() {
               );
             })}
           </div>
-          
+
           <div className="mt-6 bg-black/30 p-4 rounded-lg border border-green-500/50">
             <h5 className="font-semibold text-green-400 mb-3">Recommended 3-Phase Approach:</h5>
             <div className="space-y-2 text-sm text-gray-300">
-              <div><strong>Phase 1:</strong> {manufacturingStrategy.recommendedApproach.phase1}</div>
-              <div><strong>Phase 2:</strong> {manufacturingStrategy.recommendedApproach.phase2}</div>
-              <div><strong>Phase 3:</strong> {manufacturingStrategy.recommendedApproach.phase3}</div>
+              <div>
+                <strong>Phase 1:</strong> {manufacturingStrategy.recommendedApproach.phase1}
+              </div>
+              <div>
+                <strong>Phase 2:</strong> {manufacturingStrategy.recommendedApproach.phase2}
+              </div>
+              <div>
+                <strong>Phase 3:</strong> {manufacturingStrategy.recommendedApproach.phase3}
+              </div>
               <div className="pt-2 border-t border-gray-600">
                 <strong>Timeline:</strong> {manufacturingStrategy.recommendedApproach.timeline}
               </div>
@@ -319,8 +354,8 @@ function ManufacturingStrategyDisplay() {
 
 // Product Specifications Display
 function ProductSpecsDisplay() {
-  const tablet = customTabletSpecs["Universal Learning Tablet Pro"];
-  
+  const tablet = customTabletSpecs['Universal Learning Tablet Pro'];
+
   return (
     <div className="space-y-6">
       <Card className="bg-gradient-to-br from-green-500/20 to-blue-500/20 border-green-500">
@@ -348,7 +383,7 @@ function ProductSpecsDisplay() {
                 ))}
               </div>
             </div>
-            
+
             <div>
               <h5 className="font-semibold text-green-400 mb-3">Educational Features</h5>
               <div className="space-y-2">
@@ -360,7 +395,7 @@ function ProductSpecsDisplay() {
                 ))}
               </div>
             </div>
-            
+
             <div>
               <h5 className="font-semibold text-purple-400 mb-3">Technical Specifications</h5>
               <div className="space-y-2">
@@ -384,10 +419,19 @@ function AdministrationPlanDisplay() {
   return (
     <div className="grid md:grid-cols-2 gap-6">
       {Object.entries(administrationPlan).map(([category, sections]) => (
-        <Card key={category} className={`bg-gradient-to-br from-${category === 'manufacturing' ? 'orange' : 'cyan'}-500/20 to-${category === 'manufacturing' ? 'red' : 'blue'}-500/20 border-${category === 'manufacturing' ? 'orange' : 'cyan'}-500`}>
+        <Card
+          key={category}
+          className={`bg-gradient-to-br from-${category === 'manufacturing' ? 'orange' : 'cyan'}-500/20 to-${category === 'manufacturing' ? 'red' : 'blue'}-500/20 border-${category === 'manufacturing' ? 'orange' : 'cyan'}-500`}
+        >
           <CardHeader>
-            <CardTitle className={`flex items-center gap-2 text-${category === 'manufacturing' ? 'orange' : 'cyan'}-400`}>
-              {category === 'manufacturing' ? <Factory className="w-5 h-5" /> : <Users className="w-5 h-5" />}
+            <CardTitle
+              className={`flex items-center gap-2 text-${category === 'manufacturing' ? 'orange' : 'cyan'}-400`}
+            >
+              {category === 'manufacturing' ? (
+                <Factory className="w-5 h-5" />
+              ) : (
+                <Users className="w-5 h-5" />
+              )}
               {category.charAt(0).toUpperCase() + category.slice(1)} Operations
             </CardTitle>
           </CardHeader>
@@ -420,7 +464,10 @@ function CostAnalysisDisplay() {
     <div className="space-y-6">
       <div className="grid md:grid-cols-3 gap-6">
         {Object.entries(costAnalysis).map(([category, costs]) => (
-          <Card key={category} className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500">
+          <Card
+            key={category}
+            className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-yellow-500"
+          >
             <CardHeader>
               <CardTitle className={`text-yellow-400 text-lg`}>
                 {category.replace(/([A-Z])/g, ' $1').trim()}
@@ -429,7 +476,10 @@ function CostAnalysisDisplay() {
             <CardContent>
               <div className="space-y-2">
                 {Object.entries(costs).map(([item, cost]) => (
-                  <div key={item} className="flex justify-between items-center p-2 bg-black/30 rounded border border-gray-600">
+                  <div
+                    key={item}
+                    className="flex justify-between items-center p-2 bg-black/30 rounded border border-gray-600"
+                  >
                     <span className="text-sm text-gray-300">{item}:</span>
                     <span className="text-sm text-white font-semibold">{cost}</span>
                   </div>
@@ -448,7 +498,10 @@ function ProductDifferentiationDisplay() {
   return (
     <div className="space-y-4">
       {productDifferentiation.educationalOptimizations.map((feature, i) => (
-        <Card key={i} className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500">
+        <Card
+          key={i}
+          className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-purple-500"
+        >
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-purple-400">{feature.feature}</CardTitle>
@@ -483,7 +536,7 @@ export default function ManufacturingAdministrationPage() {
           <p className="text-xl text-gray-300 mb-6">
             Complete strategy for manufacturing our own educational tablets with Asian partners
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-6">
             <Badge variant="outline" className="border-orange-500 text-orange-400">
               <Factory className="w-4 h-4 mr-2" />
@@ -504,13 +557,15 @@ export default function ManufacturingAdministrationPage() {
         <Card className="mb-8 bg-gradient-to-r from-green-500/20 to-blue-500/20 border-green-500">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <h3 className="text-2xl font-bold text-green-400">Custom Educational Tablet Strategy</h3>
+              <h3 className="text-2xl font-bold text-green-400">
+                Custom Educational Tablet Strategy
+              </h3>
               <p className="text-gray-300 max-w-4xl mx-auto">
-                Build our own educational tablets optimized for learning with Asian manufacturers. 
-                Target $108-170 manufacturing cost, $299-499 retail price, achieving 40-60% profit margins 
-                while providing superior educational features compared to generic tablets.
+                Build our own educational tablets optimized for learning with Asian manufacturers.
+                Target $108-170 manufacturing cost, $299-499 retail price, achieving 40-60% profit
+                margins while providing superior educational features compared to generic tablets.
               </p>
-              
+
               <div className="grid md:grid-cols-4 gap-4 mt-6">
                 <div className="bg-black/30 p-4 rounded-lg border border-orange-500/30">
                   <div className="text-2xl font-bold text-orange-400 mb-2">$150</div>
@@ -585,7 +640,7 @@ export default function ManufacturingAdministrationPage() {
                     <li>• Regulatory compliance planning</li>
                   </ul>
                 </div>
-                
+
                 <div className="bg-black/30 p-4 rounded-lg border border-blue-500/30">
                   <h5 className="font-semibold text-blue-400 mb-2">Months 4-6: Production</h5>
                   <ul className="text-sm text-gray-300 space-y-1">
@@ -595,7 +650,7 @@ export default function ManufacturingAdministrationPage() {
                     <li>• Sales and marketing preparation</li>
                   </ul>
                 </div>
-                
+
                 <div className="bg-black/30 p-4 rounded-lg border border-purple-500/30">
                   <h5 className="font-semibold text-purple-400 mb-2">Months 7+: Scale</h5>
                   <ul className="text-sm text-gray-300 space-y-1">
@@ -606,7 +661,7 @@ export default function ManufacturingAdministrationPage() {
                   </ul>
                 </div>
               </div>
-              
+
               <div className="bg-black/30 p-4 rounded-lg border border-yellow-500/50">
                 <h5 className="font-semibold text-yellow-400 mb-2">Immediate Action Items:</h5>
                 <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-300">
@@ -628,21 +683,21 @@ export default function ManufacturingAdministrationPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex justify-center gap-4">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-orange-600 hover:bg-orange-700"
-                  onClick={() => window.location.href = '/self-hosted-device-ecosystem'}
+                  onClick={() => (window.location.href = '/self-hosted-device-ecosystem')}
                 >
                   <Factory className="w-5 h-5 mr-2" />
                   View Device Ecosystem
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
+                <Button
+                  size="lg"
+                  variant="outline"
                   className="border-green-500 text-green-400"
-                  onClick={() => window.location.href = '/multi-device-learning'}
+                  onClick={() => (window.location.href = '/multi-device-learning')}
                 >
                   <Tablet className="w-5 h-5 mr-2" />
                   See Learning Experience

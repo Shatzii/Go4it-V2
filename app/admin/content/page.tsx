@@ -1,31 +1,42 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import { Save, Upload, Eye, Edit, Trash2, Plus, DollarSign, Image, FileText, Settings } from 'lucide-react'
+import React, { useState, useEffect } from 'react';
+import {
+  Save,
+  Upload,
+  Eye,
+  Edit,
+  Trash2,
+  Plus,
+  DollarSign,
+  Image,
+  FileText,
+  Settings,
+} from 'lucide-react';
 
 interface ContentItem {
-  id: string
-  type: 'camp' | 'pricing' | 'hero' | 'feature'
-  title: string
-  description: string
-  price?: string
-  image?: string
-  content: any
-  isActive: boolean
-  updatedAt: string
+  id: string;
+  type: 'camp' | 'pricing' | 'hero' | 'feature';
+  title: string;
+  description: string;
+  price?: string;
+  image?: string;
+  content: any;
+  isActive: boolean;
+  updatedAt: string;
 }
 
 export default function AdminContentManagement() {
-  const [activeTab, setActiveTab] = useState<'camps' | 'pricing' | 'hero' | 'features'>('camps')
-  const [content, setContent] = useState<ContentItem[]>([])
-  const [editing, setEditing] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState<ContentItem | null>(null)
-  const [uploading, setUploading] = useState(false)
+  const [activeTab, setActiveTab] = useState<'camps' | 'pricing' | 'hero' | 'features'>('camps');
+  const [content, setContent] = useState<ContentItem[]>([]);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<ContentItem | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   // Initialize with current content
   useEffect(() => {
-    loadContent()
-  }, [activeTab])
+    loadContent();
+  }, [activeTab]);
 
   const loadContent = () => {
     // Load existing content based on active tab
@@ -45,19 +56,20 @@ export default function AdminContentManagement() {
             'Native English-speaking coaches',
             'Flag football, basketball, soccer, tennis',
             'Daily lunch and snacks included',
-            'Ages 5-17 years welcome'
+            'Ages 5-17 years welcome',
           ],
           maxParticipants: 60,
-          category: 'BILINGUAL'
+          category: 'BILINGUAL',
         },
         isActive: true,
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       },
       {
         id: '2',
         type: 'camp',
         title: 'Team Camps & Coaching Clinics',
-        description: 'Elite training with USA Football coaches and potential Dallas program qualification',
+        description:
+          'Elite training with USA Football coaches and potential Dallas program qualification',
         price: '$725USD / $225USD',
         image: '/camps/merida-team.jpg',
         content: {
@@ -68,73 +80,71 @@ export default function AdminContentManagement() {
             'Develop winning strategies',
             'Individual players welcome',
             'USA Football membership included',
-            '3 days = 6 practices = 9 total sessions'
+            '3 days = 6 practices = 9 total sessions',
           ],
           maxParticipants: 16,
-          category: 'ELITE'
+          category: 'ELITE',
         },
         isActive: true,
-        updatedAt: new Date().toISOString()
-      }
-    ]
-    setContent(mockContent.filter(item => item.type === activeTab.slice(0, -1) as any))
-  }
+        updatedAt: new Date().toISOString(),
+      },
+    ];
+    setContent(mockContent.filter((item) => item.type === (activeTab.slice(0, -1) as any)));
+  };
 
   const handleEdit = (item: ContentItem) => {
-    setEditing(item.id)
-    setEditForm({ ...item })
-  }
+    setEditing(item.id);
+    setEditForm({ ...item });
+  };
 
   const handleSave = async () => {
-    if (!editForm) return
+    if (!editForm) return;
 
     try {
       // Save to database/API
       const response = await fetch('/api/admin/content', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editForm)
-      })
+        body: JSON.stringify(editForm),
+      });
 
       if (response.ok) {
-        setContent(content.map(item => 
-          item.id === editForm.id ? editForm : item
-        ))
-        setEditing(null)
-        setEditForm(null)
-        alert('Content updated successfully!')
+        setContent(content.map((item) => (item.id === editForm.id ? editForm : item)));
+        setEditing(null);
+        setEditForm(null);
+        alert('Content updated successfully!');
       }
     } catch (error) {
-      console.error('Save failed:', error)
-      alert('Failed to save content')
+      console.error('Save failed:', error);
+      alert('Failed to save content');
     }
-  }
+  };
 
   const handleImageUpload = async (file: File) => {
-    if (!editForm) return
+    if (!editForm) return;
 
-    setUploading(true)
-    const formData = new FormData()
-    formData.append('image', file)
-    formData.append('type', 'content')
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('type', 'content');
 
     try {
       const response = await fetch('/api/upload', {
         method: 'POST',
-        body: formData
-      })
+        body: formData,
+      });
 
       if (response.ok) {
-        const { url } = await response.json()
-        setEditForm({ ...editForm, image: url })
+        const { url } = await response.json();
+        setEditForm({ ...editForm, image: url });
       }
     } catch (error) {
-      console.error('Upload failed:', error)
-      alert('Failed to upload image')
+      console.error('Upload failed:', error);
+      alert('Failed to upload image');
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   const renderCampEditor = () => (
     <div className="space-y-6">
@@ -149,7 +159,7 @@ export default function AdminContentManagement() {
             placeholder="Enter camp title"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Price</label>
           <input
@@ -166,7 +176,9 @@ export default function AdminContentManagement() {
         <label className="block text-sm font-medium text-slate-300 mb-2">Description</label>
         <textarea
           value={editForm?.description || ''}
-          onChange={(e) => setEditForm(editForm ? { ...editForm, description: e.target.value } : null)}
+          onChange={(e) =>
+            setEditForm(editForm ? { ...editForm, description: e.target.value } : null)
+          }
           className="form-input"
           rows={3}
           placeholder="Enter camp description"
@@ -179,24 +191,36 @@ export default function AdminContentManagement() {
           <input
             type="text"
             value={editForm?.content?.location || ''}
-            onChange={(e) => setEditForm(editForm ? { 
-              ...editForm, 
-              content: { ...editForm.content, location: e.target.value }
-            } : null)}
+            onChange={(e) =>
+              setEditForm(
+                editForm
+                  ? {
+                      ...editForm,
+                      content: { ...editForm.content, location: e.target.value },
+                    }
+                  : null,
+              )
+            }
             className="form-input"
             placeholder="Merida, Mexico"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Dates</label>
           <input
             type="text"
             value={editForm?.content?.dates || ''}
-            onChange={(e) => setEditForm(editForm ? { 
-              ...editForm, 
-              content: { ...editForm.content, dates: e.target.value }
-            } : null)}
+            onChange={(e) =>
+              setEditForm(
+                editForm
+                  ? {
+                      ...editForm,
+                      content: { ...editForm.content, dates: e.target.value },
+                    }
+                  : null,
+              )
+            }
             className="form-input"
             placeholder="July 15-20, 2025"
           />
@@ -204,13 +228,24 @@ export default function AdminContentManagement() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Features (one per line)</label>
+        <label className="block text-sm font-medium text-slate-300 mb-2">
+          Features (one per line)
+        </label>
         <textarea
           value={editForm?.content?.features?.join('\n') || ''}
-          onChange={(e) => setEditForm(editForm ? { 
-            ...editForm, 
-            content: { ...editForm.content, features: e.target.value.split('\n').filter(f => f.trim()) }
-          } : null)}
+          onChange={(e) =>
+            setEditForm(
+              editForm
+                ? {
+                    ...editForm,
+                    content: {
+                      ...editForm.content,
+                      features: e.target.value.split('\n').filter((f) => f.trim()),
+                    },
+                  }
+                : null,
+            )
+          }
           className="form-input"
           rows={6}
           placeholder="Professional GAR video analysis&#10;Elite coaching from D1 staff&#10;USA Football membership included"
@@ -223,23 +258,35 @@ export default function AdminContentManagement() {
           <input
             type="number"
             value={editForm?.content?.maxParticipants || ''}
-            onChange={(e) => setEditForm(editForm ? { 
-              ...editForm, 
-              content: { ...editForm.content, maxParticipants: parseInt(e.target.value) }
-            } : null)}
+            onChange={(e) =>
+              setEditForm(
+                editForm
+                  ? {
+                      ...editForm,
+                      content: { ...editForm.content, maxParticipants: parseInt(e.target.value) },
+                    }
+                  : null,
+              )
+            }
             className="form-input"
             placeholder="32"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-slate-300 mb-2">Category</label>
           <select
             value={editForm?.content?.category || ''}
-            onChange={(e) => setEditForm(editForm ? { 
-              ...editForm, 
-              content: { ...editForm.content, category: e.target.value }
-            } : null)}
+            onChange={(e) =>
+              setEditForm(
+                editForm
+                  ? {
+                      ...editForm,
+                      content: { ...editForm.content, category: e.target.value },
+                    }
+                  : null,
+              )
+            }
             className="form-input"
           >
             <option value="">Select Category</option>
@@ -257,23 +304,37 @@ export default function AdminContentManagement() {
         <input
           type="text"
           value={editForm?.content?.schedule || ''}
-          onChange={(e) => setEditForm(editForm ? { 
-            ...editForm, 
-            content: { ...editForm.content, schedule: e.target.value }
-          } : null)}
+          onChange={(e) =>
+            setEditForm(
+              editForm
+                ? {
+                    ...editForm,
+                    content: { ...editForm.content, schedule: e.target.value },
+                  }
+                : null,
+            )
+          }
           className="form-input"
           placeholder="8:00 AM - 4:00 PM"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Additional Information</label>
+        <label className="block text-sm font-medium text-slate-300 mb-2">
+          Additional Information
+        </label>
         <textarea
           value={editForm?.content?.additionalInfo || ''}
-          onChange={(e) => setEditForm(editForm ? { 
-            ...editForm, 
-            content: { ...editForm.content, additionalInfo: e.target.value }
-          } : null)}
+          onChange={(e) =>
+            setEditForm(
+              editForm
+                ? {
+                    ...editForm,
+                    content: { ...editForm.content, additionalInfo: e.target.value },
+                  }
+                : null,
+            )
+          }
           className="form-input"
           rows={3}
           placeholder="Extra details about the camp, qualifications, etc."
@@ -281,13 +342,24 @@ export default function AdminContentManagement() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Featured Staff (one per line)</label>
+        <label className="block text-sm font-medium text-slate-300 mb-2">
+          Featured Staff (one per line)
+        </label>
         <textarea
           value={editForm?.content?.featuredStaff?.join('\n') || ''}
-          onChange={(e) => setEditForm(editForm ? { 
-            ...editForm, 
-            content: { ...editForm.content, featuredStaff: e.target.value.split('\n').filter(s => s.trim()) }
-          } : null)}
+          onChange={(e) =>
+            setEditForm(
+              editForm
+                ? {
+                    ...editForm,
+                    content: {
+                      ...editForm.content,
+                      featuredStaff: e.target.value.split('\n').filter((s) => s.trim()),
+                    },
+                  }
+                : null,
+            )
+          }
           className="form-input"
           rows={4}
           placeholder="2x Super Bowl Champion Derrick Martin&#10;NFL alumnus Talib Wise"
@@ -310,8 +382,8 @@ export default function AdminContentManagement() {
             type="file"
             accept="image/*"
             onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) handleImageUpload(file)
+              const file = e.target.files?.[0];
+              if (file) handleImageUpload(file);
             }}
             className="form-input"
             disabled={uploading}
@@ -320,7 +392,7 @@ export default function AdminContentManagement() {
         </div>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="min-h-screen hero-bg p-6">
@@ -337,8 +409,8 @@ export default function AdminContentManagement() {
               { id: 'camps', label: 'Camps & Events', icon: Settings },
               { id: 'pricing', label: 'Pricing Plans', icon: DollarSign },
               { id: 'hero', label: 'Hero Section', icon: Image },
-              { id: 'features', label: 'Features', icon: FileText }
-            ].map(tab => (
+              { id: 'features', label: 'Features', icon: FileText },
+            ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
@@ -357,7 +429,7 @@ export default function AdminContentManagement() {
 
         {/* Content List */}
         <div className="grid gap-6 mb-8">
-          {content.map(item => (
+          {content.map((item) => (
             <div key={item.id} className="hero-bg neon-border rounded-xl p-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -376,9 +448,13 @@ export default function AdminContentManagement() {
                     Edit
                   </button>
                   <button
-                    onClick={() => setContent(content.map(c => 
-                      c.id === item.id ? { ...c, isActive: !c.isActive } : c
-                    ))}
+                    onClick={() =>
+                      setContent(
+                        content.map((c) =>
+                          c.id === item.id ? { ...c, isActive: !c.isActive } : c,
+                        ),
+                      )
+                    }
                     className={`px-4 py-2 text-sm rounded-lg transition-colors ${
                       item.isActive
                         ? 'bg-green-600 hover:bg-green-700 text-white'
@@ -390,7 +466,7 @@ export default function AdminContentManagement() {
                   </button>
                 </div>
               </div>
-              
+
               {item.image && (
                 <div className="mt-4">
                   <img
@@ -412,8 +488,8 @@ export default function AdminContentManagement() {
                 <h2 className="text-2xl font-bold text-white">Edit {editForm.title}</h2>
                 <button
                   onClick={() => {
-                    setEditing(null)
-                    setEditForm(null)
+                    setEditing(null);
+                    setEditForm(null);
                   }}
                   className="text-slate-400 hover:text-white"
                 >
@@ -424,17 +500,14 @@ export default function AdminContentManagement() {
               {activeTab === 'camps' && renderCampEditor()}
 
               <div className="flex gap-4 mt-8">
-                <button
-                  onClick={handleSave}
-                  className="btn-primary px-6 py-3"
-                >
+                <button onClick={handleSave} className="btn-primary px-6 py-3">
                   <Save className="w-4 h-4 mr-2" />
                   Save Changes
                 </button>
                 <button
                   onClick={() => {
-                    setEditing(null)
-                    setEditForm(null)
+                    setEditing(null);
+                    setEditForm(null);
                   }}
                   className="btn-secondary px-6 py-3"
                 >
@@ -446,5 +519,5 @@ export default function AdminContentManagement() {
         )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import DifficultyAnalyzer from '@/components/adaptive-learning/difficulty-analyzer'
-import LearningEngine from '@/components/adaptive-learning/learning-engine'
-import { 
-  Brain, 
-  Zap, 
-  Target, 
+import { useState } from 'react';
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import DifficultyAnalyzer from '@/components/adaptive-learning/difficulty-analyzer';
+import LearningEngine from '@/components/adaptive-learning/learning-engine';
+import {
+  Brain,
+  Zap,
+  Target,
   TrendingUp,
   Users,
   BookOpen,
@@ -20,38 +20,39 @@ import {
   Clock,
   Award,
   Star,
-  ChevronRight
-} from 'lucide-react'
+  ChevronRight,
+} from 'lucide-react';
 
 export default function AdaptiveLearningPage() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const features = [
     {
       icon: <Brain className="h-8 w-8 text-purple-500" />,
       title: 'AI Difficulty Analysis',
-      description: 'Advanced algorithms analyze performance patterns to optimize learning difficulty',
-      benefits: ['Real-time adjustments', 'Pattern recognition', 'Predictive modeling']
+      description:
+        'Advanced algorithms analyze performance patterns to optimize learning difficulty',
+      benefits: ['Real-time adjustments', 'Pattern recognition', 'Predictive modeling'],
     },
     {
       icon: <Zap className="h-8 w-8 text-orange-500" />,
       title: 'Adaptive Engine',
       description: 'Dynamic content adjustment based on individual learning progress',
-      benefits: ['Instant adaptation', 'Multiple subjects', 'Continuous optimization']
+      benefits: ['Instant adaptation', 'Multiple subjects', 'Continuous optimization'],
     },
     {
       icon: <Target className="h-8 w-8 text-green-500" />,
       title: 'Personalized Learning',
-      description: 'Customized content delivery tailored to each student\'s needs',
-      benefits: ['Individual pacing', 'Learning style adaptation', 'Interest integration']
+      description: "Customized content delivery tailored to each student's needs",
+      benefits: ['Individual pacing', 'Learning style adaptation', 'Interest integration'],
     },
     {
       icon: <Users className="h-8 w-8 text-blue-500" />,
       title: 'Neurodivergent Support',
       description: 'Specialized accommodations for ADHD, dyslexia, autism, and more',
-      benefits: ['Accessibility features', 'Sensory considerations', 'Processing accommodations']
-    }
-  ]
+      benefits: ['Accessibility features', 'Sensory considerations', 'Processing accommodations'],
+    },
+  ];
 
   const benefits = [
     {
@@ -60,8 +61,8 @@ export default function AdaptiveLearningPage() {
         '40% faster concept mastery',
         '60% reduction in learning gaps',
         '35% increase in retention rates',
-        '50% improvement in engagement'
-      ]
+        '50% improvement in engagement',
+      ],
     },
     {
       category: 'Student Experience',
@@ -69,8 +70,8 @@ export default function AdaptiveLearningPage() {
         'Reduced frustration and anxiety',
         'Increased confidence and motivation',
         'Better learning flow and pacing',
-        'Enhanced sense of achievement'
-      ]
+        'Enhanced sense of achievement',
+      ],
     },
     {
       category: 'Teacher Efficiency',
@@ -78,10 +79,10 @@ export default function AdaptiveLearningPage() {
         'Automated difficulty adjustments',
         'Detailed progress insights',
         'Intervention recommendations',
-        'Time savings on differentiation'
-      ]
-    }
-  ]
+        'Time savings on differentiation',
+      ],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-orange-50">
@@ -92,7 +93,9 @@ export default function AdaptiveLearningPage() {
             <Link href="/" className="text-purple-600 font-semibold text-lg hover:text-purple-500">
               ← Universal One School
             </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Adaptive Difficulty Learning Modules</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Adaptive Difficulty Learning Modules
+            </h1>
             <div className="flex items-center gap-2">
               <Badge variant="outline">AI-Powered</Badge>
               <Badge variant="outline">Real-time</Badge>
@@ -118,8 +121,9 @@ export default function AdaptiveLearningPage() {
                 <h2 className="text-4xl font-bold text-gray-900">Adaptive Difficulty Learning</h2>
               </div>
               <p className="text-xl text-gray-600 max-w-4xl mx-auto">
-                Revolutionary AI technology that automatically adjusts learning content difficulty in real-time, 
-                ensuring each student is optimally challenged while building confidence and mastery.
+                Revolutionary AI technology that automatically adjusts learning content difficulty
+                in real-time, ensuring each student is optimally challenged while building
+                confidence and mastery.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" onClick={() => setActiveTab('analyzer')} className="px-8">
@@ -136,15 +140,16 @@ export default function AdaptiveLearningPage() {
             {/* Key Features */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {features.map((feature, index) => (
-                <Card key={index} className="hover:shadow-lg transition-all duration-300 border-2 hover:border-purple-200">
+                <Card
+                  key={index}
+                  className="hover:shadow-lg transition-all duration-300 border-2 hover:border-purple-200"
+                >
                   <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-xl">
                       {feature.icon}
                       {feature.title}
                     </CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
+                    <CardDescription className="text-base">{feature.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
@@ -165,7 +170,8 @@ export default function AdaptiveLearningPage() {
               <CardHeader>
                 <CardTitle className="text-2xl text-center">How Adaptive Learning Works</CardTitle>
                 <CardDescription className="text-center text-lg">
-                  Our AI continuously monitors and adjusts to optimize every student's learning experience
+                  Our AI continuously monitors and adjusts to optimize every student's learning
+                  experience
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -175,28 +181,36 @@ export default function AdaptiveLearningPage() {
                       <BarChart3 className="h-8 w-8 text-purple-600" />
                     </div>
                     <h3 className="font-semibold">1. Monitor Performance</h3>
-                    <p className="text-sm text-gray-600">Track accuracy, speed, engagement, and learning patterns</p>
+                    <p className="text-sm text-gray-600">
+                      Track accuracy, speed, engagement, and learning patterns
+                    </p>
                   </div>
                   <div className="text-center space-y-3">
                     <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
                       <Brain className="h-8 w-8 text-orange-600" />
                     </div>
                     <h3 className="font-semibold">2. AI Analysis</h3>
-                    <p className="text-sm text-gray-600">Advanced algorithms analyze performance and predict optimal difficulty</p>
+                    <p className="text-sm text-gray-600">
+                      Advanced algorithms analyze performance and predict optimal difficulty
+                    </p>
                   </div>
                   <div className="text-center space-y-3">
                     <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                       <Settings className="h-8 w-8 text-green-600" />
                     </div>
                     <h3 className="font-semibold">3. Auto-Adjust</h3>
-                    <p className="text-sm text-gray-600">Instantly modify content difficulty and presentation style</p>
+                    <p className="text-sm text-gray-600">
+                      Instantly modify content difficulty and presentation style
+                    </p>
                   </div>
                   <div className="text-center space-y-3">
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                       <TrendingUp className="h-8 w-8 text-blue-600" />
                     </div>
                     <h3 className="font-semibold">4. Optimize Learning</h3>
-                    <p className="text-sm text-gray-600">Achieve faster mastery with reduced frustration and improved retention</p>
+                    <p className="text-sm text-gray-600">
+                      Achieve faster mastery with reduced frustration and improved retention
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -204,7 +218,10 @@ export default function AdaptiveLearningPage() {
 
             {/* Quick Access Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('analyzer')}>
+              <Card
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => setActiveTab('analyzer')}
+              >
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>AI Difficulty Analyzer</span>
@@ -224,7 +241,10 @@ export default function AdaptiveLearningPage() {
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('engine')}>
+              <Card
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => setActiveTab('engine')}
+              >
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Adaptive Learning Engine</span>
@@ -244,15 +264,16 @@ export default function AdaptiveLearningPage() {
                 </CardContent>
               </Card>
 
-              <Card className="hover:shadow-md transition-shadow cursor-pointer" onClick={() => setActiveTab('benefits')}>
+              <Card
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => setActiveTab('benefits')}
+              >
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span>Success Metrics</span>
                     <ChevronRight className="h-5 w-5 text-gray-400" />
                   </CardTitle>
-                  <CardDescription>
-                    Proven outcomes and performance improvements
-                  </CardDescription>
+                  <CardDescription>Proven outcomes and performance improvements</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 text-sm">
@@ -278,7 +299,8 @@ export default function AdaptiveLearningPage() {
             <div className="text-center space-y-4">
               <h2 className="text-3xl font-bold text-gray-900">Proven Learning Outcomes</h2>
               <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Adaptive learning technology has demonstrated significant improvements across all learning metrics
+                Adaptive learning technology has demonstrated significant improvements across all
+                learning metrics
               </p>
             </div>
 
@@ -317,28 +339,36 @@ export default function AdaptiveLearningPage() {
                       <Clock className="h-6 w-6 text-green-600" />
                     </div>
                     <h4 className="font-semibold">Day 1</h4>
-                    <p className="text-sm text-gray-600">Initial assessment and baseline establishment</p>
+                    <p className="text-sm text-gray-600">
+                      Initial assessment and baseline establishment
+                    </p>
                   </div>
                   <div className="text-center space-y-2">
                     <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
                       <Target className="h-6 w-6 text-blue-600" />
                     </div>
                     <h4 className="font-semibold">Week 1</h4>
-                    <p className="text-sm text-gray-600">First adaptive adjustments and pattern recognition</p>
+                    <p className="text-sm text-gray-600">
+                      First adaptive adjustments and pattern recognition
+                    </p>
                   </div>
                   <div className="text-center space-y-2">
                     <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
                       <TrendingUp className="h-6 w-6 text-purple-600" />
                     </div>
                     <h4 className="font-semibold">Month 1</h4>
-                    <p className="text-sm text-gray-600">Significant performance improvements visible</p>
+                    <p className="text-sm text-gray-600">
+                      Significant performance improvements visible
+                    </p>
                   </div>
                   <div className="text-center space-y-2">
                     <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto">
                       <Award className="h-6 w-6 text-orange-600" />
                     </div>
                     <h4 className="font-semibold">3+ Months</h4>
-                    <p className="text-sm text-gray-600">Maximum optimization and sustained improvement</p>
+                    <p className="text-sm text-gray-600">
+                      Maximum optimization and sustained improvement
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -358,7 +388,11 @@ export default function AdaptiveLearningPage() {
                     <Brain className="h-5 w-5 mr-2" />
                     Start AI Analysis
                   </Button>
-                  <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-purple-600">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="border-white text-white hover:bg-white hover:text-purple-600"
+                  >
                     <BookOpen className="h-5 w-5 mr-2" />
                     View Documentation
                   </Button>
@@ -369,5 +403,5 @@ export default function AdaptiveLearningPage() {
         </div>
       </Tabs>
     </div>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Security Health Checker
- * 
+ *
  * This module implements periodic health checks of all security components
  * to ensure they are functioning correctly and haven't been tampered with.
  */
@@ -16,7 +16,7 @@ export enum ComponentStatus {
   DEGRADED = 'degraded',
   UNHEALTHY = 'unhealthy',
   TAMPERED = 'tampered',
-  INACTIVE = 'inactive'
+  INACTIVE = 'inactive',
 }
 
 // Health check result for a component
@@ -51,7 +51,7 @@ const DEFAULT_HEALTH_CHECK_CONFIG = {
   alertOnUnhealthy: true,
   alertOnTampered: true,
   createIncidentOnTampered: true,
-  checkIntegrity: true
+  checkIntegrity: true,
 };
 
 // Components to check
@@ -70,7 +70,7 @@ const SECURITY_COMPONENTS = [
   'threat-intelligence',
   'anomaly-detection',
   'vulnerability-scanner',
-  'correlation-engine'
+  'correlation-engine',
 ];
 
 // Last health check time
@@ -85,25 +85,31 @@ export function initHealthChecker(): void {
     const settings = getSecuritySettings();
     const healthCheckConfig = {
       ...DEFAULT_HEALTH_CHECK_CONFIG,
-      ...(settings.healthCheckConfig || {})
+      ...(settings.healthCheckConfig || {}),
     };
-    
+
     const now = Date.now();
     if (now - lastHealthCheckTime >= healthCheckConfig.checkFrequency) {
       await performHealthCheck();
     }
   };
-  
+
   // Run initial check
-  setTimeout(() => {
-    checkAndRunIfNeeded();
-  }, 2 * 60 * 1000); // Wait 2 minutes after startup
-  
+  setTimeout(
+    () => {
+      checkAndRunIfNeeded();
+    },
+    2 * 60 * 1000,
+  ); // Wait 2 minutes after startup
+
   // Schedule regular checks
-  setInterval(() => {
-    checkAndRunIfNeeded();
-  }, 5 * 60 * 1000); // Check every 5 minutes
-  
+  setInterval(
+    () => {
+      checkAndRunIfNeeded();
+    },
+    5 * 60 * 1000,
+  ); // Check every 5 minutes
+
   console.log('Security Health Checker module initialized');
 }
 
@@ -115,36 +121,34 @@ export async function performHealthCheck(runById?: string): Promise<HealthCheckR
   const settings = getSecuritySettings();
   const healthCheckConfig = {
     ...DEFAULT_HEALTH_CHECK_CONFIG,
-    ...(settings.healthCheckConfig || {})
+    ...(settings.healthCheckConfig || {}),
   };
-  
+
   const timestamp = Date.now();
   const components: ComponentHealth[] = [];
-  
+
   // Log health check start
-  logSecurityEvent(
-    runById || 'system',
-    'Security health check started',
-    {},
-    'system'
-  );
-  
+  logSecurityEvent(runById || 'system', 'Security health check started', {}, 'system');
+
   // Check each component
   for (const componentName of SECURITY_COMPONENTS) {
     // Check component health
     const health = await checkComponentHealth(componentName, healthCheckConfig.checkIntegrity);
     components.push(health);
-    
+
     // Alert on issues if configured
-    if ((health.status === ComponentStatus.DEGRADED && healthCheckConfig.alertOnDegraded) ||
-        (health.status === ComponentStatus.UNHEALTHY && healthCheckConfig.alertOnUnhealthy) ||
-        (health.status === ComponentStatus.TAMPERED && healthCheckConfig.alertOnTampered)) {
-      
-      const severity = health.status === ComponentStatus.TAMPERED ? 
-        AlertSeverity.CRITICAL : 
-        health.status === ComponentStatus.UNHEALTHY ? 
-          AlertSeverity.HIGH : AlertSeverity.MEDIUM;
-      
+    if (
+      (health.status === ComponentStatus.DEGRADED && healthCheckConfig.alertOnDegraded) ||
+      (health.status === ComponentStatus.UNHEALTHY && healthCheckConfig.alertOnUnhealthy) ||
+      (health.status === ComponentStatus.TAMPERED && healthCheckConfig.alertOnTampered)
+    ) {
+      const severity =
+        health.status === ComponentStatus.TAMPERED
+          ? AlertSeverity.CRITICAL
+          : health.status === ComponentStatus.UNHEALTHY
+            ? AlertSeverity.HIGH
+            : AlertSeverity.MEDIUM;
+
       sendAlert(
         severity,
         AlertType.SYSTEM,
@@ -153,12 +157,15 @@ export async function performHealthCheck(runById?: string): Promise<HealthCheckR
           component: componentName,
           status: health.status,
           details: health.details,
-          issues: health.issues
-        }
+          issues: health.issues,
+        },
       );
-      
+
       // Create security incident for tampered components
-      if (health.status === ComponentStatus.TAMPERED && healthCheckConfig.createIncidentOnTampered) {
+      if (
+        health.status === ComponentStatus.TAMPERED &&
+        healthCheckConfig.createIncidentOnTampered
+      ) {
         createSecurityIncident(
           IncidentType.SYSTEM_MISCONFIGURATION,
           AlertSeverity.CRITICAL,
@@ -166,35 +173,35 @@ export async function performHealthCheck(runById?: string): Promise<HealthCheckR
           {
             component: componentName,
             details: health.details,
-            issues: health.issues
-          }
+            issues: health.issues,
+          },
         );
       }
     }
   }
-  
+
   // Determine overall status
   const overallStatus = determineOverallStatus(components);
-  
+
   // Create result
   const result: HealthCheckResult = {
     timestamp,
     overallStatus,
     components,
-    message: generateHealthSummaryMessage(overallStatus, components)
+    message: generateHealthSummaryMessage(overallStatus, components),
   };
-  
+
   // Store result
   healthCheckHistory.push(result);
-  
+
   // Trim history if needed
   if (healthCheckHistory.length > MAX_HEALTH_HISTORY) {
     healthCheckHistory.shift();
   }
-  
+
   // Update last check time
   lastHealthCheckTime = timestamp;
-  
+
   // Log health check completion
   logSecurityEvent(
     runById || 'system',
@@ -202,14 +209,14 @@ export async function performHealthCheck(runById?: string): Promise<HealthCheckR
     {
       overallStatus,
       componentCount: components.length,
-      healthyCount: components.filter(c => c.status === ComponentStatus.HEALTHY).length,
-      degradedCount: components.filter(c => c.status === ComponentStatus.DEGRADED).length,
-      unhealthyCount: components.filter(c => c.status === ComponentStatus.UNHEALTHY).length,
-      tamperedCount: components.filter(c => c.status === ComponentStatus.TAMPERED).length
+      healthyCount: components.filter((c) => c.status === ComponentStatus.HEALTHY).length,
+      degradedCount: components.filter((c) => c.status === ComponentStatus.DEGRADED).length,
+      unhealthyCount: components.filter((c) => c.status === ComponentStatus.UNHEALTHY).length,
+      tamperedCount: components.filter((c) => c.status === ComponentStatus.TAMPERED).length,
     },
-    'system'
+    'system',
   );
-  
+
   return result;
 }
 
@@ -217,8 +224,8 @@ export async function performHealthCheck(runById?: string): Promise<HealthCheckR
  * Check health of a specific component
  */
 async function checkComponentHealth(
-  componentName: string, 
-  checkIntegrity: boolean
+  componentName: string,
+  checkIntegrity: boolean,
 ): Promise<ComponentHealth> {
   switch (componentName) {
     case 'rate-limiter':
@@ -256,7 +263,7 @@ async function checkComponentHealth(
         name: componentName,
         status: ComponentStatus.INACTIVE,
         lastChecked: Date.now(),
-        details: 'Component not recognized or not implemented'
+        details: 'Component not recognized or not implemented',
       };
   }
 }
@@ -265,22 +272,22 @@ async function checkComponentHealth(
  * Determine overall system status from component health
  */
 function determineOverallStatus(components: ComponentHealth[]): ComponentStatus {
-  if (components.some(c => c.status === ComponentStatus.TAMPERED)) {
+  if (components.some((c) => c.status === ComponentStatus.TAMPERED)) {
     return ComponentStatus.TAMPERED;
   }
-  
-  if (components.some(c => c.status === ComponentStatus.UNHEALTHY)) {
+
+  if (components.some((c) => c.status === ComponentStatus.UNHEALTHY)) {
     return ComponentStatus.UNHEALTHY;
   }
-  
-  if (components.some(c => c.status === ComponentStatus.DEGRADED)) {
+
+  if (components.some((c) => c.status === ComponentStatus.DEGRADED)) {
     return ComponentStatus.DEGRADED;
   }
-  
-  if (components.some(c => c.status === ComponentStatus.INACTIVE)) {
+
+  if (components.some((c) => c.status === ComponentStatus.INACTIVE)) {
     return ComponentStatus.DEGRADED;
   }
-  
+
   return ComponentStatus.HEALTHY;
 }
 
@@ -289,16 +296,16 @@ function determineOverallStatus(components: ComponentHealth[]): ComponentStatus 
  */
 function generateHealthSummaryMessage(
   overallStatus: ComponentStatus,
-  components: ComponentHealth[]
+  components: ComponentHealth[],
 ): string {
-  const healthyCount = components.filter(c => c.status === ComponentStatus.HEALTHY).length;
-  const degradedCount = components.filter(c => c.status === ComponentStatus.DEGRADED).length;
-  const unhealthyCount = components.filter(c => c.status === ComponentStatus.UNHEALTHY).length;
-  const tamperedCount = components.filter(c => c.status === ComponentStatus.TAMPERED).length;
-  const inactiveCount = components.filter(c => c.status === ComponentStatus.INACTIVE).length;
-  
+  const healthyCount = components.filter((c) => c.status === ComponentStatus.HEALTHY).length;
+  const degradedCount = components.filter((c) => c.status === ComponentStatus.DEGRADED).length;
+  const unhealthyCount = components.filter((c) => c.status === ComponentStatus.UNHEALTHY).length;
+  const tamperedCount = components.filter((c) => c.status === ComponentStatus.TAMPERED).length;
+  const inactiveCount = components.filter((c) => c.status === ComponentStatus.INACTIVE).length;
+
   const totalCount = components.length;
-  
+
   switch (overallStatus) {
     case ComponentStatus.HEALTHY:
       return `All ${totalCount} security components are healthy`;
@@ -319,11 +326,11 @@ function generateHealthSummaryMessage(
 export function getHealthCheckHistory(limit?: number): HealthCheckResult[] {
   const history = [...healthCheckHistory];
   history.sort((a, b) => b.timestamp - a.timestamp);
-  
+
   if (limit) {
     return history.slice(0, limit);
   }
-  
+
   return history;
 }
 
@@ -334,7 +341,7 @@ export function getLatestHealthCheck(): HealthCheckResult | undefined {
   if (healthCheckHistory.length === 0) {
     return undefined;
   }
-  
+
   return healthCheckHistory[healthCheckHistory.length - 1];
 }
 
@@ -349,8 +356,8 @@ async function checkRateLimiter(checkIntegrity: boolean): Promise<ComponentHealt
     metrics: {
       activeRules: 5,
       totalBlocks: 127,
-      last24HourBlocks: 14
-    }
+      last24HourBlocks: 14,
+    },
   };
 }
 
@@ -363,8 +370,8 @@ async function checkIpBlocker(checkIntegrity: boolean): Promise<ComponentHealth>
     metrics: {
       blockedIPs: 37,
       automaticBlocks: 22,
-      manualBlocks: 15
-    }
+      manualBlocks: 15,
+    },
   };
 }
 
@@ -376,8 +383,8 @@ async function checkTwoFactorAuth(checkIntegrity: boolean): Promise<ComponentHea
     lastChecked: Date.now(),
     metrics: {
       enabledUsers: 15,
-      verificationSuccessRate: 98.5
-    }
+      verificationSuccessRate: 98.5,
+    },
   };
 }
 
@@ -390,8 +397,8 @@ async function checkFileValidation(checkIntegrity: boolean): Promise<ComponentHe
     metrics: {
       validationRules: 12,
       blockedUploads: 8,
-      allowedUploads: 143
-    }
+      allowedUploads: 143,
+    },
   };
 }
 
@@ -399,17 +406,17 @@ async function checkContentSecurityPolicy(checkIntegrity: boolean): Promise<Comp
   // Check if CSP headers are being applied correctly
   const issues: string[] = [];
   let status = ComponentStatus.HEALTHY;
-  
+
   // In a real implementation, we would check the actual CSP configuration
-  
+
   // Simulate a potential issue
   const hasIssue = Math.random() < 0.1; // 10% chance of an issue
-  
+
   if (hasIssue) {
     issues.push('Content-Security-Policy header is not being applied consistently');
     status = ComponentStatus.DEGRADED;
   }
-  
+
   return {
     name: 'content-security-policy',
     status,
@@ -417,8 +424,8 @@ async function checkContentSecurityPolicy(checkIntegrity: boolean): Promise<Comp
     issues,
     metrics: {
       cspRules: 8,
-      reportedViolations: hasIssue ? 12 : 0
-    }
+      reportedViolations: hasIssue ? 12 : 0,
+    },
   };
 }
 
@@ -431,8 +438,8 @@ async function checkAuditLogging(checkIntegrity: boolean): Promise<ComponentHeal
     metrics: {
       logsLast24Hours: 573,
       storageUsed: '42MB',
-      retentionDays: 90
-    }
+      retentionDays: 90,
+    },
   };
 }
 
@@ -446,8 +453,8 @@ async function checkAlerting(checkIntegrity: boolean): Promise<ComponentHealth> 
       alertsLast24Hours: 8,
       criticalAlerts: 1,
       highAlerts: 3,
-      mediumAlerts: 4
-    }
+      mediumAlerts: 4,
+    },
   };
 }
 
@@ -460,8 +467,8 @@ async function checkIncidentResponse(checkIntegrity: boolean): Promise<Component
     metrics: {
       openIncidents: 2,
       resolvedLast7Days: 5,
-      averageResolutionTimeHours: 3.2
-    }
+      averageResolutionTimeHours: 3.2,
+    },
   };
 }
 
@@ -474,8 +481,8 @@ async function checkApiKeyManager(checkIntegrity: boolean): Promise<ComponentHea
     metrics: {
       activeKeys: 12,
       expiredKeys: 3,
-      rotatedKeys: 7
-    }
+      rotatedKeys: 7,
+    },
   };
 }
 
@@ -488,8 +495,8 @@ async function checkDbMonitor(checkIntegrity: boolean): Promise<ComponentHealth>
     metrics: {
       monitoredQueries: 1254,
       blockedQueries: 2,
-      averageQueryTime: '45ms'
-    }
+      averageQueryTime: '45ms',
+    },
   };
 }
 
@@ -502,8 +509,8 @@ async function checkSecurityEducation(checkIntegrity: boolean): Promise<Componen
     metrics: {
       resources: 15,
       recommendationsGenerated: 43,
-      resourcesViewed: 28
-    }
+      resourcesViewed: 28,
+    },
   };
 }
 
@@ -511,26 +518,27 @@ async function checkThreatIntelligence(checkIntegrity: boolean): Promise<Compone
   // In a real implementation, we would check if threat intelligence is functioning correctly
   const issues: string[] = [];
   let status = ComponentStatus.HEALTHY;
-  
+
   // Simulate a potential issue
-  const lastUpdateTime = Date.now() - (48 * 60 * 60 * 1000); // 48 hours ago
-  
-  if (lastUpdateTime < Date.now() - (24 * 60 * 60 * 1000)) {
+  const lastUpdateTime = Date.now() - 48 * 60 * 60 * 1000; // 48 hours ago
+
+  if (lastUpdateTime < Date.now() - 24 * 60 * 60 * 1000) {
     issues.push('Threat intelligence data has not been updated in over 24 hours');
     status = ComponentStatus.DEGRADED;
   }
-  
+
   return {
     name: 'threat-intelligence',
     status,
     lastChecked: Date.now(),
     issues,
-    suggestions: issues.length > 0 ? ['Check API connectivity to threat intelligence sources'] : undefined,
+    suggestions:
+      issues.length > 0 ? ['Check API connectivity to threat intelligence sources'] : undefined,
     metrics: {
       knownBadIPs: 1254,
       knownBadDomains: 876,
-      lastUpdateTime
-    }
+      lastUpdateTime,
+    },
   };
 }
 
@@ -543,8 +551,8 @@ async function checkAnomalyDetection(checkIntegrity: boolean): Promise<Component
     metrics: {
       monitoredMetrics: 18,
       detectableAnomalyTypes: 7,
-      detectedAnomalies: 3
-    }
+      detectedAnomalies: 3,
+    },
   };
 }
 
@@ -555,10 +563,10 @@ async function checkVulnerabilityScanner(checkIntegrity: boolean): Promise<Compo
     status: ComponentStatus.HEALTHY,
     lastChecked: Date.now(),
     metrics: {
-      lastScanTime: Date.now() - (14 * 60 * 60 * 1000), // 14 hours ago
+      lastScanTime: Date.now() - 14 * 60 * 60 * 1000, // 14 hours ago
       knownVulnerabilities: 5,
-      criticalVulnerabilities: 0
-    }
+      criticalVulnerabilities: 0,
+    },
   };
 }
 
@@ -571,7 +579,7 @@ async function checkCorrelationEngine(checkIntegrity: boolean): Promise<Componen
     metrics: {
       activeRules: 5,
       detectedAttacks: 2,
-      eventsMonitored: 1547
-    }
+      eventsMonitored: 1547,
+    },
   };
 }

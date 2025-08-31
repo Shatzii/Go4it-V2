@@ -30,7 +30,7 @@
 }
 
 .nav-links a {
-  color: #04FFFF;
+  color: #04ffff;
   text-decoration: none;
   margin-left: 1.5rem;
   font-weight: 500;
@@ -150,7 +150,7 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #04FFFF;
+  border-color: #04ffff;
   outline: none;
   box-shadow: 0 0 0 2px rgba(4, 255, 255, 0.2);
 }
@@ -204,13 +204,15 @@
   height: 40px;
   border: 4px solid rgba(0, 0, 0, 0.1);
   border-radius: 50%;
-  border-top-color: #04FFFF;
+  border-top-color: #04ffff;
   animation: spin 1s ease-in-out infinite;
   margin-bottom: 1rem;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error container */
@@ -240,7 +242,7 @@
 .teacher-name {
   color: #1a1a2e;
   font-size: 1.8rem;
-  border-bottom: 2px solid #04FFFF;
+  border-bottom: 2px solid #04ffff;
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
 }
@@ -270,7 +272,7 @@
 }
 
 .action-button {
-  background-color: #04FFFF;
+  background-color: #04ffff;
   color: #1a1a2e;
   border: none;
   padding: 0.75rem 1.5rem;

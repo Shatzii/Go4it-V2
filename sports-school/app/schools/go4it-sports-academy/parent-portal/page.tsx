@@ -1,10 +1,10 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
 export default function SportsParentPortal() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const studentData = {
     name: 'Jordan Martinez',
@@ -13,34 +13,46 @@ export default function SportsParentPortal() {
     level: 'Varsity',
     season: 'Spring 2025',
     teamNumber: 12,
-    coachName: 'Coach Williams'
-  }
+    coachName: 'Coach Williams',
+  };
 
   const parentData = {
     name: 'Maria Martinez',
     relationship: 'Mother',
     email: 'maria.martinez@email.com',
-    phone: '(555) 123-4567'
-  }
+    phone: '(555) 123-4567',
+  };
 
   const recentPerformance = [
     { date: 'Jan 20', event: 'vs. East High', performance: 'Excellent', goals: 2, assists: 1 },
     { date: 'Jan 15', event: 'vs. West Academy', performance: 'Good', goals: 0, assists: 2 },
-    { date: 'Jan 10', event: 'vs. South United', performance: 'Average', goals: 1, assists: 0 }
-  ]
+    { date: 'Jan 10', event: 'vs. South United', performance: 'Average', goals: 1, assists: 0 },
+  ];
 
   const upcomingEvents = [
-    { date: 'Jan 26', event: 'vs. Central High', type: 'Game', time: '4:00 PM', location: 'Home Field' },
-    { date: 'Jan 28', event: 'Parent-Coach Meeting', type: 'Meeting', time: '7:00 PM', location: 'School Office' },
-    { date: 'Feb 2', event: 'vs. North Academy', type: 'Game', time: '2:00 PM', location: 'Away' }
-  ]
+    {
+      date: 'Jan 26',
+      event: 'vs. Central High',
+      type: 'Game',
+      time: '4:00 PM',
+      location: 'Home Field',
+    },
+    {
+      date: 'Jan 28',
+      event: 'Parent-Coach Meeting',
+      type: 'Meeting',
+      time: '7:00 PM',
+      location: 'School Office',
+    },
+    { date: 'Feb 2', event: 'vs. North Academy', type: 'Game', time: '2:00 PM', location: 'Away' },
+  ];
 
   const academicProgress = [
     { subject: 'Math', grade: 'A-', teacher: 'Ms. Johnson', notes: 'Excellent progress' },
     { subject: 'English', grade: 'B+', teacher: 'Mr. Smith', notes: 'Good improvement' },
     { subject: 'Science', grade: 'A', teacher: 'Dr. Brown', notes: 'Outstanding work' },
-    { subject: 'History', grade: 'B', teacher: 'Mrs. Davis', notes: 'Steady progress' }
-  ]
+    { subject: 'History', grade: 'B', teacher: 'Mrs. Davis', notes: 'Steady progress' },
+  ];
 
   const healthMetrics = {
     weight: '145 lbs',
@@ -48,14 +60,14 @@ export default function SportsParentPortal() {
     bmi: '22.0',
     lastPhysical: 'Dec 15, 2024',
     injuries: 'None',
-    medications: 'None'
-  }
+    medications: 'None',
+  };
 
   const nutritionPlan = [
     { meal: 'Breakfast', calories: 680, protein: 35, carbs: 75, status: 'completed' },
     { meal: 'Lunch', calories: 750, protein: 45, carbs: 85, status: 'completed' },
-    { meal: 'Dinner', calories: 650, protein: 40, carbs: 60, status: 'planned' }
-  ]
+    { meal: 'Dinner', calories: 650, protein: 40, carbs: 60, status: 'planned' },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-900 via-emerald-900 to-teal-900">
@@ -63,14 +75,19 @@ export default function SportsParentPortal() {
       <header className="bg-white/10 backdrop-blur-sm border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <Link href="/schools/go4it-sports-academy" className="text-white font-semibold text-lg hover:text-green-300">
+            <Link
+              href="/schools/go4it-sports-academy"
+              className="text-white font-semibold text-lg hover:text-green-300"
+            >
               ← Go4it Sports Academy
             </Link>
             <h1 className="text-2xl font-bold text-white">Parent Portal</h1>
             <div className="flex items-center space-x-3">
               <div className="text-right">
                 <div className="font-semibold text-white">{parentData.name}</div>
-                <div className="text-sm text-green-200">{parentData.relationship} of {studentData.name}</div>
+                <div className="text-sm text-green-200">
+                  {parentData.relationship} of {studentData.name}
+                </div>
               </div>
               <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold">
                 {parentData.name.charAt(0)}
@@ -86,7 +103,9 @@ export default function SportsParentPortal() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-white">{studentData.name}</h2>
-              <p className="text-green-200">#{studentData.teamNumber} • {studentData.position} • {studentData.level}</p>
+              <p className="text-green-200">
+                #{studentData.teamNumber} • {studentData.position} • {studentData.level}
+              </p>
             </div>
             <div className="text-right">
               <div className="text-lg font-semibold text-white">{studentData.season}</div>
@@ -103,7 +122,7 @@ export default function SportsParentPortal() {
                 { id: 'overview', name: 'Overview', icon: '📊' },
                 { id: 'performance', name: 'Performance', icon: '⚽' },
                 { id: 'academic', name: 'Academic', icon: '📚' },
-                { id: 'health', name: 'Health', icon: '🏥' }
+                { id: 'health', name: 'Health', icon: '🏥' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -129,17 +148,23 @@ export default function SportsParentPortal() {
                     {upcomingEvents.map((event, index) => (
                       <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`px-3 py-1 rounded-full text-sm ${
-                            event.type === 'Game' ? 'bg-red-500/30 text-red-200' :
-                            event.type === 'Meeting' ? 'bg-blue-500/30 text-blue-200' :
-                            'bg-purple-500/30 text-purple-200'
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              event.type === 'Game'
+                                ? 'bg-red-500/30 text-red-200'
+                                : event.type === 'Meeting'
+                                  ? 'bg-blue-500/30 text-blue-200'
+                                  : 'bg-purple-500/30 text-purple-200'
+                            }`}
+                          >
                             {event.type}
                           </span>
                           <span className="text-green-200 text-sm">{event.time}</span>
                         </div>
                         <h4 className="font-semibold text-white mb-1">{event.event}</h4>
-                        <p className="text-green-200 text-sm">{event.date} • {event.location}</p>
+                        <p className="text-green-200 text-sm">
+                          {event.date} • {event.location}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -152,11 +177,15 @@ export default function SportsParentPortal() {
                       <div key={index} className="bg-white/5 rounded-lg p-4 border border-white/10">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-semibold text-white">{game.event}</h4>
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            game.performance === 'Excellent' ? 'bg-green-500/30 text-green-200' :
-                            game.performance === 'Good' ? 'bg-blue-500/30 text-blue-200' :
-                            'bg-yellow-500/30 text-yellow-200'
-                          }`}>
+                          <span
+                            className={`px-2 py-1 rounded text-xs ${
+                              game.performance === 'Excellent'
+                                ? 'bg-green-500/30 text-green-200'
+                                : game.performance === 'Good'
+                                  ? 'bg-blue-500/30 text-blue-200'
+                                  : 'bg-yellow-500/30 text-yellow-200'
+                            }`}
+                          >
                             {game.performance}
                           </span>
                         </div>
@@ -210,14 +239,15 @@ export default function SportsParentPortal() {
                       <div className="bg-white/5 rounded p-3">
                         <div className="text-sm text-green-200 mb-1">Latest Feedback</div>
                         <p className="text-white text-sm">
-                          "Jordan shows excellent leadership skills and has improved significantly in tactical awareness. 
-                          Keep up the great work!"
+                          "Jordan shows excellent leadership skills and has improved significantly
+                          in tactical awareness. Keep up the great work!"
                         </p>
                       </div>
                       <div className="bg-white/5 rounded p-3">
                         <div className="text-sm text-green-200 mb-1">Areas for Improvement</div>
                         <p className="text-white text-sm">
-                          "Focus on defensive positioning and communication with teammates during set pieces."
+                          "Focus on defensive positioning and communication with teammates during
+                          set pieces."
                         </p>
                       </div>
                     </div>
@@ -271,7 +301,9 @@ export default function SportsParentPortal() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-200">Last Physical</span>
-                          <span className="text-white font-semibold">{healthMetrics.lastPhysical}</span>
+                          <span className="text-white font-semibold">
+                            {healthMetrics.lastPhysical}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -285,7 +317,9 @@ export default function SportsParentPortal() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-green-200">Medications</span>
-                          <span className="text-white font-semibold">{healthMetrics.medications}</span>
+                          <span className="text-white font-semibold">
+                            {healthMetrics.medications}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -296,16 +330,23 @@ export default function SportsParentPortal() {
                   <h3 className="text-xl font-bold text-white mb-6">Nutrition Tracking</h3>
                   <div className="space-y-4">
                     {nutritionPlan.map((meal, index) => (
-                      <div key={index} className={`rounded-lg p-4 border ${
-                        meal.status === 'completed' 
-                          ? 'bg-green-500/20 border-green-500/30' 
-                          : 'bg-white/5 border-white/10'
-                      }`}>
+                      <div
+                        key={index}
+                        className={`rounded-lg p-4 border ${
+                          meal.status === 'completed'
+                            ? 'bg-green-500/20 border-green-500/30'
+                            : 'bg-white/5 border-white/10'
+                        }`}
+                      >
                         <div className="flex items-center justify-between mb-3">
                           <h4 className="text-lg font-semibold text-white">{meal.meal}</h4>
-                          <span className={`px-3 py-1 rounded text-sm ${
-                            meal.status === 'completed' ? 'bg-green-500/30 text-green-200' : 'bg-yellow-500/30 text-yellow-200'
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded text-sm ${
+                              meal.status === 'completed'
+                                ? 'bg-green-500/30 text-green-200'
+                                : 'bg-yellow-500/30 text-yellow-200'
+                            }`}
+                          >
                             {meal.status}
                           </span>
                         </div>
@@ -352,5 +393,5 @@ export default function SportsParentPortal() {
         </div>
       </div>
     </div>
-  )
+  );
 }

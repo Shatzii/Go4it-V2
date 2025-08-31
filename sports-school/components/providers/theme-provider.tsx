@@ -1,29 +1,29 @@
-'use client'
+'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type Theme = 'dark' | 'light' | 'system'
+type Theme = 'dark' | 'light' | 'system';
 
 type ThemeProviderProps = {
-  children: ReactNode
-  defaultTheme?: Theme
-  storageKey?: string
-  attribute?: string
-  enableSystem?: boolean
-  disableTransitionOnChange?: boolean
-}
+  children: ReactNode;
+  defaultTheme?: Theme;
+  storageKey?: string;
+  attribute?: string;
+  enableSystem?: boolean;
+  disableTransitionOnChange?: boolean;
+};
 
 type ThemeProviderState = {
-  theme: Theme
-  setTheme: (theme: Theme) => void
-}
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
+};
 
 const initialState: ThemeProviderState = {
   theme: 'system',
   setTheme: () => null,
-}
+};
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
+const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
@@ -34,51 +34,51 @@ export function ThemeProvider({
   disableTransitionOnChange = false,
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme)
-  const [mounted, setMounted] = useState(false)
+  const [theme, setTheme] = useState<Theme>(defaultTheme);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
+    setMounted(true);
     try {
-      const storedTheme = localStorage.getItem(storageKey) as Theme
+      const storedTheme = localStorage.getItem(storageKey) as Theme;
       if (storedTheme) {
-        setTheme(storedTheme)
+        setTheme(storedTheme);
       }
     } catch (error) {
       // Handle localStorage access error
-      console.warn('Theme provider: localStorage access failed')
+      console.warn('Theme provider: localStorage access failed');
     }
-  }, [storageKey])
+  }, [storageKey]);
 
   useEffect(() => {
-    if (!mounted) return
+    if (!mounted) return;
 
-    const root = window.document.documentElement
-    root.classList.remove('light', 'dark')
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
 
     if (theme === 'system' && enableSystem) {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
-        : 'light'
-      root.classList.add(systemTheme)
-      return
+        : 'light';
+      root.classList.add(systemTheme);
+      return;
     }
 
-    root.classList.add(theme)
+    root.classList.add(theme);
 
     // Store theme preference
     try {
-      localStorage.setItem(storageKey, theme)
+      localStorage.setItem(storageKey, theme);
     } catch (error) {
-      console.warn('Theme provider: failed to save theme preference')
+      console.warn('Theme provider: failed to save theme preference');
     }
-  }, [theme, enableSystem, mounted, storageKey])
+  }, [theme, enableSystem, mounted, storageKey]);
 
   const value = {
     theme,
     setTheme: (newTheme: Theme) => {
       if (disableTransitionOnChange) {
-        const css = document.createElement('style')
+        const css = document.createElement('style');
         css.appendChild(
           document.createTextNode(
             `* {
@@ -86,39 +86,38 @@ export function ThemeProvider({
               -moz-transition: none !important;
               -o-transition: none !important;
               transition: none !important;
-            }`
-          )
-        )
-        document.head.appendChild(css)
+            }`,
+          ),
+        );
+        document.head.appendChild(css);
 
-        window.getComputedStyle(document.body)
+        window.getComputedStyle(document.body);
 
         setTimeout(() => {
-          document.head.removeChild(css)
-        }, 1)
+          document.head.removeChild(css);
+        }, 1);
       }
 
-      setTheme(newTheme)
+      setTheme(newTheme);
     },
-  }
+  };
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
-    return null
+    return null;
   }
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>
       {children}
     </ThemeProviderContext.Provider>
-  )
+  );
 }
 
 export const useTheme = () => {
-  const context = useContext(ThemeProviderContext)
+  const context = useContext(ThemeProviderContext);
 
-  if (context === undefined)
-    throw new Error('useTheme must be used within a ThemeProvider')
+  if (context === undefined) throw new Error('useTheme must be used within a ThemeProvider');
 
-  return context
-}
+  return context;
+};

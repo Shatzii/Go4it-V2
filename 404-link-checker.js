@@ -15,7 +15,7 @@ const TIMEOUT = 10000;
 const results = {
   passed: [],
   failed: [],
-  total: 0
+  total: 0,
 };
 
 // Helper function to make HTTP requests
@@ -28,13 +28,13 @@ function makeRequest(url, options = {}) {
     const req = http.request(url, options, (res) => {
       clearTimeout(timeout);
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', (chunk) => (data += chunk));
       res.on('end', () => {
         resolve({
           statusCode: res.statusCode,
           headers: res.headers,
           data: data,
-          url: url
+          url: url,
         });
       });
     });
@@ -52,16 +52,21 @@ function makeRequest(url, options = {}) {
 async function testUrl(url, description) {
   console.log(`Testing: ${url}`);
   results.total++;
-  
+
   try {
     const response = await makeRequest(url);
-    
+
     if (response.statusCode === 200) {
       results.passed.push({ url, description, status: response.statusCode });
       console.log(`  ✅ ${description} - ${response.statusCode}`);
       return true;
     } else if (response.statusCode === 404) {
-      results.failed.push({ url, description, status: response.statusCode, error: '404 Not Found' });
+      results.failed.push({
+        url,
+        description,
+        status: response.statusCode,
+        error: '404 Not Found',
+      });
       console.log(`  ❌ ${description} - 404 NOT FOUND`);
       return false;
     } else {
@@ -95,7 +100,7 @@ const mainPages = [
   { url: '/gar-upload', description: 'GAR Upload' },
   { url: '/video-analysis', description: 'Video Analysis' },
   { url: '/parent-dashboard', description: 'Parent Dashboard' },
-  { url: '/student-dashboard', description: 'Student Dashboard' }
+  { url: '/student-dashboard', description: 'Student Dashboard' },
 ];
 
 // API endpoints to test
@@ -130,7 +135,7 @@ const apiEndpoints = [
   { url: '/api/profile', description: 'Profile API' },
   { url: '/api/starpath', description: 'StarPath API' },
   { url: '/api/teams', description: 'Teams API' },
-  { url: '/api/videos', description: 'Videos API' }
+  { url: '/api/videos', description: 'Videos API' },
 ];
 
 // Static assets to test
@@ -139,7 +144,7 @@ const staticAssets = [
   { url: '/sw.js', description: 'Service Worker' },
   { url: '/favicon.ico', description: 'Favicon' },
   { url: '/_next/static/chunks/main.js', description: 'Main JS Bundle' },
-  { url: '/_next/static/css/app.css', description: 'Main CSS Bundle' }
+  { url: '/_next/static/css/app.css', description: 'Main CSS Bundle' },
 ];
 
 // Test for common 404 pages
@@ -148,29 +153,29 @@ const common404Tests = [
   { url: '/random-404-test', description: 'Random 404 Test' },
   { url: '/api/nonexistent', description: 'Non-existent API' },
   { url: '/dashboard/nonexistent', description: 'Non-existent Dashboard Sub-page' },
-  { url: '/academy/nonexistent', description: 'Non-existent Academy Sub-page' }
+  { url: '/academy/nonexistent', description: 'Non-existent Academy Sub-page' },
 ];
 
 // Run all tests
 async function runAllTests() {
   console.log('🔍 Starting 404 Link Checker for Go4It Sports Platform\n');
-  
+
   // Test main pages
   console.log('📄 Testing Main Pages...\n');
   for (const page of mainPages) {
     await testUrl(`${BASE_URL}${page.url}`, page.description);
   }
-  
+
   console.log('\n📡 Testing API Endpoints...\n');
   for (const endpoint of apiEndpoints) {
     await testUrl(`${BASE_URL}${endpoint.url}`, endpoint.description);
   }
-  
+
   console.log('\n📦 Testing Static Assets...\n');
   for (const asset of staticAssets) {
     await testUrl(`${BASE_URL}${asset.url}`, asset.description);
   }
-  
+
   console.log('\n🔍 Testing Common 404 Cases...\n');
   for (const test of common404Tests) {
     const response = await testUrl(`${BASE_URL}${test.url}`, test.description);
@@ -181,26 +186,28 @@ async function runAllTests() {
       console.log(`  ⚠️  ${test.description} should return 404 but returned different status`);
     }
   }
-  
+
   // Print summary
   console.log('\n📊 404 Link Check Results:');
   console.log(`  Total URLs Tested: ${results.total}`);
   console.log(`  Passed (200/other): ${results.passed.length}`);
   console.log(`  Failed (404/errors): ${results.failed.length}`);
   console.log(`  Success Rate: ${Math.round((results.passed.length / results.total) * 100)}%`);
-  
+
   if (results.failed.length > 0) {
     console.log('\n❌ Failed URLs:');
-    results.failed.forEach(result => {
-      console.log(`  - ${result.url} (${result.description}): ${result.status} - ${result.error || 'Unknown error'}`);
+    results.failed.forEach((result) => {
+      console.log(
+        `  - ${result.url} (${result.description}): ${result.status} - ${result.error || 'Unknown error'}`,
+      );
     });
   }
-  
+
   console.log('\n✅ Passed URLs:');
-  results.passed.forEach(result => {
+  results.passed.forEach((result) => {
     console.log(`  - ${result.url} (${result.description}): ${result.status}`);
   });
-  
+
   if (results.failed.length === 0) {
     console.log('\n🎉 All tested URLs are working correctly!');
   } else {
@@ -209,7 +216,7 @@ async function runAllTests() {
 }
 
 // Run the tests
-runAllTests().catch(error => {
+runAllTests().catch((error) => {
   console.error('Test runner error:', error);
   process.exit(1);
 });

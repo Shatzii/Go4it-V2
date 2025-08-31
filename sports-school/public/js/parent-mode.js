@@ -1,38 +1,38 @@
 /**
  * ShatziiOS Parent Translation Mode
- * 
+ *
  * This script manages the parent translation mode feature, which displays
  * content in both the original language and the selected language to help
  * non-native speaking parents support their children's learning.
  */
 
 // Initialize parent mode functionality when the document is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Create and initialize parent mode features
-  const parentMode = (function() {
+  const parentMode = (function () {
     const STORAGE_KEY = 'shatzii_parent_mode_seen';
     let bannerElement = null;
-    
+
     /**
      * Initialize parent mode features
      */
     function init() {
       // Listen for language changes that might trigger parent mode
       document.addEventListener('language-changed', handleLanguageChange);
-      
+
       // Check if we need to show the banner when parent mode is enabled
       if (document.body.classList.contains('parent-mode')) {
         maybeShowBanner();
       }
     }
-    
+
     /**
      * Handle language or parent mode changes
      */
     function handleLanguageChange(event) {
       const detail = event.detail || {};
       const settings = detail.settings || {};
-      
+
       // If parent mode was just enabled, show the banner
       if (settings.parentMode === true) {
         document.body.classList.add('parent-mode');
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     }
-    
+
     /**
      * Create and show the parent mode banner if the user hasn't seen it before
      */
@@ -54,16 +54,16 @@ document.addEventListener('DOMContentLoaded', function() {
       if (localStorage.getItem(STORAGE_KEY) === 'true') {
         return;
       }
-      
+
       // Create the banner if it doesn't exist
       if (!bannerElement) {
         createBanner();
       }
-      
+
       // Show the banner
       bannerElement.classList.add('visible');
     }
-    
+
     /**
      * Create the parent mode banner
      */
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
       bannerElement = document.createElement('div');
       bannerElement.className = 'parent-mode-banner';
       bannerElement.setAttribute('role', 'alert');
-      
+
       // Add banner content
       bannerElement.innerHTML = `
         <button class="close-banner" aria-label="Close banner">×</button>
@@ -85,12 +85,13 @@ document.addEventListener('DOMContentLoaded', function() {
           <button data-action="gotit" data-i18n="parent_mode.got_it">Got It</button>
         </div>
       `;
-      
+
       // Add banner to the page at the top of the main content
-      const mainContent = document.querySelector('.accessibility-guide') || 
-                          document.querySelector('main') || 
-                          document.querySelector('.hero');
-      
+      const mainContent =
+        document.querySelector('.accessibility-guide') ||
+        document.querySelector('main') ||
+        document.querySelector('.hero');
+
       if (mainContent) {
         mainContent.insertBefore(bannerElement, mainContent.firstChild);
       } else {
@@ -103,28 +104,28 @@ document.addEventListener('DOMContentLoaded', function() {
           document.body.appendChild(bannerElement);
         }
       }
-      
+
       // Apply translations
       if (window.ShatziiI18n) {
         window.ShatziiI18n.applyTranslations();
       }
-      
+
       // Add event listeners
       const closeButton = bannerElement.querySelector('.close-banner');
       if (closeButton) {
-        closeButton.addEventListener('click', function() {
+        closeButton.addEventListener('click', function () {
           bannerElement.classList.remove('visible');
           // Mark as seen
           localStorage.setItem(STORAGE_KEY, 'true');
         });
       }
-      
+
       // Handle action buttons
       const actionButtons = bannerElement.querySelectorAll('[data-action]');
-      actionButtons.forEach(button => {
-        button.addEventListener('click', function() {
+      actionButtons.forEach((button) => {
+        button.addEventListener('click', function () {
           const action = this.getAttribute('data-action');
-          
+
           if (action === 'disable') {
             // Disable parent mode
             if (window.ShatziiI18n) {
@@ -140,20 +141,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
     }
-    
+
     /**
      * Reset "seen" status to show the banner again next time
      */
     function resetBannerSeen() {
       localStorage.removeItem(STORAGE_KEY);
     }
-    
+
     return {
       init: init,
-      resetBannerSeen: resetBannerSeen
+      resetBannerSeen: resetBannerSeen,
     };
   })();
-  
+
   // Initialize parent mode
   parentMode.init();
 });

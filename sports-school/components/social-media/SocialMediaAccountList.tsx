@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -7,7 +7,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Shield, ShieldAlert, ShieldCheck, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import {
+  Loader2,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  AlertTriangle,
+  Eye,
+  EyeOff,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import type { SocialMediaAccount } from '@shared/schema';
@@ -26,56 +34,66 @@ const PLATFORM_ICONS = {
   whatsapp: '💬',
   facebook: '👥',
   twitter: '🐦',
-  linkedin: '💼'
+  linkedin: '💼',
 };
 
 const RISK_COLORS = {
   low: 'bg-green-100 text-green-800 border-green-200',
   medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
   high: 'bg-orange-100 text-orange-800 border-orange-200',
-  critical: 'bg-red-100 text-red-800 border-red-200'
+  critical: 'bg-red-100 text-red-800 border-red-200',
 };
 
 const RISK_ICONS = {
   low: ShieldCheck,
   medium: Shield,
   high: ShieldAlert,
-  critical: AlertTriangle
+  critical: AlertTriangle,
 };
 
-export function SocialMediaAccountList({ userId, showParentalControls = false }: SocialMediaAccountListProps) {
+export function SocialMediaAccountList({
+  userId,
+  showParentalControls = false,
+}: SocialMediaAccountListProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: accounts, isLoading, error } = useQuery({
+  const {
+    data: accounts,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ['/api/social-media/accounts', userId],
     queryFn: async () => {
-      const response = await apiRequest('GET', userId ? `/api/social-media/accounts?userId=${userId}` : '/api/social-media/accounts');
-      return await response.json() as SocialMediaAccount[];
-    }
+      const response = await apiRequest(
+        'GET',
+        userId ? `/api/social-media/accounts?userId=${userId}` : '/api/social-media/accounts',
+      );
+      return (await response.json()) as SocialMediaAccount[];
+    },
   });
 
   const toggleMonitoringMutation = useMutation({
     mutationFn: async ({ accountId, enabled }: { accountId: string; enabled: boolean }) => {
       const response = await apiRequest('PATCH', `/api/social-media/accounts/${accountId}`, {
-        isMonitored: enabled
+        isMonitored: enabled,
       });
       return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/social-media/accounts'] });
       toast({
-        title: "Monitoring Updated",
-        description: "Social media monitoring settings have been updated.",
+        title: 'Monitoring Updated',
+        description: 'Social media monitoring settings have been updated.',
       });
     },
     onError: () => {
       toast({
-        title: "Update Failed",
-        description: "Failed to update monitoring settings. Please try again.",
-        variant: "destructive",
+        title: 'Update Failed',
+        description: 'Failed to update monitoring settings. Please try again.',
+        variant: 'destructive',
       });
-    }
+    },
   });
 
   const removeAccountMutation = useMutation({
@@ -86,17 +104,17 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/social-media/accounts'] });
       toast({
-        title: "Account Removed",
-        description: "Social media account has been removed from monitoring.",
+        title: 'Account Removed',
+        description: 'Social media account has been removed from monitoring.',
       });
     },
     onError: () => {
       toast({
-        title: "Removal Failed",
-        description: "Failed to remove account. Please try again.",
-        variant: "destructive",
+        title: 'Removal Failed',
+        description: 'Failed to remove account. Please try again.',
+        variant: 'destructive',
       });
-    }
+    },
   });
 
   const getSafetyScore = (account: SocialMediaAccount): number => {
@@ -107,12 +125,12 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
 
   const getLastActivityText = (lastActivity: Date | null): string => {
     if (!lastActivity) return 'No recent activity';
-    
+
     const now = new Date();
     const diff = now.getTime() - new Date(lastActivity).getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(hours / 24);
-    
+
     if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
     if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
     return 'Less than 1 hour ago';
@@ -124,10 +142,10 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
       // This would typically open a consent modal
       console.log('Parental consent required for enabling monitoring');
     }
-    
+
     toggleMonitoringMutation.mutate({
       accountId,
-      enabled: !currentlyEnabled
+      enabled: !currentlyEnabled,
     });
   };
 
@@ -180,25 +198,25 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {accounts.filter(a => a.riskLevel === 'low').length}
+                {accounts.filter((a) => a.riskLevel === 'low').length}
               </div>
               <div className="text-sm text-muted-foreground">Safe Accounts</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-600">
-                {accounts.filter(a => a.riskLevel === 'medium').length}
+                {accounts.filter((a) => a.riskLevel === 'medium').length}
               </div>
               <div className="text-sm text-muted-foreground">Medium Risk</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">
-                {accounts.filter(a => a.riskLevel === 'high').length}
+                {accounts.filter((a) => a.riskLevel === 'high').length}
               </div>
               <div className="text-sm text-muted-foreground">High Risk</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-red-600">
-                {accounts.filter(a => a.riskLevel === 'critical').length}
+                {accounts.filter((a) => a.riskLevel === 'critical').length}
               </div>
               <div className="text-sm text-muted-foreground">Critical Risk</div>
             </div>
@@ -211,7 +229,7 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
         {accounts.map((account) => {
           const RiskIcon = RISK_ICONS[account.riskLevel as keyof typeof RISK_ICONS];
           const safetyScore = getSafetyScore(account);
-          
+
           return (
             <Card key={account.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
@@ -221,11 +239,13 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
                     <div className="text-3xl">
                       {PLATFORM_ICONS[account.platform as keyof typeof PLATFORM_ICONS] || '📱'}
                     </div>
-                    
+
                     {/* Account Info */}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="font-semibold text-lg">{account.displayName || account.username}</h3>
+                        <h3 className="font-semibold text-lg">
+                          {account.displayName || account.username}
+                        </h3>
                         <Badge variant="outline" className="capitalize">
                           {account.platform}
                         </Badge>
@@ -233,13 +253,15 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
                           <Badge variant="destructive">Consent Required</Badge>
                         )}
                       </div>
-                      
+
                       <p className="text-sm text-muted-foreground mb-2">@{account.username}</p>
-                      
+
                       <div className="flex items-center gap-4 text-sm">
                         <div className="flex items-center gap-1">
                           <RiskIcon className="h-4 w-4" />
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${RISK_COLORS[account.riskLevel as keyof typeof RISK_COLORS]}`}>
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${RISK_COLORS[account.riskLevel as keyof typeof RISK_COLORS]}`}
+                          >
                             {account.riskLevel.toUpperCase()} RISK
                           </span>
                         </div>
@@ -262,15 +284,18 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
                       <Switch
                         id={`monitoring-${account.id}`}
                         checked={account.isMonitored}
-                        onCheckedChange={() => handleToggleMonitoring(account.id, account.isMonitored)}
+                        onCheckedChange={() =>
+                          handleToggleMonitoring(account.id, account.isMonitored)
+                        }
                         disabled={toggleMonitoringMutation.isPending}
                       />
-                      {account.isMonitored ? 
-                        <Eye className="h-4 w-4 text-green-600" /> : 
+                      {account.isMonitored ? (
+                        <Eye className="h-4 w-4 text-green-600" />
+                      ) : (
                         <EyeOff className="h-4 w-4 text-muted-foreground" />
-                      }
+                      )}
                     </div>
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -291,10 +316,9 @@ export function SocialMediaAccountList({ userId, showParentalControls = false }:
                   <Alert className="mt-4 border-orange-200 bg-orange-50">
                     <AlertTriangle className="h-4 w-4 text-orange-600" />
                     <AlertDescription className="text-orange-800">
-                      {account.riskLevel === 'critical' 
+                      {account.riskLevel === 'critical'
                         ? 'Critical safety concerns detected. Immediate review recommended.'
-                        : 'Elevated risk detected. Consider reviewing recent activity.'
-                      }
+                        : 'Elevated risk detected. Consider reviewing recent activity.'}
                     </AlertDescription>
                   </Alert>
                 )}

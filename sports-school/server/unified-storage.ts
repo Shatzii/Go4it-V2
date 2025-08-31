@@ -21,7 +21,7 @@ class SimplifiedStorage implements UnifiedStorage {
       theme: 'superhero',
       description: 'Superhero-themed K-6 education tailored for young neurodivergent minds.',
       features: ['Interactive Stories', 'Visual Learning', 'Adaptive Pace'],
-      isActive: true
+      isActive: true,
     },
     {
       id: 'secondary-school',
@@ -29,7 +29,7 @@ class SimplifiedStorage implements UnifiedStorage {
       theme: 'mature',
       description: 'Grades 7-12 with mature themes designed for adolescent learners.',
       features: ['Project-Based', 'Self-Paced', 'Career Focused'],
-      isActive: true
+      isActive: true,
     },
     {
       id: 'lawyer-makers',
@@ -37,7 +37,7 @@ class SimplifiedStorage implements UnifiedStorage {
       theme: 'professional',
       description: 'College-level legal education designed for neurodivergent students.',
       features: ['Case Studies', 'Simulations', 'Legal Writing'],
-      isActive: true
+      isActive: true,
     },
     {
       id: 'language-school',
@@ -45,16 +45,16 @@ class SimplifiedStorage implements UnifiedStorage {
       theme: 'global',
       description: 'Multilingual education in English, German, and Spanish.',
       features: ['Conversation', 'Cultural Context', 'Practical Usage'],
-      isActive: true
-    }
+      isActive: true,
+    },
   ];
 
   async getAllSchools(): Promise<SchoolData[]> {
-    return this.schoolData.filter(school => school.isActive);
+    return this.schoolData.filter((school) => school.isActive);
   }
 
   async getSchool(id: string): Promise<SchoolData | undefined> {
-    return this.schoolData.find(school => school.id === id && school.isActive);
+    return this.schoolData.find((school) => school.id === id && school.isActive);
   }
 }
 

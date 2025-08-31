@@ -1,117 +1,149 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CheckCircle, Clock, AlertTriangle, Award, BookOpen, Users, Star, GraduationCap, FileText, Home } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  Award,
+  BookOpen,
+  Users,
+  Star,
+  GraduationCap,
+  FileText,
+  Home,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function TexasGraduationTracker() {
-  const [selectedStudent, setSelectedStudent] = useState('student1')
+  const [selectedStudent, setSelectedStudent] = useState('student1');
 
   // Texas graduation requirements (26 credits minimum)
   const texasRequirements = {
     totalCredits: 26,
     categories: {
-      english: { 
-        required: 4, 
-        earned: 3.5, 
+      english: {
+        required: 4,
+        earned: 3.5,
         courses: [
           { name: 'English I', credits: 1, completed: true, staar: true, grade: 'A' },
           { name: 'English II', credits: 1, completed: true, staar: true, grade: 'A-' },
           { name: 'English III', credits: 1, completed: true, grade: 'B+' },
           { name: 'Speech & Drama', credits: 0.5, completed: true, grade: 'A', stagePrep: true },
-          { name: 'English IV', credits: 1, completed: false, planned: 'Spring 2025' }
-        ]
+          { name: 'English IV', credits: 1, completed: false, planned: 'Spring 2025' },
+        ],
       },
-      mathematics: { 
-        required: 4, 
-        earned: 4, 
+      mathematics: {
+        required: 4,
+        earned: 4,
         courses: [
           { name: 'Algebra I', credits: 1, completed: true, staar: true, grade: 'B+' },
           { name: 'Geometry', credits: 1, completed: true, grade: 'A-' },
           { name: 'Algebra II', credits: 1, completed: true, grade: 'B' },
-          { name: 'Pre-Calculus', credits: 1, completed: true, grade: 'B+' }
-        ]
+          { name: 'Pre-Calculus', credits: 1, completed: true, grade: 'B+' },
+        ],
       },
-      science: { 
-        required: 4, 
-        earned: 3.5, 
+      science: {
+        required: 4,
+        earned: 3.5,
         courses: [
           { name: 'Biology', credits: 1, completed: true, staar: true, grade: 'A' },
           { name: 'Chemistry', credits: 1, completed: true, grade: 'B+' },
           { name: 'Physics', credits: 1, completed: true, grade: 'A-' },
           { name: 'Environmental Science', credits: 0.5, completed: true, grade: 'A' },
-          { name: 'Advanced Science Elective', credits: 0.5, completed: false, planned: 'Spring 2025' }
-        ]
+          {
+            name: 'Advanced Science Elective',
+            credits: 0.5,
+            completed: false,
+            planned: 'Spring 2025',
+          },
+        ],
       },
-      socialStudies: { 
-        required: 4, 
-        earned: 3.5, 
+      socialStudies: {
+        required: 4,
+        earned: 3.5,
         courses: [
           { name: 'World Geography', credits: 1, completed: true, grade: 'A-' },
           { name: 'World History', credits: 1, completed: true, grade: 'B+' },
           { name: 'US History', credits: 1, completed: true, staar: true, grade: 'A' },
           { name: 'Government', credits: 0.5, completed: true, grade: 'A' },
-          { name: 'Economics', credits: 0.5, completed: false, planned: 'Spring 2025' }
-        ]
+          { name: 'Economics', credits: 0.5, completed: false, planned: 'Spring 2025' },
+        ],
       },
-      worldLanguages: { 
-        required: 2, 
-        earned: 2, 
+      worldLanguages: {
+        required: 2,
+        earned: 2,
         courses: [
           { name: 'Spanish I', credits: 1, completed: true, grade: 'A-' },
-          { name: 'Spanish II', credits: 1, completed: true, grade: 'B+' }
-        ]
+          { name: 'Spanish II', credits: 1, completed: true, grade: 'B+' },
+        ],
       },
-      fineArts: { 
-        required: 1, 
-        earned: 3, 
+      fineArts: {
+        required: 1,
+        earned: 3,
         courses: [
           { name: 'Theater Arts I', credits: 1, completed: true, grade: 'A', stagePrep: true },
-          { name: 'Advanced Theater Performance', credits: 1, completed: true, grade: 'A', stagePrep: true },
-          { name: 'Stage Management', credits: 1, completed: true, grade: 'A-', stagePrep: true }
-        ]
+          {
+            name: 'Advanced Theater Performance',
+            credits: 1,
+            completed: true,
+            grade: 'A',
+            stagePrep: true,
+          },
+          { name: 'Stage Management', credits: 1, completed: true, grade: 'A-', stagePrep: true },
+        ],
       },
-      physicalEducation: { 
-        required: 1.5, 
-        earned: 1.5, 
+      physicalEducation: {
+        required: 1.5,
+        earned: 1.5,
         courses: [
           { name: 'PE/Health', credits: 1, completed: true, grade: 'A' },
-          { name: 'Athletic Training', credits: 0.5, completed: true, grade: 'A-' }
-        ]
+          { name: 'Athletic Training', credits: 0.5, completed: true, grade: 'A-' },
+        ],
       },
-      technology: { 
-        required: 1, 
-        earned: 1, 
+      technology: {
+        required: 1,
+        earned: 1,
         courses: [
-          { name: 'Digital Media Arts', credits: 1, completed: true, grade: 'A', stagePrep: true }
-        ]
+          { name: 'Digital Media Arts', credits: 1, completed: true, grade: 'A', stagePrep: true },
+        ],
       },
-      careerPrep: { 
-        required: 1, 
-        earned: 1, 
-        courses: [
-          { name: 'Career Investigation', credits: 1, completed: true, grade: 'A-' }
-        ]
+      careerPrep: {
+        required: 1,
+        earned: 1,
+        courses: [{ name: 'Career Investigation', credits: 1, completed: true, grade: 'A-' }],
       },
-      electives: { 
-        required: 3.5, 
-        earned: 4.5, 
+      electives: {
+        required: 3.5,
+        earned: 4.5,
         courses: [
           { name: 'Creative Writing', credits: 1, completed: true, grade: 'A', stagePrep: true },
           { name: 'Psychology', credits: 1, completed: true, grade: 'B+' },
           { name: 'Voice & Diction', credits: 0.5, completed: true, grade: 'A', stagePrep: true },
-          { name: 'Character Development', credits: 0.5, completed: true, grade: 'A-', stagePrep: true },
-          { name: 'Portfolio Development', credits: 1, completed: true, grade: 'A', stagePrep: true },
-          { name: 'Advanced Elective', credits: 0.5, completed: false, planned: 'Spring 2025' }
-        ]
-      }
-    }
-  }
+          {
+            name: 'Character Development',
+            credits: 0.5,
+            completed: true,
+            grade: 'A-',
+            stagePrep: true,
+          },
+          {
+            name: 'Portfolio Development',
+            credits: 1,
+            completed: true,
+            grade: 'A',
+            stagePrep: true,
+          },
+          { name: 'Advanced Elective', credits: 0.5, completed: false, planned: 'Spring 2025' },
+        ],
+      },
+    },
+  };
 
   // STAAR Testing Requirements
   const staarRequirements = {
@@ -121,17 +153,17 @@ export default function TexasGraduationTracker() {
       'English I': { score: 'Meets Grade Level', scaled: 4015, level: 3 },
       'English II': { score: 'Masters Grade Level', scaled: 4237, level: 4 },
       'Algebra I': { score: 'Meets Grade Level', scaled: 3801, level: 3 },
-      'Biology': { score: 'Masters Grade Level', scaled: 4156, level: 4 },
-      'US History': { score: 'Pending', scaled: null, level: null }
-    }
-  }
+      Biology: { score: 'Masters Grade Level', scaled: 4156, level: 4 },
+      'US History': { score: 'Pending', scaled: null, level: null },
+    },
+  };
 
   // CCMR (College, Career, Military Readiness) Indicators
   const ccmrIndicators = {
     required: 1,
     achieved: [
       'AP Theater Arts - Score: 4',
-      'Industry Certification: Stage Management Professional'
+      'Industry Certification: Stage Management Professional',
     ],
     available: [
       'SAT score of 1210+ (Evidence-Based Reading/Writing: 480+, Math: 530+)',
@@ -139,9 +171,9 @@ export default function TexasGraduationTracker() {
       'AP exam score of 3 or higher',
       'Dual enrollment credit (3+ hours)',
       'Industry certification',
-      'Military readiness indicator'
-    ]
-  }
+      'Military readiness indicator',
+    ],
+  };
 
   // Stage Prep Graduation Plan Templates
   const graduationPlans = {
@@ -151,21 +183,21 @@ export default function TexasGraduationTracker() {
       fourYearPlan: {
         grade9: [
           'English I (STAAR)',
-          'Algebra I (STAAR)', 
+          'Algebra I (STAAR)',
           'Biology (STAAR)',
           'World Geography',
           'Theater Arts I',
           'Spanish I',
-          'PE/Health'
+          'PE/Health',
         ],
         grade10: [
           'English II (STAAR)',
           'Geometry',
-          'Chemistry', 
+          'Chemistry',
           'World History',
           'Advanced Theater Performance',
           'Spanish II',
-          'Voice & Diction'
+          'Voice & Diction',
         ],
         grade11: [
           'English III',
@@ -174,7 +206,7 @@ export default function TexasGraduationTracker() {
           'US History (STAAR)',
           'Stage Management',
           'Character Development',
-          'Digital Media Arts'
+          'Digital Media Arts',
         ],
         grade12: [
           'Speech & Drama',
@@ -183,9 +215,9 @@ export default function TexasGraduationTracker() {
           'Government/Economics',
           'Theater Capstone Project',
           'Career Investigation',
-          'Portfolio Development'
-        ]
-      }
+          'Portfolio Development',
+        ],
+      },
     },
     technical: {
       name: 'Technical Theater Track',
@@ -194,20 +226,20 @@ export default function TexasGraduationTracker() {
         grade9: [
           'English I (STAAR)',
           'Algebra I (STAAR)',
-          'Biology (STAAR)', 
+          'Biology (STAAR)',
           'World Geography',
           'Theater Arts I',
           'Spanish I',
-          'PE/Health'
+          'PE/Health',
         ],
         grade10: [
           'English II (STAAR)',
           'Geometry',
           'Chemistry',
-          'World History', 
+          'World History',
           'Stage Craft',
           'Spanish II',
-          'Digital Media Arts'
+          'Digital Media Arts',
         ],
         grade11: [
           'English III',
@@ -216,7 +248,7 @@ export default function TexasGraduationTracker() {
           'US History (STAAR)',
           'Lighting & Sound Design',
           'Set Construction',
-          'Career Investigation'
+          'Career Investigation',
         ],
         grade12: [
           'Speech & Drama',
@@ -225,12 +257,12 @@ export default function TexasGraduationTracker() {
           'Government/Economics',
           'Production Management',
           'Technical Portfolio',
-          'Industry Certification Prep'
-        ]
-      }
+          'Industry Certification Prep',
+        ],
+      },
     },
     writing: {
-      name: 'Dramatic Writing Track', 
+      name: 'Dramatic Writing Track',
       description: 'Playwriting and theatrical storytelling emphasis',
       fourYearPlan: {
         grade9: [
@@ -240,7 +272,7 @@ export default function TexasGraduationTracker() {
           'World Geography',
           'Theater Arts I',
           'Spanish I',
-          'PE/Health'
+          'PE/Health',
         ],
         grade10: [
           'English II (STAAR)',
@@ -248,8 +280,8 @@ export default function TexasGraduationTracker() {
           'Chemistry',
           'World History',
           'Creative Writing',
-          'Spanish II', 
-          'Digital Media Arts'
+          'Spanish II',
+          'Digital Media Arts',
         ],
         grade11: [
           'English III',
@@ -258,7 +290,7 @@ export default function TexasGraduationTracker() {
           'US History (STAAR)',
           'Playwriting I',
           'Dramatic Literature',
-          'Career Investigation'
+          'Career Investigation',
         ],
         grade12: [
           'Speech & Drama',
@@ -267,11 +299,11 @@ export default function TexasGraduationTracker() {
           'Government/Economics',
           'Advanced Playwriting',
           'Script Analysis',
-          'Writing Portfolio'
-        ]
-      }
-    }
-  }
+          'Writing Portfolio',
+        ],
+      },
+    },
+  };
 
   const mockStudents = [
     {
@@ -286,10 +318,10 @@ export default function TexasGraduationTracker() {
       creditsEarned: 24.5,
       graduationStatus: 'On Track',
       graduationDate: 'May 24, 2026',
-      endorsement: 'Arts & Humanities'
+      endorsement: 'Arts & Humanities',
     },
     {
-      id: 'student2', 
+      id: 'student2',
       name: 'Jordan Kim',
       grade: 10,
       studentId: 'SR2026-045',
@@ -300,13 +332,13 @@ export default function TexasGraduationTracker() {
       creditsEarned: 13.5,
       graduationStatus: 'On Track',
       graduationDate: 'May 22, 2027',
-      endorsement: 'Arts & Humanities'
+      endorsement: 'Arts & Humanities',
     },
     {
       id: 'student3',
       name: 'Alex Thompson',
       grade: 12,
-      studentId: 'SR2024-023', 
+      studentId: 'SR2024-023',
       pathway: 'writing',
       gpa: 3.8,
       classRank: 12,
@@ -314,17 +346,20 @@ export default function TexasGraduationTracker() {
       creditsEarned: 25.5,
       graduationStatus: 'Ready to Graduate',
       graduationDate: 'May 25, 2025',
-      endorsement: 'Arts & Humanities'
-    }
-  ]
+      endorsement: 'Arts & Humanities',
+    },
+  ];
 
-  const selectedStudentData = mockStudents.find(s => s.id === selectedStudent) || mockStudents[0]
-  const totalEarned = Object.values(texasRequirements.categories).reduce((sum, cat) => sum + cat.earned, 0)
-  const progressPercentage = (totalEarned / texasRequirements.totalCredits) * 100
-  const staarComplete = staarRequirements.completed.length === staarRequirements.required.length
+  const selectedStudentData = mockStudents.find((s) => s.id === selectedStudent) || mockStudents[0];
+  const totalEarned = Object.values(texasRequirements.categories).reduce(
+    (sum, cat) => sum + cat.earned,
+    0,
+  );
+  const progressPercentage = (totalEarned / texasRequirements.totalCredits) * 100;
+  const staarComplete = staarRequirements.completed.length === staarRequirements.required.length;
   const stageCredits = Object.values(texasRequirements.categories)
-    .flatMap(cat => cat.courses)
-    .filter(course => course.stagePrep && course.completed).length
+    .flatMap((cat) => cat.courses)
+    .filter((course) => course.stagePrep && course.completed).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-6">
@@ -333,7 +368,10 @@ export default function TexasGraduationTracker() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4 mb-4">
             <Link href="/schools/secondary-school">
-              <Button variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+              <Button
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
                 <Home className="h-4 w-4 mr-2" />
                 Back to Secondary School
               </Button>
@@ -349,30 +387,24 @@ export default function TexasGraduationTracker() {
             Block Schedule: 4 Year-Long Courses per Semester | 8 Classes Annually
           </p>
           <div className="mt-4 flex justify-center gap-4 flex-wrap">
-            <Badge className="bg-yellow-600/20 text-yellow-300 px-4 py-2">
-              TEA Compliant
-            </Badge>
-            <Badge className="bg-green-600/20 text-green-300 px-4 py-2">
-              26 Credit Program
-            </Badge>
+            <Badge className="bg-yellow-600/20 text-yellow-300 px-4 py-2">TEA Compliant</Badge>
+            <Badge className="bg-green-600/20 text-green-300 px-4 py-2">26 Credit Program</Badge>
             <Badge className="bg-orange-600/20 text-orange-300 px-4 py-2">
               Block Schedule: 4×4
             </Badge>
             <Badge className="bg-purple-600/20 text-purple-300 px-4 py-2">
               Distinguished Achievement
             </Badge>
-            <Badge className="bg-blue-600/20 text-blue-300 px-4 py-2">
-              CCMR Ready
-            </Badge>
+            <Badge className="bg-blue-600/20 text-blue-300 px-4 py-2">CCMR Ready</Badge>
           </div>
         </div>
 
         {/* Student Selector */}
         <div className="flex gap-4 mb-6 justify-center flex-wrap">
-          {mockStudents.map(student => (
+          {mockStudents.map((student) => (
             <Button
               key={student.id}
-              variant={selectedStudent === student.id ? "default" : "outline"}
+              variant={selectedStudent === student.id ? 'default' : 'outline'}
               onClick={() => setSelectedStudent(student.id)}
               className="bg-white/10 border-white/20 text-white hover:bg-white/20"
             >
@@ -383,12 +415,24 @@ export default function TexasGraduationTracker() {
 
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6 bg-white/10 border-white/20">
-            <TabsTrigger value="overview" className="text-white">Overview</TabsTrigger>
-            <TabsTrigger value="credits" className="text-white">Credits</TabsTrigger>
-            <TabsTrigger value="testing" className="text-white">STAAR</TabsTrigger>
-            <TabsTrigger value="ccmr" className="text-white">CCMR</TabsTrigger>
-            <TabsTrigger value="pathways" className="text-white">Stage Paths</TabsTrigger>
-            <TabsTrigger value="planning" className="text-white">4-Year Plans</TabsTrigger>
+            <TabsTrigger value="overview" className="text-white">
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="credits" className="text-white">
+              Credits
+            </TabsTrigger>
+            <TabsTrigger value="testing" className="text-white">
+              STAAR
+            </TabsTrigger>
+            <TabsTrigger value="ccmr" className="text-white">
+              CCMR
+            </TabsTrigger>
+            <TabsTrigger value="pathways" className="text-white">
+              Stage Paths
+            </TabsTrigger>
+            <TabsTrigger value="planning" className="text-white">
+              4-Year Plans
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
@@ -417,15 +461,21 @@ export default function TexasGraduationTracker() {
                   </div>
                   <div className="flex justify-between">
                     <span>Stage Track:</span>
-                    <span className="text-purple-300">{graduationPlans[selectedStudentData.pathway].name}</span>
+                    <span className="text-purple-300">
+                      {graduationPlans[selectedStudentData.pathway].name}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>GPA:</span>
-                    <Badge className="bg-green-600/20 text-green-300">{selectedStudentData.gpa}</Badge>
+                    <Badge className="bg-green-600/20 text-green-300">
+                      {selectedStudentData.gpa}
+                    </Badge>
                   </div>
                   <div className="flex justify-between">
                     <span>Class Rank:</span>
-                    <span>{selectedStudentData.classRank} of {selectedStudentData.classSize}</span>
+                    <span>
+                      {selectedStudentData.classRank} of {selectedStudentData.classSize}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -440,9 +490,7 @@ export default function TexasGraduationTracker() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-green-400">
-                      {totalEarned} / 26
-                    </div>
+                    <div className="text-3xl font-bold text-green-400">{totalEarned} / 26</div>
                     <p className="text-sm text-blue-200">Credits Earned</p>
                   </div>
                   <Progress value={progressPercentage} className="h-3" />
@@ -457,7 +505,9 @@ export default function TexasGraduationTracker() {
                     </div>
                     <div className="flex justify-between">
                       <span>Remaining:</span>
-                      <span>{Math.max(0, texasRequirements.totalCredits - totalEarned)} credits</span>
+                      <span>
+                        {Math.max(0, texasRequirements.totalCredits - totalEarned)} credits
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -478,7 +528,13 @@ export default function TexasGraduationTracker() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span>STAAR Tests:</span>
-                    <Badge className={staarComplete ? "bg-green-600/20 text-green-300" : "bg-yellow-600/20 text-yellow-300"}>
+                    <Badge
+                      className={
+                        staarComplete
+                          ? 'bg-green-600/20 text-green-300'
+                          : 'bg-yellow-600/20 text-yellow-300'
+                      }
+                    >
                       {staarRequirements.completed.length}/5
                     </Badge>
                   </div>
@@ -542,8 +598,8 @@ export default function TexasGraduationTracker() {
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {Object.entries(texasRequirements.categories).map(([category, data]) => {
-                    const isComplete = data.earned >= data.required
-                    const progressPerc = (data.earned / data.required) * 100
+                    const isComplete = data.earned >= data.required;
+                    const progressPerc = (data.earned / data.required) * 100;
 
                     return (
                       <Card key={category} className="bg-white/5 border-white/10">
@@ -552,8 +608,12 @@ export default function TexasGraduationTracker() {
                             <CardTitle className="text-sm capitalize text-white">
                               {category.replace(/([A-Z])/g, ' $1').trim()}
                             </CardTitle>
-                            <Badge 
-                              className={isComplete ? "bg-green-600/20 text-green-300" : "bg-orange-600/20 text-orange-300"}
+                            <Badge
+                              className={
+                                isComplete
+                                  ? 'bg-green-600/20 text-green-300'
+                                  : 'bg-orange-600/20 text-orange-300'
+                              }
                             >
                               {data.earned} / {data.required} credits
                             </Badge>
@@ -563,28 +623,38 @@ export default function TexasGraduationTracker() {
                           <Progress value={Math.min(progressPerc, 100)} className="h-2 mb-3" />
                           <div className="space-y-1">
                             {data.courses.map((course, idx) => (
-                              <div key={idx} className="flex items-center justify-between p-2 bg-white/5 rounded text-xs">
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between p-2 bg-white/5 rounded text-xs"
+                              >
                                 <div className="flex items-center gap-2">
                                   {course.completed ? (
                                     <CheckCircle className="h-3 w-3 text-green-400" />
                                   ) : (
                                     <Clock className="h-3 w-3 text-yellow-400" />
                                   )}
-                                  <span className={`${course.completed ? "text-white" : "text-blue-300"} ${course.stagePrep ? "font-medium text-purple-300" : ""}`}>
+                                  <span
+                                    className={`${course.completed ? 'text-white' : 'text-blue-300'} ${course.stagePrep ? 'font-medium text-purple-300' : ''}`}
+                                  >
                                     {course.name}
-                                    {course.staar && " (STAAR)"}
-                                    {course.stagePrep && " (Stage)"}
+                                    {course.staar && ' (STAAR)'}
+                                    {course.stagePrep && ' (Stage)'}
                                   </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <span className="text-blue-200">{course.credits} cr</span>
                                   {course.completed && (
-                                    <Badge variant="secondary" className="bg-green-600/20 text-green-300 text-xs">
+                                    <Badge
+                                      variant="secondary"
+                                      className="bg-green-600/20 text-green-300 text-xs"
+                                    >
                                       {course.grade}
                                     </Badge>
                                   )}
                                   {!course.completed && course.planned && (
-                                    <span className="text-yellow-300 text-xs">{course.planned}</span>
+                                    <span className="text-yellow-300 text-xs">
+                                      {course.planned}
+                                    </span>
                                   )}
                                 </div>
                               </div>
@@ -592,7 +662,7 @@ export default function TexasGraduationTracker() {
                           </div>
                         </CardContent>
                       </Card>
-                    )
+                    );
                   })}
                 </div>
               </CardContent>
@@ -609,12 +679,15 @@ export default function TexasGraduationTracker() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {staarRequirements.required.map(test => {
-                  const completed = staarRequirements.completed.includes(test)
-                  const score = staarRequirements.scores[test]
-                  
+                {staarRequirements.required.map((test) => {
+                  const completed = staarRequirements.completed.includes(test);
+                  const score = staarRequirements.scores[test];
+
                   return (
-                    <div key={test} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                    <div
+                      key={test}
+                      className="flex items-center justify-between p-4 bg-white/5 rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         {completed ? (
                           <CheckCircle className="h-6 w-6 text-green-400" />
@@ -632,9 +705,13 @@ export default function TexasGraduationTracker() {
                       </div>
                       <div className="text-right">
                         {completed ? (
-                          <Badge className={`${
-                            score.level >= 3 ? 'bg-green-600/20 text-green-300' : 'bg-yellow-600/20 text-yellow-300'
-                          }`}>
+                          <Badge
+                            className={`${
+                              score.level >= 3
+                                ? 'bg-green-600/20 text-green-300'
+                                : 'bg-yellow-600/20 text-yellow-300'
+                            }`}
+                          >
                             {score.score}
                           </Badge>
                         ) : (
@@ -644,7 +721,7 @@ export default function TexasGraduationTracker() {
                         )}
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </CardContent>
             </Card>
@@ -665,7 +742,10 @@ export default function TexasGraduationTracker() {
                     <h4 className="font-bold text-green-300 mb-4">Achieved Indicators</h4>
                     <div className="space-y-3">
                       {ccmrIndicators.achieved.map((indicator, idx) => (
-                        <div key={idx} className="flex items-center gap-3 p-3 bg-green-600/10 rounded-lg">
+                        <div
+                          key={idx}
+                          className="flex items-center gap-3 p-3 bg-green-600/10 rounded-lg"
+                        >
                           <CheckCircle className="h-5 w-5 text-green-400" />
                           <span className="text-green-300">{indicator}</span>
                         </div>
@@ -676,7 +756,10 @@ export default function TexasGraduationTracker() {
                     <h4 className="font-bold text-blue-300 mb-4">Available Indicators</h4>
                     <div className="space-y-2">
                       {ccmrIndicators.available.map((option, idx) => (
-                        <div key={idx} className="text-sm text-blue-200 flex items-center gap-2 p-2 bg-white/5 rounded">
+                        <div
+                          key={idx}
+                          className="text-sm text-blue-200 flex items-center gap-2 p-2 bg-white/5 rounded"
+                        >
                           <Star className="h-3 w-3 text-blue-400" />
                           {option}
                         </div>
@@ -698,20 +781,19 @@ export default function TexasGraduationTracker() {
                       <Star className="h-5 w-5" />
                       {plan.name}
                     </CardTitle>
-                    <CardDescription className="text-blue-200">
-                      {plan.description}
-                    </CardDescription>
+                    <CardDescription className="text-blue-200">{plan.description}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <h4 className="font-semibold text-yellow-300">Sample Senior Year:</h4>
                       <div className="space-y-1">
                         {plan.fourYearPlan.grade12.map((course, idx) => (
-                          <div key={idx} className="text-sm flex items-center gap-1 p-2 bg-white/5 rounded">
+                          <div
+                            key={idx}
+                            className="text-sm flex items-center gap-1 p-2 bg-white/5 rounded"
+                          >
                             <BookOpen className="h-3 w-3 text-blue-400" />
-                            <span className="text-blue-200">
-                              {course}
-                            </span>
+                            <span className="text-blue-200">{course}</span>
                           </div>
                         ))}
                       </div>
@@ -726,9 +808,13 @@ export default function TexasGraduationTracker() {
           <TabsContent value="planning" className="space-y-6">
             <Card className="bg-white/10 border-white/20 text-white">
               <CardHeader>
-                <CardTitle>Four-Year Stage Prep Academic Plan - {graduationPlans[selectedStudentData.pathway].name}</CardTitle>
+                <CardTitle>
+                  Four-Year Stage Prep Academic Plan -{' '}
+                  {graduationPlans[selectedStudentData.pathway].name}
+                </CardTitle>
                 <CardDescription className="text-blue-200">
-                  Block Schedule: 4 Year-Long Courses per Semester | Texas-compliant sequence with theater specialization
+                  Block Schedule: 4 Year-Long Courses per Semester | Texas-compliant sequence with
+                  theater specialization
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -738,23 +824,31 @@ export default function TexasGraduationTracker() {
                     <h3 className="text-xl font-bold text-yellow-300">Grade 9 (8 classes)</h3>
                     <div className="space-y-3">
                       <div className="bg-blue-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-blue-300 mb-2">Fall Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-blue-300 mb-2">
+                          Fall Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade9.slice(0, 4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade9
+                            .slice(0, 4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                       <div className="bg-purple-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-purple-300 mb-2">Spring Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-purple-300 mb-2">
+                          Spring Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade9.slice(4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade9
+                            .slice(4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -765,23 +859,31 @@ export default function TexasGraduationTracker() {
                     <h3 className="text-xl font-bold text-yellow-300">Grade 10 (8 classes)</h3>
                     <div className="space-y-3">
                       <div className="bg-blue-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-blue-300 mb-2">Fall Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-blue-300 mb-2">
+                          Fall Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade10.slice(0, 4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade10
+                            .slice(0, 4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                       <div className="bg-purple-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-purple-300 mb-2">Spring Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-purple-300 mb-2">
+                          Spring Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade10.slice(4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade10
+                            .slice(4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -792,23 +894,31 @@ export default function TexasGraduationTracker() {
                     <h3 className="text-xl font-bold text-yellow-300">Grade 11 (8 classes)</h3>
                     <div className="space-y-3">
                       <div className="bg-blue-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-blue-300 mb-2">Fall Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-blue-300 mb-2">
+                          Fall Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade11.slice(0, 4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade11
+                            .slice(0, 4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                       <div className="bg-purple-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-purple-300 mb-2">Spring Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-purple-300 mb-2">
+                          Spring Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade11.slice(4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade11
+                            .slice(4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -819,23 +929,31 @@ export default function TexasGraduationTracker() {
                     <h3 className="text-xl font-bold text-yellow-300">Grade 12 (8 classes)</h3>
                     <div className="space-y-3">
                       <div className="bg-blue-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-blue-300 mb-2">Fall Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-blue-300 mb-2">
+                          Fall Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade12.slice(0, 4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade12
+                            .slice(0, 4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                       <div className="bg-purple-600/10 p-3 rounded-lg">
-                        <h4 className="font-semibold text-purple-300 mb-2">Spring Semester (4 courses)</h4>
+                        <h4 className="font-semibold text-purple-300 mb-2">
+                          Spring Semester (4 courses)
+                        </h4>
                         <div className="space-y-1">
-                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade12.slice(4).map((course, idx) => (
-                            <div key={idx} className="p-2 bg-white/5 rounded text-sm">
-                              {course}
-                            </div>
-                          ))}
+                          {graduationPlans[selectedStudentData.pathway].fourYearPlan.grade12
+                            .slice(4)
+                            .map((course, idx) => (
+                              <div key={idx} className="p-2 bg-white/5 rounded text-sm">
+                                {course}
+                              </div>
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -845,7 +963,9 @@ export default function TexasGraduationTracker() {
                 <div className="mt-8 space-y-6">
                   {/* Block Schedule Explanation */}
                   <div className="p-4 bg-orange-600/10 rounded-lg border border-orange-600/20">
-                    <h4 className="font-bold text-orange-300 mb-4 text-center">Block Schedule System</h4>
+                    <h4 className="font-bold text-orange-300 mb-4 text-center">
+                      Block Schedule System
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
                       <div className="space-y-2">
                         <h5 className="font-semibold text-blue-300">Schedule Structure:</h5>
@@ -894,7 +1014,9 @@ export default function TexasGraduationTracker() {
 
                   {/* Texas Requirements Summary */}
                   <div className="p-4 bg-green-600/10 rounded-lg border border-green-600/20">
-                    <h4 className="font-bold text-green-300 mb-4 text-center">Texas Graduation Requirements Summary</h4>
+                    <h4 className="font-bold text-green-300 mb-4 text-center">
+                      Texas Graduation Requirements Summary
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
                       <div className="space-y-2">
                         <h5 className="font-semibold text-yellow-300">Foundation Requirements:</h5>
@@ -956,5 +1078,5 @@ export default function TexasGraduationTracker() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

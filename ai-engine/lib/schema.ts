@@ -1,4 +1,13 @@
-import { pgTable, text, integer, timestamp, boolean, decimal, jsonb, serial } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  text,
+  integer,
+  timestamp,
+  boolean,
+  decimal,
+  jsonb,
+  serial,
+} from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
@@ -24,7 +33,9 @@ export const users = pgTable('users', {
 // Video analysis table
 export const videoAnalysis = pgTable('video_analysis', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   fileName: text('file_name').notNull(),
   filePath: text('file_path').notNull(),
   sport: text('sport').notNull(),
@@ -37,7 +48,9 @@ export const videoAnalysis = pgTable('video_analysis', {
 // Videos table for the highlight reel system
 export const videos = pgTable('videos', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   fileName: text('file_name').notNull(),
   filePath: text('file_path').notNull(),
   sport: text('sport').notNull(),
@@ -50,7 +63,9 @@ export const videos = pgTable('videos', {
 // Highlight reels table
 export const highlightReels = pgTable('highlight_reels', {
   id: serial('id').primaryKey(),
-  videoId: integer('video_id').notNull().references(() => videos.id),
+  videoId: integer('video_id')
+    .notNull()
+    .references(() => videos.id),
   title: text('title').notNull(),
   duration: integer('duration').notNull().default(60),
   highlights: jsonb('highlights'),
@@ -63,7 +78,9 @@ export const highlightReels = pgTable('highlight_reels', {
 // StarPath progress table
 export const starPathProgress = pgTable('starpath_progress', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   skillId: text('skill_id').notNull(),
   skillName: text('skill_name').notNull(),
   currentLevel: integer('current_level').notNull().default(1),
@@ -76,7 +93,9 @@ export const starPathProgress = pgTable('starpath_progress', {
 // Achievements table
 export const achievements = pgTable('achievements', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   achievementId: text('achievement_id').notNull(),
   title: text('title').notNull(),
   description: text('description'),
@@ -101,7 +120,9 @@ export const ncaaSchools = pgTable('ncaa_schools', {
 // User sessions table for authentication
 export const userSessions = pgTable('user_sessions', {
   id: text('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   token: text('token').notNull().unique(),
   expiresAt: timestamp('expires_at').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),

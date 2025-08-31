@@ -5,9 +5,9 @@ import * as THREE from 'three';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Building2, 
-  Users, 
+import {
+  Building2,
+  Users,
   Stethoscope,
   Target,
   Eye,
@@ -19,7 +19,7 @@ import {
   Move3D,
   Play,
   Pause,
-  SkipForward
+  SkipForward,
 } from 'lucide-react';
 
 // 3D Campus Model Component
@@ -65,7 +65,15 @@ function Campus3DViewer() {
     scene.add(ground);
 
     // Building creation function
-    const createBuilding = (x: number, z: number, width: number, height: number, depth: number, color: number, label: string) => {
+    const createBuilding = (
+      x: number,
+      z: number,
+      width: number,
+      height: number,
+      depth: number,
+      color: number,
+      label: string,
+    ) => {
       const geometry = new THREE.BoxGeometry(width, height, depth);
       const material = new THREE.MeshLambertMaterial({ color });
       const building = new THREE.Mesh(geometry, material);
@@ -211,7 +219,7 @@ function Campus3DViewer() {
       if (object instanceof THREE.DirectionalLight) {
         const intensity = Math.sin(timeOfDay * Math.PI) * 0.8 + 0.2;
         object.intensity = Math.max(0.1, intensity);
-        
+
         if (timeOfDay < 0.3) {
           object.color.setHex(0x4a90e2); // Morning blue
         } else if (timeOfDay < 0.7) {
@@ -231,11 +239,7 @@ function Campus3DViewer() {
           <div className="flex justify-between items-center">
             <CardTitle className="text-white">Interactive 3D Campus Model</CardTitle>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAnimating(!isAnimating)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setIsAnimating(!isAnimating)}>
                 {isAnimating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                 {isAnimating ? 'Pause' : 'Animate'}
               </Button>
@@ -256,14 +260,17 @@ function Campus3DViewer() {
                 />
               </div>
               <span className="text-sm text-gray-400 min-w-[60px]">
-                {Math.floor(timeOfDay * 24).toString().padStart(2, '0')}:00
+                {Math.floor(timeOfDay * 24)
+                  .toString()
+                  .padStart(2, '0')}
+                :00
               </span>
             </div>
           )}
         </CardHeader>
         <CardContent>
-          <div 
-            ref={mountRef} 
+          <div
+            ref={mountRef}
             className="w-full h-[600px] bg-slate-900 rounded-lg overflow-hidden"
             style={{ cursor: 'grab' }}
           />
@@ -375,7 +382,7 @@ export default function Campus3DModel() {
             Explore our $95M elite athletic campus in immersive 3D with 4D time visualization
           </p>
         </div>
-        
+
         <Campus3DViewer />
       </div>
     </div>

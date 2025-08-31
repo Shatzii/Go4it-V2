@@ -6,14 +6,20 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   LineChart,
   Line,
@@ -21,21 +27,21 @@ import {
   Pie,
   Cell,
   AreaChart,
-  Area
+  Area,
 } from 'recharts';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Target, 
-  Clock, 
-  Award, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Target,
+  Clock,
+  Award,
   Brain,
   BookOpen,
   Users,
   Calendar,
   Download,
   Filter,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 
 interface LearningMetrics {
@@ -90,7 +96,9 @@ export function LearningAnalytics() {
   const loadAnalytics = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/analytics/learning?timeRange=${timeRange}&subject=${selectedSubject}`);
+      const response = await fetch(
+        `/api/analytics/learning?timeRange=${timeRange}&subject=${selectedSubject}`,
+      );
       if (response.ok) {
         const data = await response.json();
         setMetrics(data);
@@ -114,13 +122,13 @@ export function LearningAnalytics() {
       { subject: 'Mathematics', hours: 45, color: '#3b82f6' },
       { subject: 'Science', hours: 38, color: '#10b981' },
       { subject: 'English', hours: 32, color: '#8b5cf6' },
-      { subject: 'History', hours: 30, color: '#f59e0b' }
+      { subject: 'History', hours: 30, color: '#f59e0b' },
     ],
     progressBySubject: [
       { subject: 'Mathematics', progress: 85, target: 90, color: '#3b82f6' },
       { subject: 'Science', progress: 78, target: 85, color: '#10b981' },
       { subject: 'English', progress: 92, target: 95, color: '#8b5cf6' },
-      { subject: 'History', progress: 67, target: 80, color: '#f59e0b' }
+      { subject: 'History', progress: 67, target: 80, color: '#f59e0b' },
     ],
     weeklyActivity: [
       { date: '2024-01-01', hours: 3.5, lessons: 4, score: 82 },
@@ -129,20 +137,41 @@ export function LearningAnalytics() {
       { date: '2024-01-04', hours: 5.1, lessons: 6, score: 90 },
       { date: '2024-01-05', hours: 3.7, lessons: 4, score: 87 },
       { date: '2024-01-06', hours: 4.5, lessons: 5, score: 89 },
-      { date: '2024-01-07', hours: 3.9, lessons: 4, score: 84 }
+      { date: '2024-01-07', hours: 3.9, lessons: 4, score: 84 },
     ],
     performanceByTopic: [
       { topic: 'Algebra', score: 92, attempts: 45, improvement: 12 },
       { topic: 'Geometry', score: 78, attempts: 32, improvement: 8 },
       { topic: 'Chemistry', score: 85, attempts: 38, improvement: 15 },
       { topic: 'Physics', score: 81, attempts: 29, improvement: 10 },
-      { topic: 'Literature', score: 89, attempts: 42, improvement: 7 }
+      { topic: 'Literature', score: 89, attempts: 42, improvement: 7 },
     ],
     learningGoals: [
-      { id: '1', title: 'Complete Algebra Course', progress: 85, target: 100, deadline: '2024-02-15', status: 'on-track' },
-      { id: '2', title: 'Improve Science Grades', progress: 60, target: 100, deadline: '2024-01-30', status: 'behind' },
-      { id: '3', title: 'Read 5 Classic Novels', progress: 100, target: 100, deadline: '2024-01-15', status: 'completed' }
-    ]
+      {
+        id: '1',
+        title: 'Complete Algebra Course',
+        progress: 85,
+        target: 100,
+        deadline: '2024-02-15',
+        status: 'on-track',
+      },
+      {
+        id: '2',
+        title: 'Improve Science Grades',
+        progress: 60,
+        target: 100,
+        deadline: '2024-01-30',
+        status: 'behind',
+      },
+      {
+        id: '3',
+        title: 'Read 5 Classic Novels',
+        progress: 100,
+        target: 100,
+        deadline: '2024-01-15',
+        status: 'completed',
+      },
+    ],
   });
 
   const formatHours = (hours: number) => {
@@ -163,25 +192,33 @@ export function LearningAnalytics() {
 
   const getGoalStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'on-track': return 'bg-blue-100 text-blue-800';
-      case 'behind': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'on-track':
+        return 'bg-blue-100 text-blue-800';
+      case 'behind':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const exportData = () => {
     // Create and download CSV
-    const csvContent = "data:text/csv;charset=utf-8," + 
-      "Subject,Hours,Progress,Score\n" +
-      metrics?.timeSpent.map(item => 
-        `${item.subject},${item.hours},${metrics.progressBySubject.find(p => p.subject === item.subject)?.progress || 0},${metrics.averageScore}`
-      ).join("\n");
-    
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      'Subject,Hours,Progress,Score\n' +
+      metrics?.timeSpent
+        .map(
+          (item) =>
+            `${item.subject},${item.hours},${metrics.progressBySubject.find((p) => p.subject === item.subject)?.progress || 0},${metrics.averageScore}`,
+        )
+        .join('\n');
+
     const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "learning_analytics.csv");
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', 'learning_analytics.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -213,7 +250,7 @@ export function LearningAnalytics() {
           <h1 className="text-2xl font-bold">Learning Analytics</h1>
           <p className="text-gray-600">Track your learning progress and performance</p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-32">
@@ -226,7 +263,7 @@ export function LearningAnalytics() {
               <SelectItem value="year">This Year</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select value={selectedSubject} onValueChange={setSelectedSubject}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="Subject" />
@@ -239,12 +276,12 @@ export function LearningAnalytics() {
               <SelectItem value="history">History</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Button variant="outline" onClick={loadAnalytics}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
           </Button>
-          
+
           <Button variant="outline" onClick={exportData}>
             <Download className="w-4 h-4 mr-2" />
             Export
@@ -367,7 +404,9 @@ export function LearningAnalytics() {
                   <div key={subject.subject} className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">{subject.subject}</span>
-                      <span className="text-sm text-gray-600">{subject.progress}% / {subject.target}%</span>
+                      <span className="text-sm text-gray-600">
+                        {subject.progress}% / {subject.target}%
+                      </span>
                     </div>
                     <Progress value={subject.progress} className="h-2" />
                   </div>
@@ -387,17 +426,34 @@ export function LearningAnalytics() {
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={metrics.weeklyActivity}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tickFormatter={(date) => new Date(date).toLocaleDateString()} />
+                  <XAxis
+                    dataKey="date"
+                    tickFormatter={(date) => new Date(date).toLocaleDateString()}
+                  />
                   <YAxis />
-                  <Tooltip 
+                  <Tooltip
                     labelFormatter={(date) => new Date(date).toLocaleDateString()}
                     formatter={(value, name) => [
                       name === 'hours' ? formatHours(value as number) : value,
-                      name === 'hours' ? 'Hours' : name === 'lessons' ? 'Lessons' : 'Score'
+                      name === 'hours' ? 'Hours' : name === 'lessons' ? 'Lessons' : 'Score',
                     ]}
                   />
-                  <Area type="monotone" dataKey="hours" stackId="1" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                  <Area type="monotone" dataKey="lessons" stackId="2" stroke="#10b981" fill="#10b981" fillOpacity={0.6} />
+                  <Area
+                    type="monotone"
+                    dataKey="hours"
+                    stackId="1"
+                    stroke="#3b82f6"
+                    fill="#3b82f6"
+                    fillOpacity={0.6}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="lessons"
+                    stackId="2"
+                    stroke="#10b981"
+                    fill="#10b981"
+                    fillOpacity={0.6}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </CardContent>
@@ -432,14 +488,19 @@ export function LearningAnalytics() {
             <CardContent>
               <div className="space-y-4">
                 {metrics.performanceByTopic.map((topic) => (
-                  <div key={topic.topic} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div
+                    key={topic.topic}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                  >
                     <div>
                       <h4 className="font-medium">{topic.topic}</h4>
                       <p className="text-sm text-gray-600">{topic.attempts} attempts</p>
                     </div>
                     <div className="text-right">
                       <div className="text-lg font-semibold">{topic.score}%</div>
-                      <div className={`text-sm flex items-center ${getImprovementColor(topic.improvement)}`}>
+                      <div
+                        className={`text-sm flex items-center ${getImprovementColor(topic.improvement)}`}
+                      >
                         {getImprovementIcon(topic.improvement)}
                         <span className="ml-1">+{topic.improvement}%</span>
                       </div>
@@ -466,20 +527,21 @@ export function LearningAnalytics() {
                       {goal.status.replace('-', ' ')}
                     </Badge>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Progress</span>
-                      <span>{goal.progress}% / {goal.target}%</span>
+                      <span>
+                        {goal.progress}% / {goal.target}%
+                      </span>
                     </div>
                     <Progress value={goal.progress} className="h-2" />
                     <div className="flex justify-between text-sm text-gray-600">
                       <span>Deadline: {new Date(goal.deadline).toLocaleDateString()}</span>
                       <span>
-                        {new Date(goal.deadline) > new Date() 
+                        {new Date(goal.deadline) > new Date()
                           ? `${Math.ceil((new Date(goal.deadline).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left`
-                          : 'Overdue'
-                        }
+                          : 'Overdue'}
                       </span>
                     </div>
                   </div>

@@ -6,9 +6,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  Brain, MessageSquare, TrendingUp, Target, Users, Zap,
-  Activity, Timer, Award, Star, ChevronRight, Send
+import {
+  Brain,
+  MessageSquare,
+  TrendingUp,
+  Target,
+  Users,
+  Zap,
+  Activity,
+  Timer,
+  Award,
+  Star,
+  ChevronRight,
+  Send,
 } from 'lucide-react';
 
 // AI Athletic Advisor Chat Interface
@@ -17,16 +27,17 @@ function AIAdvisorChat() {
     {
       id: 1,
       sender: 'ai',
-      message: "Hello! I'm Coach AI Go4it, your personal athletic advisor. I've analyzed your recent performance data and I'm ready to help optimize your training. What would you like to focus on today?",
+      message:
+        "Hello! I'm Coach AI Go4it, your personal athletic advisor. I've analyzed your recent performance data and I'm ready to help optimize your training. What would you like to focus on today?",
       timestamp: new Date().toISOString(),
       data: {
         performanceMetrics: {
           currentLevel: 87,
           weeklyImprovement: 4.2,
-          areas: ['Speed', 'Endurance', 'Recovery']
-        }
-      }
-    }
+          areas: ['Speed', 'Endurance', 'Recovery'],
+        },
+      },
+    },
   ]);
 
   const [inputMessage, setInputMessage] = useState('');
@@ -40,10 +51,10 @@ function AIAdvisorChat() {
       id: messages.length + 1,
       sender: 'user',
       message: inputMessage,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
 
@@ -51,54 +62,57 @@ function AIAdvisorChat() {
     setTimeout(() => {
       const responses = [
         {
-          message: "Based on your biometric data from yesterday's workout, I recommend adjusting your training intensity. Your heart rate variability indicates you're 85% recovered. Let's focus on power development today with 6x30 second sprints at 95% intensity.",
+          message:
+            "Based on your biometric data from yesterday's workout, I recommend adjusting your training intensity. Your heart rate variability indicates you're 85% recovered. Let's focus on power development today with 6x30 second sprints at 95% intensity.",
           data: {
             recommendations: [
-              "Power Sprint Training: 6x30s @ 95% intensity",
-              "Recovery intervals: 3 minutes between sets",
-              "Target heart rate: 175-185 BPM",
-              "Focus on explosive starts and acceleration"
+              'Power Sprint Training: 6x30s @ 95% intensity',
+              'Recovery intervals: 3 minutes between sets',
+              'Target heart rate: 175-185 BPM',
+              'Focus on explosive starts and acceleration',
             ],
-            expectedGains: "12% power improvement in 3 weeks"
-          }
+            expectedGains: '12% power improvement in 3 weeks',
+          },
         },
         {
-          message: "Your sleep quality last night was 78% - slightly below optimal. This affects your neuromuscular coordination. I suggest modifying today's training to focus on technique refinement rather than high-intensity work.",
+          message:
+            "Your sleep quality last night was 78% - slightly below optimal. This affects your neuromuscular coordination. I suggest modifying today's training to focus on technique refinement rather than high-intensity work.",
           data: {
             recommendations: [
-              "Technical skill work: 45 minutes",
-              "Movement pattern optimization",
-              "Core stability exercises",
-              "Light cardio recovery session"
+              'Technical skill work: 45 minutes',
+              'Movement pattern optimization',
+              'Core stability exercises',
+              'Light cardio recovery session',
             ],
-            expectedGains: "Improved movement efficiency by 8%"
-          }
+            expectedGains: 'Improved movement efficiency by 8%',
+          },
         },
         {
-          message: "Excellent question! Your force production has plateaued over the last 2 weeks. This is normal adaptation. Let's implement a new stimulus with plyometric training and weightlifting periodization.",
+          message:
+            "Excellent question! Your force production has plateaued over the last 2 weeks. This is normal adaptation. Let's implement a new stimulus with plyometric training and weightlifting periodization.",
           data: {
             recommendations: [
-              "Plyometric circuit: Box jumps, depth jumps",
-              "Strength phase: 4 weeks @ 85-90% 1RM",
-              "Neural recovery: Extended rest periods",
-              "Biomechanical assessment next week"
+              'Plyometric circuit: Box jumps, depth jumps',
+              'Strength phase: 4 weeks @ 85-90% 1RM',
+              'Neural recovery: Extended rest periods',
+              'Biomechanical assessment next week',
             ],
-            expectedGains: "Break through plateau with 15% strength gains"
-          }
-        }
+            expectedGains: 'Break through plateau with 15% strength gains',
+          },
+        },
       ];
 
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      
+
       const aiMessage = {
         id: messages.length + 2,
         sender: 'ai',
         message: randomResponse.message,
         timestamp: new Date().toISOString(),
-        data: randomResponse.data
+        data: randomResponse.data,
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
       setIsTyping(false);
     }, 2000);
   };
@@ -115,26 +129,35 @@ function AIAdvisorChat() {
         {/* Messages Area */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-4">
           {messages.map((msg) => (
-            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}>
+            <div
+              key={msg.id}
+              className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[80%] flex gap-3 ${msg.sender === 'user' ? 'flex-row-reverse' : ''}`}
+              >
                 <Avatar className="w-8 h-8 flex-shrink-0">
                   <AvatarFallback className={msg.sender === 'ai' ? 'bg-blue-500' : 'bg-green-500'}>
                     {msg.sender === 'ai' ? 'AI' : 'U'}
                   </AvatarFallback>
                 </Avatar>
-                
-                <div className={`rounded-lg p-3 ${
-                  msg.sender === 'user' 
-                    ? 'bg-green-500/20 border border-green-500' 
-                    : 'bg-blue-500/20 border border-blue-500'
-                }`}>
+
+                <div
+                  className={`rounded-lg p-3 ${
+                    msg.sender === 'user'
+                      ? 'bg-green-500/20 border border-green-500'
+                      : 'bg-blue-500/20 border border-blue-500'
+                  }`}
+                >
                   <p className="text-sm text-gray-200">{msg.message}</p>
-                  
+
                   {msg.data && (
                     <div className="mt-3 p-3 bg-black/30 rounded border border-gray-600">
                       {msg.data.recommendations && (
                         <div className="mb-3">
-                          <h5 className="font-semibold text-cyan-400 mb-2">Training Recommendations:</h5>
+                          <h5 className="font-semibold text-cyan-400 mb-2">
+                            Training Recommendations:
+                          </h5>
                           <ul className="space-y-1">
                             {msg.data.recommendations.map((rec, i) => (
                               <li key={i} className="flex items-start gap-2 text-xs">
@@ -145,25 +168,31 @@ function AIAdvisorChat() {
                           </ul>
                         </div>
                       )}
-                      
+
                       {msg.data.expectedGains && (
                         <div className="text-xs text-green-400 font-semibold">
                           Expected Result: {msg.data.expectedGains}
                         </div>
                       )}
-                      
+
                       {msg.data.performanceMetrics && (
                         <div className="grid grid-cols-3 gap-2 text-xs">
                           <div className="text-center">
-                            <div className="text-lg font-bold text-green-400">{msg.data.performanceMetrics.currentLevel}%</div>
+                            <div className="text-lg font-bold text-green-400">
+                              {msg.data.performanceMetrics.currentLevel}%
+                            </div>
                             <div className="text-gray-400">Current Level</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-bold text-blue-400">+{msg.data.performanceMetrics.weeklyImprovement}%</div>
+                            <div className="text-lg font-bold text-blue-400">
+                              +{msg.data.performanceMetrics.weeklyImprovement}%
+                            </div>
                             <div className="text-gray-400">Weekly Growth</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-bold text-purple-400">{msg.data.performanceMetrics.areas.length}</div>
+                            <div className="text-lg font-bold text-purple-400">
+                              {msg.data.performanceMetrics.areas.length}
+                            </div>
                             <div className="text-gray-400">Focus Areas</div>
                           </div>
                         </div>
@@ -174,7 +203,7 @@ function AIAdvisorChat() {
               </div>
             </div>
           ))}
-          
+
           {isTyping && (
             <div className="flex justify-start">
               <div className="flex gap-3">
@@ -184,8 +213,14 @@ function AIAdvisorChat() {
                 <div className="bg-blue-500/20 border border-blue-500 rounded-lg p-3">
                   <div className="flex space-x-1">
                     <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                    <div
+                      className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '0.1s' }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '0.2s' }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -207,7 +242,7 @@ function AIAdvisorChat() {
               }
             }}
           />
-          <Button 
+          <Button
             onClick={sendMessage}
             disabled={!inputMessage.trim() || isTyping}
             className="bg-blue-600 hover:bg-blue-700"
@@ -226,7 +261,7 @@ function PerformanceAnalytics() {
     weeklyProgress: 0,
     performanceScore: 0,
     efficiency: 0,
-    riskLevel: 0
+    riskLevel: 0,
   });
 
   const [insights, setInsights] = useState([]);
@@ -238,7 +273,7 @@ function PerformanceAnalytics() {
         weeklyProgress: 78 + Math.random() * 22,
         performanceScore: 85 + Math.random() * 15,
         efficiency: 82 + Math.random() * 18,
-        riskLevel: Math.random() * 25
+        riskLevel: Math.random() * 25,
       });
 
       setInsights([
@@ -246,20 +281,20 @@ function PerformanceAnalytics() {
           type: 'improvement',
           title: 'Speed Development',
           value: '+12.3%',
-          description: 'Sprint times improved over last 4 weeks'
+          description: 'Sprint times improved over last 4 weeks',
         },
         {
           type: 'warning',
           title: 'Recovery Deficit',
           value: '15%',
-          description: 'Below optimal recovery metrics - adjust training load'
+          description: 'Below optimal recovery metrics - adjust training load',
         },
         {
           type: 'success',
           title: 'Power Output',
           value: '+8.7%',
-          description: 'Strength gains exceeding projected timeline'
-        }
+          description: 'Strength gains exceeding projected timeline',
+        },
       ]);
     }, 3000);
 
@@ -284,21 +319,21 @@ function PerformanceAnalytics() {
               </div>
               <div className="text-sm text-blue-300">Weekly Progress</div>
             </div>
-            
+
             <div className="bg-green-500/20 p-4 rounded-lg border border-green-500 text-center">
               <div className="text-2xl font-bold text-green-400">
                 {Math.round(analytics.performanceScore)}
               </div>
               <div className="text-sm text-green-300">Performance Score</div>
             </div>
-            
+
             <div className="bg-purple-500/20 p-4 rounded-lg border border-purple-500 text-center">
               <div className="text-2xl font-bold text-purple-400">
                 {Math.round(analytics.efficiency)}%
               </div>
               <div className="text-sm text-purple-300">Training Efficiency</div>
             </div>
-            
+
             <div className="bg-orange-500/20 p-4 rounded-lg border border-orange-500 text-center">
               <div className="text-2xl font-bold text-orange-400">
                 {Math.round(analytics.riskLevel)}%
@@ -311,24 +346,33 @@ function PerformanceAnalytics() {
           <div className="space-y-3">
             <h4 className="font-bold text-cyan-400">AI-Generated Insights</h4>
             {insights.map((insight, i) => (
-              <div key={i} className={`p-3 rounded-lg border flex items-start gap-3
+              <div
+                key={i}
+                className={`p-3 rounded-lg border flex items-start gap-3
                 ${insight.type === 'improvement' ? 'bg-blue-500/20 border-blue-500' : ''}
                 ${insight.type === 'warning' ? 'bg-yellow-500/20 border-yellow-500' : ''}
                 ${insight.type === 'success' ? 'bg-green-500/20 border-green-500' : ''}
-              `}>
-                <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0
+              `}
+              >
+                <div
+                  className={`w-2 h-2 rounded-full mt-2 flex-shrink-0
                   ${insight.type === 'improvement' ? 'bg-blue-400' : ''}
                   ${insight.type === 'warning' ? 'bg-yellow-400' : ''}
                   ${insight.type === 'success' ? 'bg-green-400' : ''}
-                `}></div>
+                `}
+                ></div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-semibold text-sm">{insight.title}</span>
-                    <span className={`font-bold
+                    <span
+                      className={`font-bold
                       ${insight.type === 'improvement' ? 'text-blue-400' : ''}
                       ${insight.type === 'warning' ? 'text-yellow-400' : ''}
                       ${insight.type === 'success' ? 'text-green-400' : ''}
-                    `}>{insight.value}</span>
+                    `}
+                    >
+                      {insight.value}
+                    </span>
                   </div>
                   <p className="text-xs text-gray-300">{insight.description}</p>
                 </div>
@@ -351,7 +395,7 @@ function PeerMentorshipNetwork() {
       achievements: ['2x Olympic Gold', 'World Record Holder'],
       availability: 'online',
       compatibilityScore: 95,
-      image: 'JM'
+      image: 'JM',
     },
     {
       id: 2,
@@ -360,7 +404,7 @@ function PeerMentorshipNetwork() {
       achievements: ['PhD Sports Psychology', 'Mental Performance Coach'],
       availability: 'busy',
       compatibilityScore: 88,
-      image: 'SC'
+      image: 'SC',
     },
     {
       id: 3,
@@ -369,8 +413,8 @@ function PeerMentorshipNetwork() {
       achievements: ['NFL Strength Coach', 'Olympic Weightlifting'],
       availability: 'online',
       compatibilityScore: 92,
-      image: 'MR'
-    }
+      image: 'MR',
+    },
   ]);
 
   return (
@@ -391,7 +435,7 @@ function PeerMentorshipNetwork() {
                     {mentor.image}
                   </AvatarFallback>
                 </Avatar>
-                
+
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
                     <div>
@@ -401,13 +445,15 @@ function PeerMentorshipNetwork() {
                     <div className="text-right">
                       <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 text-yellow-400" />
-                        <span className="text-sm text-yellow-400">{mentor.compatibilityScore}%</span>
+                        <span className="text-sm text-yellow-400">
+                          {mentor.compatibilityScore}%
+                        </span>
                       </div>
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={`text-xs mt-1 ${
-                          mentor.availability === 'online' 
-                            ? 'border-green-500 text-green-400' 
+                          mentor.availability === 'online'
+                            ? 'border-green-500 text-green-400'
                             : 'border-orange-500 text-orange-400'
                         }`}
                       >
@@ -415,25 +461,33 @@ function PeerMentorshipNetwork() {
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <div className="mt-2 flex flex-wrap gap-1">
                     {mentor.achievements.map((achievement, i) => (
-                      <Badge key={i} variant="outline" className="text-xs border-purple-500 text-purple-400">
+                      <Badge
+                        key={i}
+                        variant="outline"
+                        className="text-xs border-purple-500 text-purple-400"
+                      >
                         {achievement}
                       </Badge>
                     ))}
                   </div>
-                  
+
                   <div className="mt-3 flex gap-2">
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       className="bg-purple-600 hover:bg-purple-700"
                       disabled={mentor.availability !== 'online'}
                     >
                       <MessageSquare className="w-3 h-3 mr-1" />
                       Connect
                     </Button>
-                    <Button size="sm" variant="outline" className="border-purple-500 text-purple-400">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-purple-500 text-purple-400"
+                    >
                       View Profile
                     </Button>
                   </div>
@@ -460,7 +514,7 @@ export default function AIAthleticAdvisorPage() {
           <p className="text-xl text-gray-300 mb-6">
             Revolutionary AI-powered coaching with real-time biometric analysis and peer mentorship
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-6">
             <Badge variant="outline" className="border-blue-500 text-blue-400">
               <Brain className="w-4 h-4 mr-2" />
@@ -494,29 +548,38 @@ export default function AIAthleticAdvisorPage() {
         {/* Results & ROI */}
         <Card className="mt-8 bg-gradient-to-r from-yellow-500/20 to-red-500/20 border-yellow-500">
           <CardHeader>
-            <CardTitle className="text-yellow-400">Revolutionary Athletic Development Results</CardTitle>
+            <CardTitle className="text-yellow-400">
+              Revolutionary Athletic Development Results
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-3 gap-8 text-center">
               <div>
                 <div className="text-4xl font-bold text-green-400 mb-2">95%</div>
-                <div className="text-green-300">Students maintain 3.5+ GPA during sports seasons</div>
+                <div className="text-green-300">
+                  Students maintain 3.5+ GPA during sports seasons
+                </div>
                 <div className="text-sm text-green-200 mt-2">
-                  AI optimization maintains academic excellence while maximizing athletic performance
+                  AI optimization maintains academic excellence while maximizing athletic
+                  performance
                 </div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-blue-400 mb-2">100%</div>
-                <div className="text-blue-300">College acceptance rate with 90% athletic scholarships</div>
+                <div className="text-blue-300">
+                  College acceptance rate with 90% athletic scholarships
+                </div>
                 <div className="text-sm text-blue-200 mt-2">
-                  Biometric optimization results in 23% average performance improvement leading to scholarships
+                  Biometric optimization results in 23% average performance improvement leading to
+                  scholarships
                 </div>
               </div>
               <div>
                 <div className="text-4xl font-bold text-purple-400 mb-2">200%</div>
                 <div className="text-purple-300">Expected ROI by year 5 implementation</div>
                 <div className="text-sm text-purple-200 mt-2">
-                  $45M investment generates sustainable revenue through elite athletic development programs
+                  $45M investment generates sustainable revenue through elite athletic development
+                  programs
                 </div>
               </div>
             </div>

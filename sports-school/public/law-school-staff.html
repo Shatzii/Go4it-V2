@@ -1,957 +1,1037 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Law School Staff Management - ShotziOS</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="assets/js/helpBubble.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: #ffffff !important;
-    }
-    p {
-      color: #e0e0e0 !important;
-    }
-    a {
-      color: #0070f3;
-    }
-    .text-gray-600, .text-gray-800, .text-gray-500, .text-gray-700 {
-      color: #e0e0e0 !important;
-    }
-    .bg-white {
-      background-color: #121212 !important;
-    }
-    .bg-gray-50, .bg-gray-100 {
-      background-color: #181818 !important;
-    }
-    .border-gray-300 {
-      border-color: #333333 !important;
-    }
-    .card {
-      background-color: #121212 !important;
-      border: 1px solid #0070f3 !important;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 112, 243, 0.4), 0 10px 10px -5px rgba(0, 112, 243, 0.3);
-    }
-    .header-gradient {
-      background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
-    }
-    button, .button {
-      background-color: #0070f3 !important;
-      color: white !important;
-      border: none !important;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      font-weight: 600;
-      transition: background-color 0.2s ease;
-    }
-    button:hover, .button:hover {
-      background-color: #0060d0 !important;
-    }
-    footer {
-      background-color: #121212 !important;
-      border-top: 1px solid #333333;
-    }
-    .tabs-container {
-      border-bottom: 1px solid #333333;
-    }
-    .tab {
-      border-bottom: 2px solid transparent;
-      transition: all 0.3s ease;
-    }
-    .tab.active {
-      border-bottom: 2px solid #0070f3;
-      color: #0070f3 !important;
-    }
-    textarea, select, input[type="text"] {
-      background-color: #1a1a1a !important;
-      border: 1px solid #333333 !important;
-      color: #e0e0e0 !important;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-    }
-    textarea:focus, select:focus, input[type="text"]:focus {
-      border-color: #0070f3 !important;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
-    }
-    label {
-      color: #ffffff !important;
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-    .badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.125rem 0.5rem;
-      border-radius: 9999px;
-    }
-    .badge-success {
-      background-color: rgba(14, 177, 0, 0.2);
-      color: #4ade80;
-    }
-    .badge-warning {
-      background-color: rgba(202, 138, 4, 0.2);
-      color: #facc15;
-    }
-    .badge-info {
-      background-color: rgba(8, 145, 178, 0.2);
-      color: #38bdf8;
-    }
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: #334155;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 1.25rem;
-    }
-    .avatar-large {
-      width: 80px;
-      height: 80px;
-      font-size: 2rem;
-    }
-    .dialog-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-    .dialog {
-      background-color: #121212;
-      border: 1px solid #0070f3;
-      border-radius: 10px;
-      max-width: 600px;
-      width: 100%;
-      padding: 1.5rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-    .progress-container {
-      height: 8px;
-      background-color: #1f2937;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%;
-      background-color: #0070f3;
-      border-radius: 4px;
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="header-gradient text-white shadow-lg">
-    <div class="container mx-auto px-4 py-4">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-          <a href="law-school.html" class="text-white hover:bg-blue-600 px-3 py-1 rounded-lg">
-            &larr; Back to Law School
-          </a>
-          <h1 class="text-2xl font-bold flex items-center">
-            <span class="mr-2">⚖️</span> Law School Staff Management
-          </h1>
-        </div>
-        <div class="flex items-center space-x-3">
-          <a href="law-school-curriculum.html" class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg">
-            <span>📚</span>
-            <span>Curriculum</span>
-          </a>
-          <a href="law-school-compliance.html" class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg">
-            <span>📋</span>
-            <span>Compliance</span>
-          </a>
-          <button class="flex items-center space-x-1 bg-blue-800 px-3 py-1 rounded-lg">
-            <span>👤</span>
-            <span>Admin</span>
-          </button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Law School Staff Management - ShotziOS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="assets/js/helpBubble.js"></script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #ffffff !important;
+      }
+      p {
+        color: #e0e0e0 !important;
+      }
+      a {
+        color: #0070f3;
+      }
+      .text-gray-600,
+      .text-gray-800,
+      .text-gray-500,
+      .text-gray-700 {
+        color: #e0e0e0 !important;
+      }
+      .bg-white {
+        background-color: #121212 !important;
+      }
+      .bg-gray-50,
+      .bg-gray-100 {
+        background-color: #181818 !important;
+      }
+      .border-gray-300 {
+        border-color: #333333 !important;
+      }
+      .card {
+        background-color: #121212 !important;
+        border: 1px solid #0070f3 !important;
+        border-radius: 10px;
+        overflow: hidden;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 112, 243, 0.4),
+          0 10px 10px -5px rgba(0, 112, 243, 0.3);
+      }
+      .header-gradient {
+        background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
+      }
+      button,
+      .button {
+        background-color: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+      }
+      button:hover,
+      .button:hover {
+        background-color: #0060d0 !important;
+      }
+      footer {
+        background-color: #121212 !important;
+        border-top: 1px solid #333333;
+      }
+      .tabs-container {
+        border-bottom: 1px solid #333333;
+      }
+      .tab {
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+      .tab.active {
+        border-bottom: 2px solid #0070f3;
+        color: #0070f3 !important;
+      }
+      textarea,
+      select,
+      input[type='text'] {
+        background-color: #1a1a1a !important;
+        border: 1px solid #333333 !important;
+        color: #e0e0e0 !important;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+      }
+      textarea:focus,
+      select:focus,
+      input[type='text']:focus {
+        border-color: #0070f3 !important;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+      }
+      label {
+        color: #ffffff !important;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      .badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+      }
+      .badge-success {
+        background-color: rgba(14, 177, 0, 0.2);
+        color: #4ade80;
+      }
+      .badge-warning {
+        background-color: rgba(202, 138, 4, 0.2);
+        color: #facc15;
+      }
+      .badge-info {
+        background-color: rgba(8, 145, 178, 0.2);
+        color: #38bdf8;
+      }
+      .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #334155;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.25rem;
+      }
+      .avatar-large {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+      }
+      .dialog-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+      }
+      .dialog {
+        background-color: #121212;
+        border: 1px solid #0070f3;
+        border-radius: 10px;
+        max-width: 600px;
+        width: 100%;
+        padding: 1.5rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      }
+      .progress-container {
+        height: 8px;
+        background-color: #1f2937;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        background-color: #0070f3;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <a href="law-school.html" class="text-white hover:bg-blue-600 px-3 py-1 rounded-lg">
+              &larr; Back to Law School
+            </a>
+            <h1 class="text-2xl font-bold flex items-center">
+              <span class="mr-2">⚖️</span> Law School Staff Management
+            </h1>
+          </div>
+          <div class="flex items-center space-x-3">
+            <a
+              href="law-school-curriculum.html"
+              class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg"
+            >
+              <span>📚</span>
+              <span>Curriculum</span>
+            </a>
+            <a
+              href="law-school-compliance.html"
+              class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg"
+            >
+              <span>📋</span>
+              <span>Compliance</span>
+            </a>
+            <button class="flex items-center space-x-1 bg-blue-800 px-3 py-1 rounded-lg">
+              <span>👤</span>
+              <span>Admin</span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- Main Content -->
-  <main class="container mx-auto py-8 px-4">
-    <!-- Staff Management Tabs -->
-    <div class="tabs-container flex mb-6">
-      <div class="tab active px-4 py-2 text-base font-medium cursor-pointer" onclick="switchTab('all-staff')">All Staff</div>
-      <div class="tab px-4 py-2 text-base font-medium cursor-pointer" onclick="switchTab('professors')">Professors</div>
-      <div class="tab px-4 py-2 text-base font-medium cursor-pointer" onclick="switchTab('administrators')">Administrators</div>
-      <div class="tab px-4 py-2 text-base font-medium cursor-pointer" onclick="switchTab('staff-analytics')">Staff Analytics</div>
-    </div>
-    
-    <!-- Tab Content -->
-    <div id="all-staff" class="tab-content">
-      <!-- Staff Controls -->
-      <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center space-x-3">
-          <input type="text" placeholder="Search staff..." class="px-3 py-2 text-sm rounded-lg w-64">
-          <select class="px-3 py-2 text-sm rounded-lg">
-            <option value="">All Departments</option>
-            <option value="constitutional">Constitutional Law</option>
-            <option value="criminal">Criminal Law</option>
-            <option value="contract">Contract Law</option>
-            <option value="international">International Law</option>
-            <option value="property">Property Law</option>
-          </select>
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+      <!-- Staff Management Tabs -->
+      <div class="tabs-container flex mb-6">
+        <div
+          class="tab active px-4 py-2 text-base font-medium cursor-pointer"
+          onclick="switchTab('all-staff')"
+        >
+          All Staff
         </div>
-        <button onclick="openStaffDialog()" class="flex items-center space-x-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          <span>Add Staff Member</span>
-        </button>
-      </div>
-      
-      <!-- Staff Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Staff Member 1 -->
-        <div class="card">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center space-x-3">
-                <div class="avatar">JD</div>
-                <div>
-                  <h3 class="font-bold">Judge Dredd</h3>
-                  <p class="text-sm">Professor of Criminal Law</p>
-                </div>
-              </div>
-              <span class="badge badge-success">Active</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <div>
-                <span class="text-gray-500">Department:</span>
-                <p>Criminal Law</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Specialization:</span>
-                <p>Sentencing & Judicial Process</p>
-              </div>
-              <div>
-                <span class="text-gray-500">AI Model:</span>
-                <p>Claude 3.7</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Teaching Style:</span>
-                <p>Direct, Case-based</p>
-              </div>
-            </div>
-            <div class="flex justify-between text-sm mt-4">
-              <div>
-                <span class="text-gray-500">Student Rating:</span>
-                <div class="flex items-center">
-                  <span class="mr-1">4.8/5</span>
-                  <div class="flex text-yellow-400">
-                    ★★★★★
-                  </div>
-                </div>
-              </div>
-              <div>
-                <span class="text-gray-500">Current Students:</span>
-                <p>245</p>
-              </div>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
-              <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
-            </div>
-          </div>
+        <div
+          class="tab px-4 py-2 text-base font-medium cursor-pointer"
+          onclick="switchTab('professors')"
+        >
+          Professors
         </div>
-        
-        <!-- Staff Member 2 -->
-        <div class="card">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center space-x-3">
-                <div class="avatar">RG</div>
-                <div>
-                  <h3 class="font-bold">Ruth Ginsburg</h3>
-                  <p class="text-sm">Professor of Constitutional Law</p>
-                </div>
-              </div>
-              <span class="badge badge-success">Active</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <div>
-                <span class="text-gray-500">Department:</span>
-                <p>Constitutional Law</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Specialization:</span>
-                <p>Gender Equality & Civil Rights</p>
-              </div>
-              <div>
-                <span class="text-gray-500">AI Model:</span>
-                <p>Claude 3.7</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Teaching Style:</span>
-                <p>Socratic, Detail-oriented</p>
-              </div>
-            </div>
-            <div class="flex justify-between text-sm mt-4">
-              <div>
-                <span class="text-gray-500">Student Rating:</span>
-                <div class="flex items-center">
-                  <span class="mr-1">4.9/5</span>
-                  <div class="flex text-yellow-400">
-                    ★★★★★
-                  </div>
-                </div>
-              </div>
-              <div>
-                <span class="text-gray-500">Current Students:</span>
-                <p>318</p>
-              </div>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
-              <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
-            </div>
-          </div>
+        <div
+          class="tab px-4 py-2 text-base font-medium cursor-pointer"
+          onclick="switchTab('administrators')"
+        >
+          Administrators
         </div>
-        
-        <!-- Staff Member 3 -->
-        <div class="card">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center space-x-3">
-                <div class="avatar">MA</div>
-                <div>
-                  <h3 class="font-bold">Mohammed Al-Fayed</h3>
-                  <p class="text-sm">Professor of UAE Law</p>
-                </div>
-              </div>
-              <span class="badge badge-success">Active</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <div>
-                <span class="text-gray-500">Department:</span>
-                <p>UAE Legal System</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Specialization:</span>
-                <p>Islamic Legal Principles</p>
-              </div>
-              <div>
-                <span class="text-gray-500">AI Model:</span>
-                <p>Claude 3.7</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Teaching Style:</span>
-                <p>Holistic, Cultural Context</p>
-              </div>
-            </div>
-            <div class="flex justify-between text-sm mt-4">
-              <div>
-                <span class="text-gray-500">Student Rating:</span>
-                <div class="flex items-center">
-                  <span class="mr-1">4.7/5</span>
-                  <div class="flex text-yellow-400">
-                    ★★★★★
-                  </div>
-                </div>
-              </div>
-              <div>
-                <span class="text-gray-500">Current Students:</span>
-                <p>278</p>
-              </div>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
-              <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Staff Member 4 -->
-        <div class="card">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center space-x-3">
-                <div class="avatar">MH</div>
-                <div>
-                  <h3 class="font-bold">Maria Hernandez</h3>
-                  <p class="text-sm">Professor of International Law</p>
-                </div>
-              </div>
-              <span class="badge badge-success">Active</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <div>
-                <span class="text-gray-500">Department:</span>
-                <p>International Law</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Specialization:</span>
-                <p>Human Rights Law</p>
-              </div>
-              <div>
-                <span class="text-gray-500">AI Model:</span>
-                <p>Claude 3.7</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Teaching Style:</span>
-                <p>Interactive, Case Studies</p>
-              </div>
-            </div>
-            <div class="flex justify-between text-sm mt-4">
-              <div>
-                <span class="text-gray-500">Student Rating:</span>
-                <div class="flex items-center">
-                  <span class="mr-1">4.6/5</span>
-                  <div class="flex text-yellow-400">
-                    ★★★★★
-                  </div>
-                </div>
-              </div>
-              <div>
-                <span class="text-gray-500">Current Students:</span>
-                <p>192</p>
-              </div>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
-              <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Staff Member 5 -->
-        <div class="card">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center space-x-3">
-                <div class="avatar">JM</div>
-                <div>
-                  <h3 class="font-bold">Jared Mitchell</h3>
-                  <p class="text-sm">Bar Exam Specialist</p>
-                </div>
-              </div>
-              <span class="badge badge-success">Active</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <div>
-                <span class="text-gray-500">Department:</span>
-                <p>Bar Preparation</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Specialization:</span>
-                <p>UAE Bar Exam</p>
-              </div>
-              <div>
-                <span class="text-gray-500">AI Model:</span>
-                <p>Claude 3.7</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Teaching Style:</span>
-                <p>Structured, Practice-based</p>
-              </div>
-            </div>
-            <div class="flex justify-between text-sm mt-4">
-              <div>
-                <span class="text-gray-500">Student Rating:</span>
-                <div class="flex items-center">
-                  <span class="mr-1">4.8/5</span>
-                  <div class="flex text-yellow-400">
-                    ★★★★★
-                  </div>
-                </div>
-              </div>
-              <div>
-                <span class="text-gray-500">Current Students:</span>
-                <p>356</p>
-              </div>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
-              <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Staff Member 6 -->
-        <div class="card">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center space-x-3">
-                <div class="avatar">SR</div>
-                <div>
-                  <h3 class="font-bold">Samantha Reynolds</h3>
-                  <p class="text-sm">Law School Registrar</p>
-                </div>
-              </div>
-              <span class="badge badge-info">Admin</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
-              <div>
-                <span class="text-gray-500">Department:</span>
-                <p>Administration</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Specialization:</span>
-                <p>Student Records & Registration</p>
-              </div>
-              <div>
-                <span class="text-gray-500">AI Model:</span>
-                <p>Claude 3.7</p>
-              </div>
-              <div>
-                <span class="text-gray-500">Teaching Style:</span>
-                <p>N/A</p>
-              </div>
-            </div>
-            <div class="flex justify-between text-sm mt-4">
-              <div>
-                <span class="text-gray-500">Staff Rating:</span>
-                <div class="flex items-center">
-                  <span class="mr-1">4.7/5</span>
-                  <div class="flex text-yellow-400">
-                    ★★★★★
-                  </div>
-                </div>
-              </div>
-              <div>
-                <span class="text-gray-500">Students Managed:</span>
-                <p>1,245</p>
-              </div>
-            </div>
-            <div class="flex justify-end space-x-2 mt-4">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
-              <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
-            </div>
-          </div>
+        <div
+          class="tab px-4 py-2 text-base font-medium cursor-pointer"
+          onclick="switchTab('staff-analytics')"
+        >
+          Staff Analytics
         </div>
       </div>
-      
-      <!-- Pagination -->
-      <div class="flex justify-center mt-8">
-        <nav class="flex items-center space-x-2">
-          <a href="#" class="px-3 py-1 rounded-md">Previous</a>
-          <a href="#" class="px-3 py-1 rounded-md bg-blue-700">1</a>
-          <a href="#" class="px-3 py-1 rounded-md">2</a>
-          <a href="#" class="px-3 py-1 rounded-md">3</a>
-          <span class="px-2">...</span>
-          <a href="#" class="px-3 py-1 rounded-md">Next</a>
-        </nav>
-      </div>
-    </div>
-    
-    <!-- Staff Analytics Tab Content (Hidden by default) -->
-    <div id="staff-analytics" class="tab-content hidden">
-      <div class="bg-white rounded-xl p-6 mb-6">
-        <h2 class="text-xl font-bold mb-4">Staff Performance Analytics</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div class="bg-blue-900 bg-opacity-20 p-4 rounded-lg">
-            <div class="text-sm text-gray-400 mb-1">Average Student Rating</div>
-            <div class="flex items-end">
-              <div class="text-2xl font-bold mr-2">4.7</div>
-              <div class="text-sm text-green-400">↑ 0.2</div>
-            </div>
-            <div class="flex text-yellow-400 text-sm mt-1">
-              ★★★★★
-            </div>
-          </div>
-          
-          <div class="bg-blue-900 bg-opacity-20 p-4 rounded-lg">
-            <div class="text-sm text-gray-400 mb-1">Total Active Staff</div>
-            <div class="flex items-end">
-              <div class="text-2xl font-bold mr-2">24</div>
-              <div class="text-sm text-green-400">↑ 3</div>
-            </div>
-            <div class="text-xs text-gray-400 mt-1">
-              18 Professors, 6 Administrators
-            </div>
-          </div>
-          
-          <div class="bg-blue-900 bg-opacity-20 p-4 rounded-lg">
-            <div class="text-sm text-gray-400 mb-1">Student-Staff Ratio</div>
-            <div class="flex items-end">
-              <div class="text-2xl font-bold mr-2">12:1</div>
-              <div class="text-sm text-green-400">↓ 2:1</div>
-            </div>
-            <div class="text-xs text-gray-400 mt-1">
-              Industry Average: 15:1
-            </div>
-          </div>
-        </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 class="font-medium mb-3">Top Performing Staff</h3>
-            <div class="overflow-x-auto">
-              <table class="min-w-full">
-                <thead>
-                  <tr>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">Name</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">Department</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">Rating</th>
-                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">Students</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-700">
-                  <tr>
-                    <td class="px-4 py-2 whitespace-nowrap">Ruth Ginsburg</td>
-                    <td class="px-4 py-2 whitespace-nowrap">Constitutional Law</td>
-                    <td class="px-4 py-2 whitespace-nowrap">4.9/5</td>
-                    <td class="px-4 py-2 whitespace-nowrap">318</td>
-                  </tr>
-                  <tr>
-                    <td class="px-4 py-2 whitespace-nowrap">Judge Dredd</td>
-                    <td class="px-4 py-2 whitespace-nowrap">Criminal Law</td>
-                    <td class="px-4 py-2 whitespace-nowrap">4.8/5</td>
-                    <td class="px-4 py-2 whitespace-nowrap">245</td>
-                  </tr>
-                  <tr>
-                    <td class="px-4 py-2 whitespace-nowrap">Jared Mitchell</td>
-                    <td class="px-4 py-2 whitespace-nowrap">Bar Preparation</td>
-                    <td class="px-4 py-2 whitespace-nowrap">4.8/5</td>
-                    <td class="px-4 py-2 whitespace-nowrap">356</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          
-          <div>
-            <h3 class="font-medium mb-3">Department Performance</h3>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">Constitutional Law</span>
-                  <span class="text-sm">92%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 92%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">Criminal Law</span>
-                  <span class="text-sm">88%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 88%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">Bar Preparation</span>
-                  <span class="text-sm">94%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 94%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">International Law</span>
-                  <span class="text-sm">86%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 86%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">UAE Law</span>
-                  <span class="text-sm">90%</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 90%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="bg-white rounded-xl p-6">
-        <h2 class="text-xl font-bold mb-4">Staff Budget Allocation</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 class="font-medium mb-3">Budget Distribution by Department</h3>
-            <div class="space-y-4">
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">Constitutional Law</span>
-                  <span class="text-sm">$215,000</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 28%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">Criminal Law</span>
-                  <span class="text-sm">$186,000</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 24%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">Bar Preparation</span>
-                  <span class="text-sm">$152,000</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 20%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">International Law</span>
-                  <span class="text-sm">$124,000</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 16%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm">UAE Law</span>
-                  <span class="text-sm">$95,000</span>
-                </div>
-                <div class="progress-container">
-                  <div class="progress-bar" style="width: 12%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div>
-            <h3 class="font-medium mb-3">Staff Development Resources</h3>
-            <div class="space-y-4">
-              <div class="flex justify-between">
-                <span>Annual Training Budget</span>
-                <span>$48,000</span>
-              </div>
-              <div class="flex justify-between">
-                <span>AI Model Subscription</span>
-                <span>$36,000</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Legal Database Access</span>
-                <span>$24,000</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Conference Attendance</span>
-                <span>$18,000</span>
-              </div>
-              <div class="flex justify-between">
-                <span>Neurodivergent Support Training</span>
-                <span>$12,000</span>
-              </div>
-              <div class="flex justify-between font-medium mt-4 pt-4 border-t border-gray-700">
-                <span>Total Development Budget</span>
-                <span>$138,000</span>
-              </div>
-            </div>
-            <div class="mt-4">
-              <button class="w-full py-2 bg-blue-700">Adjust Budget Allocation</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Hidden Tab Content -->
-    <div id="professors" class="tab-content hidden">
-      <div class="bg-white rounded-xl p-6">
-        <h2 class="text-xl font-bold mb-4">Law School Professors</h2>
-        <!-- Content would go here -->
-        <p>Professor management content will be displayed here.</p>
-      </div>
-    </div>
-    
-    <div id="administrators" class="tab-content hidden">
-      <div class="bg-white rounded-xl p-6">
-        <h2 class="text-xl font-bold mb-4">Law School Administrators</h2>
-        <!-- Content would go here -->
-        <p>Administrator management content will be displayed here.</p>
-      </div>
-    </div>
-  </main>
-  
-  <!-- Add Staff Dialog (Hidden by default) -->
-  <div id="staff-dialog" class="dialog-overlay hidden">
-    <div class="dialog">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">Add New Staff Member</h2>
-        <button onclick="closeStaffDialog()" class="text-gray-400 hover:text-white">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      
-      <form>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label for="staff-name">Name</label>
-            <input type="text" id="staff-name" class="w-full" placeholder="e.g., John Smith">
-          </div>
-          
-          <div>
-            <label for="staff-title">Title</label>
-            <input type="text" id="staff-title" class="w-full" placeholder="e.g., Professor of Criminal Law">
-          </div>
-          
-          <div>
-            <label for="staff-role">Role</label>
-            <select id="staff-role" class="w-full">
-              <option value="professor">Professor</option>
-              <option value="administrator">Administrator</option>
-              <option value="specialist">Specialist</option>
-              <option value="counselor">Student Counselor</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="staff-department">Department</label>
-            <select id="staff-department" class="w-full">
+
+      <!-- Tab Content -->
+      <div id="all-staff" class="tab-content">
+        <!-- Staff Controls -->
+        <div class="flex justify-between items-center mb-6">
+          <div class="flex items-center space-x-3">
+            <input
+              type="text"
+              placeholder="Search staff..."
+              class="px-3 py-2 text-sm rounded-lg w-64"
+            />
+            <select class="px-3 py-2 text-sm rounded-lg">
+              <option value="">All Departments</option>
               <option value="constitutional">Constitutional Law</option>
               <option value="criminal">Criminal Law</option>
               <option value="contract">Contract Law</option>
               <option value="international">International Law</option>
               <option value="property">Property Law</option>
-              <option value="barPrep">Bar Preparation</option>
-              <option value="admin">Administration</option>
             </select>
           </div>
-          
-          <div>
-            <label for="staff-specialization">Specialization</label>
-            <input type="text" id="staff-specialization" class="w-full" placeholder="e.g., Criminal Procedure">
-          </div>
-          
-          <div>
-            <label for="staff-ai-model">AI Model</label>
-            <select id="staff-ai-model" class="w-full">
-              <option value="claude-3.7">Claude 3.7</option>
-              <option value="claude-3.5">Claude 3.5</option>
-              <option value="gpt-4">GPT-4</option>
-              <option value="custom">Custom Model</option>
-            </select>
-          </div>
-          
-          <div class="md:col-span-2">
-            <label for="staff-personality">Personality Traits</label>
-            <input type="text" id="staff-personality" class="w-full" placeholder="e.g., Authoritative, Detailed, Patient">
-          </div>
-          
-          <div class="md:col-span-2">
-            <label for="staff-teaching-style">Teaching Style</label>
-            <input type="text" id="staff-teaching-style" class="w-full" placeholder="e.g., Socratic Method, Case-based, Interactive">
-          </div>
-          
-          <div class="md:col-span-2">
-            <label class="flex items-center">
-              <input type="checkbox" checked class="mr-2">
-              <span>Active Status</span>
-            </label>
-          </div>
+          <button onclick="openStaffDialog()" class="flex items-center space-x-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Add Staff Member</span>
+          </button>
         </div>
-        
-        <div class="flex justify-end space-x-3">
-          <button type="button" onclick="closeStaffDialog()" class="px-4 py-2 bg-gray-700">Cancel</button>
-          <button type="button" class="px-4 py-2">Create Staff Member</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-200 p-4 mt-12">
-    <div class="container mx-auto">
-      <div class="text-center">
-        <p class="text-sm">&copy; 2025 ShotziOS Learning Platform - Law School Staff Management</p>
-        <p class="text-xs text-gray-400 mt-1">
-          Version 2.5.3 • Last Updated: April 10, 2025
-        </p>
+        <!-- Staff Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Staff Member 1 -->
+          <div class="card">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                  <div class="avatar">JD</div>
+                  <div>
+                    <h3 class="font-bold">Judge Dredd</h3>
+                    <p class="text-sm">Professor of Criminal Law</p>
+                  </div>
+                </div>
+                <span class="badge badge-success">Active</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                <div>
+                  <span class="text-gray-500">Department:</span>
+                  <p>Criminal Law</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Specialization:</span>
+                  <p>Sentencing & Judicial Process</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">AI Model:</span>
+                  <p>Claude 3.7</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Teaching Style:</span>
+                  <p>Direct, Case-based</p>
+                </div>
+              </div>
+              <div class="flex justify-between text-sm mt-4">
+                <div>
+                  <span class="text-gray-500">Student Rating:</span>
+                  <div class="flex items-center">
+                    <span class="mr-1">4.8/5</span>
+                    <div class="flex text-yellow-400">★★★★★</div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Current Students:</span>
+                  <p>245</p>
+                </div>
+              </div>
+              <div class="flex justify-end space-x-2 mt-4">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
+                <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Member 2 -->
+          <div class="card">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                  <div class="avatar">RG</div>
+                  <div>
+                    <h3 class="font-bold">Ruth Ginsburg</h3>
+                    <p class="text-sm">Professor of Constitutional Law</p>
+                  </div>
+                </div>
+                <span class="badge badge-success">Active</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                <div>
+                  <span class="text-gray-500">Department:</span>
+                  <p>Constitutional Law</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Specialization:</span>
+                  <p>Gender Equality & Civil Rights</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">AI Model:</span>
+                  <p>Claude 3.7</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Teaching Style:</span>
+                  <p>Socratic, Detail-oriented</p>
+                </div>
+              </div>
+              <div class="flex justify-between text-sm mt-4">
+                <div>
+                  <span class="text-gray-500">Student Rating:</span>
+                  <div class="flex items-center">
+                    <span class="mr-1">4.9/5</span>
+                    <div class="flex text-yellow-400">★★★★★</div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Current Students:</span>
+                  <p>318</p>
+                </div>
+              </div>
+              <div class="flex justify-end space-x-2 mt-4">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
+                <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Member 3 -->
+          <div class="card">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                  <div class="avatar">MA</div>
+                  <div>
+                    <h3 class="font-bold">Mohammed Al-Fayed</h3>
+                    <p class="text-sm">Professor of UAE Law</p>
+                  </div>
+                </div>
+                <span class="badge badge-success">Active</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                <div>
+                  <span class="text-gray-500">Department:</span>
+                  <p>UAE Legal System</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Specialization:</span>
+                  <p>Islamic Legal Principles</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">AI Model:</span>
+                  <p>Claude 3.7</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Teaching Style:</span>
+                  <p>Holistic, Cultural Context</p>
+                </div>
+              </div>
+              <div class="flex justify-between text-sm mt-4">
+                <div>
+                  <span class="text-gray-500">Student Rating:</span>
+                  <div class="flex items-center">
+                    <span class="mr-1">4.7/5</span>
+                    <div class="flex text-yellow-400">★★★★★</div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Current Students:</span>
+                  <p>278</p>
+                </div>
+              </div>
+              <div class="flex justify-end space-x-2 mt-4">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
+                <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Member 4 -->
+          <div class="card">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                  <div class="avatar">MH</div>
+                  <div>
+                    <h3 class="font-bold">Maria Hernandez</h3>
+                    <p class="text-sm">Professor of International Law</p>
+                  </div>
+                </div>
+                <span class="badge badge-success">Active</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                <div>
+                  <span class="text-gray-500">Department:</span>
+                  <p>International Law</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Specialization:</span>
+                  <p>Human Rights Law</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">AI Model:</span>
+                  <p>Claude 3.7</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Teaching Style:</span>
+                  <p>Interactive, Case Studies</p>
+                </div>
+              </div>
+              <div class="flex justify-between text-sm mt-4">
+                <div>
+                  <span class="text-gray-500">Student Rating:</span>
+                  <div class="flex items-center">
+                    <span class="mr-1">4.6/5</span>
+                    <div class="flex text-yellow-400">★★★★★</div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Current Students:</span>
+                  <p>192</p>
+                </div>
+              </div>
+              <div class="flex justify-end space-x-2 mt-4">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
+                <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Member 5 -->
+          <div class="card">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                  <div class="avatar">JM</div>
+                  <div>
+                    <h3 class="font-bold">Jared Mitchell</h3>
+                    <p class="text-sm">Bar Exam Specialist</p>
+                  </div>
+                </div>
+                <span class="badge badge-success">Active</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                <div>
+                  <span class="text-gray-500">Department:</span>
+                  <p>Bar Preparation</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Specialization:</span>
+                  <p>UAE Bar Exam</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">AI Model:</span>
+                  <p>Claude 3.7</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Teaching Style:</span>
+                  <p>Structured, Practice-based</p>
+                </div>
+              </div>
+              <div class="flex justify-between text-sm mt-4">
+                <div>
+                  <span class="text-gray-500">Student Rating:</span>
+                  <div class="flex items-center">
+                    <span class="mr-1">4.8/5</span>
+                    <div class="flex text-yellow-400">★★★★★</div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Current Students:</span>
+                  <p>356</p>
+                </div>
+              </div>
+              <div class="flex justify-end space-x-2 mt-4">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
+                <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Staff Member 6 -->
+          <div class="card">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                  <div class="avatar">SR</div>
+                  <div>
+                    <h3 class="font-bold">Samantha Reynolds</h3>
+                    <p class="text-sm">Law School Registrar</p>
+                  </div>
+                </div>
+                <span class="badge badge-info">Admin</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                <div>
+                  <span class="text-gray-500">Department:</span>
+                  <p>Administration</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Specialization:</span>
+                  <p>Student Records & Registration</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">AI Model:</span>
+                  <p>Claude 3.7</p>
+                </div>
+                <div>
+                  <span class="text-gray-500">Teaching Style:</span>
+                  <p>N/A</p>
+                </div>
+              </div>
+              <div class="flex justify-between text-sm mt-4">
+                <div>
+                  <span class="text-gray-500">Staff Rating:</span>
+                  <div class="flex items-center">
+                    <span class="mr-1">4.7/5</span>
+                    <div class="flex text-yellow-400">★★★★★</div>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-gray-500">Students Managed:</span>
+                  <p>1,245</p>
+                </div>
+              </div>
+              <div class="flex justify-end space-x-2 mt-4">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1 bg-green-700">Generate AI</button>
+                <button class="text-xs px-3 py-1 bg-red-700">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="flex justify-center mt-8">
+          <nav class="flex items-center space-x-2">
+            <a href="#" class="px-3 py-1 rounded-md">Previous</a>
+            <a href="#" class="px-3 py-1 rounded-md bg-blue-700">1</a>
+            <a href="#" class="px-3 py-1 rounded-md">2</a>
+            <a href="#" class="px-3 py-1 rounded-md">3</a>
+            <span class="px-2">...</span>
+            <a href="#" class="px-3 py-1 rounded-md">Next</a>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Staff Analytics Tab Content (Hidden by default) -->
+      <div id="staff-analytics" class="tab-content hidden">
+        <div class="bg-white rounded-xl p-6 mb-6">
+          <h2 class="text-xl font-bold mb-4">Staff Performance Analytics</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <div class="bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+              <div class="text-sm text-gray-400 mb-1">Average Student Rating</div>
+              <div class="flex items-end">
+                <div class="text-2xl font-bold mr-2">4.7</div>
+                <div class="text-sm text-green-400">↑ 0.2</div>
+              </div>
+              <div class="flex text-yellow-400 text-sm mt-1">★★★★★</div>
+            </div>
+
+            <div class="bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+              <div class="text-sm text-gray-400 mb-1">Total Active Staff</div>
+              <div class="flex items-end">
+                <div class="text-2xl font-bold mr-2">24</div>
+                <div class="text-sm text-green-400">↑ 3</div>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">18 Professors, 6 Administrators</div>
+            </div>
+
+            <div class="bg-blue-900 bg-opacity-20 p-4 rounded-lg">
+              <div class="text-sm text-gray-400 mb-1">Student-Staff Ratio</div>
+              <div class="flex items-end">
+                <div class="text-2xl font-bold mr-2">12:1</div>
+                <div class="text-sm text-green-400">↓ 2:1</div>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">Industry Average: 15:1</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-medium mb-3">Top Performing Staff</h3>
+              <div class="overflow-x-auto">
+                <table class="min-w-full">
+                  <thead>
+                    <tr>
+                      <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">Name</th>
+                      <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">
+                        Department
+                      </th>
+                      <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">Rating</th>
+                      <th class="px-4 py-2 text-left text-sm font-medium text-gray-400">
+                        Students
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-700">
+                    <tr>
+                      <td class="px-4 py-2 whitespace-nowrap">Ruth Ginsburg</td>
+                      <td class="px-4 py-2 whitespace-nowrap">Constitutional Law</td>
+                      <td class="px-4 py-2 whitespace-nowrap">4.9/5</td>
+                      <td class="px-4 py-2 whitespace-nowrap">318</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2 whitespace-nowrap">Judge Dredd</td>
+                      <td class="px-4 py-2 whitespace-nowrap">Criminal Law</td>
+                      <td class="px-4 py-2 whitespace-nowrap">4.8/5</td>
+                      <td class="px-4 py-2 whitespace-nowrap">245</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-2 whitespace-nowrap">Jared Mitchell</td>
+                      <td class="px-4 py-2 whitespace-nowrap">Bar Preparation</td>
+                      <td class="px-4 py-2 whitespace-nowrap">4.8/5</td>
+                      <td class="px-4 py-2 whitespace-nowrap">356</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-medium mb-3">Department Performance</h3>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">Constitutional Law</span>
+                    <span class="text-sm">92%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 92%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">Criminal Law</span>
+                    <span class="text-sm">88%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 88%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">Bar Preparation</span>
+                    <span class="text-sm">94%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 94%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">International Law</span>
+                    <span class="text-sm">86%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 86%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">UAE Law</span>
+                    <span class="text-sm">90%</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 90%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6">
+          <h2 class="text-xl font-bold mb-4">Staff Budget Allocation</h2>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h3 class="font-medium mb-3">Budget Distribution by Department</h3>
+              <div class="space-y-4">
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">Constitutional Law</span>
+                    <span class="text-sm">$215,000</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 28%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">Criminal Law</span>
+                    <span class="text-sm">$186,000</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 24%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">Bar Preparation</span>
+                    <span class="text-sm">$152,000</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 20%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">International Law</span>
+                    <span class="text-sm">$124,000</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 16%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between mb-1">
+                    <span class="text-sm">UAE Law</span>
+                    <span class="text-sm">$95,000</span>
+                  </div>
+                  <div class="progress-container">
+                    <div class="progress-bar" style="width: 12%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-medium mb-3">Staff Development Resources</h3>
+              <div class="space-y-4">
+                <div class="flex justify-between">
+                  <span>Annual Training Budget</span>
+                  <span>$48,000</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>AI Model Subscription</span>
+                  <span>$36,000</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Legal Database Access</span>
+                  <span>$24,000</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Conference Attendance</span>
+                  <span>$18,000</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Neurodivergent Support Training</span>
+                  <span>$12,000</span>
+                </div>
+                <div class="flex justify-between font-medium mt-4 pt-4 border-t border-gray-700">
+                  <span>Total Development Budget</span>
+                  <span>$138,000</span>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button class="w-full py-2 bg-blue-700">Adjust Budget Allocation</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden Tab Content -->
+      <div id="professors" class="tab-content hidden">
+        <div class="bg-white rounded-xl p-6">
+          <h2 class="text-xl font-bold mb-4">Law School Professors</h2>
+          <!-- Content would go here -->
+          <p>Professor management content will be displayed here.</p>
+        </div>
+      </div>
+
+      <div id="administrators" class="tab-content hidden">
+        <div class="bg-white rounded-xl p-6">
+          <h2 class="text-xl font-bold mb-4">Law School Administrators</h2>
+          <!-- Content would go here -->
+          <p>Administrator management content will be displayed here.</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add Staff Dialog (Hidden by default) -->
+    <div id="staff-dialog" class="dialog-overlay hidden">
+      <div class="dialog">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Add New Staff Member</h2>
+          <button onclick="closeStaffDialog()" class="text-gray-400 hover:text-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <form>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label for="staff-name">Name</label>
+              <input type="text" id="staff-name" class="w-full" placeholder="e.g., John Smith" />
+            </div>
+
+            <div>
+              <label for="staff-title">Title</label>
+              <input
+                type="text"
+                id="staff-title"
+                class="w-full"
+                placeholder="e.g., Professor of Criminal Law"
+              />
+            </div>
+
+            <div>
+              <label for="staff-role">Role</label>
+              <select id="staff-role" class="w-full">
+                <option value="professor">Professor</option>
+                <option value="administrator">Administrator</option>
+                <option value="specialist">Specialist</option>
+                <option value="counselor">Student Counselor</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="staff-department">Department</label>
+              <select id="staff-department" class="w-full">
+                <option value="constitutional">Constitutional Law</option>
+                <option value="criminal">Criminal Law</option>
+                <option value="contract">Contract Law</option>
+                <option value="international">International Law</option>
+                <option value="property">Property Law</option>
+                <option value="barPrep">Bar Preparation</option>
+                <option value="admin">Administration</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="staff-specialization">Specialization</label>
+              <input
+                type="text"
+                id="staff-specialization"
+                class="w-full"
+                placeholder="e.g., Criminal Procedure"
+              />
+            </div>
+
+            <div>
+              <label for="staff-ai-model">AI Model</label>
+              <select id="staff-ai-model" class="w-full">
+                <option value="claude-3.7">Claude 3.7</option>
+                <option value="claude-3.5">Claude 3.5</option>
+                <option value="gpt-4">GPT-4</option>
+                <option value="custom">Custom Model</option>
+              </select>
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="staff-personality">Personality Traits</label>
+              <input
+                type="text"
+                id="staff-personality"
+                class="w-full"
+                placeholder="e.g., Authoritative, Detailed, Patient"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="staff-teaching-style">Teaching Style</label>
+              <input
+                type="text"
+                id="staff-teaching-style"
+                class="w-full"
+                placeholder="e.g., Socratic Method, Case-based, Interactive"
+              />
+            </div>
+
+            <div class="md:col-span-2">
+              <label class="flex items-center">
+                <input type="checkbox" checked class="mr-2" />
+                <span>Active Status</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-end space-x-3">
+            <button type="button" onclick="closeStaffDialog()" class="px-4 py-2 bg-gray-700">
+              Cancel
+            </button>
+            <button type="button" class="px-4 py-2">Create Staff Member</button>
+          </div>
+        </form>
       </div>
     </div>
-  </footer>
 
-  <!-- Help Bubble -->
-  <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeHelpBubble('law-staff', 'right');
-    });
-  </script>
-  
-  <!-- Simple Tab Switching Script -->
-  <script>
-    function switchTab(tabId) {
-      // Hide all tab content
-      const tabContents = document.querySelectorAll('.tab-content');
-      tabContents.forEach(content => {
-        content.classList.add('hidden');
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-200 p-4 mt-12">
+      <div class="container mx-auto">
+        <div class="text-center">
+          <p class="text-sm">
+            &copy; 2025 ShotziOS Learning Platform - Law School Staff Management
+          </p>
+          <p class="text-xs text-gray-400 mt-1">Version 2.5.3 • Last Updated: April 10, 2025</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Help Bubble -->
+    <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeHelpBubble('law-staff', 'right');
       });
-      
-      // Show selected tab content
-      document.getElementById(tabId).classList.remove('hidden');
-      
-      // Update tab styles
-      const tabs = document.querySelectorAll('.tab');
-      tabs.forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Add active class to clicked tab
-      event.currentTarget.classList.add('active');
-    }
-    
-    function openStaffDialog() {
-      document.getElementById('staff-dialog').classList.remove('hidden');
-    }
-    
-    function closeStaffDialog() {
-      document.getElementById('staff-dialog').classList.add('hidden');
-    }
-  </script>
-</body>
+    </script>
+
+    <!-- Simple Tab Switching Script -->
+    <script>
+      function switchTab(tabId) {
+        // Hide all tab content
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach((content) => {
+          content.classList.add('hidden');
+        });
+
+        // Show selected tab content
+        document.getElementById(tabId).classList.remove('hidden');
+
+        // Update tab styles
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach((tab) => {
+          tab.classList.remove('active');
+        });
+
+        // Add active class to clicked tab
+        event.currentTarget.classList.add('active');
+      }
+
+      function openStaffDialog() {
+        document.getElementById('staff-dialog').classList.remove('hidden');
+      }
+
+      function closeStaffDialog() {
+        document.getElementById('staff-dialog').classList.add('hidden');
+      }
+    </script>
+  </body>
 </html>

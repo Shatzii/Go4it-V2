@@ -13,43 +13,45 @@
   --line-height: 1.5;
   --paragraph-spacing: 1.5rem;
   --word-spacing: normal;
-  
+
   /* Font variables */
   --font-dyslexic: 'OpenDyslexic', 'Comic Sans MS', sans-serif;
-  --font-standard: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-standard:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+    'Open Sans', 'Helvetica Neue', sans-serif;
   --font-serif: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'Courier New', monospace;
-  
+
   /* Color schemes */
   --bg-standard: #ffffff;
   --text-standard: #333333;
   --link-standard: #1a73e8;
-  
+
   --bg-dyslexia: #f8f8f8;
   --text-dyslexia: #333333;
   --link-dyslexia: #1a5fb4;
-  
+
   --bg-contrast: #000000;
   --text-contrast: #ffffff;
   --link-contrast: #3498db;
-  
+
   --bg-soft: #f0f4f8;
   --text-soft: #4a5568;
   --link-soft: #2b6cb0;
-  
+
   --bg-sepia: #f8f2e4;
   --text-sepia: #5f4b32;
   --link-sepia: #a05a2c;
-  
+
   --bg-autism-friendly: #f0f7ff;
   --text-autism-friendly: #2d3748;
   --link-autism-friendly: #2c5282;
-  
+
   /* Focus states */
   --focus-outline-width: 3px;
   --focus-outline-style: solid;
   --focus-outline-color: #4299e1;
-  
+
   /* Animation control */
   --transition-speed: 0.3s;
   --reduced-motion: none;
@@ -73,11 +75,11 @@ body.dyslexia-friendly {
   max-width: 70ch; /* Optimal reading width */
 }
 
-.dyslexia-friendly h1, 
-.dyslexia-friendly h2, 
-.dyslexia-friendly h3, 
-.dyslexia-friendly h4, 
-.dyslexia-friendly h5, 
+.dyslexia-friendly h1,
+.dyslexia-friendly h2,
+.dyslexia-friendly h3,
+.dyslexia-friendly h4,
+.dyslexia-friendly h5,
 .dyslexia-friendly h6 {
   margin-top: 1.5em;
   margin-bottom: 0.75em;
@@ -97,7 +99,7 @@ body.dyslexia-friendly {
   font-style: italic;
 }
 
-.dyslexia-friendly ul, 
+.dyslexia-friendly ul,
 .dyslexia-friendly ol {
   padding-left: 2em;
   margin-bottom: 1.5em;
@@ -123,7 +125,7 @@ body.high-contrast {
   text-underline-offset: 0.2em;
 }
 
-.high-contrast button, 
+.high-contrast button,
 .high-contrast .button {
   border: 2px solid white;
   background-color: black;
@@ -135,8 +137,8 @@ body.high-contrast {
   filter: grayscale(100%) contrast(150%);
 }
 
-.high-contrast input, 
-.high-contrast textarea, 
+.high-contrast input,
+.high-contrast textarea,
 .high-contrast select {
   background-color: black;
   color: white;
@@ -155,7 +157,7 @@ body.adhd-friendly {
   line-height: 1.7;
 }
 
-.adhd-friendly section, 
+.adhd-friendly section,
 .adhd-friendly article {
   max-width: 650px;
   margin: 0 auto;
@@ -166,8 +168,8 @@ body.adhd-friendly {
   margin-bottom: 2em;
 }
 
-.adhd-friendly h1, 
-.adhd-friendly h2, 
+.adhd-friendly h1,
+.adhd-friendly h2,
 .adhd-friendly h3 {
   color: #2c5282;
   border-bottom: 2px solid #e2e8f0;
@@ -178,13 +180,13 @@ body.adhd-friendly {
   margin-bottom: 1.5em;
 }
 
-.adhd-friendly .sidebar, 
+.adhd-friendly .sidebar,
 .adhd-friendly aside {
   opacity: 0.8;
   transition: opacity var(--transition-speed) ease;
 }
 
-.adhd-friendly .sidebar:hover, 
+.adhd-friendly .sidebar:hover,
 .adhd-friendly aside:hover {
   opacity: 1;
 }
@@ -211,14 +213,16 @@ body.autism-friendly {
 
 .autism-friendly * {
   animation: none !important;
-  transition: color var(--transition-speed) ease, background-color var(--transition-speed) ease !important;
+  transition:
+    color var(--transition-speed) ease,
+    background-color var(--transition-speed) ease !important;
 }
 
-.autism-friendly h1, 
-.autism-friendly h2, 
-.autism-friendly h3, 
-.autism-friendly h4, 
-.autism-friendly h5, 
+.autism-friendly h1,
+.autism-friendly h2,
+.autism-friendly h3,
+.autism-friendly h4,
+.autism-friendly h5,
 .autism-friendly h6 {
   margin-top: 1.5em;
   margin-bottom: 1em;
@@ -238,7 +242,7 @@ body.autism-friendly {
   border-radius: 4px;
 }
 
-.autism-friendly button, 
+.autism-friendly button,
 .autism-friendly .button {
   background-color: #edf2f7;
   color: #2d3748;
@@ -249,7 +253,7 @@ body.autism-friendly {
   transition: background-color var(--transition-speed) ease;
 }
 
-.autism-friendly button:hover, 
+.autism-friendly button:hover,
 .autism-friendly .button:hover {
   background-color: #e2e8f0;
 }
@@ -303,10 +307,10 @@ body.use-reading-ruler .reading-ruler {
  * Print styles for all accessibility modes
  */
 @media print {
-  body, 
-  body.dyslexia-friendly, 
-  body.high-contrast, 
-  body.adhd-friendly, 
+  body,
+  body.dyslexia-friendly,
+  body.high-contrast,
+  body.adhd-friendly,
   body.autism-friendly {
     font-family: var(--font-serif);
     background-color: white !important;
@@ -314,16 +318,16 @@ body.use-reading-ruler .reading-ruler {
     font-size: 12pt;
     line-height: 1.5;
   }
-  
-  a, 
-  .dyslexia-friendly a, 
-  .high-contrast a, 
-  .adhd-friendly a, 
+
+  a,
+  .dyslexia-friendly a,
+  .high-contrast a,
+  .adhd-friendly a,
   .autism-friendly a {
     color: black !important;
     text-decoration: underline;
   }
-  
+
   .reading-ruler {
     display: none !important;
   }
@@ -335,8 +339,9 @@ body.use-reading-ruler .reading-ruler {
  */
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('/fonts/OpenDyslexic-Regular.woff2') format('woff2'),
-       url('/fonts/OpenDyslexic-Regular.woff') format('woff');
+  src:
+    url('/fonts/OpenDyslexic-Regular.woff2') format('woff2'),
+    url('/fonts/OpenDyslexic-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -344,8 +349,9 @@ body.use-reading-ruler .reading-ruler {
 
 @font-face {
   font-family: 'OpenDyslexic';
-  src: url('/fonts/OpenDyslexic-Bold.woff2') format('woff2'),
-       url('/fonts/OpenDyslexic-Bold.woff') format('woff');
+  src:
+    url('/fonts/OpenDyslexic-Bold.woff2') format('woff2'),
+    url('/fonts/OpenDyslexic-Bold.woff') format('woff');
   font-weight: bold;
   font-style: normal;
   font-display: swap;
@@ -361,14 +367,14 @@ body.use-reading-ruler .reading-ruler {
     font-size: 16px;
     line-height: 1.6;
   }
-  
+
   .dyslexia-friendly p,
   .adhd-friendly p,
   .autism-friendly p {
     margin-bottom: 1.2em;
   }
-  
-  .adhd-friendly section, 
+
+  .adhd-friendly section,
   .adhd-friendly article {
     padding: 1em;
     margin-bottom: 1.5em;

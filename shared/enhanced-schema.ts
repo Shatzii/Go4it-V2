@@ -1,14 +1,25 @@
-import { pgTable, text, integer, timestamp, boolean, decimal, jsonb, serial } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  text,
+  integer,
+  timestamp,
+  boolean,
+  decimal,
+  jsonb,
+  serial,
+} from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
 import { z } from 'zod';
-import { users } from '../lib/schema';
+import { users } from './schema';
 
 // Extended schema with additional tables for enhanced functionality
 
 // AI Coaching Profiles
 export const aiCoachingProfiles = pgTable('ai_coaching_profiles', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   emotionalState: text('emotional_state'),
   frustrationLevel: integer('frustration_level').default(0),
   adaptations: jsonb('adaptations'),
@@ -24,7 +35,9 @@ export const aiCoachingProfiles = pgTable('ai_coaching_profiles', {
 // User Preferences for Accessibility
 export const userPreferences = pgTable('user_preferences', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   theme: text('theme').default('default'),
   sensoryPreferences: jsonb('sensory_preferences'),
   audioDescriptions: boolean('audio_descriptions').default(false),
@@ -39,7 +52,9 @@ export const userPreferences = pgTable('user_preferences', {
 // Performance Metrics
 export const performanceMetrics = pgTable('performance_metrics', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   metricType: text('metric_type').notNull(),
   value: decimal('value', { precision: 10, scale: 2 }).notNull(),
   unit: text('unit'),
@@ -54,8 +69,12 @@ export const performanceMetrics = pgTable('performance_metrics', {
 // Team Memberships
 export const teamMemberships = pgTable('team_memberships', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
-  teamId: integer('team_id').notNull().references(() => teams.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  teamId: integer('team_id')
+    .notNull()
+    .references(() => teams.id),
   role: text('role').default('player'), // player, coach, assistant, manager
   joinDate: timestamp('join_date').notNull().defaultNow(),
   endDate: timestamp('end_date'),
@@ -98,8 +117,12 @@ export const challenges = pgTable('challenges', {
 // User Challenges
 export const userChallenges = pgTable('user_challenges', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
-  challengeId: integer('challenge_id').notNull().references(() => challenges.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  challengeId: integer('challenge_id')
+    .notNull()
+    .references(() => challenges.id),
   status: text('status').default('active'), // active, completed, failed, expired
   progress: integer('progress').default(0),
   maxProgress: integer('max_progress').default(100),
@@ -111,7 +134,9 @@ export const userChallenges = pgTable('user_challenges', {
 // Health Metrics
 export const healthMetrics = pgTable('health_metrics', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   metricType: text('metric_type').notNull(), // heart_rate, sleep, stress, recovery
   value: decimal('value', { precision: 10, scale: 2 }).notNull(),
   unit: text('unit').notNull(),
@@ -124,7 +149,9 @@ export const healthMetrics = pgTable('health_metrics', {
 // Recovery Plans
 export const recoveryPlans = pgTable('recovery_plans', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   planName: text('plan_name').notNull(),
   planType: text('plan_type').notNull(), // injury, fatigue, performance
   description: text('description'),
@@ -140,7 +167,9 @@ export const recoveryPlans = pgTable('recovery_plans', {
 // Live Sessions for real-time performance tracking
 export const liveSessions = pgTable('live_sessions', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   sessionName: text('session_name').notNull(),
   sessionType: text('session_type').notNull(), // training, game, practice
   sport: text('sport').notNull(),
@@ -155,7 +184,9 @@ export const liveSessions = pgTable('live_sessions', {
 // Video Recording Sessions for mobile video capture
 export const videoRecordingSessions = pgTable('video_recording_sessions', {
   id: serial('id').primaryKey(),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   sessionName: text('session_name').notNull(),
   sessionType: text('session_type').notNull(), // practice, game, drill
   sport: text('sport').notNull(),
@@ -171,8 +202,12 @@ export const videoRecordingSessions = pgTable('video_recording_sessions', {
 // Team Rosters for managing team compositions
 export const teamRosters = pgTable('team_rosters', {
   id: serial('id').primaryKey(),
-  teamId: integer('team_id').notNull().references(() => teams.id),
-  userId: integer('user_id').notNull().references(() => users.id),
+  teamId: integer('team_id')
+    .notNull()
+    .references(() => teams.id),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
   position: text('position'),
   jerseyNumber: integer('jersey_number'),
   status: text('status').default('active'), // active, inactive, injured
@@ -181,8 +216,6 @@ export const teamRosters = pgTable('team_rosters', {
   role: text('role').default('player'), // player, captain, vice_captain
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
-
-
 
 // Create insert schemas
 export const insertAiCoachingProfileSchema = createInsertSchema(aiCoachingProfiles).omit({

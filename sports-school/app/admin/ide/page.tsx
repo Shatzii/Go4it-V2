@@ -8,22 +8,28 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { 
-  FileCode, 
-  FolderOpen, 
-  Plus, 
-  Save, 
-  Play, 
-  Terminal, 
-  Eye, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  FileCode,
+  FolderOpen,
+  Plus,
+  Save,
+  Play,
+  Terminal,
+  Eye,
   Download,
   Upload,
   Settings,
   Trash2,
   Copy,
   FileText,
-  Globe
+  Globe,
 } from 'lucide-react';
 
 interface FileNode {
@@ -63,7 +69,7 @@ const defaultFiles: FileNode[] = [
     </div>
     <script src="script.js"></script>
 </body>
-</html>`
+</html>`,
       },
       {
         id: 'styles.css',
@@ -100,7 +106,7 @@ button {
 
 button:hover {
     background: #45a049;
-}`
+}`,
       },
       {
         id: 'script.js',
@@ -159,10 +165,10 @@ const EducationUtils = {
     }
 };
 
-console.log('Universal One School IDE - Ready for educational content creation!');`
-      }
-    ]
-  }
+console.log('Universal One School IDE - Ready for educational content creation!');`,
+      },
+    ],
+  },
 ];
 
 const projectTemplates = [
@@ -173,8 +179,8 @@ const projectTemplates = [
     files: [
       { name: 'index.html', language: 'html', content: '<!-- SuperHero Game Template -->' },
       { name: 'game.js', language: 'javascript', content: '// SuperHero game logic' },
-      { name: 'styles.css', language: 'css', content: '/* SuperHero theme styles */' }
-    ]
+      { name: 'styles.css', language: 'css', content: '/* SuperHero theme styles */' },
+    ],
   },
   {
     id: 'stage-prep',
@@ -183,8 +189,8 @@ const projectTemplates = [
     files: [
       { name: 'index.html', language: 'html', content: '<!-- Theater Module Template -->' },
       { name: 'theater.js', language: 'javascript', content: '// Theater learning logic' },
-      { name: 'stage.css', language: 'css', content: '/* Stage prep styles */' }
-    ]
+      { name: 'stage.css', language: 'css', content: '/* Stage prep styles */' },
+    ],
   },
   {
     id: 'law-case',
@@ -193,9 +199,9 @@ const projectTemplates = [
     files: [
       { name: 'index.html', language: 'html', content: '<!-- Legal Case Template -->' },
       { name: 'case-analysis.js', language: 'javascript', content: '// Case analysis logic' },
-      { name: 'legal.css', language: 'css', content: '/* Legal theme styles */' }
-    ]
-  }
+      { name: 'legal.css', language: 'css', content: '/* Legal theme styles */' },
+    ],
+  },
 ];
 
 export default function IDEPage() {
@@ -205,7 +211,7 @@ export default function IDEPage() {
   const [terminalOutput, setTerminalOutput] = useState<string[]>([
     'Universal One School IDE Terminal v3.1.0',
     'Type "help" for available commands',
-    '> '
+    '> ',
   ]);
   const [terminalInput, setTerminalInput] = useState('');
   const [previewHtml, setPreviewHtml] = useState('');
@@ -229,7 +235,7 @@ export default function IDEPage() {
   };
 
   const updateFileContent = (files: FileNode[], id: string, content: string): FileNode[] => {
-    return files.map(file => {
+    return files.map((file) => {
       if (file.id === id) {
         return { ...file, content };
       }
@@ -244,7 +250,7 @@ export default function IDEPage() {
     if (value !== undefined && activeFile) {
       setEditorValue(value);
       setFiles(updateFileContent(files, activeFile.id, value));
-      
+
       // Update preview for HTML files
       if (activeFile.language === 'html') {
         setPreviewHtml(value);
@@ -260,13 +266,13 @@ export default function IDEPage() {
   };
 
   const addTerminalOutput = (output: string) => {
-    setTerminalOutput(prev => [...prev, output, '> ']);
+    setTerminalOutput((prev) => [...prev, output, '> ']);
   };
 
   const handleTerminalCommand = (command: string) => {
     const cmd = command.trim().toLowerCase();
     addTerminalOutput(command);
-    
+
     switch (cmd) {
       case 'help':
         addTerminalOutput('Available commands:');
@@ -281,7 +287,9 @@ export default function IDEPage() {
         break;
       case 'files':
         const fileList = getAllFiles(files);
-        fileList.forEach(file => addTerminalOutput(`  ${file.name} (${file.language || 'folder'})`));
+        fileList.forEach((file) =>
+          addTerminalOutput(`  ${file.name} (${file.language || 'folder'})`),
+        );
         break;
       case 'preview':
         generatePreview();
@@ -298,7 +306,7 @@ export default function IDEPage() {
 
   const getAllFiles = (fileNodes: FileNode[]): FileNode[] => {
     let allFiles: FileNode[] = [];
-    fileNodes.forEach(node => {
+    fileNodes.forEach((node) => {
       if (node.type === 'file') {
         allFiles.push(node);
       }
@@ -318,15 +326,15 @@ export default function IDEPage() {
 
   const createNewFile = () => {
     if (!newFileName) return;
-    
+
     const extension = newFileName.split('.').pop() || '';
     const languageMap: { [key: string]: string } = {
-      'html': 'html',
-      'css': 'css',
-      'js': 'javascript',
-      'ts': 'typescript',
-      'py': 'python',
-      'json': 'json'
+      html: 'html',
+      css: 'css',
+      js: 'javascript',
+      ts: 'typescript',
+      py: 'python',
+      json: 'json',
     };
 
     const newFile: FileNode = {
@@ -334,45 +342,47 @@ export default function IDEPage() {
       name: newFileName,
       type: 'file',
       language: languageMap[extension] || 'text',
-      content: `// New ${extension.toUpperCase()} file\n`
+      content: `// New ${extension.toUpperCase()} file\n`,
     };
 
-    setFiles(prev => {
+    setFiles((prev) => {
       const projectFolder = prev[0];
       if (projectFolder.children) {
         projectFolder.children.push(newFile);
       }
       return [...prev];
     });
-    
+
     setNewFileName('');
     addTerminalOutput(`Created new file: ${newFileName}`);
   };
 
   const loadTemplate = (templateId: string) => {
-    const template = projectTemplates.find(t => t.id === templateId);
+    const template = projectTemplates.find((t) => t.id === templateId);
     if (!template) return;
 
-    const templateFiles = template.files.map(file => ({
+    const templateFiles = template.files.map((file) => ({
       id: file.name,
       name: file.name,
       type: 'file' as const,
       language: file.language,
-      content: file.content
+      content: file.content,
     }));
 
-    setFiles([{
-      id: 'project',
-      name: 'Project',
-      type: 'folder',
-      children: templateFiles
-    }]);
+    setFiles([
+      {
+        id: 'project',
+        name: 'Project',
+        type: 'folder',
+        children: templateFiles,
+      },
+    ]);
 
     addTerminalOutput(`Loaded template: ${template.name}`);
   };
 
   const renderFileTree = (nodes: FileNode[], depth = 0) => {
-    return nodes.map(node => (
+    return nodes.map((node) => (
       <div key={node.id} style={{ marginLeft: depth * 16 }}>
         <div
           className={`flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 ${
@@ -380,7 +390,11 @@ export default function IDEPage() {
           }`}
           onClick={() => node.type === 'file' && setActiveFile(node)}
         >
-          {node.type === 'folder' ? <FolderOpen className="w-4 h-4" /> : <FileCode className="w-4 h-4" />}
+          {node.type === 'folder' ? (
+            <FolderOpen className="w-4 h-4" />
+          ) : (
+            <FileCode className="w-4 h-4" />
+          )}
           <span className="text-sm">{node.name}</span>
           {node.type === 'file' && (
             <Badge variant="outline" className="text-xs">
@@ -423,7 +437,7 @@ export default function IDEPage() {
                 </div>
               </DialogContent>
             </Dialog>
-            
+
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm">
@@ -436,15 +450,21 @@ export default function IDEPage() {
                   <DialogTitle>Project Templates</DialogTitle>
                 </DialogHeader>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {projectTemplates.map(template => (
-                    <Card key={template.id} className="cursor-pointer hover:shadow-md" onClick={() => loadTemplate(template.id)}>
+                  {projectTemplates.map((template) => (
+                    <Card
+                      key={template.id}
+                      className="cursor-pointer hover:shadow-md"
+                      onClick={() => loadTemplate(template.id)}
+                    >
                       <CardHeader className="pb-2">
                         <CardTitle className="text-lg">{template.name}</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{template.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {template.description}
+                        </p>
                         <div className="flex gap-1 mt-2">
-                          {template.files.map(file => (
+                          {template.files.map((file) => (
                             <Badge key={file.name} variant="outline" className="text-xs">
                               {file.name}
                             </Badge>
@@ -476,9 +496,7 @@ export default function IDEPage() {
             <h3 className="font-semibold text-sm">File Explorer</h3>
           </div>
           <ScrollArea className="flex-1">
-            <div className="p-2">
-              {renderFileTree(files)}
-            </div>
+            <div className="p-2">{renderFileTree(files)}</div>
           </ScrollArea>
         </div>
 
@@ -526,7 +544,7 @@ export default function IDEPage() {
                           suggestOnTriggerCharacters: true,
                           acceptSuggestionOnEnter: 'on',
                           tabSize: 2,
-                          insertSpaces: true
+                          insertSpaces: true,
                         }}
                       />
                     </div>
@@ -550,11 +568,7 @@ export default function IDEPage() {
             <TabsContent value="preview" className="flex-1 m-0">
               <div className="h-full border">
                 {previewHtml ? (
-                  <iframe
-                    srcDoc={previewHtml}
-                    className="w-full h-full border-0"
-                    title="Preview"
-                  />
+                  <iframe srcDoc={previewHtml} className="w-full h-full border-0" title="Preview" />
                 ) : (
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center">

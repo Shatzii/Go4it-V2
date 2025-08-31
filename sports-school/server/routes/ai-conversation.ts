@@ -1,7 +1,7 @@
-import { Router } from "express";
+import { Router } from 'express';
 import Anthropic from '@anthropic-ai/sdk';
-import OpenAI from "openai";
-import multer from "multer";
+import OpenAI from 'openai';
+import multer from 'multer';
 
 /*
 <important_code_snippet_instructions>
@@ -12,7 +12,7 @@ When copying code from this code snippet, ensure you also include this informati
 */
 
 // <important_do_not_delete>
-const DEFAULT_MODEL_STR = "claude-sonnet-4-20250514";
+const DEFAULT_MODEL_STR = 'claude-sonnet-4-20250514';
 // </important_do_not_delete>
 
 const router = Router();
@@ -30,18 +30,18 @@ const openai = new OpenAI({
 
 interface ConversationMessage {
   id: string;
-  type: "user" | "agent" | "system";
+  type: 'user' | 'agent' | 'system';
   content: string;
   timestamp: Date;
 }
 
 // Main conversation endpoint
-router.post("/conversation", async (req, res) => {
+router.post('/conversation', async (req, res) => {
   try {
     const { message, userId, conversationHistory } = req.body;
 
     if (!message) {
-      return res.status(400).json({ error: "Message is required" });
+      return res.status(400).json({ error: 'Message is required' });
     }
 
     // Educational AI system prompt optimized for neurodivergent learners
@@ -72,17 +72,18 @@ LEGAL EDUCATION SPECIALTY:
 When explaining concepts, always indicate if visual aids would be helpful by saying phrases like "Let me create a diagram for this" or "This concept would benefit from a visual representation."`;
 
     // Convert conversation history to Anthropic format
-    const messages = conversationHistory
-      ?.filter((msg: ConversationMessage) => msg.type !== "system")
-      ?.map((msg: ConversationMessage) => ({
-        role: msg.type === "user" ? "user" : "assistant",
-        content: msg.content
-      })) || [];
+    const messages =
+      conversationHistory
+        ?.filter((msg: ConversationMessage) => msg.type !== 'system')
+        ?.map((msg: ConversationMessage) => ({
+          role: msg.type === 'user' ? 'user' : 'assistant',
+          content: msg.content,
+        })) || [];
 
     // Add current message
     messages.push({
-      role: "user",
-      content: message
+      role: 'user',
+      content: message,
     });
 
     const response = await anthropic.messages.create({
@@ -90,28 +91,46 @@ When explaining concepts, always indicate if visual aids would be helpful by say
       system: systemPrompt,
       messages: messages,
       max_tokens: 1200,
-      temperature: 0.7
+      temperature: 0.7,
     });
 
     const responseText = response.content[0].type === 'text' ? response.content[0].text : '';
 
     // Detect if visual content would be helpful
     const visualKeywords = [
-      'diagram', 'chart', 'visual', 'image', 'illustration', 'graph', 
-      'flowchart', 'timeline', 'map', 'structure', 'process', 'relationship',
-      'comparison', 'hierarchy', 'framework', 'model', 'schema'
+      'diagram',
+      'chart',
+      'visual',
+      'image',
+      'illustration',
+      'graph',
+      'flowchart',
+      'timeline',
+      'map',
+      'structure',
+      'process',
+      'relationship',
+      'comparison',
+      'hierarchy',
+      'framework',
+      'model',
+      'schema',
     ];
-    
+
     const visualPhrases = [
-      'let me create', 'would benefit from a visual', 'this concept needs',
-      'picture this', 'imagine a', 'visualize this', 'draw a', 'show you'
+      'let me create',
+      'would benefit from a visual',
+      'this concept needs',
+      'picture this',
+      'imagine a',
+      'visualize this',
+      'draw a',
+      'show you',
     ];
-    
-    const suggestsVisual = visualKeywords.some(keyword => 
-      responseText.toLowerCase().includes(keyword)
-    ) || visualPhrases.some(phrase => 
-      responseText.toLowerCase().includes(phrase)
-    );
+
+    const suggestsVisual =
+      visualKeywords.some((keyword) => responseText.toLowerCase().includes(keyword)) ||
+      visualPhrases.some((phrase) => responseText.toLowerCase().includes(phrase));
 
     let visualUrl = null;
     let visualType = null;
@@ -127,16 +146,16 @@ When explaining concepts, always indicate if visual aids would be helpful by say
         Content: Visual representation that helps explain the concept clearly.`;
 
         const imageResponse = await openai.images.generate({
-          model: "dall-e-3",
+          model: 'dall-e-3',
           prompt: visualPrompt,
           n: 1,
-          size: "1024x1024",
-          quality: "standard"
+          size: '1024x1024',
+          quality: 'standard',
         });
 
         if (imageResponse.data && imageResponse.data[0]) {
           visualUrl = imageResponse.data[0].url;
-          visualType = "image";
+          visualType = 'image';
           visualDescription = `Educational visual for: ${message}`;
         }
       } catch (error) {
@@ -148,27 +167,30 @@ When explaining concepts, always indicate if visual aids would be helpful by say
     let audioUrl = null;
     try {
       if (process.env.ELEVENLABS_API_KEY && responseText.length > 0) {
-        const ttsResponse = await fetch('https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'xi-api-key': process.env.ELEVENLABS_API_KEY
+        const ttsResponse = await fetch(
+          'https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'xi-api-key': process.env.ELEVENLABS_API_KEY,
+            },
+            body: JSON.stringify({
+              text: responseText.substring(0, 5000), // Limit length for TTS
+              model_id: 'eleven_monolingual_v1',
+              voice_settings: {
+                stability: 0.6,
+                similarity_boost: 0.7,
+                style: 0.3,
+                use_speaker_boost: true,
+              },
+            }),
           },
-          body: JSON.stringify({
-            text: responseText.substring(0, 5000), // Limit length for TTS
-            model_id: "eleven_monolingual_v1",
-            voice_settings: {
-              stability: 0.6,
-              similarity_boost: 0.7,
-              style: 0.3,
-              use_speaker_boost: true
-            }
-          })
-        });
+        );
 
         if (ttsResponse.ok) {
           // In production, save audio to storage and return URL
-          audioUrl = "/api/audio/generated";
+          audioUrl = '/api/audio/generated';
         }
       }
     } catch (error) {
@@ -182,154 +204,150 @@ When explaining concepts, always indicate if visual aids would be helpful by say
       visualType,
       visualDescription,
       timestamp: new Date().toISOString(),
-      conversationId: `conv_${Date.now()}_${userId || 'anonymous'}`
+      conversationId: `conv_${Date.now()}_${userId || 'anonymous'}`,
     });
-
   } catch (error) {
     console.error('Conversation API error:', error);
-    res.status(500).json({ error: "Failed to process conversation" });
+    res.status(500).json({ error: 'Failed to process conversation' });
   }
 });
 
 // Visual generation endpoint
-router.post("/generate-visual", async (req, res) => {
+router.post('/generate-visual', async (req, res) => {
   try {
     const { prompt, type, style, size, userId } = req.body;
 
     if (!prompt) {
-      return res.status(400).json({ error: "Prompt is required" });
+      return res.status(400).json({ error: 'Prompt is required' });
     }
 
     // Build enhanced prompt based on type and style
     let enhancedPrompt = prompt;
-    
+
     switch (type) {
-      case "realistic":
+      case 'realistic':
         enhancedPrompt = `Photorealistic image: ${prompt}. High quality, detailed, professional photography style.`;
         break;
-      case "artistic":
+      case 'artistic':
         enhancedPrompt = `Artistic illustration: ${prompt}. Creative, stylized, visually appealing artwork.`;
         break;
-      case "diagram":
+      case 'diagram':
         enhancedPrompt = `Educational diagram: ${prompt}. Clean lines, clear labels, informative layout, professional design.`;
         break;
-      case "educational":
+      case 'educational':
         enhancedPrompt = `Educational infographic: ${prompt}. Student-friendly, clear explanations, organized visually, engaging design.`;
         break;
-      case "legal":
+      case 'legal':
         enhancedPrompt = `Legal document visual: ${prompt}. Professional, formal, clear hierarchy, suitable for legal education.`;
         break;
     }
 
     // Add style modifiers
     switch (style) {
-      case "photorealistic":
-        enhancedPrompt += " Photorealistic style, high detail, professional photography quality.";
+      case 'photorealistic':
+        enhancedPrompt += ' Photorealistic style, high detail, professional photography quality.';
         break;
-      case "cartoon":
-        enhancedPrompt += " Cartoon style, friendly, approachable, colorful illustration.";
+      case 'cartoon':
+        enhancedPrompt += ' Cartoon style, friendly, approachable, colorful illustration.';
         break;
-      case "sketch":
-        enhancedPrompt += " Hand-drawn sketch style, clean lines, minimal shading.";
+      case 'sketch':
+        enhancedPrompt += ' Hand-drawn sketch style, clean lines, minimal shading.';
         break;
-      case "infographic":
-        enhancedPrompt += " Infographic style, data visualization, charts, clear typography.";
+      case 'infographic':
+        enhancedPrompt += ' Infographic style, data visualization, charts, clear typography.';
         break;
-      case "professional":
-        enhancedPrompt += " Professional business style, clean, modern, corporate aesthetic.";
+      case 'professional':
+        enhancedPrompt += ' Professional business style, clean, modern, corporate aesthetic.';
         break;
     }
 
     // Determine image size
-    let imageSize: "256x256" | "512x512" | "1024x1024" | "1792x1024" | "1024x1792" = "1024x1024";
+    let imageSize: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792' = '1024x1024';
     switch (size) {
-      case "square":
-        imageSize = "1024x1024";
+      case 'square':
+        imageSize = '1024x1024';
         break;
-      case "landscape":
-        imageSize = "1792x1024";
+      case 'landscape':
+        imageSize = '1792x1024';
         break;
-      case "portrait":
-        imageSize = "1024x1792";
+      case 'portrait':
+        imageSize = '1024x1792';
         break;
     }
 
     const imageResponse = await openai.images.generate({
-      model: "dall-e-3",
+      model: 'dall-e-3',
       prompt: enhancedPrompt,
       n: 1,
       size: imageSize,
-      quality: "standard"
+      quality: 'standard',
     });
 
     if (!imageResponse.data || !imageResponse.data[0]) {
-      throw new Error("No image generated");
+      throw new Error('No image generated');
     }
 
     res.json({
       url: imageResponse.data[0].url,
-      type: "image",
+      type: 'image',
       description: prompt,
       enhancedPrompt,
       timestamp: new Date().toISOString(),
-      generationId: `visual_${Date.now()}_${userId || 'anonymous'}`
+      generationId: `visual_${Date.now()}_${userId || 'anonymous'}`,
     });
-
   } catch (error) {
     console.error('Visual generation error:', error);
-    res.status(500).json({ error: "Failed to generate visual content" });
+    res.status(500).json({ error: 'Failed to generate visual content' });
   }
 });
 
 // Speech-to-text endpoint
-router.post("/speech-to-text", upload.single('audio'), async (req, res) => {
+router.post('/speech-to-text', upload.single('audio'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "Audio file is required" });
+      return res.status(400).json({ error: 'Audio file is required' });
     }
 
     // Convert audio to text using OpenAI Whisper
     const transcription = await openai.audio.transcriptions.create({
-      file: new File([req.file.buffer], "audio.wav", { type: req.file.mimetype }),
-      model: "whisper-1",
-      language: "en"
+      file: new File([req.file.buffer], 'audio.wav', { type: req.file.mimetype }),
+      model: 'whisper-1',
+      language: 'en',
     });
 
     res.json({
       text: transcription.text,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Speech-to-text error:', error);
-    res.status(500).json({ error: "Failed to process audio" });
+    res.status(500).json({ error: 'Failed to process audio' });
   }
 });
 
 // Text-to-speech endpoint
-router.post("/text-to-speech", async (req, res) => {
+router.post('/text-to-speech', async (req, res) => {
   try {
-    const { text, voice = "alloy" } = req.body;
+    const { text, voice = 'alloy' } = req.body;
 
     if (!text) {
-      return res.status(400).json({ error: "Text is required" });
+      return res.status(400).json({ error: 'Text is required' });
     }
 
     const mp3 = await openai.audio.speech.create({
-      model: "tts-1",
+      model: 'tts-1',
       voice: voice,
-      input: text.substring(0, 4096) // OpenAI TTS limit
+      input: text.substring(0, 4096), // OpenAI TTS limit
     });
 
     const buffer = Buffer.from(await mp3.arrayBuffer());
-    
+
     res.setHeader('Content-Type', 'audio/mpeg');
     res.setHeader('Content-Length', buffer.length);
     res.send(buffer);
-
   } catch (error) {
     console.error('Text-to-speech error:', error);
-    res.status(500).json({ error: "Failed to generate audio" });
+    res.status(500).json({ error: 'Failed to generate audio' });
   }
 });
 

@@ -6,37 +6,92 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Users, BookOpen, GraduationCap, DollarSign, BarChart3, Settings, School, Brain, TrendingUp, AlertCircle } from 'lucide-react';
+import {
+  Users,
+  BookOpen,
+  GraduationCap,
+  DollarSign,
+  BarChart3,
+  Settings,
+  School,
+  Brain,
+  TrendingUp,
+  AlertCircle,
+} from 'lucide-react';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   const stats = [
-    { title: 'Total Students', value: '1,247', change: '+12%', icon: Users, color: 'text-blue-600' },
-    { title: 'Active Courses', value: '89', change: '+5%', icon: BookOpen, color: 'text-green-600' },
-    { title: 'Graduation Rate', value: '94%', change: '+2%', icon: GraduationCap, color: 'text-purple-600' },
-    { title: 'Revenue (Monthly)', value: '$2.1M', change: '+18%', icon: DollarSign, color: 'text-emerald-600' }
+    {
+      title: 'Total Students',
+      value: '1,247',
+      change: '+12%',
+      icon: Users,
+      color: 'text-blue-600',
+    },
+    {
+      title: 'Active Courses',
+      value: '89',
+      change: '+5%',
+      icon: BookOpen,
+      color: 'text-green-600',
+    },
+    {
+      title: 'Graduation Rate',
+      value: '94%',
+      change: '+2%',
+      icon: GraduationCap,
+      color: 'text-purple-600',
+    },
+    {
+      title: 'Revenue (Monthly)',
+      value: '$2.1M',
+      change: '+18%',
+      icon: DollarSign,
+      color: 'text-emerald-600',
+    },
   ];
 
   const schoolStats = [
     { name: 'SuperHero School (K-6)', students: 387, capacity: 450, utilization: 86 },
     { name: 'Stage Prep School (7-12)', students: 425, capacity: 500, utilization: 85 },
     { name: 'Future Legal Professionals', students: 234, capacity: 300, utilization: 78 },
-    { name: 'Global Language Academy', students: 201, capacity: 250, utilization: 80 }
+    { name: 'Global Language Academy', students: 201, capacity: 250, utilization: 80 },
   ];
 
   const aiMetrics = [
     { feature: 'AI Personal Tutor', usage: 89, satisfaction: 94 },
     { feature: 'Content Creator', usage: 76, satisfaction: 91 },
     { feature: 'Learning Analytics', usage: 82, satisfaction: 88 },
-    { feature: 'Virtual Classroom', usage: 68, satisfaction: 92 }
+    { feature: 'Virtual Classroom', usage: 68, satisfaction: 92 },
   ];
 
   const recentActivities = [
-    { action: 'New student enrollment', details: 'Alice Johnson - Stage Prep School', time: '2 minutes ago', type: 'enrollment' },
-    { action: 'Course completion', details: 'Advanced Theater Arts - 24 students', time: '15 minutes ago', type: 'completion' },
-    { action: 'AI tutor session', details: 'Mathematics help - 156 sessions today', time: '1 hour ago', type: 'ai' },
-    { action: 'Parent portal access', details: '89 new parent accounts created', time: '2 hours ago', type: 'parent' }
+    {
+      action: 'New student enrollment',
+      details: 'Alice Johnson - Stage Prep School',
+      time: '2 minutes ago',
+      type: 'enrollment',
+    },
+    {
+      action: 'Course completion',
+      details: 'Advanced Theater Arts - 24 students',
+      time: '15 minutes ago',
+      type: 'completion',
+    },
+    {
+      action: 'AI tutor session',
+      details: 'Mathematics help - 156 sessions today',
+      time: '1 hour ago',
+      type: 'ai',
+    },
+    {
+      action: 'Parent portal access',
+      details: '89 new parent accounts created',
+      time: '2 hours ago',
+      type: 'parent',
+    },
   ];
 
   return (
@@ -100,14 +155,18 @@ export default function AdminDashboard() {
                     <School className="h-5 w-5" />
                     School Utilization
                   </CardTitle>
-                  <CardDescription>Current enrollment vs capacity across all schools</CardDescription>
+                  <CardDescription>
+                    Current enrollment vs capacity across all schools
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {schoolStats.map((school, index) => (
                     <div key={index} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium">{school.name}</span>
-                        <span className="text-sm text-gray-600">{school.students}/{school.capacity} students</span>
+                        <span className="text-sm text-gray-600">
+                          {school.students}/{school.capacity} students
+                        </span>
                       </div>
                       <Progress value={school.utilization} className="h-2" />
                       <div className="text-xs text-gray-500">{school.utilization}% capacity</div>
@@ -149,13 +208,15 @@ export default function AdminDashboard() {
                   <CardContent className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span>Enrollment</span>
-                      <Badge variant={school.utilization > 85 ? "default" : "secondary"}>
+                      <Badge variant={school.utilization > 85 ? 'default' : 'secondary'}>
                         {school.utilization}% capacity
                       </Badge>
                     </div>
                     <Progress value={school.utilization} />
                     <div className="flex gap-2 mt-4">
-                      <Button size="sm" variant="outline">View Details</Button>
+                      <Button size="sm" variant="outline">
+                        View Details
+                      </Button>
                       <Button size="sm">Manage</Button>
                     </div>
                   </CardContent>
@@ -171,7 +232,9 @@ export default function AdminDashboard() {
                   <Brain className="h-5 w-5" />
                   AI Feature Performance
                 </CardTitle>
-                <CardDescription>Usage statistics and satisfaction ratings for AI-powered features</CardDescription>
+                <CardDescription>
+                  Usage statistics and satisfaction ratings for AI-powered features
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -257,7 +320,9 @@ export default function AdminDashboard() {
                 <CardContent className="p-6 text-center">
                   <Users className="h-8 w-8 mx-auto mb-4 text-blue-600" />
                   <h3 className="font-semibold mb-2">Student Management</h3>
-                  <p className="text-sm text-gray-600 mb-4">Manage enrollments, records, and progress</p>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Manage enrollments, records, and progress
+                  </p>
                   <Button className="w-full">Access</Button>
                 </CardContent>
               </Card>
@@ -275,7 +340,9 @@ export default function AdminDashboard() {
                 <CardContent className="p-6 text-center">
                   <DollarSign className="h-8 w-8 mx-auto mb-4 text-emerald-600" />
                   <h3 className="font-semibold mb-2">Financial Management</h3>
-                  <p className="text-sm text-gray-600 mb-4">Handle billing, payments, and finances</p>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Handle billing, payments, and finances
+                  </p>
                   <Button className="w-full">Access</Button>
                 </CardContent>
               </Card>

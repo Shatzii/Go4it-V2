@@ -1,6 +1,6 @@
 /**
  * Content Abundance Engine
- * 
+ *
  * Demonstrates the platform's ability to generate unlimited educational
  * materials for every possible combination of subject, grade, and learning need.
  */
@@ -16,7 +16,7 @@ class ContentAbundanceEngine {
       bySubject: {},
       byGrade: {},
       byLearningStyle: {},
-      byNeurodivergentNeed: {}
+      byNeurodivergentNeed: {},
     };
   }
 
@@ -25,23 +25,37 @@ class ContentAbundanceEngine {
     console.log('🎓 Demonstrating Educational Content Abundance...\n');
 
     const subjects = ['mathematics', 'science', 'english', 'socialStudies', 'arts'];
-    const grades = ['kindergarten', 'grade1', 'grade2', 'grade3', 'grade4', 'grade5', 
-                   'grade6', 'grade7', 'grade8', 'grade9', 'grade10', 'grade11', 'grade12'];
+    const grades = [
+      'kindergarten',
+      'grade1',
+      'grade2',
+      'grade3',
+      'grade4',
+      'grade5',
+      'grade6',
+      'grade7',
+      'grade8',
+      'grade9',
+      'grade10',
+      'grade11',
+      'grade12',
+    ];
     const learningStyles = ['visual', 'auditory', 'kinesthetic', 'reading'];
     const neurodivergentNeeds = [
       [], // No accommodations
       ['adhd'],
-      ['dyslexia'], 
+      ['dyslexia'],
       ['autism'],
       ['processing'],
       ['gifted'],
       ['adhd', 'dyslexia'], // Multiple accommodations
       ['autism', 'processing'],
-      ['adhd', 'gifted']
+      ['adhd', 'gifted'],
     ];
 
     // Calculate total possible combinations
-    const totalCombinations = subjects.length * grades.length * learningStyles.length * neurodivergentNeeds.length;
+    const totalCombinations =
+      subjects.length * grades.length * learningStyles.length * neurodivergentNeeds.length;
     console.log(`📊 Total Possible Content Combinations: ${totalCombinations.toLocaleString()}`);
     console.log(`   • ${subjects.length} Subjects`);
     console.log(`   • ${grades.length} Grade Levels`);
@@ -59,10 +73,13 @@ class ContentAbundanceEngine {
       const subject = subjects[Math.floor(Math.random() * subjects.length)];
       const grade = grades[Math.floor(Math.random() * grades.length)];
       const learningStyle = learningStyles[Math.floor(Math.random() * learningStyles.length)];
-      const accommodations = neurodivergentNeeds[Math.floor(Math.random() * neurodivergentNeeds.length)];
-      
+      const accommodations =
+        neurodivergentNeeds[Math.floor(Math.random() * neurodivergentNeeds.length)];
+
       // Get a topic for this subject/grade
-      const availableTopics = this.generator.subjects[subject]?.topics[grade] || [`Custom ${subject} Topic`];
+      const availableTopics = this.generator.subjects[subject]?.topics[grade] || [
+        `Custom ${subject} Topic`,
+      ];
       const topic = availableTopics[Math.floor(Math.random() * availableTopics.length)];
 
       try {
@@ -74,7 +91,7 @@ class ContentAbundanceEngine {
           neurodivergentNeeds: accommodations,
           contentType: 'lesson',
           duration: 45,
-          difficulty: 'grade_level'
+          difficulty: 'grade_level',
         });
 
         generatedSamples.push({
@@ -84,7 +101,7 @@ class ContentAbundanceEngine {
           topic,
           learningStyle,
           accommodations,
-          contentPreview: this.createContentPreview(content)
+          contentPreview: this.createContentPreview(content),
         });
 
         this.updateGenerationStats(subject, grade, learningStyle, accommodations);
@@ -93,7 +110,6 @@ class ContentAbundanceEngine {
         if ((i + 1) % 10 === 0) {
           console.log(`   ✓ Generated ${i + 1}/${sampleSize} samples...`);
         }
-
       } catch (error) {
         console.error(`Error generating content for ${subject}/${grade}/${topic}:`, error.message);
       }
@@ -112,19 +128,21 @@ class ContentAbundanceEngine {
       activitiesCount: Object.keys(content.activities).length,
       accommodationsApplied: Object.keys(content.accommodations).length,
       resourcesCount: Object.keys(content.resources).length,
-      hasExtensions: content.extensions.length > 0
+      hasExtensions: content.extensions.length > 0,
     };
   }
 
   updateGenerationStats(subject, grade, learningStyle, accommodations) {
     this.generationStats.totalGenerated++;
-    
+
     this.generationStats.bySubject[subject] = (this.generationStats.bySubject[subject] || 0) + 1;
     this.generationStats.byGrade[grade] = (this.generationStats.byGrade[grade] || 0) + 1;
-    this.generationStats.byLearningStyle[learningStyle] = (this.generationStats.byLearningStyle[learningStyle] || 0) + 1;
-    
-    accommodations.forEach(accommodation => {
-      this.generationStats.byNeurodivergentNeed[accommodation] = (this.generationStats.byNeurodivergentNeed[accommodation] || 0) + 1;
+    this.generationStats.byLearningStyle[learningStyle] =
+      (this.generationStats.byLearningStyle[learningStyle] || 0) + 1;
+
+    accommodations.forEach((accommodation) => {
+      this.generationStats.byNeurodivergentNeed[accommodation] =
+        (this.generationStats.byNeurodivergentNeed[accommodation] || 0) + 1;
     });
   }
 
@@ -163,15 +181,21 @@ class ContentAbundanceEngine {
     console.log('\n🔍 SAMPLE CONTENT ANALYSIS');
     const sampleContent = samples[0];
     if (sampleContent) {
-      console.log(`Sample Package: ${sampleContent.topic} (${sampleContent.subject}, ${sampleContent.grade})`);
+      console.log(
+        `Sample Package: ${sampleContent.topic} (${sampleContent.subject}, ${sampleContent.grade})`,
+      );
       console.log(`   • Learning Style: ${sampleContent.learningStyle}`);
-      console.log(`   • Accommodations: ${sampleContent.accommodations.length > 0 ? sampleContent.accommodations.join(', ') : 'None'}`);
+      console.log(
+        `   • Accommodations: ${sampleContent.accommodations.length > 0 ? sampleContent.accommodations.join(', ') : 'None'}`,
+      );
       console.log(`   • Teacher: ${sampleContent.contentPreview.teacher}`);
       console.log(`   • Learning Objectives: ${sampleContent.contentPreview.objectives.length}`);
       console.log(`   • Vocabulary Terms: ${sampleContent.contentPreview.vocabularyCount}`);
       console.log(`   • Activity Types: ${sampleContent.contentPreview.activitiesCount}`);
       console.log(`   • Resources Included: ${sampleContent.contentPreview.resourcesCount}`);
-      console.log(`   • Extension Activities: ${sampleContent.contentPreview.hasExtensions ? 'Yes' : 'No'}`);
+      console.log(
+        `   • Extension Activities: ${sampleContent.contentPreview.hasExtensions ? 'Yes' : 'No'}`,
+      );
     }
 
     console.log('\n💡 ABUNDANCE FEATURES');
@@ -237,7 +261,7 @@ class ContentAbundanceEngine {
       grade = 'grade5',
       learningStyle = 'visual',
       neurodivergentNeeds = [],
-      topicCount = 10
+      topicCount = 10,
     } = options;
 
     console.log(`\n📚 Generating ${topicCount} ${subject} content packages for ${grade}...`);
@@ -257,7 +281,7 @@ class ContentAbundanceEngine {
           neurodivergentNeeds,
           contentType: 'comprehensive',
           duration: 45,
-          difficulty: 'grade_level'
+          difficulty: 'grade_level',
         });
 
         contentPackages.push({
@@ -266,26 +290,23 @@ class ContentAbundanceEngine {
           objectivesCount: content.content.objectives.length,
           vocabularyCount: content.content.vocabulary.length,
           activitiesCount: Object.keys(content.activities).length,
-          resourcesCount: Object.keys(content.resources).length
+          resourcesCount: Object.keys(content.resources).length,
         });
 
         console.log(`   ✓ Generated: ${topic}`);
-
       } catch (error) {
         console.error(`   ❌ Error generating ${topic}:`, error.message);
       }
     }
 
-    console.log(`\n📊 Generated ${contentPackages.length}/${topicCount} ${subject} packages successfully`);
+    console.log(
+      `\n📊 Generated ${contentPackages.length}/${topicCount} ${subject} packages successfully`,
+    );
     return contentPackages;
   }
 
   async generateNeurodivergentSpecificContent(accommodationType, options = {}) {
-    const {
-      subject = 'mathematics',
-      grade = 'grade3',
-      topicCount = 5
-    } = options;
+    const { subject = 'mathematics', grade = 'grade3', topicCount = 5 } = options;
 
     console.log(`\n🧠 Generating ${accommodationType} accommodated content...`);
 
@@ -304,7 +325,7 @@ class ContentAbundanceEngine {
           neurodivergentNeeds: [accommodationType],
           contentType: 'accommodated',
           duration: 45,
-          difficulty: 'grade_level'
+          difficulty: 'grade_level',
         });
 
         const accommodationDetails = content.accommodations[accommodationType];
@@ -314,25 +335,24 @@ class ContentAbundanceEngine {
           accommodationType,
           accommodationFeatures: Object.keys(accommodationDetails || {}),
           adaptedActivities: content.activities.warmUp.accommodations?.[accommodationType] || {},
-          specialMaterials: this.generator.neurodivergentAdaptations[accommodationType]?.materials || []
+          specialMaterials:
+            this.generator.neurodivergentAdaptations[accommodationType]?.materials || [],
         });
 
         console.log(`   ✓ ${topic} adapted for ${accommodationType}`);
-
       } catch (error) {
         console.error(`   ❌ Error accommodating ${topic}:`, error.message);
       }
     }
 
-    console.log(`\n📊 Generated ${accommodatedContent.length} accommodated packages for ${accommodationType}`);
+    console.log(
+      `\n📊 Generated ${accommodatedContent.length} accommodated packages for ${accommodationType}`,
+    );
     return accommodatedContent;
   }
 
   async generateMultiModalContent(topic, options = {}) {
-    const {
-      subject = 'science',
-      grade = 'grade4'
-    } = options;
+    const { subject = 'science', grade = 'grade4' } = options;
 
     console.log(`\n🎨 Generating multi-modal content for ${topic}...`);
 
@@ -349,25 +369,26 @@ class ContentAbundanceEngine {
           neurodivergentNeeds: [],
           contentType: 'multi_modal',
           duration: 45,
-          difficulty: 'grade_level'
+          difficulty: 'grade_level',
         });
 
         multiModalContent.push({
           learningStyle,
           deliveryMethod: content.content.deliveryMethod,
-          activities: content.activities.mainActivities.map(a => a.name),
+          activities: content.activities.mainActivities.map((a) => a.name),
           materials: content.content.recommendedMaterials,
-          assessmentAdaptations: content.assessments.adaptiveAssessment.formats
+          assessmentAdaptations: content.assessments.adaptiveAssessment.formats,
         });
 
         console.log(`   ✓ ${learningStyle} version created`);
-
       } catch (error) {
         console.error(`   ❌ Error creating ${learningStyle} version:`, error.message);
       }
     }
 
-    console.log(`\n📊 Generated ${multiModalContent.length} learning style variations for ${topic}`);
+    console.log(
+      `\n📊 Generated ${multiModalContent.length} learning style variations for ${topic}`,
+    );
     return multiModalContent;
   }
 
@@ -379,7 +400,7 @@ class ContentAbundanceEngine {
       averageGenerationTime: '< 1 second per package',
       qualityAssurance: 'Template-based consistency',
       customizationLevel: 'Complete personalization',
-      scalability: 'Millions of concurrent users'
+      scalability: 'Millions of concurrent users',
     };
   }
 
@@ -387,7 +408,10 @@ class ContentAbundanceEngine {
     const subjects = Object.keys(this.generator.subjects);
     const grades = Object.keys(this.generator.subjects.mathematics.topics);
     const learningStyles = Object.keys(this.generator.learningStyles);
-    const accommodationSets = Math.pow(2, Object.keys(this.generator.neurodivergentAdaptations).length); // All possible combinations
+    const accommodationSets = Math.pow(
+      2,
+      Object.keys(this.generator.neurodivergentAdaptations).length,
+    ); // All possible combinations
 
     return subjects.length * grades.length * learningStyles.length * accommodationSets;
   }
@@ -396,28 +420,28 @@ class ContentAbundanceEngine {
     return {
       subjects: {
         count: Object.keys(this.generator.subjects).length,
-        names: Object.keys(this.generator.subjects)
+        names: Object.keys(this.generator.subjects),
       },
       grades: {
         count: Object.keys(this.generator.subjects.mathematics.topics).length,
-        range: 'PreK through Grade 12'
+        range: 'PreK through Grade 12',
       },
       learningStyles: {
         count: Object.keys(this.generator.learningStyles).length,
-        types: Object.keys(this.generator.learningStyles)
+        types: Object.keys(this.generator.learningStyles),
       },
       accommodations: {
         count: Object.keys(this.generator.neurodivergentAdaptations).length,
-        types: Object.keys(this.generator.neurodivergentAdaptations)
+        types: Object.keys(this.generator.neurodivergentAdaptations),
       },
       contentTypes: {
         count: Object.keys(this.generator.contentTemplates).length,
-        types: Object.keys(this.generator.contentTemplates)
+        types: Object.keys(this.generator.contentTemplates),
       },
       assessmentTypes: {
         count: Object.keys(this.generator.assessmentBank).length,
-        types: Object.keys(this.generator.assessmentBank)
-      }
+        types: Object.keys(this.generator.assessmentBank),
+      },
     };
   }
 }

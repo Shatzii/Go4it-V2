@@ -13,7 +13,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${appUrl}/starpath`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 },
     { url: `${appUrl}/gar-upload`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 },
     { url: `${appUrl}/challenges`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 },
-    { url: `${appUrl}/ai-football-coach`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 },
+    {
+      url: `${appUrl}/ai-football-coach`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
     { url: `${appUrl}/navigation`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${appUrl}/pricing`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
   ];

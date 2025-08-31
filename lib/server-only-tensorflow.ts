@@ -18,7 +18,7 @@ export class ServerTensorFlowUtils {
 
   async initialize(): Promise<boolean> {
     if (this.isInitialized) return true;
-    
+
     // Only initialize on server side
     if (typeof window !== 'undefined' || process.env.IS_CLIENT === 'true') {
       console.log('Skipping TensorFlow.js initialization on client side');
@@ -27,14 +27,14 @@ export class ServerTensorFlowUtils {
 
     try {
       console.log('Initializing server-side TensorFlow.js...');
-      
+
       // Dynamic imports to prevent webpack bundling
       this.tf = await import('@tensorflow/tfjs-node');
       this.poseDetection = await import('@tensorflow-models/pose-detection');
-      
+
       await this.tf.ready();
       console.log('Server-side TensorFlow.js ready');
-      
+
       this.isInitialized = true;
       return true;
     } catch (error) {
@@ -51,12 +51,12 @@ export class ServerTensorFlowUtils {
 
     try {
       const detectorConfig = {
-        modelType: this.poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING
+        modelType: this.poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
       };
-      
+
       return await this.poseDetection.createDetector(
         this.poseDetection.SupportedModels.MoveNet,
-        detectorConfig
+        detectorConfig,
       );
     } catch (error) {
       console.error('Failed to create pose detector:', error);

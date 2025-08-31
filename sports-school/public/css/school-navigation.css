@@ -143,28 +143,28 @@
 }
 
 /* School-specific color themes */
-.school-nav-floating[data-school="primary"] {
+.school-nav-floating[data-school='primary'] {
   --school-primary: #ff6b6b;
   --school-secondary: #ffa726;
   --school-accent: #66bb6a;
   --school-gradient: linear-gradient(135deg, #ff6b6b, #ffa726);
 }
 
-.school-nav-floating[data-school="secondary"] {
+.school-nav-floating[data-school='secondary'] {
   --school-primary: #667eea;
   --school-secondary: #764ba2;
   --school-accent: #f093fb;
   --school-gradient: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-.school-nav-floating[data-school="law"] {
+.school-nav-floating[data-school='law'] {
   --school-primary: #2c3e50;
   --school-secondary: #34495e;
   --school-accent: #3498db;
   --school-gradient: linear-gradient(135deg, #2c3e50, #34495e);
 }
 
-.school-nav-floating[data-school="language"] {
+.school-nav-floating[data-school='language'] {
   --school-primary: #74b9ff;
   --school-secondary: #0984e3;
   --school-accent: #00cec9;
@@ -180,19 +180,19 @@
     width: auto;
     max-width: 90vw;
   }
-  
+
   .school-nav-floating.expanded {
     width: auto;
   }
-  
+
   .school-nav-header {
     padding: 0.75rem;
   }
-  
+
   .nav-item {
     padding: 0.75rem;
   }
-  
+
   .nav-text {
     font-size: 0.85rem;
   }
@@ -207,7 +207,7 @@
     margin: 1rem;
     width: auto;
   }
-  
+
   .school-nav-header h3 {
     font-size: 0.9rem;
   }
@@ -220,13 +220,27 @@
   animation: slideInNav 0.3s ease forwards;
 }
 
-.nav-item:nth-child(1) { animation-delay: 0.1s; }
-.nav-item:nth-child(2) { animation-delay: 0.15s; }
-.nav-item:nth-child(3) { animation-delay: 0.2s; }
-.nav-item:nth-child(4) { animation-delay: 0.25s; }
-.nav-item:nth-child(5) { animation-delay: 0.3s; }
-.nav-item:nth-child(6) { animation-delay: 0.35s; }
-.nav-item:nth-child(7) { animation-delay: 0.4s; }
+.nav-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.nav-item:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.nav-item:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.nav-item:nth-child(4) {
+  animation-delay: 0.25s;
+}
+.nav-item:nth-child(5) {
+  animation-delay: 0.3s;
+}
+.nav-item:nth-child(6) {
+  animation-delay: 0.35s;
+}
+.nav-item:nth-child(7) {
+  animation-delay: 0.4s;
+}
 
 @keyframes slideInNav {
   to {

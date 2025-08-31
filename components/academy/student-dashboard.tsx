@@ -1,96 +1,115 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useAuth } from '../../hooks/use-auth'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useQuery } from '@tanstack/react-query'
-import { BookOpen, Trophy, Target, Brain, Star, Calendar, MessageCircle, GraduationCap, Clock, Map, Zap, TrendingUp, BarChart3, Video, CreditCard, Bell, Upload, Download } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../hooks/use-auth';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQuery } from '@tanstack/react-query';
+import {
+  BookOpen,
+  Trophy,
+  Target,
+  Brain,
+  Star,
+  Calendar,
+  MessageCircle,
+  GraduationCap,
+  Clock,
+  Map,
+  Zap,
+  TrendingUp,
+  BarChart3,
+  Video,
+  CreditCard,
+  Bell,
+  Upload,
+  Download,
+} from 'lucide-react';
 
 interface Achievement {
-  id: string
-  title: string
-  description: string
-  tier?: string
-  level?: string
-  points?: number
-  icon?: string
-  unlocked: boolean
-  category: string
-  unlockedAt?: Date
+  id: string;
+  title: string;
+  description: string;
+  tier?: string;
+  level?: string;
+  points?: number;
+  icon?: string;
+  unlocked: boolean;
+  category: string;
+  unlockedAt?: Date;
 }
 
 interface StudentProgress {
-  id: string
-  userId: string
-  courseId: string
-  completedLessons: number
-  totalLessons: number
-  points: number
-  streakDays: number
-  lastActivity: Date
+  id: string;
+  userId: string;
+  courseId: string;
+  completedLessons: number;
+  totalLessons: number;
+  points: number;
+  streakDays: number;
+  lastActivity: Date;
 }
 
 interface Course {
-  id: string
-  title: string
-  description: string
-  schoolId: string
-  difficulty: string
-  subjects: string[]
+  id: string;
+  title: string;
+  description: string;
+  schoolId: string;
+  difficulty: string;
+  subjects: string[];
 }
 
 export default function StudentDashboard() {
-  const { user, isAuthenticated } = useAuth()
-  const [selectedSchool, setSelectedSchool] = useState('primary-school')
-  const [isAdmin, setIsAdmin] = useState(false)
-  
+  const { user, isAuthenticated } = useAuth();
+  const [selectedSchool, setSelectedSchool] = useState('primary-school');
+  const [isAdmin, setIsAdmin] = useState(false);
+
   useEffect(() => {
     // Check admin status to allow full access
-    const adminMode = localStorage.getItem('admin_mode') === 'true'
-    const masterAdmin = localStorage.getItem('master_admin') === 'true'
-    const userRole = localStorage.getItem('user_role')
-    setIsAdmin(adminMode || masterAdmin || userRole === 'admin')
-  }, [])
+    const adminMode = localStorage.getItem('admin_mode') === 'true';
+    const masterAdmin = localStorage.getItem('master_admin') === 'true';
+    const userRole = localStorage.getItem('user_role');
+    setIsAdmin(adminMode || masterAdmin || userRole === 'admin');
+  }, []);
 
   const { data: courses, isLoading: coursesLoading } = useQuery({
     queryKey: ['courses', selectedSchool],
     queryFn: async () => {
       // Self-hosted data - no external APIs
-      return getMockCourses(selectedSchool)
+      return getMockCourses(selectedSchool);
     },
     enabled: !!user || isAdmin,
-  })
+  });
 
   const { data: progress, isLoading: progressLoading } = useQuery({
     queryKey: ['progress', user?.id || 'admin', selectedSchool],
     queryFn: async () => {
       // Self-hosted data - no external APIs
-      return getMockProgress()
+      return getMockProgress();
     },
     enabled: !!user || isAdmin,
-  })
+  });
 
   const { data: achievements, isLoading: achievementsLoading } = useQuery({
     queryKey: ['achievements', user?.id || 'admin', selectedSchool],
     queryFn: async () => {
       // Self-hosted data - no external APIs
-      return getMockAchievements()
+      return getMockAchievements();
     },
     enabled: !!user || isAdmin,
-  })
+  });
 
   const { data: enrollments } = useQuery({
     queryKey: ['enrollments', user?.id || 'admin'],
     queryFn: async () => {
       // Self-hosted data - no external APIs
-      return getMockEnrollments()
+      return getMockEnrollments();
     },
     enabled: !!user || isAdmin,
-  })
+  });
 
   if (!isAuthenticated && !isAdmin) {
     return (
@@ -98,13 +117,13 @@ export default function StudentDashboard() {
         <Card className="w-96">
           <CardContent className="pt-6 text-center">
             <p className="text-gray-600">Please sign in to access your dashboard</p>
-            <Button className="mt-4" onClick={() => window.location.href = '/auth'}>
+            <Button className="mt-4" onClick={() => (window.location.href = '/auth')}>
               Sign In
             </Button>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   // Mock data functions for self-hosted operation
@@ -115,7 +134,7 @@ export default function StudentDashboard() {
       description: 'Interactive math learning with superhero themes',
       schoolId,
       difficulty: 'intermediate',
-      subjects: ['Mathematics', 'Problem Solving']
+      subjects: ['Mathematics', 'Problem Solving'],
     },
     {
       id: 'course2',
@@ -123,7 +142,7 @@ export default function StudentDashboard() {
       description: 'Hands-on science experiments and discovery',
       schoolId,
       difficulty: 'beginner',
-      subjects: ['Science', 'Physics', 'Chemistry']
+      subjects: ['Science', 'Physics', 'Chemistry'],
     },
     {
       id: 'course3',
@@ -131,9 +150,9 @@ export default function StudentDashboard() {
       description: 'Engaging stories and reading comprehension',
       schoolId,
       difficulty: 'intermediate',
-      subjects: ['English', 'Literature']
-    }
-  ]
+      subjects: ['English', 'Literature'],
+    },
+  ];
 
   const getMockProgress = (): StudentProgress[] => [
     {
@@ -144,7 +163,7 @@ export default function StudentDashboard() {
       totalLessons: 20,
       points: 450,
       streakDays: 8,
-      lastActivity: new Date()
+      lastActivity: new Date(),
     },
     {
       id: 'prog2',
@@ -154,7 +173,7 @@ export default function StudentDashboard() {
       totalLessons: 18,
       points: 380,
       streakDays: 5,
-      lastActivity: new Date()
+      lastActivity: new Date(),
     },
     {
       id: 'prog3',
@@ -164,9 +183,9 @@ export default function StudentDashboard() {
       totalLessons: 15,
       points: 290,
       streakDays: 3,
-      lastActivity: new Date()
-    }
-  ]
+      lastActivity: new Date(),
+    },
+  ];
 
   const getMockAchievements = () => ({
     earnedAchievements: [
@@ -178,7 +197,7 @@ export default function StudentDashboard() {
         points: 100,
         unlocked: true,
         category: 'Mathematics',
-        unlockedAt: new Date()
+        unlockedAt: new Date(),
       },
       {
         id: 'ach2',
@@ -188,8 +207,8 @@ export default function StudentDashboard() {
         points: 200,
         unlocked: true,
         category: 'Science',
-        unlockedAt: new Date()
-      }
+        unlockedAt: new Date(),
+      },
     ],
     availableAchievements: [
       {
@@ -199,10 +218,10 @@ export default function StudentDashboard() {
         tier: 'Gold',
         points: 300,
         unlocked: false,
-        category: 'English'
-      }
-    ]
-  })
+        category: 'English',
+      },
+    ],
+  });
 
   const getMockEnrollments = () => [
     {
@@ -210,25 +229,29 @@ export default function StudentDashboard() {
       userId: user?.id || 'demo-user',
       schoolId: selectedSchool,
       status: 'active',
-      enrolledAt: new Date()
-    }
-  ]
+      enrolledAt: new Date(),
+    },
+  ];
 
-  const totalProgress = progress?.reduce((sum: number, p: StudentProgress) => sum + (p.completedLessons / p.totalLessons * 100), 0) / (progress?.length || 1) || 0
-  const totalPoints = progress?.reduce((sum: number, p: StudentProgress) => sum + p.points, 0) || 0
-  const currentStreak = Math.max(...(progress?.map((p: StudentProgress) => p.streakDays) || [0]))
+  const totalProgress =
+    progress?.reduce(
+      (sum: number, p: StudentProgress) => sum + (p.completedLessons / p.totalLessons) * 100,
+      0,
+    ) / (progress?.length || 1) || 0;
+  const totalPoints = progress?.reduce((sum: number, p: StudentProgress) => sum + p.points, 0) || 0;
+  const currentStreak = Math.max(...(progress?.map((p: StudentProgress) => p.streakDays) || [0]));
 
   const schoolOptions = [
     { id: 'primary-school', name: 'SuperHero School (K-6)', theme: 'blue', icon: '🦸‍♂️' },
     { id: 'secondary-school', name: 'Stage Prep School (7-12)', theme: 'purple', icon: '🎭' },
     { id: 'language-school', name: 'Language School', theme: 'green', icon: '🌍' },
     { id: 'law-school', name: 'Law School', theme: 'amber', icon: '⚖️' },
-  ]
+  ];
 
   const getSchoolTheme = (schoolId: string) => {
-    const school = schoolOptions.find(s => s.id === schoolId)
-    return school?.theme || 'blue'
-  }
+    const school = schoolOptions.find((s) => s.id === schoolId);
+    return school?.theme || 'blue';
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -241,7 +264,7 @@ export default function StudentDashboard() {
             </h1>
             <p className="text-gray-600">Ready to continue your learning adventure?</p>
           </div>
-          
+
           <div className="flex gap-2">
             {schoolOptions.map((school) => (
               <Button
@@ -277,7 +300,9 @@ export default function StudentDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Points</p>
-                  <p className="text-2xl font-bold text-green-600">{totalPoints.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {totalPoints.toLocaleString()}
+                  </p>
                 </div>
                 <Star className="h-8 w-8 text-green-600" />
               </div>
@@ -324,54 +349,54 @@ export default function StudentDashboard() {
 
           <TabsContent value="courses" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {coursesLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <Card key={i} className="animate-pulse">
-                    <CardContent className="pt-6">
-                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                courses?.map((course: Course) => {
-                  const courseProgress = progress?.find((p: StudentProgress) => p.courseId === course.id)
-                  const progressPercent = courseProgress 
-                    ? (courseProgress.completedLessons / courseProgress.totalLessons * 100)
-                    : 0
-
-                  return (
-                    <Card key={course.id} className="hover:shadow-lg transition-shadow">
+              {coursesLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <Card key={i} className="animate-pulse">
                       <CardContent className="pt-6">
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="font-semibold text-lg">{course.title}</h3>
-                            <p className="text-sm text-gray-600">{course.description}</p>
-                          </div>
-                          
-                          <div className="flex flex-wrap gap-1">
-                            {course.subjects?.slice(0, 3).map((subject) => (
-                              <Badge key={subject} variant="secondary" className="text-xs">
-                                {subject}
-                              </Badge>
-                            ))}
-                          </div>
-                          
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span>Progress</span>
-                              <span>{Math.round(progressPercent)}%</span>
-                            </div>
-                            <Progress value={progressPercent} />
-                          </div>
-                          
-                          <Button className="w-full">Continue Learning</Button>
-                        </div>
+                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
                       </CardContent>
                     </Card>
-                  )
-                })
-              )}
+                  ))
+                : courses?.map((course: Course) => {
+                    const courseProgress = progress?.find(
+                      (p: StudentProgress) => p.courseId === course.id,
+                    );
+                    const progressPercent = courseProgress
+                      ? (courseProgress.completedLessons / courseProgress.totalLessons) * 100
+                      : 0;
+
+                    return (
+                      <Card key={course.id} className="hover:shadow-lg transition-shadow">
+                        <CardContent className="pt-6">
+                          <div className="space-y-4">
+                            <div>
+                              <h3 className="font-semibold text-lg">{course.title}</h3>
+                              <p className="text-sm text-gray-600">{course.description}</p>
+                            </div>
+
+                            <div className="flex flex-wrap gap-1">
+                              {course.subjects?.slice(0, 3).map((subject) => (
+                                <Badge key={subject} variant="secondary" className="text-xs">
+                                  {subject}
+                                </Badge>
+                              ))}
+                            </div>
+
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-sm">
+                                <span>Progress</span>
+                                <span>{Math.round(progressPercent)}%</span>
+                              </div>
+                              <Progress value={progressPercent} />
+                            </div>
+
+                            <Button className="w-full">Continue Learning</Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
             </div>
           </TabsContent>
 
@@ -442,7 +467,11 @@ export default function StudentDashboard() {
                     </div>
                   </div>
                   <Button variant="outline" className="w-full" asChild>
-                    <a href="/curriculum-planning?tab=generator" target="_blank" rel="noopener noreferrer">
+                    <a
+                      href="/curriculum-planning?tab=generator"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Build Schedule
                     </a>
                   </Button>
@@ -468,7 +497,11 @@ export default function StudentDashboard() {
                     <p>• Accommodation strategies</p>
                   </div>
                   <Button variant="outline" className="w-full" asChild>
-                    <a href="/curriculum-planning?userType=teacher" target="_blank" rel="noopener noreferrer">
+                    <a
+                      href="/curriculum-planning?userType=teacher"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       Teacher Dashboard
                     </a>
                   </Button>
@@ -494,7 +527,11 @@ export default function StudentDashboard() {
                     <p>• Assessment schedules</p>
                   </div>
                   <Button variant="outline" className="w-full" asChild>
-                    <a href="/curriculum-planning?tab=features" target="_blank" rel="noopener noreferrer">
+                    <a
+                      href="/curriculum-planning?tab=features"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
                       View Requirements
                     </a>
                   </Button>
@@ -506,9 +543,7 @@ export default function StudentDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>
-                  Common curriculum planning tasks
-                </CardDescription>
+                <CardDescription>Common curriculum planning tasks</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -546,7 +581,8 @@ export default function StudentDashboard() {
                   Adaptive Difficulty Learning
                 </h2>
                 <p className="text-gray-600 max-w-2xl mx-auto">
-                  AI-powered learning that adjusts content difficulty in real-time based on your performance and learning patterns
+                  AI-powered learning that adjusts content difficulty in real-time based on your
+                  performance and learning patterns
                 </p>
               </div>
 
@@ -609,9 +645,7 @@ export default function StudentDashboard() {
                       <span>Mathematics</span>
                       <Badge className="bg-green-100 text-green-800">Level 3.5</Badge>
                     </CardTitle>
-                    <CardDescription>
-                      Strong performance - difficulty increasing
-                    </CardDescription>
+                    <CardDescription>Strong performance - difficulty increasing</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-3 gap-3 text-sm">
@@ -630,8 +664,7 @@ export default function StudentDashboard() {
                     </div>
                     <Progress value={87} className="h-2" />
                     <div className="text-xs text-gray-600 bg-green-50 p-2 rounded">
-                      • Added algebraic word problems
-                      • Introduced multi-step equations
+                      • Added algebraic word problems • Introduced multi-step equations
                     </div>
                   </CardContent>
                 </Card>
@@ -642,9 +675,7 @@ export default function StudentDashboard() {
                       <span>Reading Comprehension</span>
                       <Badge className="bg-blue-100 text-blue-800">Level 2.5</Badge>
                     </CardTitle>
-                    <CardDescription>
-                      Steady progress - maintaining current level
-                    </CardDescription>
+                    <CardDescription>Steady progress - maintaining current level</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-3 gap-3 text-sm">
@@ -663,8 +694,7 @@ export default function StudentDashboard() {
                     </div>
                     <Progress value={72} className="h-2" />
                     <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded">
-                      • Added vocabulary support
-                      • Provided graphic organizers
+                      • Added vocabulary support • Provided graphic organizers
                     </div>
                   </CardContent>
                 </Card>
@@ -703,7 +733,11 @@ export default function StudentDashboard() {
                   </CardHeader>
                   <CardContent>
                     <Button variant="outline" className="w-full" asChild>
-                      <a href="/adaptive-learning?tab=engine" target="_blank" rel="noopener noreferrer">
+                      <a
+                        href="/adaptive-learning?tab=engine"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         Configure Settings
                       </a>
                     </Button>
@@ -726,7 +760,9 @@ export default function StudentDashboard() {
                         <TrendingUp className="h-5 w-5 text-green-600" />
                         <div>
                           <p className="font-medium">Mathematics - Increased Difficulty</p>
-                          <p className="text-sm text-gray-600">Added algebraic word problems due to strong performance</p>
+                          <p className="text-sm text-gray-600">
+                            Added algebraic word problems due to strong performance
+                          </p>
                         </div>
                       </div>
                       <Badge variant="outline" className="text-green-700">
@@ -739,7 +775,9 @@ export default function StudentDashboard() {
                         <Zap className="h-5 w-5 text-blue-600" />
                         <div>
                           <p className="font-medium">Reading - Enhanced Support</p>
-                          <p className="text-sm text-gray-600">Added vocabulary aids and visual organizers</p>
+                          <p className="text-sm text-gray-600">
+                            Added vocabulary aids and visual organizers
+                          </p>
                         </div>
                       </div>
                       <Badge variant="outline" className="text-blue-700">
@@ -752,7 +790,9 @@ export default function StudentDashboard() {
                         <Brain className="h-5 w-5 text-purple-600" />
                         <div>
                           <p className="font-medium">Science - Optimized Pacing</p>
-                          <p className="text-sm text-gray-600">Adjusted lesson timing based on attention patterns</p>
+                          <p className="text-sm text-gray-600">
+                            Adjusted lesson timing based on attention patterns
+                          </p>
                         </div>
                       </div>
                       <Badge variant="outline" className="text-purple-700">
@@ -767,47 +807,56 @@ export default function StudentDashboard() {
 
           <TabsContent value="achievements" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {achievementsLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <Card key={i} className="animate-pulse">
-                    <CardContent className="pt-6">
-                      <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                    </CardContent>
-                  </Card>
-                ))
-              ) : (
-                achievements?.earnedAchievements?.concat(achievements?.availableAchievements || [])?.map((achievement: Achievement) => (
-                  <Card key={achievement.id} className={`${achievement.unlocked ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}>
-                    <CardContent className="pt-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <span className="text-2xl">{achievement.icon || '🏆'}</span>
-                          <Badge variant={achievement.unlocked ? 'default' : 'secondary'}>
-                            {achievement.tier || achievement.level || 'Achievement'}
-                          </Badge>
-                        </div>
-                        
-                        <div>
-                          <h3 className={`font-semibold ${achievement.unlocked ? 'text-green-800' : 'text-gray-600'}`}>
-                            {achievement.title}
-                          </h3>
-                          <p className={`text-sm ${achievement.unlocked ? 'text-green-600' : 'text-gray-500'}`}>
-                            {achievement.description}
-                          </p>
-                        </div>
-                        
-                        {achievement.points && (
-                          <div className="flex items-center gap-2">
-                            <Star className="h-4 w-4 text-yellow-500" />
-                            <span className="text-sm font-medium">{achievement.points} points</span>
+              {achievementsLoading
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <Card key={i} className="animate-pulse">
+                      <CardContent className="pt-6">
+                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                      </CardContent>
+                    </Card>
+                  ))
+                : achievements?.earnedAchievements
+                    ?.concat(achievements?.availableAchievements || [])
+                    ?.map((achievement: Achievement) => (
+                      <Card
+                        key={achievement.id}
+                        className={`${achievement.unlocked ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-gray-50'}`}
+                      >
+                        <CardContent className="pt-6">
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                              <span className="text-2xl">{achievement.icon || '🏆'}</span>
+                              <Badge variant={achievement.unlocked ? 'default' : 'secondary'}>
+                                {achievement.tier || achievement.level || 'Achievement'}
+                              </Badge>
+                            </div>
+
+                            <div>
+                              <h3
+                                className={`font-semibold ${achievement.unlocked ? 'text-green-800' : 'text-gray-600'}`}
+                              >
+                                {achievement.title}
+                              </h3>
+                              <p
+                                className={`text-sm ${achievement.unlocked ? 'text-green-600' : 'text-gray-500'}`}
+                              >
+                                {achievement.description}
+                              </p>
+                            </div>
+
+                            {achievement.points && (
+                              <div className="flex items-center gap-2">
+                                <Star className="h-4 w-4 text-yellow-500" />
+                                <span className="text-sm font-medium">
+                                  {achievement.points} points
+                                </span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))
-              )}
+                        </CardContent>
+                      </Card>
+                    ))}
             </div>
           </TabsContent>
 
@@ -834,17 +883,29 @@ export default function StudentDashboard() {
                       <span>Get Study Help</span>
                     </Button>
                   </div>
-                  
+
                   <div className="p-4 bg-blue-50 rounded-lg">
                     <h4 className="font-semibold text-blue-800 mb-2">Quick Suggestions</h4>
                     <div className="space-y-2">
-                      <Button variant="ghost" size="sm" className="justify-start h-auto p-2 text-blue-700">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="justify-start h-auto p-2 text-blue-700"
+                      >
                         "Show me my learning progress"
                       </Button>
-                      <Button variant="ghost" size="sm" className="justify-start h-auto p-2 text-blue-700">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="justify-start h-auto p-2 text-blue-700"
+                      >
                         "What should I study next?"
                       </Button>
-                      <Button variant="ghost" size="sm" className="justify-start h-auto p-2 text-blue-700">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="justify-start h-auto p-2 text-blue-700"
+                      >
                         "Help me with my assignments"
                       </Button>
                     </div>
@@ -863,9 +924,9 @@ export default function StudentDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     {progress?.map((p: StudentProgress) => {
-                      const course = courses?.find((c: Course) => c.id === p.courseId)
-                      const progressPercent = (p.completedLessons / p.totalLessons) * 100
-                      
+                      const course = courses?.find((c: Course) => c.id === p.courseId);
+                      const progressPercent = (p.completedLessons / p.totalLessons) * 100;
+
                       return (
                         <div key={p.id} className="space-y-2">
                           <div className="flex justify-between">
@@ -880,7 +941,7 @@ export default function StudentDashboard() {
                             <span>{p.streakDays} day streak</span>
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </CardContent>
@@ -893,8 +954,8 @@ export default function StudentDashboard() {
                 <CardContent>
                   <div className="space-y-4">
                     {progress?.slice(0, 5).map((p: StudentProgress) => {
-                      const course = courses?.find((c: Course) => c.id === p.courseId)
-                      
+                      const course = courses?.find((c: Course) => c.id === p.courseId);
+
                       return (
                         <div key={p.id} className="flex items-center gap-3">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -906,7 +967,7 @@ export default function StudentDashboard() {
                           </div>
                           <Badge variant="secondary">+{p.points}pts</Badge>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </CardContent>
@@ -1054,7 +1115,9 @@ export default function StudentDashboard() {
                   <div className="space-y-4">
                     <div className="p-4 bg-blue-50 rounded-lg">
                       <h4 className="font-semibold text-blue-800">Payment managed by parents</h4>
-                      <p className="text-sm text-blue-600">Contact your parents for billing questions</p>
+                      <p className="text-sm text-blue-600">
+                        Contact your parents for billing questions
+                      </p>
                     </div>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
@@ -1063,7 +1126,9 @@ export default function StudentDashboard() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm">Student ID</span>
-                        <span className="text-sm font-medium">STU-2025-{user?.id?.slice(-4) || '1234'}</span>
+                        <span className="text-sm font-medium">
+                          STU-2025-{user?.id?.slice(-4) || '1234'}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm">School Access</span>
@@ -1109,5 +1174,5 @@ export default function StudentDashboard() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

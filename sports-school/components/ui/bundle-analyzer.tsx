@@ -31,17 +31,17 @@ export function BundleAnalyzer() {
   const analyzeBundleSize = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch('/api/bundle-analysis', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to analyze bundle');
       }
-      
+
       const data = await response.json();
       setStats(data);
     } catch (err) {
@@ -78,7 +78,7 @@ export function BundleAnalyzer() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex gap-4">
-          <Button 
+          <Button
             onClick={analyzeBundleSize}
             disabled={loading}
             className="flex items-center gap-2"
@@ -139,7 +139,10 @@ export function BundleAnalyzer() {
               <CardContent>
                 <div className="space-y-4">
                   {stats.chunks.map((chunk, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <FileText className="w-4 h-4 text-gray-600" />
                         <div>
@@ -151,8 +154,8 @@ export function BundleAnalyzer() {
                         <div className={`font-medium ${getSizeColor(chunk.size)}`}>
                           {formatSize(chunk.size)}
                         </div>
-                        <Progress 
-                          value={(chunk.size / stats.totalSize) * 100} 
+                        <Progress
+                          value={(chunk.size / stats.totalSize) * 100}
                           className="w-20 h-2 mt-1"
                         />
                       </div>
@@ -170,7 +173,10 @@ export function BundleAnalyzer() {
               <CardContent>
                 <div className="space-y-3">
                   {stats.largestModules.map((module, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex-1 min-w-0">
                         <div className="font-medium truncate">{module.name}</div>
                         <div className="text-sm text-gray-600 truncate">{module.path}</div>

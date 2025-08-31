@@ -14,41 +14,33 @@ export default function reportsPage() {
           <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
             Administrative Reports
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Comprehensive school reporting
-          </p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">Comprehensive school reporting</p>
         </div>
 
         {/* Content Section */}
         <div className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <div className="prose max-w-none">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-4">
-              Welcome to Reports
-            </h2>
+            <h2 className="text-2xl font-semibold text-gray-900 mb-4">Welcome to Reports</h2>
             <p className="text-gray-600 mb-6">
-              This page is part of the Universal One School AI Education Platform. 
-              Our comprehensive system provides personalized learning experiences 
-              for all students, with specialized support for neurodivergent learners.
+              This page is part of the Universal One School AI Education Platform. Our comprehensive
+              system provides personalized learning experiences for all students, with specialized
+              support for neurodivergent learners.
             </p>
-            
+
             <div className="grid md:grid-cols-2 gap-6 mt-8">
               <div className="bg-blue-50 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">
-                  AI-Powered Learning
-                </h3>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">AI-Powered Learning</h3>
                 <p className="text-blue-700">
-                  Experience personalized education with our advanced AI tutoring system 
-                  that adapts to your unique learning style and needs.
+                  Experience personalized education with our advanced AI tutoring system that adapts
+                  to your unique learning style and needs.
                 </p>
               </div>
-              
+
               <div className="bg-green-50 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold text-green-900 mb-2">
-                  Accessibility First
-                </h3>
+                <h3 className="text-lg font-semibold text-green-900 mb-2">Accessibility First</h3>
                 <p className="text-green-700">
-                  Built with comprehensive accessibility features and neurodivergent 
-                  accommodations to ensure every student can succeed.
+                  Built with comprehensive accessibility features and neurodivergent accommodations
+                  to ensure every student can succeed.
                 </p>
               </div>
             </div>

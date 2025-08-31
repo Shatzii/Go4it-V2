@@ -1,6 +1,6 @@
 /**
  * Learning Profile API Routes
- * 
+ *
  * These routes handle all learning profile and assessment related operations,
  * providing a REST API for clients to interact with the Learning Profile Management System.
  */
@@ -19,17 +19,17 @@ const router = Router();
 router.get('/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    
+
     if (isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-    
+
     const profile = await LearningProfileService.getLearningProfile(userId);
-    
+
     if (!profile) {
       return res.status(404).json({ error: 'Learning profile not found' });
     }
-    
+
     res.json(profile);
   } catch (error) {
     console.error('Error fetching learning profile:', error);
@@ -62,21 +62,24 @@ router.post('/', async (req, res) => {
 router.patch('/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    
+
     if (isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-    
+
     // Validate the update data (partial validation)
     const validatedData = insertLearningProfileSchema.partial().parse(req.body);
-    
+
     // Update the profile
-    const updatedProfile = await LearningProfileService.updateLearningProfile(userId, validatedData);
-    
+    const updatedProfile = await LearningProfileService.updateLearningProfile(
+      userId,
+      validatedData,
+    );
+
     if (!updatedProfile) {
       return res.status(404).json({ error: 'Learning profile not found' });
     }
-    
+
     res.json(updatedProfile);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -94,24 +97,24 @@ router.patch('/:userId', async (req, res) => {
 router.post('/:userId/generate', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    
+
     if (isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-    
+
     const profile = await LearningProfileService.generateProfileFromAssessments(userId);
     res.json(profile);
   } catch (error) {
     console.error('Error generating learning profile:', error);
-    
+
     // Specific error for no assessments
     if (error instanceof Error && error.message.includes('No assessments found')) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Cannot generate profile without assessments',
-        message: 'User must complete required assessments first'
+        message: 'User must complete required assessments first',
       });
     }
-    
+
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -123,19 +126,19 @@ router.post('/:userId/generate', async (req, res) => {
 router.get('/:userId/assessments', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    
+
     if (isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-    
+
     // Get type filter if provided
     const type = req.query.type?.toString();
-    
+
     const assessments = await LearningProfileService.getAssessmentResultsByUser(
-      userId, 
-      type as any // The service will handle validation
+      userId,
+      type as any, // The service will handle validation
     );
-    
+
     res.json(assessments);
   } catch (error) {
     console.error('Error fetching assessment results:', error);
@@ -150,20 +153,20 @@ router.get('/:userId/assessments', async (req, res) => {
 router.post('/:userId/assessments', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    
+
     if (isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-    
+
     // Validate and merge with userId
     const validatedData = insertAssessmentResultSchema.parse({
       ...req.body,
-      userId
+      userId,
     });
-    
+
     // Save the assessment
     const assessment = await LearningProfileService.saveAssessmentResult(validatedData);
-    
+
     res.status(201).json(assessment);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -181,19 +184,19 @@ router.post('/:userId/assessments', async (req, res) => {
 router.get('/:userId/assessments/status', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
-    
+
     if (isNaN(userId)) {
       return res.status(400).json({ error: 'Invalid user ID' });
     }
-    
+
     const isComplete = await LearningProfileService.hasCompletedAllRequiredAssessments(userId);
-    
+
     res.json({
       userId,
       isComplete,
-      message: isComplete 
+      message: isComplete
         ? 'All required assessments completed'
-        : 'User has not completed all required assessments'
+        : 'User has not completed all required assessments',
     });
   } catch (error) {
     console.error('Error checking assessment status:', error);

@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import React, { useState, useRef, useEffect } from 'react'
-import Link from 'next/link'
+import React, { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 
 interface Message {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  timestamp: Date
-  subject?: string
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+  subject?: string;
 }
 
 export default function AITutorPage() {
@@ -16,42 +16,62 @@ export default function AITutorPage() {
     {
       id: '1',
       role: 'assistant',
-      content: 'Hello! I\'m your AI Tutor. I can help you with any subject from K-12 through college level. I specialize in neurodivergent learning support and can adapt my teaching style to your needs. What would you like to learn about today?',
-      timestamp: new Date()
-    }
-  ])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedSubject, setSelectedSubject] = useState('General')
-  const [learningStyle, setLearningStyle] = useState('Visual')
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+      content:
+        "Hello! I'm your AI Tutor. I can help you with any subject from K-12 through college level. I specialize in neurodivergent learning support and can adapt my teaching style to your needs. What would you like to learn about today?",
+      timestamp: new Date(),
+    },
+  ]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState('General');
+  const [learningStyle, setLearningStyle] = useState('Visual');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const subjects = ['General', 'Mathematics', 'Science', 'English', 'History', 'Foreign Languages', 'Programming', 'Law', 'Art', 'Music']
-  const learningStyles = ['Visual', 'Auditory', 'Kinesthetic', 'Reading/Writing', 'ADHD Support', 'Dyslexia Support', 'Autism Support']
+  const subjects = [
+    'General',
+    'Mathematics',
+    'Science',
+    'English',
+    'History',
+    'Foreign Languages',
+    'Programming',
+    'Law',
+    'Art',
+    'Music',
+  ];
+  const learningStyles = [
+    'Visual',
+    'Auditory',
+    'Kinesthetic',
+    'Reading/Writing',
+    'ADHD Support',
+    'Dyslexia Support',
+    'Autism Support',
+  ];
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+    scrollToBottom();
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim()) return
+    e.preventDefault();
+    if (!input.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input,
       timestamp: new Date(),
-      subject: selectedSubject
-    }
+      subject: selectedSubject,
+    };
 
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/ai-tutor', {
@@ -61,46 +81,47 @@ export default function AITutorPage() {
           message: input,
           subject: selectedSubject,
           learningStyle,
-          conversationHistory: messages.slice(-5)
-        })
-      })
+          conversationHistory: messages.slice(-5),
+        }),
+      });
 
-      const data = await response.json()
-      
+      const data = await response.json();
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: data.response || 'I apologize, but I encountered an error. Please try again.',
         timestamp: new Date(),
-        subject: selectedSubject
-      }
+        subject: selectedSubject,
+      };
 
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('AI Tutor Error:', error)
+      console.error('AI Tutor Error:', error);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: 'I\'m experiencing technical difficulties. Please try again in a moment.',
-        timestamp: new Date()
-      }
-      setMessages(prev => [...prev, errorMessage])
+        content: "I'm experiencing technical difficulties. Please try again in a moment.",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-xl hover:text-blue-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-xl hover:text-blue-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              AI Personal Tutor
-            </div>
+            <div className="text-white font-bold text-xl">AI Personal Tutor</div>
           </nav>
         </div>
       </header>
@@ -110,29 +131,37 @@ export default function AITutorPage() {
           <div className="lg:col-span-1">
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
               <h3 className="text-white font-bold text-lg mb-4">Learning Preferences</h3>
-              
+
               <div className="mb-4">
-                <label className="block text-white/80 mb-2 text-sm font-medium">Subject Focus</label>
-                <select 
+                <label className="block text-white/80 mb-2 text-sm font-medium">
+                  Subject Focus
+                </label>
+                <select
                   value={selectedSubject}
                   onChange={(e) => setSelectedSubject(e.target.value)}
                   className="w-full p-2 rounded-lg bg-black/30 text-white border border-white/30 focus:border-blue-400"
                 >
-                  {subjects.map(subject => (
-                    <option key={subject} value={subject}>{subject}</option>
+                  {subjects.map((subject) => (
+                    <option key={subject} value={subject}>
+                      {subject}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div className="mb-4">
-                <label className="block text-white/80 mb-2 text-sm font-medium">Learning Style</label>
-                <select 
+                <label className="block text-white/80 mb-2 text-sm font-medium">
+                  Learning Style
+                </label>
+                <select
                   value={learningStyle}
                   onChange={(e) => setLearningStyle(e.target.value)}
                   className="w-full p-2 rounded-lg bg-black/30 text-white border border-white/30 focus:border-blue-400"
                 >
-                  {learningStyles.map(style => (
-                    <option key={style} value={style}>{style}</option>
+                  {learningStyles.map((style) => (
+                    <option key={style} value={style}>
+                      {style}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -153,12 +182,17 @@ export default function AITutorPage() {
             <div className="bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 h-[600px] flex flex-col">
               <div className="flex-1 overflow-y-auto p-6 space-y-4">
                 {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-4 rounded-lg ${
-                      message.role === 'user' 
-                        ? 'bg-blue-600 text-white' 
-                        : 'bg-white/20 text-white border border-white/30'
-                    }`}>
+                  <div
+                    key={message.id}
+                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-[80%] p-4 rounded-lg ${
+                        message.role === 'user'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white/20 text-white border border-white/30'
+                      }`}
+                    >
                       {message.role === 'assistant' && (
                         <div className="flex items-center mb-2">
                           <span className="text-blue-300 text-sm font-medium">AI Tutor</span>
@@ -213,5 +247,5 @@ export default function AITutorPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

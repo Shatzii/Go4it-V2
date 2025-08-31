@@ -1,98 +1,108 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  Database, 
-  Shield, 
-  Globe, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Database,
+  Shield,
+  Globe,
   User,
   BarChart3,
   Filter,
   Download,
   RefreshCw,
   Eye,
-  X
-} from 'lucide-react'
-import { ErrorTrackingService, ErrorLog, ErrorSeverity, ErrorCategory } from '@/lib/error-tracking'
+  X,
+} from 'lucide-react';
+import { ErrorTrackingService, ErrorLog, ErrorSeverity, ErrorCategory } from '@/lib/error-tracking';
 
 export default function ErrorDashboard() {
-  const [errors, setErrors] = useState<ErrorLog[]>([])
-  const [selectedError, setSelectedError] = useState<ErrorLog | null>(null)
+  const [errors, setErrors] = useState<ErrorLog[]>([]);
+  const [selectedError, setSelectedError] = useState<ErrorLog | null>(null);
   const [filter, setFilter] = useState<{
-    severity?: ErrorSeverity
-    category?: ErrorCategory
-    resolved?: boolean
-  }>({})
+    severity?: ErrorSeverity;
+    category?: ErrorCategory;
+    resolved?: boolean;
+  }>({});
 
-  const errorTracker = ErrorTrackingService.getInstance()
+  const errorTracker = ErrorTrackingService.getInstance();
 
   useEffect(() => {
     // Load initial errors
-    setErrors(errorTracker.getErrors())
+    setErrors(errorTracker.getErrors());
 
     // Listen for new errors
     const handleNewError = (error: ErrorLog) => {
-      setErrors(prev => [...prev, error])
-    }
+      setErrors((prev) => [...prev, error]);
+    };
 
-    errorTracker.addListener(handleNewError)
-    return () => errorTracker.removeListener(handleNewError)
-  }, [])
+    errorTracker.addListener(handleNewError);
+    return () => errorTracker.removeListener(handleNewError);
+  }, []);
 
-  const analytics = errorTracker.getAnalytics()
+  const analytics = errorTracker.getAnalytics();
 
-  const filteredErrors = errors.filter(error => {
-    if (filter.severity && error.severity !== filter.severity) return false
-    if (filter.category && error.category !== filter.category) return false
-    if (filter.resolved !== undefined && error.resolved !== filter.resolved) return false
-    return true
-  })
+  const filteredErrors = errors.filter((error) => {
+    if (filter.severity && error.severity !== filter.severity) return false;
+    if (filter.category && error.category !== filter.category) return false;
+    if (filter.resolved !== undefined && error.resolved !== filter.resolved) return false;
+    return true;
+  });
 
   const getSeverityColor = (severity: ErrorSeverity) => {
     switch (severity) {
-      case ErrorSeverity.CRITICAL: return 'bg-red-500'
-      case ErrorSeverity.HIGH: return 'bg-orange-500'
-      case ErrorSeverity.MEDIUM: return 'bg-yellow-500'
-      case ErrorSeverity.LOW: return 'bg-blue-500'
-      default: return 'bg-gray-500'
+      case ErrorSeverity.CRITICAL:
+        return 'bg-red-500';
+      case ErrorSeverity.HIGH:
+        return 'bg-orange-500';
+      case ErrorSeverity.MEDIUM:
+        return 'bg-yellow-500';
+      case ErrorSeverity.LOW:
+        return 'bg-blue-500';
+      default:
+        return 'bg-gray-500';
     }
-  }
+  };
 
   const getCategoryIcon = (category: ErrorCategory) => {
     switch (category) {
-      case ErrorCategory.AUTHENTICATION: return Shield
-      case ErrorCategory.DATABASE: return Database
-      case ErrorCategory.API: return Globe
-      case ErrorCategory.UI: return User
-      default: return AlertTriangle
+      case ErrorCategory.AUTHENTICATION:
+        return Shield;
+      case ErrorCategory.DATABASE:
+        return Database;
+      case ErrorCategory.API:
+        return Globe;
+      case ErrorCategory.UI:
+        return User;
+      default:
+        return AlertTriangle;
     }
-  }
+  };
 
   const resolveError = (errorId: string) => {
-    errorTracker.resolveError(errorId, 'admin')
-    setErrors(prev => prev.map(e => 
-      e.id === errorId ? { ...e, resolved: true, resolvedAt: new Date() } : e
-    ))
-  }
+    errorTracker.resolveError(errorId, 'admin');
+    setErrors((prev) =>
+      prev.map((e) => (e.id === errorId ? { ...e, resolved: true, resolvedAt: new Date() } : e)),
+    );
+  };
 
   const exportErrors = () => {
-    const dataStr = JSON.stringify(filteredErrors, null, 2)
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
-    const exportFileDefaultName = `errors_${new Date().toISOString().split('T')[0]}.json`
-    
-    const linkElement = document.createElement('a')
-    linkElement.setAttribute('href', dataUri)
-    linkElement.setAttribute('download', exportFileDefaultName)
-    linkElement.click()
-  }
+    const dataStr = JSON.stringify(filteredErrors, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const exportFileDefaultName = `errors_${new Date().toISOString().split('T')[0]}.json`;
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -164,16 +174,16 @@ export default function ErrorDashboard() {
         <CardContent>
           <div className="flex flex-wrap gap-2">
             <Button
-              variant={filter.severity === undefined ? "default" : "outline"}
-              onClick={() => setFilter(prev => ({ ...prev, severity: undefined }))}
+              variant={filter.severity === undefined ? 'default' : 'outline'}
+              onClick={() => setFilter((prev) => ({ ...prev, severity: undefined }))}
             >
               All Severities
             </Button>
-            {Object.values(ErrorSeverity).map(severity => (
+            {Object.values(ErrorSeverity).map((severity) => (
               <Button
                 key={severity}
-                variant={filter.severity === severity ? "default" : "outline"}
-                onClick={() => setFilter(prev => ({ ...prev, severity }))}
+                variant={filter.severity === severity ? 'default' : 'outline'}
+                onClick={() => setFilter((prev) => ({ ...prev, severity }))}
               >
                 {severity.charAt(0).toUpperCase() + severity.slice(1)}
               </Button>
@@ -181,20 +191,20 @@ export default function ErrorDashboard() {
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
             <Button
-              variant={filter.resolved === undefined ? "default" : "outline"}
-              onClick={() => setFilter(prev => ({ ...prev, resolved: undefined }))}
+              variant={filter.resolved === undefined ? 'default' : 'outline'}
+              onClick={() => setFilter((prev) => ({ ...prev, resolved: undefined }))}
             >
               All Status
             </Button>
             <Button
-              variant={filter.resolved === false ? "default" : "outline"}
-              onClick={() => setFilter(prev => ({ ...prev, resolved: false }))}
+              variant={filter.resolved === false ? 'default' : 'outline'}
+              onClick={() => setFilter((prev) => ({ ...prev, resolved: false }))}
             >
               Unresolved
             </Button>
             <Button
-              variant={filter.resolved === true ? "default" : "outline"}
-              onClick={() => setFilter(prev => ({ ...prev, resolved: true }))}
+              variant={filter.resolved === true ? 'default' : 'outline'}
+              onClick={() => setFilter((prev) => ({ ...prev, resolved: true }))}
             >
               Resolved
             </Button>
@@ -212,7 +222,7 @@ export default function ErrorDashboard() {
             <ScrollArea className="h-[600px]">
               <div className="space-y-2">
                 {filteredErrors.map((error) => {
-                  const CategoryIcon = getCategoryIcon(error.category)
+                  const CategoryIcon = getCategoryIcon(error.category);
                   return (
                     <div
                       key={error.id}
@@ -233,13 +243,11 @@ export default function ErrorDashboard() {
                           <Badge className={getSeverityColor(error.severity)}>
                             {error.severity}
                           </Badge>
-                          {error.resolved && (
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                          )}
+                          {error.resolved && <CheckCircle className="h-4 w-4 text-green-500" />}
                         </div>
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </ScrollArea>
@@ -252,11 +260,7 @@ export default function ErrorDashboard() {
             <CardTitle className="flex items-center justify-between">
               Error Details
               {selectedError && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedError(null)}
-                >
+                <Button variant="ghost" size="sm" onClick={() => setSelectedError(null)}>
                   <X className="h-4 w-4" />
                 </Button>
               )}
@@ -269,9 +273,7 @@ export default function ErrorDashboard() {
                   <Badge className={getSeverityColor(selectedError.severity)}>
                     {selectedError.severity}
                   </Badge>
-                  <Badge variant="outline">
-                    {selectedError.category}
-                  </Badge>
+                  <Badge variant="outline">{selectedError.category}</Badge>
                 </div>
 
                 <div>
@@ -338,5 +340,5 @@ export default function ErrorDashboard() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

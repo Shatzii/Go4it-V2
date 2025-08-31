@@ -6,7 +6,7 @@ import { recommendedIndexes, DatabasePerformanceMonitor } from '@/lib/database-o
 export async function POST(req: NextRequest) {
   try {
     const { action, queryId } = await req.json();
-    
+
     switch (action) {
       case 'create_indexes':
         return await createIndexes();
@@ -27,35 +27,35 @@ export async function POST(req: NextRequest) {
 
 async function createIndexes() {
   const results = [];
-  
+
   for (const index of recommendedIndexes) {
     try {
       const startTime = performance.now();
       await db.execute(index.query);
       const endTime = performance.now();
-      
+
       results.push({
         description: index.description,
         performance: index.performance,
         status: 'created',
-        duration: endTime - startTime
+        duration: endTime - startTime,
       });
     } catch (error) {
       results.push({
         description: index.description,
         status: 'error',
-        error: error.message
+        error: error.message,
       });
     }
   }
-  
+
   return NextResponse.json({ results });
 }
 
 async function updateGARScores() {
   try {
     const startTime = performance.now();
-    
+
     await db.execute(`
       WITH latest_analysis AS (
         SELECT 
@@ -74,19 +74,22 @@ async function updateGARScores() {
       FROM latest_analysis
       WHERE users.id = latest_analysis.user_id
     `);
-    
+
     const endTime = performance.now();
-    
+
     return NextResponse.json({
       success: true,
       duration: endTime - startTime,
-      message: 'GAR scores updated successfully'
+      message: 'GAR scores updated successfully',
     });
   } catch (error) {
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      { status: 500 },
+    );
   }
 }
 
@@ -95,7 +98,7 @@ async function getPerformanceStats() {
     slowQueries: DatabasePerformanceMonitor.getSlowQueries(),
     queryStats: {
       // Add basic query stats here
-    }
+    },
   });
 }
 
@@ -110,16 +113,19 @@ export async function GET(req: NextRequest) {
     const startTime = performance.now();
     await db.execute('SELECT 1');
     const endTime = performance.now();
-    
+
     return NextResponse.json({
       status: 'healthy',
       responseTime: endTime - startTime,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    return NextResponse.json({
-      status: 'error',
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        status: 'error',
+        error: error.message,
+      },
+      { status: 500 },
+    );
   }
 }

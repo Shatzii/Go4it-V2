@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Shield, Users, Calendar, Trophy, Star, Clock, MapPin } from 'lucide-react'
-import Link from 'next/link'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Shield, Users, Calendar, Trophy, Star, Clock, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 export default function FlagFootballPage() {
-  const [selectedDivision, setSelectedDivision] = useState('all')
+  const [selectedDivision, setSelectedDivision] = useState('all');
 
   const divisions = [
     { id: '6u', name: '6U', ages: '4-6', teams: 2, players: 24 },
@@ -16,8 +16,8 @@ export default function FlagFootballPage() {
     { id: '10u', name: '10U', ages: '9-10', teams: 2, players: 28 },
     { id: '12u', name: '12U', ages: '11-12', teams: 3, players: 42 },
     { id: '14u', name: '14U', ages: '13-14', teams: 2, players: 32 },
-    { id: '16u', name: '16U', ages: '15-16', teams: 1, players: 14 }
-  ]
+    { id: '16u', name: '16U', ages: '15-16', teams: 1, players: 14 },
+  ];
 
   const upcomingGames = [
     {
@@ -27,7 +27,7 @@ export default function FlagFootballPage() {
       division: '12U',
       date: '2025-01-25',
       time: '10:00 AM',
-      location: 'Field A'
+      location: 'Field A',
     },
     {
       id: 2,
@@ -36,7 +36,7 @@ export default function FlagFootballPage() {
       division: '10U',
       date: '2025-01-25',
       time: '11:30 AM',
-      location: 'Field B'
+      location: 'Field B',
     },
     {
       id: 3,
@@ -45,18 +45,53 @@ export default function FlagFootballPage() {
       division: '14U',
       date: '2025-01-26',
       time: '9:00 AM',
-      location: 'Field A'
-    }
-  ]
+      location: 'Field A',
+    },
+  ];
 
   const teams = [
-    { name: 'Lightning Bolts', division: '12U', coach: 'Coach Martinez', players: 14, wins: 8, losses: 2 },
-    { name: 'Thunder Hawks', division: '12U', coach: 'Coach Johnson', players: 13, wins: 7, losses: 3 },
-    { name: 'Storm Eagles', division: '10U', coach: 'Coach Williams', players: 15, wins: 9, losses: 1 },
-    { name: 'Fire Dragons', division: '10U', coach: 'Coach Davis', players: 13, wins: 6, losses: 4 },
+    {
+      name: 'Lightning Bolts',
+      division: '12U',
+      coach: 'Coach Martinez',
+      players: 14,
+      wins: 8,
+      losses: 2,
+    },
+    {
+      name: 'Thunder Hawks',
+      division: '12U',
+      coach: 'Coach Johnson',
+      players: 13,
+      wins: 7,
+      losses: 3,
+    },
+    {
+      name: 'Storm Eagles',
+      division: '10U',
+      coach: 'Coach Williams',
+      players: 15,
+      wins: 9,
+      losses: 1,
+    },
+    {
+      name: 'Fire Dragons',
+      division: '10U',
+      coach: 'Coach Davis',
+      players: 13,
+      wins: 6,
+      losses: 4,
+    },
     { name: 'Sky Wolves', division: '14U', coach: 'Coach Brown', players: 16, wins: 8, losses: 2 },
-    { name: 'Wind Runners', division: '14U', coach: 'Coach Wilson', players: 16, wins: 5, losses: 5 },
-  ]
+    {
+      name: 'Wind Runners',
+      division: '14U',
+      coach: 'Coach Wilson',
+      players: 16,
+      wins: 5,
+      losses: 5,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -73,7 +108,7 @@ export default function FlagFootballPage() {
               </div>
               <h1 className="text-4xl font-bold mb-4">🏈 Flag Football Program</h1>
               <p className="text-xl text-green-100 max-w-2xl">
-                Safe, fun, and competitive flag football following official USA Football guidelines. 
+                Safe, fun, and competitive flag football following official USA Football guidelines.
                 No-contact play focusing on skill development and teamwork.
               </p>
             </div>
@@ -136,8 +171,8 @@ export default function FlagFootballPage() {
           <h2 className="text-2xl font-bold mb-6">Age Divisions</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {divisions.map((division) => (
-              <Card 
-                key={division.id} 
+              <Card
+                key={division.id}
                 className="bg-slate-800 border-slate-700 hover:border-green-500 cursor-pointer transition-all"
                 onClick={() => setSelectedDivision(division.id)}
               >
@@ -199,9 +234,7 @@ export default function FlagFootballPage() {
                     <CardTitle className="text-white">{team.name}</CardTitle>
                     <Badge className="bg-green-600 text-white">{team.division}</Badge>
                   </div>
-                  <CardDescription className="text-slate-400">
-                    Coach: {team.coach}
-                  </CardDescription>
+                  <CardDescription className="text-slate-400">Coach: {team.coach}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-3 gap-4 text-center">
@@ -286,5 +319,5 @@ export default function FlagFootballPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -17,11 +17,14 @@ export function PerformanceMonitor() {
 
   useEffect(() => {
     const measurePerformance = () => {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const navigation = performance.getEntriesByType(
+        'navigation',
+      )[0] as PerformanceNavigationTiming;
       const memory = (performance as any).memory;
-      
+
       const loadTime = navigation.loadEventEnd - navigation.loadEventStart;
-      const renderTime = navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
+      const renderTime =
+        navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart;
       const interactionTime = navigation.domInteractive - navigation.domLoading;
       const memoryUsage = memory ? memory.usedJSHeapSize / (1024 * 1024) : 0;
       const networkLatency = navigation.responseStart - navigation.requestStart;
@@ -31,7 +34,7 @@ export function PerformanceMonitor() {
         renderTime,
         interactionTime,
         memoryUsage,
-        networkLatency
+        networkLatency,
       });
     };
 
@@ -135,9 +138,7 @@ export function PerformanceMonitor() {
       </div>
 
       <div className="mt-3 pt-2 border-t border-slate-700">
-        <p className="text-xs text-slate-500">
-          Press Ctrl+Shift+P to toggle
-        </p>
+        <p className="text-xs text-slate-500">Press Ctrl+Shift+P to toggle</p>
       </div>
     </div>
   );

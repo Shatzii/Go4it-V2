@@ -1,88 +1,88 @@
-'use client'
+'use client';
 
-import React, { useState, useEffect } from 'react'
-import Link from 'next/link'
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 interface StudentRecord {
-  id: string
-  firstName: string
-  lastName: string
-  email: string
-  gradeLevel: string
-  enrollmentType: 'onsite' | 'online_premium' | 'online_free' | 'hybrid'
-  accessLevel: 'full' | 'premium' | 'basic' | 'trial'
-  subscriptionStatus: 'active' | 'inactive' | 'trial' | 'cancelled'
-  tuitionPaid: boolean
-  paymentMethod?: string
-  schoolId: string
-  lastLogin?: Date
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  gradeLevel: string;
+  enrollmentType: 'onsite' | 'online_premium' | 'online_free' | 'hybrid';
+  accessLevel: 'full' | 'premium' | 'basic' | 'trial';
+  subscriptionStatus: 'active' | 'inactive' | 'trial' | 'cancelled';
+  tuitionPaid: boolean;
+  paymentMethod?: string;
+  schoolId: string;
+  lastLogin?: Date;
   monthlyUsage: {
-    aiTutorSessions: number
-    virtualClassrooms: number
-    liveAttendance: number
-  }
+    aiTutorSessions: number;
+    virtualClassrooms: number;
+    liveAttendance: number;
+  };
 }
 
 interface DashboardStats {
-  totalStudents: number
-  paidStudents: number
-  freeUsers: number
-  onsiteStudents: number
-  onlineStudents: number
-  hybridStudents: number
-  monthlyRevenue: number
-  activeSubscriptions: number
+  totalStudents: number;
+  paidStudents: number;
+  freeUsers: number;
+  onsiteStudents: number;
+  onlineStudents: number;
+  hybridStudents: number;
+  monthlyRevenue: number;
+  activeSubscriptions: number;
 }
 
 export default function StudentManagementPage() {
-  const [students, setStudents] = useState<StudentRecord[]>([])
-  const [stats, setStats] = useState<DashboardStats | null>(null)
-  const [selectedFilter, setSelectedFilter] = useState('all')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
-  const [selectedSchool, setSelectedSchool] = useState('all')
+  const [students, setStudents] = useState<StudentRecord[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [selectedSchool, setSelectedSchool] = useState('all');
 
   const enrollmentTypeLabels = {
     onsite: 'On-Site Student',
     online_premium: 'Online Premium',
     online_free: 'Online Basic',
-    hybrid: 'Hybrid Learning'
-  }
+    hybrid: 'Hybrid Learning',
+  };
 
   const accessLevelColors = {
     full: 'bg-green-500/20 text-green-300',
     premium: 'bg-blue-500/20 text-blue-300',
     basic: 'bg-yellow-500/20 text-yellow-300',
-    trial: 'bg-gray-500/20 text-gray-300'
-  }
+    trial: 'bg-gray-500/20 text-gray-300',
+  };
 
   const schools = [
     { id: 'all', name: 'All Schools' },
     { id: 'primary', name: 'SuperHero School (K-6)' },
     { id: 'secondary', name: 'S.T.A.G.E Prep (7-12)' },
     { id: 'law', name: 'Law School' },
-    { id: 'language', name: 'Language School' }
-  ]
+    { id: 'language', name: 'Language School' },
+  ];
 
   useEffect(() => {
-    fetchStudentData()
-  }, [])
+    fetchStudentData();
+  }, []);
 
   const fetchStudentData = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/student-management')
-      const data = await response.json()
-      setStudents(data.students || mockStudents)
-      setStats(data.stats || mockStats)
+      const response = await fetch('/api/student-management');
+      const data = await response.json();
+      setStudents(data.students || mockStudents);
+      setStats(data.stats || mockStats);
     } catch (error) {
-      console.error('Failed to fetch student data:', error)
-      setStudents(mockStudents)
-      setStats(mockStats)
+      console.error('Failed to fetch student data:', error);
+      setStudents(mockStudents);
+      setStats(mockStats);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const mockStats: DashboardStats = {
     totalStudents: 247,
@@ -92,8 +92,8 @@ export default function StudentManagementPage() {
     onlineStudents: 134,
     hybridStudents: 31,
     monthlyRevenue: 47850,
-    activeSubscriptions: 189
-  }
+    activeSubscriptions: 189,
+  };
 
   const mockStudents: StudentRecord[] = [
     {
@@ -109,7 +109,7 @@ export default function StudentManagementPage() {
       paymentMethod: 'annual',
       schoolId: 'secondary',
       lastLogin: new Date('2025-01-22'),
-      monthlyUsage: { aiTutorSessions: 15, virtualClassrooms: 8, liveAttendance: 20 }
+      monthlyUsage: { aiTutorSessions: 15, virtualClassrooms: 8, liveAttendance: 20 },
     },
     {
       id: '2',
@@ -124,7 +124,7 @@ export default function StudentManagementPage() {
       paymentMethod: 'monthly',
       schoolId: 'primary',
       lastLogin: new Date('2025-01-23'),
-      monthlyUsage: { aiTutorSessions: 32, virtualClassrooms: 12, liveAttendance: 15 }
+      monthlyUsage: { aiTutorSessions: 32, virtualClassrooms: 12, liveAttendance: 15 },
     },
     {
       id: '3',
@@ -138,7 +138,7 @@ export default function StudentManagementPage() {
       tuitionPaid: false,
       schoolId: 'law',
       lastLogin: new Date('2025-01-20'),
-      monthlyUsage: { aiTutorSessions: 3, virtualClassrooms: 1, liveAttendance: 0 }
+      monthlyUsage: { aiTutorSessions: 3, virtualClassrooms: 1, liveAttendance: 0 },
     },
     {
       id: '4',
@@ -153,28 +153,31 @@ export default function StudentManagementPage() {
       paymentMethod: 'semester',
       schoolId: 'secondary',
       lastLogin: new Date('2025-01-23'),
-      monthlyUsage: { aiTutorSessions: 18, virtualClassrooms: 6, liveAttendance: 25 }
-    }
-  ]
+      monthlyUsage: { aiTutorSessions: 18, virtualClassrooms: 6, liveAttendance: 25 },
+    },
+  ];
 
-  const filteredStudents = students.filter(student => {
-    const matchesSearch = student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         student.email.toLowerCase().includes(searchTerm.toLowerCase())
-    
-    const matchesFilter = selectedFilter === 'all' || 
-                         (selectedFilter === 'paid' && student.tuitionPaid) ||
-                         (selectedFilter === 'free' && !student.tuitionPaid) ||
-                         (selectedFilter === 'onsite' && student.enrollmentType === 'onsite') ||
-                         (selectedFilter === 'online' && (student.enrollmentType === 'online_premium' || student.enrollmentType === 'online_free'))
+  const filteredStudents = students.filter((student) => {
+    const matchesSearch =
+      student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      student.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesSchool = selectedSchool === 'all' || student.schoolId === selectedSchool
+    const matchesFilter =
+      selectedFilter === 'all' ||
+      (selectedFilter === 'paid' && student.tuitionPaid) ||
+      (selectedFilter === 'free' && !student.tuitionPaid) ||
+      (selectedFilter === 'onsite' && student.enrollmentType === 'onsite') ||
+      (selectedFilter === 'online' &&
+        (student.enrollmentType === 'online_premium' || student.enrollmentType === 'online_free'));
 
-    return matchesSearch && matchesFilter && matchesSchool
-  })
+    const matchesSchool = selectedSchool === 'all' || student.schoolId === selectedSchool;
+
+    return matchesSearch && matchesFilter && matchesSchool;
+  });
 
   const exportData = () => {
-    const csvData = filteredStudents.map(student => ({
+    const csvData = filteredStudents.map((student) => ({
       Name: `${student.firstName} ${student.lastName}`,
       Email: student.email,
       Grade: student.gradeLevel,
@@ -184,21 +187,21 @@ export default function StudentManagementPage() {
       School: student.schoolId,
       'AI Sessions': student.monthlyUsage.aiTutorSessions,
       'Virtual Classes': student.monthlyUsage.virtualClassrooms,
-      'Live Attendance': student.monthlyUsage.liveAttendance
-    }))
-    
+      'Live Attendance': student.monthlyUsage.liveAttendance,
+    }));
+
     const csvContent = [
       Object.keys(csvData[0]).join(','),
-      ...csvData.map(row => Object.values(row).join(','))
-    ].join('\n')
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `student-data-${new Date().toISOString().split('T')[0]}.csv`
-    a.click()
-  }
+      ...csvData.map((row) => Object.values(row).join(',')),
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `student-data-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
 
   if (isLoading) {
     return (
@@ -206,7 +209,7 @@ export default function StudentManagementPage() {
         <div className="animate-spin w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full"></div>
         <span className="text-white ml-3">Loading student data...</span>
       </div>
-    )
+    );
   }
 
   return (
@@ -214,20 +217,25 @@ export default function StudentManagementPage() {
       <header className="bg-black/20 backdrop-blur-sm border-b border-white/10">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-xl hover:text-blue-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-xl hover:text-blue-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              Student Management System
-            </div>
+            <div className="text-white font-bold text-xl">Student Management System</div>
           </nav>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Student Enrollment & Access Management</h1>
-          <p className="text-gray-300">Track and manage different student types, payments, and feature usage</p>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Student Enrollment & Access Management
+          </h1>
+          <p className="text-gray-300">
+            Track and manage different student types, payments, and feature usage
+          </p>
         </div>
 
         {/* Stats Dashboard */}
@@ -257,7 +265,9 @@ export default function StudentManagementPage() {
             <div className="text-white/70 text-sm">Hybrid</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-            <div className="text-2xl font-bold text-emerald-300">${stats?.monthlyRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-emerald-300">
+              ${stats?.monthlyRevenue.toLocaleString()}
+            </div>
             <div className="text-white/70 text-sm">Monthly Revenue</div>
           </div>
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
@@ -270,7 +280,9 @@ export default function StudentManagementPage() {
         <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label className="block text-white/80 mb-2 text-sm font-medium">Search Students</label>
+              <label className="block text-white/80 mb-2 text-sm font-medium">
+                Search Students
+              </label>
               <input
                 type="text"
                 value={searchTerm}
@@ -281,7 +293,7 @@ export default function StudentManagementPage() {
             </div>
             <div>
               <label className="block text-white/80 mb-2 text-sm font-medium">Filter by Type</label>
-              <select 
+              <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
                 className="w-full p-2 rounded-lg bg-black/30 text-white border border-white/30 focus:border-blue-400"
@@ -295,13 +307,15 @@ export default function StudentManagementPage() {
             </div>
             <div>
               <label className="block text-white/80 mb-2 text-sm font-medium">School</label>
-              <select 
+              <select
                 value={selectedSchool}
                 onChange={(e) => setSelectedSchool(e.target.value)}
                 className="w-full p-2 rounded-lg bg-black/30 text-white border border-white/30 focus:border-blue-400"
               >
-                {schools.map(school => (
-                  <option key={school.id} value={school.id}>{school.name}</option>
+                {schools.map((school) => (
+                  <option key={school.id} value={school.id}>
+                    {school.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -337,16 +351,22 @@ export default function StudentManagementPage() {
                   <tr key={student.id} className="border-t border-white/10 hover:bg-white/5">
                     <td className="p-4">
                       <div>
-                        <div className="text-white font-medium">{student.firstName} {student.lastName}</div>
+                        <div className="text-white font-medium">
+                          {student.firstName} {student.lastName}
+                        </div>
                         <div className="text-white/60 text-sm">{student.email}</div>
                       </div>
                     </td>
                     <td className="p-4 text-white/80">{student.gradeLevel}</td>
                     <td className="p-4">
-                      <span className="text-white/80">{enrollmentTypeLabels[student.enrollmentType]}</span>
+                      <span className="text-white/80">
+                        {enrollmentTypeLabels[student.enrollmentType]}
+                      </span>
                     </td>
                     <td className="p-4">
-                      <span className={`px-2 py-1 rounded text-xs ${accessLevelColors[student.accessLevel]}`}>
+                      <span
+                        className={`px-2 py-1 rounded text-xs ${accessLevelColors[student.accessLevel]}`}
+                      >
                         {student.accessLevel}
                       </span>
                     </td>
@@ -372,8 +392,12 @@ export default function StudentManagementPage() {
                     <td className="p-4">
                       <div className="flex space-x-2">
                         <button className="text-blue-300 hover:text-blue-400 text-sm">Edit</button>
-                        <button className="text-green-300 hover:text-green-400 text-sm">Usage</button>
-                        <button className="text-purple-300 hover:text-purple-400 text-sm">Billing</button>
+                        <button className="text-green-300 hover:text-green-400 text-sm">
+                          Usage
+                        </button>
+                        <button className="text-purple-300 hover:text-purple-400 text-sm">
+                          Billing
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -390,5 +414,5 @@ export default function StudentManagementPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

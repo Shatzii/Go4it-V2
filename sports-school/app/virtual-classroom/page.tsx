@@ -1,16 +1,16 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Video, 
-  Mic, 
-  MicOff, 
-  VideoOff, 
-  Monitor, 
-  Users, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Video,
+  Mic,
+  MicOff,
+  VideoOff,
+  Monitor,
+  Users,
   MessageSquare,
   Settings,
   Phone,
@@ -20,32 +20,68 @@ import {
   Microscope,
   Palette,
   Globe,
-  Heart
-} from 'lucide-react'
-import Link from 'next/link'
+  Heart,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function VirtualClassroom() {
-  const [isVideoOn, setIsVideoOn] = useState(true)
-  const [isMicOn, setIsMicOn] = useState(true)
-  const [isScreenSharing, setIsScreenSharing] = useState(false)
-  const [selectedTeacher, setSelectedTeacher] = useState<number | null>(null)
+  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(true);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<number | null>(null);
 
   const aiTeachers = [
-    { id: 1, name: 'Professor Newton', subject: 'Mathematics', icon: <Calculator className="h-5 w-5" />, color: 'blue' },
-    { id: 2, name: 'Dr. Curie', subject: 'Science', icon: <Microscope className="h-5 w-5" />, color: 'green' },
-    { id: 3, name: 'Ms. Shakespeare', subject: 'English', icon: <BookOpen className="h-5 w-5" />, color: 'purple' },
-    { id: 4, name: 'Professor Timeline', subject: 'Social Studies', icon: <Globe className="h-5 w-5" />, color: 'orange' },
-    { id: 5, name: 'Maestro Picasso', subject: 'Arts', icon: <Palette className="h-5 w-5" />, color: 'pink' },
-    { id: 6, name: 'Dr. Inclusive', subject: 'Special Education', icon: <Heart className="h-5 w-5" />, color: 'red' }
-  ]
+    {
+      id: 1,
+      name: 'Professor Newton',
+      subject: 'Mathematics',
+      icon: <Calculator className="h-5 w-5" />,
+      color: 'blue',
+    },
+    {
+      id: 2,
+      name: 'Dr. Curie',
+      subject: 'Science',
+      icon: <Microscope className="h-5 w-5" />,
+      color: 'green',
+    },
+    {
+      id: 3,
+      name: 'Ms. Shakespeare',
+      subject: 'English',
+      icon: <BookOpen className="h-5 w-5" />,
+      color: 'purple',
+    },
+    {
+      id: 4,
+      name: 'Professor Timeline',
+      subject: 'Social Studies',
+      icon: <Globe className="h-5 w-5" />,
+      color: 'orange',
+    },
+    {
+      id: 5,
+      name: 'Maestro Picasso',
+      subject: 'Arts',
+      icon: <Palette className="h-5 w-5" />,
+      color: 'pink',
+    },
+    {
+      id: 6,
+      name: 'Dr. Inclusive',
+      subject: 'Special Education',
+      icon: <Heart className="h-5 w-5" />,
+      color: 'red',
+    },
+  ];
 
   const currentSession = {
     title: 'Advanced Mathematics Tutorial',
     teacher: 'Professor Newton',
     participants: 12,
     duration: '45 minutes',
-    topic: 'Quadratic Equations'
-  }
+    topic: 'Quadratic Equations',
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
@@ -100,9 +136,7 @@ export default function VirtualClassroom() {
                           <Users className="h-3 w-3 mr-1" />
                           {currentSession.participants}
                         </Badge>
-                        <Badge className="bg-black/50 text-white">
-                          {currentSession.duration}
-                        </Badge>
+                        <Badge className="bg-black/50 text-white">{currentSession.duration}</Badge>
                       </div>
                     </div>
                   </div>
@@ -111,21 +145,21 @@ export default function VirtualClassroom() {
                 {/* Video Controls */}
                 <div className="flex items-center justify-center gap-4">
                   <Button
-                    variant={isMicOn ? "default" : "destructive"}
+                    variant={isMicOn ? 'default' : 'destructive'}
                     size="sm"
                     onClick={() => setIsMicOn(!isMicOn)}
                   >
                     {isMicOn ? <Mic className="h-4 w-4" /> : <MicOff className="h-4 w-4" />}
                   </Button>
                   <Button
-                    variant={isVideoOn ? "default" : "destructive"}
+                    variant={isVideoOn ? 'default' : 'destructive'}
                     size="sm"
                     onClick={() => setIsVideoOn(!isVideoOn)}
                   >
                     {isVideoOn ? <Video className="h-4 w-4" /> : <VideoOff className="h-4 w-4" />}
                   </Button>
                   <Button
-                    variant={isScreenSharing ? "secondary" : "outline"}
+                    variant={isScreenSharing ? 'secondary' : 'outline'}
                     size="sm"
                     onClick={() => setIsScreenSharing(!isScreenSharing)}
                   >
@@ -196,9 +230,7 @@ export default function VirtualClassroom() {
                     >
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-full bg-${teacher.color}-100`}>
-                          <div className={`text-${teacher.color}-600`}>
-                            {teacher.icon}
-                          </div>
+                          <div className={`text-${teacher.color}-600`}>{teacher.icon}</div>
                         </div>
                         <div>
                           <p className="font-medium text-sm">{teacher.name}</p>
@@ -264,5 +296,5 @@ export default function VirtualClassroom() {
         </div>
       </div>
     </div>
-  )
+  );
 }

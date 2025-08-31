@@ -6,5 +6,5 @@ export default function Loading() {
         <p className="text-white text-lg">Loading Go4It Sports Platform...</p>
       </div>
     </div>
-  )
+  );
 }

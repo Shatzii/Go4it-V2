@@ -1,1137 +1,1171 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adaptive Difficulty Slider - ShotziOS</title>
-  <style>
-    :root {
-      --primary-color: #1e90ff;
-      --primary-hover: #1a7ad9;
-      --secondary-color: #32cd32;
-      --success-color: #32cd32;
-      --warning-color: #ffc107;
-      --danger-color: #dc3545;
-      --info-color: #17a2b8;
-      --background-dark: #000000;
-      --card-background: #121212;
-      --input-background: #1e1e1e;
-      --border-color: #333333;
-      --text-light: #ffffff;
-      --text-secondary: #aaaaaa;
-      --text-accent: #1e90ff;
-      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      --very-easy-color: #4cd137;
-      --easy-color: #7bed9f;
-      --moderate-color: #1e90ff;
-      --challenging-color: #ff9f43;
-      --expert-color: #ff6b6b;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Open Dyslexic', Arial, sans-serif;
-      background-color: var(--background-dark);
-      color: var(--text-light);
-      line-height: 1.6;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 0;
-      border-bottom: 2px solid var(--primary-color);
-      margin-bottom: 30px;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--primary-color);
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: var(--primary-color);
-      margin-right: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      font-weight: bold;
-    }
-
-    nav {
-      margin-bottom: 20px;
-    }
-
-    .nav-links {
-      display: flex;
-      list-style: none;
-      gap: 15px;
-    }
-
-    .nav-link {
-      color: var(--text-light);
-      text-decoration: none;
-      padding: 8px 15px;
-      border-radius: 5px;
-      transition: all 0.3s ease;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      background-color: var(--primary-color);
-    }
-
-    .card {
-      background-color: var(--card-background);
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 15px;
-      margin-bottom: 15px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .card-title {
-      font-size: 1.5rem;
-      color: var(--primary-color);
-    }
-
-    h1, h2, h3, h4, h5, h6 {
-      color: var(--primary-color);
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-family: 'Open Dyslexic', Arial, sans-serif;
-    }
-
-    .btn:hover {
-      background-color: var(--primary-hover);
-      transform: translateY(-2px);
-    }
-
-    .btn-success {
-      background-color: var(--success-color);
-    }
-
-    .btn-success:hover {
-      background-color: #2ab528;
-    }
-
-    .btn-warning {
-      background-color: var(--warning-color);
-      color: #212529;
-    }
-
-    .btn-warning:hover {
-      background-color: #e0a800;
-    }
-
-    .btn-danger {
-      background-color: var(--danger-color);
-    }
-
-    .btn-danger:hover {
-      background-color: #c82333;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border-color);
-      border-radius: 5px;
-      background-color: var(--input-background);
-      color: var(--text-light);
-      font-family: 'Open Dyslexic', Arial, sans-serif;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary-color);
-    }
-
-    .checkbox-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-top: 15px;
-    }
-
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .checkbox-item input[type="checkbox"] {
-      width: auto;
-      margin-right: 10px;
-    }
-
-    .slider-container {
-      width: 100%;
-      padding: 20px 0;
-    }
-
-    .slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 15px;
-      border-radius: 10px;
-      background: linear-gradient(to right, 
-        var(--very-easy-color), 
-        var(--easy-color), 
-        var(--moderate-color), 
-        var(--challenging-color), 
-        var(--expert-color)
-      );
-      outline: none;
-      margin: 20px 0;
-    }
-
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: white;
-      cursor: pointer;
-      border: 3px solid var(--primary-color);
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-    }
-
-    .slider::-moz-range-thumb {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: white;
-      cursor: pointer;
-      border: 3px solid var(--primary-color);
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-    }
-
-    .slider-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .slider-label {
-      text-align: center;
-      font-size: 14px;
-      padding: 5px 8px;
-      border-radius: 5px;
-    }
-
-    .very-easy {
-      color: var(--very-easy-color);
-    }
-
-    .easy {
-      color: var(--easy-color);
-    }
-
-    .moderate {
-      color: var(--moderate-color);
-    }
-
-    .challenging {
-      color: var(--challenging-color);
-    }
-
-    .expert {
-      color: var(--expert-color);
-    }
-
-    .active-label {
-      font-weight: bold;
-      font-size: 16px;
-      border: 2px solid currentColor;
-    }
-
-    .difficulty-description {
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 16px;
-      line-height: 1.5;
-      border-left: 4px solid var(--primary-color);
-      background-color: rgba(30, 144, 255, 0.1);
-    }
-
-    .settings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-
-    .settings-card {
-      background-color: var(--input-background);
-      border-radius: 8px;
-      padding: 15px;
-      border: 1px solid var(--border-color);
-    }
-
-    .settings-card h3 {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: var(--primary-color);
-    }
-
-    .notification {
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 20px;
-      display: none;
-    }
-
-    .notification-success {
-      background-color: rgba(50, 205, 50, 0.2);
-      border: 1px solid var(--success-color);
-      color: var(--success-color);
-    }
-
-    .notification-error {
-      background-color: rgba(220, 53, 69, 0.2);
-      border: 1px solid var(--danger-color);
-      color: var(--danger-color);
-    }
-
-    .subject-list {
-      margin-top: 20px;
-    }
-
-    .subject-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 15px;
-      border-radius: 5px;
-      background-color: var(--input-background);
-      margin-bottom: 10px;
-      transition: all 0.3s ease;
-    }
-
-    .subject-item:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .subject-label {
-      font-weight: bold;
-    }
-
-    .subject-level {
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-weight: bold;
-      text-align: center;
-      min-width: 100px;
-    }
-
-    .preview-section {
-      margin-top: 30px;
-    }
-
-    .preview-container {
-      background-color: var(--input-background);
-      border-radius: 8px;
-      padding: 20px;
-      white-space: pre-wrap;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .preview-tabs {
-      display: flex;
-      margin-bottom: 15px;
-    }
-
-    .preview-tab {
-      padding: 10px 15px;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: all 0.3s ease;
-    }
-
-    .preview-tab.active {
-      border-bottom: 3px solid var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .history-container {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .history-item {
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      background-color: var(--input-background);
-      border-left: 4px solid var(--primary-color);
-    }
-
-    .history-timestamp {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
-    }
-
-    .history-details {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .history-change {
-      display: flex;
-      align-items: center;
-    }
-
-    .history-arrow {
-      margin: 0 10px;
-      font-size: 18px;
-    }
-
-    .history-reason {
-      font-style: italic;
-    }
-
-    @media (max-width: 768px) {
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Adaptive Difficulty Slider - ShotziOS</title>
+    <style>
+      :root {
+        --primary-color: #1e90ff;
+        --primary-hover: #1a7ad9;
+        --secondary-color: #32cd32;
+        --success-color: #32cd32;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+        --background-dark: #000000;
+        --card-background: #121212;
+        --input-background: #1e1e1e;
+        --border-color: #333333;
+        --text-light: #ffffff;
+        --text-secondary: #aaaaaa;
+        --text-accent: #1e90ff;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        --very-easy-color: #4cd137;
+        --easy-color: #7bed9f;
+        --moderate-color: #1e90ff;
+        --challenging-color: #ff9f43;
+        --expert-color: #ff6b6b;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Open Dyslexic', Arial, sans-serif;
+        background-color: var(--background-dark);
+        color: var(--text-light);
+        line-height: 1.6;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 2px solid var(--primary-color);
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--primary-color);
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        margin-right: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      nav {
+        margin-bottom: 20px;
+      }
+
+      .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 15px;
+      }
+
+      .nav-link {
+        color: var(--text-light);
+        text-decoration: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+      }
+
+      .nav-link:hover,
+      .nav-link.active {
+        background-color: var(--primary-color);
+      }
+
+      .card {
+        background-color: var(--card-background);
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        margin-bottom: 20px;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+      }
+
+      .btn {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Open Dyslexic', Arial, sans-serif;
+      }
+
+      .btn:hover {
+        background-color: var(--primary-hover);
+        transform: translateY(-2px);
+      }
+
+      .btn-success {
+        background-color: var(--success-color);
+      }
+
+      .btn-success:hover {
+        background-color: #2ab528;
+      }
+
+      .btn-warning {
+        background-color: var(--warning-color);
+        color: #212529;
+      }
+
+      .btn-warning:hover {
+        background-color: #e0a800;
+      }
+
+      .btn-danger {
+        background-color: var(--danger-color);
+      }
+
+      .btn-danger:hover {
+        background-color: #c82333;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        background-color: var(--input-background);
+        color: var(--text-light);
+        font-family: 'Open Dyslexic', Arial, sans-serif;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 15px;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .checkbox-item input[type='checkbox'] {
+        width: auto;
+        margin-right: 10px;
+      }
+
+      .slider-container {
+        width: 100%;
+        padding: 20px 0;
+      }
+
+      .slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 15px;
+        border-radius: 10px;
+        background: linear-gradient(
+          to right,
+          var(--very-easy-color),
+          var(--easy-color),
+          var(--moderate-color),
+          var(--challenging-color),
+          var(--expert-color)
+        );
+        outline: none;
+        margin: 20px 0;
+      }
+
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        border: 3px solid var(--primary-color);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .slider::-moz-range-thumb {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        border: 3px solid var(--primary-color);
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      }
+
+      .slider-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .slider-label {
+        text-align: center;
+        font-size: 14px;
+        padding: 5px 8px;
+        border-radius: 5px;
+      }
+
+      .very-easy {
+        color: var(--very-easy-color);
+      }
+
+      .easy {
+        color: var(--easy-color);
+      }
+
+      .moderate {
+        color: var(--moderate-color);
+      }
+
+      .challenging {
+        color: var(--challenging-color);
+      }
+
+      .expert {
+        color: var(--expert-color);
+      }
+
+      .active-label {
+        font-weight: bold;
+        font-size: 16px;
+        border: 2px solid currentColor;
+      }
+
+      .difficulty-description {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-size: 16px;
+        line-height: 1.5;
+        border-left: 4px solid var(--primary-color);
+        background-color: rgba(30, 144, 255, 0.1);
+      }
+
       .settings-grid {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
       }
-    }
 
-    /* Accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      .btn:hover, .subject-item:hover, .slider::-webkit-slider-thumb, .slider::-moz-range-thumb {
-        transform: none;
-        transition: none;
+      .settings-card {
+        background-color: var(--input-background);
+        border-radius: 8px;
+        padding: 15px;
+        border: 1px solid var(--border-color);
       }
-    }
 
-    *:focus {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <header>
-      <div class="logo">ShotziOS Adaptive Learning</div>
-      <div class="user-info">
-        <div class="user-avatar">S</div>
-        <div>Student</div>
-      </div>
-    </header>
+      .settings-card h3 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+      }
 
-    <nav>
-      <ul class="nav-links">
-        <li><a href="/tools" class="nav-link">Tools</a></li>
-        <li><a href="/curriculum" class="nav-link">Curriculum</a></li>
-        <li><a href="#" class="nav-link active">Adaptive Difficulty</a></li>
-        <li><a href="/performance" class="nav-link">Performance</a></li>
-      </ul>
-    </nav>
+      .notification {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: none;
+      }
 
-    <div id="notification" class="notification"></div>
+      .notification-success {
+        background-color: rgba(50, 205, 50, 0.2);
+        border: 1px solid var(--success-color);
+        color: var(--success-color);
+      }
 
-    <div class="card">
-      <div class="card-header">
-        <h1 class="card-title">Adaptive Difficulty Settings</h1>
-      </div>
+      .notification-error {
+        background-color: rgba(220, 53, 69, 0.2);
+        border: 1px solid var(--danger-color);
+        color: var(--danger-color);
+      }
 
-      <p>Adjust the difficulty level of learning content to match your needs. The system will automatically adapt content vocabulary, examples, instructions, and assessments based on your settings.</p>
+      .subject-list {
+        margin-top: 20px;
+      }
 
-      <div class="form-group">
-        <label for="userId">Student ID</label>
-        <input type="text" id="userId" placeholder="Enter your student ID">
-      </div>
+      .subject-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        border-radius: 5px;
+        background-color: var(--input-background);
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+      }
 
-      <div class="card">
-        <h2>Global Difficulty Level</h2>
-        <p>This setting applies to all subjects unless a specific subject difficulty is set.</p>
+      .subject-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
 
-        <div class="slider-container">
-          <div class="slider-labels">
-            <div class="slider-label very-easy" data-level="1">Very Easy</div>
-            <div class="slider-label easy" data-level="2">Easy</div>
-            <div class="slider-label moderate active-label" data-level="3">Moderate</div>
-            <div class="slider-label challenging" data-level="4">Challenging</div>
-            <div class="slider-label expert" data-level="5">Expert</div>
-          </div>
-          
-          <input type="range" min="1" max="5" value="3" step="1" class="slider" id="globalDifficulty">
-          
-          <div class="difficulty-description" id="difficultyDescription">
-            <strong>Moderate Difficulty:</strong> Standard level content with balanced vocabulary, clear explanations, and appropriate examples. Suitable for most students with some background in the subject.
-          </div>
+      .subject-label {
+        font-weight: bold;
+      }
+
+      .subject-level {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+        min-width: 100px;
+      }
+
+      .preview-section {
+        margin-top: 30px;
+      }
+
+      .preview-container {
+        background-color: var(--input-background);
+        border-radius: 8px;
+        padding: 20px;
+        white-space: pre-wrap;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .preview-tabs {
+        display: flex;
+        margin-bottom: 15px;
+      }
+
+      .preview-tab {
+        padding: 10px 15px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .preview-tab.active {
+        border-bottom: 3px solid var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .history-container {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .history-item {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        background-color: var(--input-background);
+        border-left: 4px solid var(--primary-color);
+      }
+
+      .history-timestamp {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 5px;
+      }
+
+      .history-details {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .history-change {
+        display: flex;
+        align-items: center;
+      }
+
+      .history-arrow {
+        margin: 0 10px;
+        font-size: 18px;
+      }
+
+      .history-reason {
+        font-style: italic;
+      }
+
+      @media (max-width: 768px) {
+        .settings-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Accessibility */
+      @media (prefers-reduced-motion: reduce) {
+        .btn:hover,
+        .subject-item:hover,
+        .slider::-webkit-slider-thumb,
+        .slider::-moz-range-thumb {
+          transform: none;
+          transition: none;
+        }
+      }
+
+      *:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">ShotziOS Adaptive Learning</div>
+        <div class="user-info">
+          <div class="user-avatar">S</div>
+          <div>Student</div>
         </div>
-        
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="autoAdjust" checked>
-            Automatically adjust difficulty based on my performance
-          </label>
-        </div>
-      </div>
+      </header>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="/tools" class="nav-link">Tools</a></li>
+          <li><a href="/curriculum" class="nav-link">Curriculum</a></li>
+          <li><a href="#" class="nav-link active">Adaptive Difficulty</a></li>
+          <li><a href="/performance" class="nav-link">Performance</a></li>
+        </ul>
+      </nav>
+
+      <div id="notification" class="notification"></div>
 
       <div class="card">
         <div class="card-header">
-          <h2>Subject-Specific Settings</h2>
-          <button id="addSubjectBtn" class="btn">Add Subject</button>
+          <h1 class="card-title">Adaptive Difficulty Settings</h1>
         </div>
-        
-        <div id="subjectForm" style="display: none;">
-          <div class="form-group">
-            <label for="subjectName">Subject</label>
-            <select id="subjectName">
-              <option value="">Select a subject...</option>
-              <option value="Mathematics">Mathematics</option>
-              <option value="Science">Science</option>
-              <option value="English Language Arts">English Language Arts</option>
-              <option value="History">History</option>
-              <option value="Foreign Languages">Foreign Languages</option>
-              <option value="Computer Science">Computer Science</option>
-              <option value="Art">Art</option>
-              <option value="Music">Music</option>
-              <option value="Physical Education">Physical Education</option>
-            </select>
+
+        <p>
+          Adjust the difficulty level of learning content to match your needs. The system will
+          automatically adapt content vocabulary, examples, instructions, and assessments based on
+          your settings.
+        </p>
+
+        <div class="form-group">
+          <label for="userId">Student ID</label>
+          <input type="text" id="userId" placeholder="Enter your student ID" />
+        </div>
+
+        <div class="card">
+          <h2>Global Difficulty Level</h2>
+          <p>This setting applies to all subjects unless a specific subject difficulty is set.</p>
+
+          <div class="slider-container">
+            <div class="slider-labels">
+              <div class="slider-label very-easy" data-level="1">Very Easy</div>
+              <div class="slider-label easy" data-level="2">Easy</div>
+              <div class="slider-label moderate active-label" data-level="3">Moderate</div>
+              <div class="slider-label challenging" data-level="4">Challenging</div>
+              <div class="slider-label expert" data-level="5">Expert</div>
+            </div>
+
+            <input
+              type="range"
+              min="1"
+              max="5"
+              value="3"
+              step="1"
+              class="slider"
+              id="globalDifficulty"
+            />
+
+            <div class="difficulty-description" id="difficultyDescription">
+              <strong>Moderate Difficulty:</strong> Standard level content with balanced vocabulary,
+              clear explanations, and appropriate examples. Suitable for most students with some
+              background in the subject.
+            </div>
           </div>
-          
+
           <div class="form-group">
-            <label for="subjectDifficulty">Difficulty Level</label>
-            <select id="subjectDifficulty">
-              <option value="1">Very Easy</option>
-              <option value="2">Easy</option>
-              <option value="3" selected>Moderate</option>
-              <option value="4">Challenging</option>
-              <option value="5">Expert</option>
-            </select>
-          </div>
-          
-          <div>
-            <button id="saveSubjectBtn" class="btn btn-success">Save Subject</button>
-            <button id="cancelSubjectBtn" class="btn btn-danger">Cancel</button>
+            <label>
+              <input type="checkbox" id="autoAdjust" checked />
+              Automatically adjust difficulty based on my performance
+            </label>
           </div>
         </div>
-        
-        <div id="subjectList" class="subject-list">
-          <!-- Subject items will be added here via JavaScript -->
+
+        <div class="card">
+          <div class="card-header">
+            <h2>Subject-Specific Settings</h2>
+            <button id="addSubjectBtn" class="btn">Add Subject</button>
+          </div>
+
+          <div id="subjectForm" style="display: none">
+            <div class="form-group">
+              <label for="subjectName">Subject</label>
+              <select id="subjectName">
+                <option value="">Select a subject...</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="English Language Arts">English Language Arts</option>
+                <option value="History">History</option>
+                <option value="Foreign Languages">Foreign Languages</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Art">Art</option>
+                <option value="Music">Music</option>
+                <option value="Physical Education">Physical Education</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="subjectDifficulty">Difficulty Level</label>
+              <select id="subjectDifficulty">
+                <option value="1">Very Easy</option>
+                <option value="2">Easy</option>
+                <option value="3" selected>Moderate</option>
+                <option value="4">Challenging</option>
+                <option value="5">Expert</option>
+              </select>
+            </div>
+
+            <div>
+              <button id="saveSubjectBtn" class="btn btn-success">Save Subject</button>
+              <button id="cancelSubjectBtn" class="btn btn-danger">Cancel</button>
+            </div>
+          </div>
+
+          <div id="subjectList" class="subject-list">
+            <!-- Subject items will be added here via JavaScript -->
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Adaptation Parameters</h2>
+          <p>Control which aspects of content should be adapted based on difficulty level.</p>
+
+          <div class="checkbox-group">
+            <div class="checkbox-item">
+              <input type="checkbox" id="contentVocabulary" checked />
+              <label for="contentVocabulary">Content Vocabulary</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="exampleComplexity" checked />
+              <label for="exampleComplexity">Example Complexity</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="visualSupports" checked />
+              <label for="visualSupports">Visual Supports</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="instructionDetail" checked />
+              <label for="instructionDetail">Instruction Detail</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="conceptDepth" checked />
+              <label for="conceptDepth">Concept Depth</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="questionComplexity" checked />
+              <label for="questionComplexity">Question Complexity</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="scaffoldingLevel" checked />
+              <label for="scaffoldingLevel">Scaffolding Level</label>
+            </div>
+            <div class="checkbox-item">
+              <input type="checkbox" id="interactivityLevel" checked />
+              <label for="interactivityLevel">Interactivity Level</label>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; text-align: center">
+          <button id="saveSettingsBtn" class="btn btn-success">Save Settings</button>
+          <button id="resetSettingsBtn" class="btn btn-danger">Reset to Default</button>
         </div>
       </div>
 
-      <div class="card">
-        <h2>Adaptation Parameters</h2>
-        <p>Control which aspects of content should be adapted based on difficulty level.</p>
-        
-        <div class="checkbox-group">
-          <div class="checkbox-item">
-            <input type="checkbox" id="contentVocabulary" checked>
-            <label for="contentVocabulary">Content Vocabulary</label>
+      <div class="card preview-section">
+        <div class="card-header">
+          <h2>Content Preview</h2>
+        </div>
+
+        <div class="preview-tabs">
+          <div class="preview-tab active" data-tab="preview">Adaptive Content Preview</div>
+          <div class="preview-tab" data-tab="history">Difficulty History</div>
+        </div>
+
+        <div id="previewTab" class="tab-content active">
+          <div class="form-group">
+            <label for="previewTopic">Topic</label>
+            <input type="text" id="previewTopic" placeholder="Enter a topic for content preview" />
           </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="exampleComplexity" checked>
-            <label for="exampleComplexity">Example Complexity</label>
+
+          <div class="form-group">
+            <label for="previewContent">Original Content</label>
+            <textarea
+              id="previewContent"
+              rows="5"
+              placeholder="Enter content to be adapted based on your difficulty settings"
+            ></textarea>
           </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="visualSupports" checked>
-            <label for="visualSupports">Visual Supports</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="instructionDetail" checked>
-            <label for="instructionDetail">Instruction Detail</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="conceptDepth" checked>
-            <label for="conceptDepth">Concept Depth</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="questionComplexity" checked>
-            <label for="questionComplexity">Question Complexity</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="scaffoldingLevel" checked>
-            <label for="scaffoldingLevel">Scaffolding Level</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="interactivityLevel" checked>
-            <label for="interactivityLevel">Interactivity Level</label>
+
+          <button id="generatePreviewBtn" class="btn">Generate Preview</button>
+
+          <div id="previewResult" style="margin-top: 20px; display: none">
+            <h3>Adapted Content</h3>
+            <div id="adaptedContent" class="preview-container"></div>
           </div>
         </div>
-      </div>
 
-      <div style="margin-top: 20px; text-align: center;">
-        <button id="saveSettingsBtn" class="btn btn-success">Save Settings</button>
-        <button id="resetSettingsBtn" class="btn btn-danger">Reset to Default</button>
+        <div id="historyTab" class="tab-content">
+          <div class="form-group">
+            <label for="historySubject">Filter by Subject (Optional)</label>
+            <select id="historySubject">
+              <option value="">All Subjects</option>
+              <!-- Options will be populated via JavaScript -->
+            </select>
+          </div>
+
+          <div id="historyContainer" class="history-container">
+            <!-- History items will be added here via JavaScript -->
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="card preview-section">
-      <div class="card-header">
-        <h2>Content Preview</h2>
-      </div>
-      
-      <div class="preview-tabs">
-        <div class="preview-tab active" data-tab="preview">Adaptive Content Preview</div>
-        <div class="preview-tab" data-tab="history">Difficulty History</div>
-      </div>
-      
-      <div id="previewTab" class="tab-content active">
-        <div class="form-group">
-          <label for="previewTopic">Topic</label>
-          <input type="text" id="previewTopic" placeholder="Enter a topic for content preview">
-        </div>
-        
-        <div class="form-group">
-          <label for="previewContent">Original Content</label>
-          <textarea id="previewContent" rows="5" placeholder="Enter content to be adapted based on your difficulty settings"></textarea>
-        </div>
-        
-        <button id="generatePreviewBtn" class="btn">Generate Preview</button>
-        
-        <div id="previewResult" style="margin-top: 20px; display: none;">
-          <h3>Adapted Content</h3>
-          <div id="adaptedContent" class="preview-container"></div>
-        </div>
-      </div>
-      
-      <div id="historyTab" class="tab-content">
-        <div class="form-group">
-          <label for="historySubject">Filter by Subject (Optional)</label>
-          <select id="historySubject">
-            <option value="">All Subjects</option>
-            <!-- Options will be populated via JavaScript -->
-          </select>
-        </div>
-        
-        <div id="historyContainer" class="history-container">
-          <!-- History items will be added here via JavaScript -->
-        </div>
-      </div>
-    </div>
-  </div>
+    <script>
+      // API URL base
+      const API_BASE = '/api/adaptive-difficulty';
 
-  <script>
-    // API URL base
-    const API_BASE = '/api/adaptive-difficulty';
-    
-    // DOM Elements
-    const userIdInput = document.getElementById('userId');
-    const globalDifficultySlider = document.getElementById('globalDifficulty');
-    const difficultyLabels = document.querySelectorAll('.slider-label');
-    const difficultyDescription = document.getElementById('difficultyDescription');
-    const autoAdjustCheckbox = document.getElementById('autoAdjust');
-    const parameterCheckboxes = document.querySelectorAll('.checkbox-item input[type="checkbox"]');
-    
-    // Subject form elements
-    const addSubjectBtn = document.getElementById('addSubjectBtn');
-    const subjectForm = document.getElementById('subjectForm');
-    const subjectNameSelect = document.getElementById('subjectName');
-    const subjectDifficultySelect = document.getElementById('subjectDifficulty');
-    const saveSubjectBtn = document.getElementById('saveSubjectBtn');
-    const cancelSubjectBtn = document.getElementById('cancelSubjectBtn');
-    const subjectList = document.getElementById('subjectList');
-    
-    // Save/reset settings buttons
-    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-    const resetSettingsBtn = document.getElementById('resetSettingsBtn');
-    
-    // Preview elements
-    const previewTabs = document.querySelectorAll('.preview-tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    const previewTopicInput = document.getElementById('previewTopic');
-    const previewContentInput = document.getElementById('previewContent');
-    const generatePreviewBtn = document.getElementById('generatePreviewBtn');
-    const previewResult = document.getElementById('previewResult');
-    const adaptedContent = document.getElementById('adaptedContent');
-    
-    // History elements
-    const historySubjectSelect = document.getElementById('historySubject');
-    const historyContainer = document.getElementById('historyContainer');
-    
-    // Notification element
-    const notification = document.getElementById('notification');
-    
-    // Current user profile
-    let currentProfile = null;
-    
-    // Difficulty descriptions
-    const difficultyDescriptions = {
-      1: '<strong>Very Easy:</strong> Highly simplified content with maximum support, basic vocabulary, extensive scaffolding, and abundant visual aids. Ideal for beginners or students needing significant accommodations.',
-      2: '<strong>Easy:</strong> Simplified content with additional support, clear explanations, concrete examples, and step-by-step guidance. Good for students building foundational knowledge.',
-      3: '<strong>Moderate:</strong> Standard level content with balanced vocabulary, clear explanations, and appropriate examples. Suitable for most students with some background in the subject.',
-      4: '<strong>Challenging:</strong> Advanced content with deeper analysis, complex examples, and higher-order thinking requirements. Designed for students ready to extend their understanding.',
-      5: '<strong>Expert:</strong> College-level content with sophisticated vocabulary, abstract concepts, and complex problem-solving. For students pursuing mastery of the subject.'
-    };
-    
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', () => {
-      // Load difficulty levels from API
-      fetch(`${API_BASE}/levels`)
-        .then(response => response.json())
-        .then(levels => {
-          console.log('Difficulty levels:', levels);
-        })
-        .catch(error => {
-          console.error('Error loading difficulty levels:', error);
-          showNotification('Error loading difficulty levels. Please try again.', 'error');
-        });
-      
+      // DOM Elements
+      const userIdInput = document.getElementById('userId');
+      const globalDifficultySlider = document.getElementById('globalDifficulty');
+      const difficultyLabels = document.querySelectorAll('.slider-label');
+      const difficultyDescription = document.getElementById('difficultyDescription');
+      const autoAdjustCheckbox = document.getElementById('autoAdjust');
+      const parameterCheckboxes = document.querySelectorAll(
+        '.checkbox-item input[type="checkbox"]',
+      );
+
+      // Subject form elements
+      const addSubjectBtn = document.getElementById('addSubjectBtn');
+      const subjectForm = document.getElementById('subjectForm');
+      const subjectNameSelect = document.getElementById('subjectName');
+      const subjectDifficultySelect = document.getElementById('subjectDifficulty');
+      const saveSubjectBtn = document.getElementById('saveSubjectBtn');
+      const cancelSubjectBtn = document.getElementById('cancelSubjectBtn');
+      const subjectList = document.getElementById('subjectList');
+
+      // Save/reset settings buttons
+      const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+      const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+
+      // Preview elements
+      const previewTabs = document.querySelectorAll('.preview-tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+      const previewTopicInput = document.getElementById('previewTopic');
+      const previewContentInput = document.getElementById('previewContent');
+      const generatePreviewBtn = document.getElementById('generatePreviewBtn');
+      const previewResult = document.getElementById('previewResult');
+      const adaptedContent = document.getElementById('adaptedContent');
+
+      // History elements
+      const historySubjectSelect = document.getElementById('historySubject');
+      const historyContainer = document.getElementById('historyContainer');
+
+      // Notification element
+      const notification = document.getElementById('notification');
+
+      // Current user profile
+      let currentProfile = null;
+
+      // Difficulty descriptions
+      const difficultyDescriptions = {
+        1: '<strong>Very Easy:</strong> Highly simplified content with maximum support, basic vocabulary, extensive scaffolding, and abundant visual aids. Ideal for beginners or students needing significant accommodations.',
+        2: '<strong>Easy:</strong> Simplified content with additional support, clear explanations, concrete examples, and step-by-step guidance. Good for students building foundational knowledge.',
+        3: '<strong>Moderate:</strong> Standard level content with balanced vocabulary, clear explanations, and appropriate examples. Suitable for most students with some background in the subject.',
+        4: '<strong>Challenging:</strong> Advanced content with deeper analysis, complex examples, and higher-order thinking requirements. Designed for students ready to extend their understanding.',
+        5: '<strong>Expert:</strong> College-level content with sophisticated vocabulary, abstract concepts, and complex problem-solving. For students pursuing mastery of the subject.',
+      };
+
+      // Initialize page
+      document.addEventListener('DOMContentLoaded', () => {
+        // Load difficulty levels from API
+        fetch(`${API_BASE}/levels`)
+          .then((response) => response.json())
+          .then((levels) => {
+            console.log('Difficulty levels:', levels);
+          })
+          .catch((error) => {
+            console.error('Error loading difficulty levels:', error);
+            showNotification('Error loading difficulty levels. Please try again.', 'error');
+          });
+
+        // Set up event listeners
+        setupEventListeners();
+
+        // Default user ID from URL if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        if (userId) {
+          userIdInput.value = userId;
+          loadUserProfile(userId);
+        }
+      });
+
       // Set up event listeners
-      setupEventListeners();
-      
-      // Default user ID from URL if present
-      const urlParams = new URLSearchParams(window.location.search);
-      const userId = urlParams.get('userId');
-      if (userId) {
-        userIdInput.value = userId;
-        loadUserProfile(userId);
-      }
-    });
-    
-    // Set up event listeners
-    function setupEventListeners() {
-      // User ID input
-      userIdInput.addEventListener('change', () => {
-        if (userIdInput.value) {
-          loadUserProfile(userIdInput.value);
-        }
-      });
-      
-      // Global difficulty slider
-      globalDifficultySlider.addEventListener('input', () => {
-        updateDifficultyDisplay(globalDifficultySlider.value);
-      });
-      
-      // Add subject button
-      addSubjectBtn.addEventListener('click', () => {
-        subjectForm.style.display = 'block';
-        addSubjectBtn.style.display = 'none';
-      });
-      
-      // Save subject button
-      saveSubjectBtn.addEventListener('click', () => {
-        const subject = subjectNameSelect.value;
-        const difficulty = parseInt(subjectDifficultySelect.value);
-        
-        if (!subject) {
-          showNotification('Please select a subject', 'error');
-          return;
-        }
-        
-        // Add subject to list
-        addSubjectToList(subject, difficulty);
-        
-        // Reset form
-        subjectNameSelect.value = '';
-        subjectDifficultySelect.value = '3';
-        subjectForm.style.display = 'none';
-        addSubjectBtn.style.display = 'block';
-      });
-      
-      // Cancel subject button
-      cancelSubjectBtn.addEventListener('click', () => {
-        subjectNameSelect.value = '';
-        subjectDifficultySelect.value = '3';
-        subjectForm.style.display = 'none';
-        addSubjectBtn.style.display = 'block';
-      });
-      
-      // Save settings button
-      saveSettingsBtn.addEventListener('click', saveSettings);
-      
-      // Reset settings button
-      resetSettingsBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to reset all difficulty settings to default?')) {
-          resetSettings();
-        }
-      });
-      
-      // Preview tabs
-      previewTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-          const tabId = tab.getAttribute('data-tab');
-          
-          // Deactivate all tabs
-          previewTabs.forEach(t => t.classList.remove('active'));
-          tabContents.forEach(c => c.classList.remove('active'));
-          
-          // Activate selected tab
-          tab.classList.add('active');
-          document.getElementById(`${tabId}Tab`).classList.add('active');
-          
-          // Load history if selected
-          if (tabId === 'history' && userIdInput.value) {
+      function setupEventListeners() {
+        // User ID input
+        userIdInput.addEventListener('change', () => {
+          if (userIdInput.value) {
+            loadUserProfile(userIdInput.value);
+          }
+        });
+
+        // Global difficulty slider
+        globalDifficultySlider.addEventListener('input', () => {
+          updateDifficultyDisplay(globalDifficultySlider.value);
+        });
+
+        // Add subject button
+        addSubjectBtn.addEventListener('click', () => {
+          subjectForm.style.display = 'block';
+          addSubjectBtn.style.display = 'none';
+        });
+
+        // Save subject button
+        saveSubjectBtn.addEventListener('click', () => {
+          const subject = subjectNameSelect.value;
+          const difficulty = parseInt(subjectDifficultySelect.value);
+
+          if (!subject) {
+            showNotification('Please select a subject', 'error');
+            return;
+          }
+
+          // Add subject to list
+          addSubjectToList(subject, difficulty);
+
+          // Reset form
+          subjectNameSelect.value = '';
+          subjectDifficultySelect.value = '3';
+          subjectForm.style.display = 'none';
+          addSubjectBtn.style.display = 'block';
+        });
+
+        // Cancel subject button
+        cancelSubjectBtn.addEventListener('click', () => {
+          subjectNameSelect.value = '';
+          subjectDifficultySelect.value = '3';
+          subjectForm.style.display = 'none';
+          addSubjectBtn.style.display = 'block';
+        });
+
+        // Save settings button
+        saveSettingsBtn.addEventListener('click', saveSettings);
+
+        // Reset settings button
+        resetSettingsBtn.addEventListener('click', () => {
+          if (confirm('Are you sure you want to reset all difficulty settings to default?')) {
+            resetSettings();
+          }
+        });
+
+        // Preview tabs
+        previewTabs.forEach((tab) => {
+          tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+
+            // Deactivate all tabs
+            previewTabs.forEach((t) => t.classList.remove('active'));
+            tabContents.forEach((c) => c.classList.remove('active'));
+
+            // Activate selected tab
+            tab.classList.add('active');
+            document.getElementById(`${tabId}Tab`).classList.add('active');
+
+            // Load history if selected
+            if (tabId === 'history' && userIdInput.value) {
+              loadDifficultyHistory(userIdInput.value);
+            }
+          });
+        });
+
+        // Generate preview button
+        generatePreviewBtn.addEventListener('click', generateContentPreview);
+
+        // History subject filter
+        historySubjectSelect.addEventListener('change', () => {
+          if (userIdInput.value) {
             loadDifficultyHistory(userIdInput.value);
           }
         });
-      });
-      
-      // Generate preview button
-      generatePreviewBtn.addEventListener('click', generateContentPreview);
-      
-      // History subject filter
-      historySubjectSelect.addEventListener('change', () => {
-        if (userIdInput.value) {
-          loadDifficultyHistory(userIdInput.value);
-        }
-      });
-    }
-    
-    // Load user profile
-    function loadUserProfile(userId) {
-      fetch(`${API_BASE}/profiles/${userId}`)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('User profile not found');
+      }
+
+      // Load user profile
+      function loadUserProfile(userId) {
+        fetch(`${API_BASE}/profiles/${userId}`)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('User profile not found');
+            }
+            return response.json();
+          })
+          .then((profile) => {
+            currentProfile = profile;
+
+            // Update UI with profile settings
+            updateProfileUI(profile);
+
+            showNotification('Profile loaded successfully', 'success');
+          })
+          .catch((error) => {
+            console.error('Error loading profile:', error);
+            showNotification(`Error loading profile: ${error.message}`, 'error');
+          });
+      }
+
+      // Update UI with profile settings
+      function updateProfileUI(profile) {
+        // Global difficulty
+        globalDifficultySlider.value = profile.globalDifficulty;
+        updateDifficultyDisplay(profile.globalDifficulty);
+
+        // Auto-adjust
+        autoAdjustCheckbox.checked = profile.autoAdjust;
+
+        // Adaptation parameters
+        if (profile.adaptationParameters) {
+          for (const param of parameterCheckboxes) {
+            param.checked = profile.adaptationParameters[param.id] !== false;
           }
-          return response.json();
-        })
-        .then(profile => {
-          currentProfile = profile;
-          
-          // Update UI with profile settings
-          updateProfileUI(profile);
-          
-          showNotification('Profile loaded successfully', 'success');
-        })
-        .catch(error => {
-          console.error('Error loading profile:', error);
-          showNotification(`Error loading profile: ${error.message}`, 'error');
-        });
-    }
-    
-    // Update UI with profile settings
-    function updateProfileUI(profile) {
-      // Global difficulty
-      globalDifficultySlider.value = profile.globalDifficulty;
-      updateDifficultyDisplay(profile.globalDifficulty);
-      
-      // Auto-adjust
-      autoAdjustCheckbox.checked = profile.autoAdjust;
-      
-      // Adaptation parameters
-      if (profile.adaptationParameters) {
-        for (const param of parameterCheckboxes) {
-          param.checked = profile.adaptationParameters[param.id] !== false;
         }
-      }
-      
-      // Subject settings
-      subjectList.innerHTML = '';
-      if (profile.subjectSettings) {
-        Object.entries(profile.subjectSettings).forEach(([subject, difficulty]) => {
-          addSubjectToList(subject, difficulty);
-        });
-      }
-      
-      // Update history subject filter
-      updateHistorySubjectFilter(profile);
-    }
-    
-    // Update difficulty display based on slider value
-    function updateDifficultyDisplay(value) {
-      // Update active label
-      difficultyLabels.forEach(label => {
-        if (parseInt(label.getAttribute('data-level')) === parseInt(value)) {
-          label.classList.add('active-label');
-        } else {
-          label.classList.remove('active-label');
+
+        // Subject settings
+        subjectList.innerHTML = '';
+        if (profile.subjectSettings) {
+          Object.entries(profile.subjectSettings).forEach(([subject, difficulty]) => {
+            addSubjectToList(subject, difficulty);
+          });
         }
-      });
-      
-      // Update description
-      difficultyDescription.innerHTML = difficultyDescriptions[value];
-    }
-    
-    // Add subject to list
-    function addSubjectToList(subject, difficulty) {
-      // Check if subject already exists
-      const existingItem = document.querySelector(`.subject-item[data-subject="${subject}"]`);
-      if (existingItem) {
-        existingItem.remove();
+
+        // Update history subject filter
+        updateHistorySubjectFilter(profile);
       }
-      
-      // Get difficulty label
-      const difficultyLabels = ['', 'Very Easy', 'Easy', 'Moderate', 'Challenging', 'Expert'];
-      const difficultyClasses = ['', 'very-easy', 'easy', 'moderate', 'challenging', 'expert'];
-      
-      // Create subject item
-      const item = document.createElement('div');
-      item.className = 'subject-item';
-      item.setAttribute('data-subject', subject);
-      item.setAttribute('data-difficulty', difficulty);
-      
-      item.innerHTML = `
+
+      // Update difficulty display based on slider value
+      function updateDifficultyDisplay(value) {
+        // Update active label
+        difficultyLabels.forEach((label) => {
+          if (parseInt(label.getAttribute('data-level')) === parseInt(value)) {
+            label.classList.add('active-label');
+          } else {
+            label.classList.remove('active-label');
+          }
+        });
+
+        // Update description
+        difficultyDescription.innerHTML = difficultyDescriptions[value];
+      }
+
+      // Add subject to list
+      function addSubjectToList(subject, difficulty) {
+        // Check if subject already exists
+        const existingItem = document.querySelector(`.subject-item[data-subject="${subject}"]`);
+        if (existingItem) {
+          existingItem.remove();
+        }
+
+        // Get difficulty label
+        const difficultyLabels = ['', 'Very Easy', 'Easy', 'Moderate', 'Challenging', 'Expert'];
+        const difficultyClasses = ['', 'very-easy', 'easy', 'moderate', 'challenging', 'expert'];
+
+        // Create subject item
+        const item = document.createElement('div');
+        item.className = 'subject-item';
+        item.setAttribute('data-subject', subject);
+        item.setAttribute('data-difficulty', difficulty);
+
+        item.innerHTML = `
         <div class="subject-label">${subject}</div>
         <div class="subject-level ${difficultyClasses[difficulty]}">${difficultyLabels[difficulty]}</div>
         <button class="btn btn-danger remove-subject-btn">Remove</button>
       `;
-      
-      // Add to list
-      subjectList.appendChild(item);
-      
-      // Add event listener to remove button
-      item.querySelector('.remove-subject-btn').addEventListener('click', () => {
-        item.remove();
-      });
-    }
-    
-    // Save settings
-    function saveSettings() {
-      if (!userIdInput.value) {
-        showNotification('Please enter a student ID', 'error');
-        return;
-      }
-      
-      // Get global difficulty
-      const globalDifficulty = parseInt(globalDifficultySlider.value);
-      
-      // Get subject settings
-      const subjectSettings = {};
-      document.querySelectorAll('.subject-item').forEach(item => {
-        const subject = item.getAttribute('data-subject');
-        const difficulty = parseInt(item.getAttribute('data-difficulty'));
-        subjectSettings[subject] = difficulty;
-      });
-      
-      // Get adaptation parameters
-      const adaptationParameters = {};
-      parameterCheckboxes.forEach(checkbox => {
-        adaptationParameters[checkbox.id] = checkbox.checked;
-      });
-      
-      // Build profile data
-      const profileData = {
-        globalDifficulty,
-        subjectSettings,
-        adaptationParameters,
-        autoAdjust: autoAdjustCheckbox.checked,
-        lastUpdated: new Date().toISOString()
-      };
-      
-      // Save profile
-      fetch(`${API_BASE}/profiles/${userIdInput.value}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(profileData)
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to save settings');
-          }
-          return response.json();
-        })
-        .then(profile => {
-          currentProfile = profile;
-          showNotification('Settings saved successfully', 'success');
-        })
-        .catch(error => {
-          console.error('Error saving settings:', error);
-          showNotification(`Error saving settings: ${error.message}`, 'error');
+
+        // Add to list
+        subjectList.appendChild(item);
+
+        // Add event listener to remove button
+        item.querySelector('.remove-subject-btn').addEventListener('click', () => {
+          item.remove();
         });
-    }
-    
-    // Reset settings
-    function resetSettings() {
-      // Reset global difficulty
-      globalDifficultySlider.value = 3;
-      updateDifficultyDisplay(3);
-      
-      // Reset auto-adjust
-      autoAdjustCheckbox.checked = true;
-      
-      // Reset adaptation parameters
-      parameterCheckboxes.forEach(checkbox => {
-        checkbox.checked = true;
-      });
-      
-      // Clear subject list
-      subjectList.innerHTML = '';
-      
-      // If user ID exists, save reset settings
-      if (userIdInput.value) {
-        saveSettings();
       }
-    }
-    
-    // Generate content preview
-    function generateContentPreview() {
-      const topic = previewTopicInput.value;
-      const content = previewContentInput.value;
-      
-      if (!content) {
-        showNotification('Please enter content to adapt', 'error');
-        return;
-      }
-      
-      // Get current difficulty
-      const difficulty = parseInt(globalDifficultySlider.value);
-      
-      // Get adaptation parameters
-      const parameters = {};
-      parameterCheckboxes.forEach(checkbox => {
-        parameters[checkbox.id] = checkbox.checked;
-      });
-      
-      // Show loading state
-      generatePreviewBtn.disabled = true;
-      generatePreviewBtn.textContent = 'Generating...';
-      previewResult.style.display = 'none';
-      
-      // Call API to adapt content
-      fetch(`${API_BASE}/adapt`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          content,
-          targetDifficulty: difficulty,
-          parameters
-        })
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to adapt content');
-          }
-          return response.json();
-        })
-        .then(data => {
-          // Display adapted content
-          adaptedContent.textContent = data.adapted;
-          previewResult.style.display = 'block';
-          
-          // Reset button
-          generatePreviewBtn.disabled = false;
-          generatePreviewBtn.textContent = 'Generate Preview';
-        })
-        .catch(error => {
-          console.error('Error adapting content:', error);
-          showNotification(`Error adapting content: ${error.message}`, 'error');
-          
-          // Reset button
-          generatePreviewBtn.disabled = false;
-          generatePreviewBtn.textContent = 'Generate Preview';
+
+      // Save settings
+      function saveSettings() {
+        if (!userIdInput.value) {
+          showNotification('Please enter a student ID', 'error');
+          return;
+        }
+
+        // Get global difficulty
+        const globalDifficulty = parseInt(globalDifficultySlider.value);
+
+        // Get subject settings
+        const subjectSettings = {};
+        document.querySelectorAll('.subject-item').forEach((item) => {
+          const subject = item.getAttribute('data-subject');
+          const difficulty = parseInt(item.getAttribute('data-difficulty'));
+          subjectSettings[subject] = difficulty;
         });
-    }
-    
-    // Load difficulty history
-    function loadDifficultyHistory(userId) {
-      // Get subject filter
-      const subject = historySubjectSelect.value;
-      
-      // API URL
-      let url = `${API_BASE}/history/${userId}`;
-      if (subject) {
-        url += `?subject=${encodeURIComponent(subject)}`;
-      }
-      
-      // Fetch history
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Failed to load history');
-          }
-          return response.json();
-        })
-        .then(data => {
-          displayDifficultyHistory(data.history);
-        })
-        .catch(error => {
-          console.error('Error loading history:', error);
-          showNotification(`Error loading history: ${error.message}`, 'error');
+
+        // Get adaptation parameters
+        const adaptationParameters = {};
+        parameterCheckboxes.forEach((checkbox) => {
+          adaptationParameters[checkbox.id] = checkbox.checked;
         });
-    }
-    
-    // Display difficulty history
-    function displayDifficultyHistory(history) {
-      // Clear container
-      historyContainer.innerHTML = '';
-      
-      // Get difficulty labels
-      const difficultyLabels = ['', 'Very Easy', 'Easy', 'Moderate', 'Challenging', 'Expert'];
-      const difficultyClasses = ['', 'very-easy', 'easy', 'moderate', 'challenging', 'expert'];
-      
-      // Check if history is empty
-      if (!history || history.length === 0) {
-        historyContainer.innerHTML = '<p>No difficulty change history found.</p>';
-        return;
+
+        // Build profile data
+        const profileData = {
+          globalDifficulty,
+          subjectSettings,
+          adaptationParameters,
+          autoAdjust: autoAdjustCheckbox.checked,
+          lastUpdated: new Date().toISOString(),
+        };
+
+        // Save profile
+        fetch(`${API_BASE}/profiles/${userIdInput.value}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profileData),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to save settings');
+            }
+            return response.json();
+          })
+          .then((profile) => {
+            currentProfile = profile;
+            showNotification('Settings saved successfully', 'success');
+          })
+          .catch((error) => {
+            console.error('Error saving settings:', error);
+            showNotification(`Error saving settings: ${error.message}`, 'error');
+          });
       }
-      
-      // Sort history by timestamp (newest first)
-      history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-      
-      // Add history items
-      history.forEach(item => {
-        const historyItem = document.createElement('div');
-        historyItem.className = 'history-item';
-        
-        // Format timestamp
-        const timestamp = new Date(item.timestamp).toLocaleString();
-        
-        historyItem.innerHTML = `
+
+      // Reset settings
+      function resetSettings() {
+        // Reset global difficulty
+        globalDifficultySlider.value = 3;
+        updateDifficultyDisplay(3);
+
+        // Reset auto-adjust
+        autoAdjustCheckbox.checked = true;
+
+        // Reset adaptation parameters
+        parameterCheckboxes.forEach((checkbox) => {
+          checkbox.checked = true;
+        });
+
+        // Clear subject list
+        subjectList.innerHTML = '';
+
+        // If user ID exists, save reset settings
+        if (userIdInput.value) {
+          saveSettings();
+        }
+      }
+
+      // Generate content preview
+      function generateContentPreview() {
+        const topic = previewTopicInput.value;
+        const content = previewContentInput.value;
+
+        if (!content) {
+          showNotification('Please enter content to adapt', 'error');
+          return;
+        }
+
+        // Get current difficulty
+        const difficulty = parseInt(globalDifficultySlider.value);
+
+        // Get adaptation parameters
+        const parameters = {};
+        parameterCheckboxes.forEach((checkbox) => {
+          parameters[checkbox.id] = checkbox.checked;
+        });
+
+        // Show loading state
+        generatePreviewBtn.disabled = true;
+        generatePreviewBtn.textContent = 'Generating...';
+        previewResult.style.display = 'none';
+
+        // Call API to adapt content
+        fetch(`${API_BASE}/adapt`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            content,
+            targetDifficulty: difficulty,
+            parameters,
+          }),
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to adapt content');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Display adapted content
+            adaptedContent.textContent = data.adapted;
+            previewResult.style.display = 'block';
+
+            // Reset button
+            generatePreviewBtn.disabled = false;
+            generatePreviewBtn.textContent = 'Generate Preview';
+          })
+          .catch((error) => {
+            console.error('Error adapting content:', error);
+            showNotification(`Error adapting content: ${error.message}`, 'error');
+
+            // Reset button
+            generatePreviewBtn.disabled = false;
+            generatePreviewBtn.textContent = 'Generate Preview';
+          });
+      }
+
+      // Load difficulty history
+      function loadDifficultyHistory(userId) {
+        // Get subject filter
+        const subject = historySubjectSelect.value;
+
+        // API URL
+        let url = `${API_BASE}/history/${userId}`;
+        if (subject) {
+          url += `?subject=${encodeURIComponent(subject)}`;
+        }
+
+        // Fetch history
+        fetch(url)
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Failed to load history');
+            }
+            return response.json();
+          })
+          .then((data) => {
+            displayDifficultyHistory(data.history);
+          })
+          .catch((error) => {
+            console.error('Error loading history:', error);
+            showNotification(`Error loading history: ${error.message}`, 'error');
+          });
+      }
+
+      // Display difficulty history
+      function displayDifficultyHistory(history) {
+        // Clear container
+        historyContainer.innerHTML = '';
+
+        // Get difficulty labels
+        const difficultyLabels = ['', 'Very Easy', 'Easy', 'Moderate', 'Challenging', 'Expert'];
+        const difficultyClasses = ['', 'very-easy', 'easy', 'moderate', 'challenging', 'expert'];
+
+        // Check if history is empty
+        if (!history || history.length === 0) {
+          historyContainer.innerHTML = '<p>No difficulty change history found.</p>';
+          return;
+        }
+
+        // Sort history by timestamp (newest first)
+        history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        // Add history items
+        history.forEach((item) => {
+          const historyItem = document.createElement('div');
+          historyItem.className = 'history-item';
+
+          // Format timestamp
+          const timestamp = new Date(item.timestamp).toLocaleString();
+
+          historyItem.innerHTML = `
           <div class="history-timestamp">${timestamp}</div>
           <div class="history-details">
             <div class="history-change">
@@ -1143,42 +1177,42 @@
           </div>
           <div class="history-reason">Reason: ${item.reason === 'auto' ? 'Automatic adjustment' : 'Manual change'}</div>
         `;
-        
-        historyContainer.appendChild(historyItem);
-      });
-    }
-    
-    // Update history subject filter
-    function updateHistorySubjectFilter(profile) {
-      // Clear existing options
-      while (historySubjectSelect.options.length > 1) {
-        historySubjectSelect.remove(1);
-      }
-      
-      // Add options for each subject in profile
-      if (profile.subjectSettings) {
-        const subjects = Object.keys(profile.subjectSettings);
-        subjects.forEach(subject => {
-          const option = document.createElement('option');
-          option.value = subject;
-          option.textContent = subject;
-          historySubjectSelect.appendChild(option);
+
+          historyContainer.appendChild(historyItem);
         });
       }
-    }
-    
-    // Show notification
-    function showNotification(message, type) {
-      notification.textContent = message;
-      notification.className = 'notification';
-      notification.classList.add(`notification-${type}`);
-      notification.style.display = 'block';
-      
-      // Auto-hide after 5 seconds
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, 5000);
-    }
-  </script>
-</body>
+
+      // Update history subject filter
+      function updateHistorySubjectFilter(profile) {
+        // Clear existing options
+        while (historySubjectSelect.options.length > 1) {
+          historySubjectSelect.remove(1);
+        }
+
+        // Add options for each subject in profile
+        if (profile.subjectSettings) {
+          const subjects = Object.keys(profile.subjectSettings);
+          subjects.forEach((subject) => {
+            const option = document.createElement('option');
+            option.value = subject;
+            option.textContent = subject;
+            historySubjectSelect.appendChild(option);
+          });
+        }
+      }
+
+      // Show notification
+      function showNotification(message, type) {
+        notification.textContent = message;
+        notification.className = 'notification';
+        notification.classList.add(`notification-${type}`);
+        notification.style.display = 'block';
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 5000);
+      }
+    </script>
+  </body>
 </html>

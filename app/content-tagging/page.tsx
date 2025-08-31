@@ -1,23 +1,29 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Tags, 
-  Brain, 
-  Upload, 
-  Search, 
-  Filter, 
-  BarChart3, 
-  Zap, 
-  CheckCircle, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Tags,
+  Brain,
+  Upload,
+  Search,
+  Filter,
+  BarChart3,
+  Zap,
+  CheckCircle,
   AlertCircle,
   Target,
   TrendingUp,
@@ -30,50 +36,50 @@ import {
   Clock,
   Play,
   Pause,
-  RefreshCw
-} from 'lucide-react'
+  RefreshCw,
+} from 'lucide-react';
 
 interface ContentTag {
-  id: string
-  name: string
-  category: string
-  confidence: number
-  relevance: number
-  metadata?: any
+  id: string;
+  name: string;
+  category: string;
+  confidence: number;
+  relevance: number;
+  metadata?: any;
 }
 
 interface FileAnalysis {
-  fileId: number
-  fileName: string
-  fileType: string
-  hasAnalysis: boolean
-  tagCount: number
-  uploadedAt: string
+  fileId: number;
+  fileName: string;
+  fileType: string;
+  hasAnalysis: boolean;
+  tagCount: number;
+  uploadedAt: string;
 }
 
 interface AnalysisResult {
-  fileId: number
-  fileName: string
-  success: boolean
-  tagsCount: number
-  skillsCount: number
+  fileId: number;
+  fileName: string;
+  success: boolean;
+  tagsCount: number;
+  skillsCount: number;
   analysis: {
-    primarySport: string
-    performance: any
-    suggestions: string[]
-    autoCategories: string[]
-  }
+    primarySport: string;
+    performance: any;
+    suggestions: string[];
+    autoCategories: string[];
+  };
 }
 
 export default function ContentTaggingPage() {
-  const [files, setFiles] = useState<FileAnalysis[]>([])
-  const [tags, setTags] = useState<ContentTag[]>([])
-  const [selectedFiles, setSelectedFiles] = useState<number[]>([])
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterCategory, setFilterCategory] = useState('all')
-  const [filterSport, setFilterSport] = useState('all')
-  const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([])
+  const [files, setFiles] = useState<FileAnalysis[]>([]);
+  const [tags, setTags] = useState<ContentTag[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<number[]>([]);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterSport, setFilterSport] = useState('all');
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResult[]>([]);
 
   const categories = [
     { value: 'all', label: 'All Categories' },
@@ -84,8 +90,8 @@ export default function ContentTaggingPage() {
     { value: 'strategy', label: 'Strategy' },
     { value: 'equipment', label: 'Equipment' },
     { value: 'event', label: 'Events' },
-    { value: 'location', label: 'Location' }
-  ]
+    { value: 'location', label: 'Location' },
+  ];
 
   const sports = [
     { value: 'all', label: 'All Sports' },
@@ -96,46 +102,46 @@ export default function ContentTaggingPage() {
     { value: 'tennis', label: 'Tennis' },
     { value: 'golf', label: 'Golf' },
     { value: 'track', label: 'Track & Field' },
-    { value: 'swimming', label: 'Swimming' }
-  ]
+    { value: 'swimming', label: 'Swimming' },
+  ];
 
   // Load files and analysis status
   useEffect(() => {
-    loadFiles()
-    loadTags()
-  }, [])
+    loadFiles();
+    loadTags();
+  }, []);
 
   const loadFiles = async () => {
     try {
-      const response = await fetch('/api/content/bulk-analyze')
-      const data = await response.json()
+      const response = await fetch('/api/content/bulk-analyze');
+      const data = await response.json();
       if (data.files) {
-        setFiles(data.files)
+        setFiles(data.files);
       }
     } catch (error) {
-      console.error('Failed to load files:', error)
+      console.error('Failed to load files:', error);
     }
-  }
+  };
 
   const loadTags = async () => {
     try {
-      const response = await fetch('/api/content/analyze')
-      const data = await response.json()
+      const response = await fetch('/api/content/analyze');
+      const data = await response.json();
       if (data.tags) {
-        setTags(data.tags)
+        setTags(data.tags);
       }
     } catch (error) {
-      console.error('Failed to load tags:', error)
+      console.error('Failed to load tags:', error);
     }
-  }
+  };
 
   const handleBulkAnalysis = async () => {
     if (selectedFiles.length === 0) {
-      alert('Please select files to analyze')
-      return
+      alert('Please select files to analyze');
+      return;
     }
 
-    setIsAnalyzing(true)
+    setIsAnalyzing(true);
     try {
       const response = await fetch('/api/content/bulk-analyze', {
         method: 'POST',
@@ -144,55 +150,54 @@ export default function ContentTaggingPage() {
         },
         body: JSON.stringify({
           fileIds: selectedFiles,
-          batchSize: 5
-        })
-      })
+          batchSize: 5,
+        }),
+      });
 
-      const data = await response.json()
+      const data = await response.json();
       if (data.success) {
-        setAnalysisResults(data.results)
-        await loadFiles() // Refresh file list
-        await loadTags() // Refresh tags
-        alert(`Analysis complete! Processed ${data.processed} files with ${data.errors} errors.`)
+        setAnalysisResults(data.results);
+        await loadFiles(); // Refresh file list
+        await loadTags(); // Refresh tags
+        alert(`Analysis complete! Processed ${data.processed} files with ${data.errors} errors.`);
       }
     } catch (error) {
-      console.error('Bulk analysis failed:', error)
-      alert('Bulk analysis failed. Please try again.')
+      console.error('Bulk analysis failed:', error);
+      alert('Bulk analysis failed. Please try again.');
     } finally {
-      setIsAnalyzing(false)
+      setIsAnalyzing(false);
     }
-  }
+  };
 
   const handleFileSelect = (fileId: number) => {
-    setSelectedFiles(prev => 
-      prev.includes(fileId) 
-        ? prev.filter(id => id !== fileId)
-        : [...prev, fileId]
-    )
-  }
+    setSelectedFiles((prev) =>
+      prev.includes(fileId) ? prev.filter((id) => id !== fileId) : [...prev, fileId],
+    );
+  };
 
-  const filteredTags = tags.filter(tag => {
-    const matchesSearch = tag.name.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesCategory = filterCategory === 'all' || tag.category === filterCategory
-    const matchesSport = filterSport === 'all' || 
+  const filteredTags = tags.filter((tag) => {
+    const matchesSearch = tag.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = filterCategory === 'all' || tag.category === filterCategory;
+    const matchesSport =
+      filterSport === 'all' ||
       tag.name.toLowerCase().includes(filterSport.toLowerCase()) ||
-      tag.metadata?.sport?.toLowerCase() === filterSport.toLowerCase()
-    
-    return matchesSearch && matchesCategory && matchesSport
-  })
+      tag.metadata?.sport?.toLowerCase() === filterSport.toLowerCase();
+
+    return matchesSearch && matchesCategory && matchesSport;
+  });
 
   const getFileIcon = (fileType: string) => {
     switch (fileType) {
       case 'video':
-        return <Video className="w-4 h-4" />
+        return <Video className="w-4 h-4" />;
       case 'image':
-        return <ImageIcon className="w-4 h-4" />
+        return <ImageIcon className="w-4 h-4" />;
       case 'document':
-        return <FileText className="w-4 h-4" />
+        return <FileText className="w-4 h-4" />;
       default:
-        return <FileText className="w-4 h-4" />
+        return <FileText className="w-4 h-4" />;
     }
-  }
+  };
 
   const getCategoryColor = (category: string) => {
     const colors = {
@@ -203,18 +208,18 @@ export default function ContentTaggingPage() {
       strategy: 'bg-red-100 text-red-800',
       equipment: 'bg-gray-100 text-gray-800',
       event: 'bg-yellow-100 text-yellow-800',
-      location: 'bg-pink-100 text-pink-800'
-    }
-    return colors[category] || 'bg-gray-100 text-gray-800'
-  }
+      location: 'bg-pink-100 text-pink-800',
+    };
+    return colors[category] || 'bg-gray-100 text-gray-800';
+  };
 
   const analysisStats = {
     totalFiles: files.length,
-    analyzedFiles: files.filter(f => f.hasAnalysis).length,
-    pendingFiles: files.filter(f => !f.hasAnalysis).length,
+    analyzedFiles: files.filter((f) => f.hasAnalysis).length,
+    pendingFiles: files.filter((f) => !f.hasAnalysis).length,
     totalTags: tags.length,
-    avgTagsPerFile: files.length > 0 ? Math.round(tags.length / files.length) : 0
-  }
+    avgTagsPerFile: files.length > 0 ? Math.round(tags.length / files.length) : 0,
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 py-8">
@@ -321,7 +326,9 @@ export default function ContentTaggingPage() {
               <CardContent>
                 <div className="flex gap-4 mb-6">
                   <Button
-                    onClick={() => setSelectedFiles(files.filter(f => !f.hasAnalysis).map(f => f.fileId))}
+                    onClick={() =>
+                      setSelectedFiles(files.filter((f) => !f.hasAnalysis).map((f) => f.fileId))
+                    }
                     variant="outline"
                     className="border-slate-600 text-white"
                   >
@@ -354,7 +361,7 @@ export default function ContentTaggingPage() {
                 </div>
 
                 <div className="space-y-3">
-                  {files.map(file => (
+                  {files.map((file) => (
                     <div
                       key={file.fileId}
                       className={`p-4 rounded-lg border transition-colors cursor-pointer ${
@@ -377,7 +384,10 @@ export default function ContentTaggingPage() {
                                 Analyzed
                               </Badge>
                             ) : (
-                              <Badge variant="outline" className="border-yellow-400 text-yellow-400">
+                              <Badge
+                                variant="outline"
+                                className="border-yellow-400 text-yellow-400"
+                              >
                                 <Clock className="w-3 h-3 mr-1" />
                                 Pending
                               </Badge>
@@ -401,7 +411,7 @@ export default function ContentTaggingPage() {
                 {analysisResults.length > 0 && (
                   <div className="mt-6 space-y-4">
                     <h3 className="text-lg font-semibold text-white">Recent Analysis Results</h3>
-                    {analysisResults.map(result => (
+                    {analysisResults.map((result) => (
                       <Card key={result.fileId} className="bg-slate-700 border-slate-600">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between mb-2">
@@ -415,14 +425,15 @@ export default function ContentTaggingPage() {
                           {result.success && (
                             <div className="space-y-2 text-sm">
                               <p className="text-slate-300">
-                                <span className="font-medium">Sport:</span> {result.analysis.primarySport}
+                                <span className="font-medium">Sport:</span>{' '}
+                                {result.analysis.primarySport}
                               </p>
                               <p className="text-slate-300">
-                                <span className="font-medium">Tags:</span> {result.tagsCount} • 
+                                <span className="font-medium">Tags:</span> {result.tagsCount} •
                                 <span className="font-medium"> Skills:</span> {result.skillsCount}
                               </p>
                               <div className="flex flex-wrap gap-1">
-                                {result.analysis.autoCategories.map(category => (
+                                {result.analysis.autoCategories.map((category) => (
                                   <Badge key={category} variant="outline" className="text-xs">
                                     {category}
                                   </Badge>
@@ -466,7 +477,7 @@ export default function ContentTaggingPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map(category => (
+                      {categories.map((category) => (
                         <SelectItem key={category.value} value={category.value}>
                           {category.label}
                         </SelectItem>
@@ -478,7 +489,7 @@ export default function ContentTaggingPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {sports.map(sport => (
+                      {sports.map((sport) => (
                         <SelectItem key={sport.value} value={sport.value}>
                           {sport.label}
                         </SelectItem>
@@ -488,14 +499,12 @@ export default function ContentTaggingPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {filteredTags.map(tag => (
+                  {filteredTags.map((tag) => (
                     <Card key={tag.id} className="bg-slate-700 border-slate-600">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <h4 className="font-medium text-white">{tag.name}</h4>
-                          <Badge className={getCategoryColor(tag.category)}>
-                            {tag.category}
-                          </Badge>
+                          <Badge className={getCategoryColor(tag.category)}>{tag.category}</Badge>
                         </div>
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
@@ -541,12 +550,15 @@ export default function ContentTaggingPage() {
                       <p className="text-slate-400">Total Tags Generated</p>
                     </div>
                     <div className="text-center">
-                      <h3 className="text-2xl font-bold text-white">{analysisStats.avgTagsPerFile}</h3>
+                      <h3 className="text-2xl font-bold text-white">
+                        {analysisStats.avgTagsPerFile}
+                      </h3>
                       <p className="text-slate-400">Average Tags per File</p>
                     </div>
                     <div className="text-center">
                       <h3 className="text-2xl font-bold text-white">
-                        {Math.round((analysisStats.analyzedFiles / analysisStats.totalFiles) * 100)}%
+                        {Math.round((analysisStats.analyzedFiles / analysisStats.totalFiles) * 100)}
+                        %
                       </h3>
                       <p className="text-slate-400">Analysis Coverage</p>
                     </div>
@@ -566,21 +578,25 @@ export default function ContentTaggingPage() {
                     <div className="p-3 bg-blue-900/20 rounded-lg border border-blue-500">
                       <h4 className="font-medium text-blue-400 mb-2">Most Common Tags</h4>
                       <div className="flex flex-wrap gap-2">
-                        {['Basketball', 'Dribbling', 'Shooting', 'Practice'].map(tag => (
-                          <Badge key={tag} variant="outline" className="border-blue-400 text-blue-400">
+                        {['Basketball', 'Dribbling', 'Shooting', 'Practice'].map((tag) => (
+                          <Badge
+                            key={tag}
+                            variant="outline"
+                            className="border-blue-400 text-blue-400"
+                          >
                             {tag}
                           </Badge>
                         ))}
                       </div>
                     </div>
-                    
+
                     <div className="p-3 bg-green-900/20 rounded-lg border border-green-500">
                       <h4 className="font-medium text-green-400 mb-2">Performance Trends</h4>
                       <p className="text-sm text-slate-300">
                         Technical skills showing improvement over time
                       </p>
                     </div>
-                    
+
                     <div className="p-3 bg-purple-900/20 rounded-lg border border-purple-500">
                       <h4 className="font-medium text-purple-400 mb-2">Recommendations</h4>
                       <p className="text-sm text-slate-300">
@@ -595,5 +611,5 @@ export default function ContentTaggingPage() {
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

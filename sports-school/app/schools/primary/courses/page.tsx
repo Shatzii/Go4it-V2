@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { BookOpen, Users, Clock, Star } from 'lucide-react'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Users, Clock, Star } from 'lucide-react';
 
 export default function PrimaryCoursesPage() {
-  const [selectedGrade, setSelectedGrade] = useState('all')
+  const [selectedGrade, setSelectedGrade] = useState('all');
 
   const courses = [
     {
@@ -20,7 +20,7 @@ export default function PrimaryCoursesPage() {
       duration: '45 min',
       difficulty: 'Beginner',
       subjects: ['Numbers', 'Shapes', 'Counting'],
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       id: 'reading-k',
@@ -32,7 +32,7 @@ export default function PrimaryCoursesPage() {
       duration: '40 min',
       difficulty: 'Beginner',
       subjects: ['Phonics', 'Vocabulary', 'Comprehension'],
-      color: 'bg-green-500'
+      color: 'bg-green-500',
     },
     {
       id: 'science-1',
@@ -44,7 +44,7 @@ export default function PrimaryCoursesPage() {
       duration: '50 min',
       difficulty: 'Beginner',
       subjects: ['Nature', 'Experiments', 'Discovery'],
-      color: 'bg-purple-500'
+      color: 'bg-purple-500',
     },
     {
       id: 'social-2',
@@ -56,7 +56,7 @@ export default function PrimaryCoursesPage() {
       duration: '45 min',
       difficulty: 'Elementary',
       subjects: ['Community', 'History', 'Geography'],
-      color: 'bg-orange-500'
+      color: 'bg-orange-500',
     },
     {
       id: 'art-3',
@@ -68,7 +68,7 @@ export default function PrimaryCoursesPage() {
       duration: '60 min',
       difficulty: 'Elementary',
       subjects: ['Drawing', 'Music', 'Drama'],
-      color: 'bg-pink-500'
+      color: 'bg-pink-500',
     },
     {
       id: 'advanced-math-4',
@@ -80,7 +80,7 @@ export default function PrimaryCoursesPage() {
       duration: '50 min',
       difficulty: 'Intermediate',
       subjects: ['Multiplication', 'Division', 'Fractions'],
-      color: 'bg-blue-600'
+      color: 'bg-blue-600',
     },
     {
       id: 'writing-5',
@@ -92,25 +92,23 @@ export default function PrimaryCoursesPage() {
       duration: '55 min',
       difficulty: 'Intermediate',
       subjects: ['Creative Writing', 'Essays', 'Grammar'],
-      color: 'bg-green-600'
-    }
-  ]
+      color: 'bg-green-600',
+    },
+  ];
 
-  const grades = ['all', 'K', '1', '2', '3', '4', '5']
+  const grades = ['all', 'K', '1', '2', '3', '4', '5'];
 
-  const filteredCourses = selectedGrade === 'all' 
-    ? courses 
-    : courses.filter(course => course.grade === selectedGrade)
+  const filteredCourses =
+    selectedGrade === 'all' ? courses : courses.filter((course) => course.grade === selectedGrade);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            🦸‍♂️ SuperHero Elementary Courses
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">🦸‍♂️ SuperHero Elementary Courses</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover our exciting superhero-themed courses designed to make learning an adventure for grades K-5!
+            Discover our exciting superhero-themed courses designed to make learning an adventure
+            for grades K-5!
           </p>
         </div>
 
@@ -119,7 +117,7 @@ export default function PrimaryCoursesPage() {
           {grades.map((grade) => (
             <Button
               key={grade}
-              variant={selectedGrade === grade ? "default" : "outline"}
+              variant={selectedGrade === grade ? 'default' : 'outline'}
               onClick={() => setSelectedGrade(grade)}
               className="min-w-[80px]"
             >
@@ -145,7 +143,7 @@ export default function PrimaryCoursesPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">{course.description}</p>
-                
+
                 <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
@@ -182,9 +180,7 @@ export default function PrimaryCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <BookOpen className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {courses.length}
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{courses.length}</h3>
               <p className="text-gray-600">Total Courses</p>
             </CardContent>
           </Card>
@@ -200,14 +196,12 @@ export default function PrimaryCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                4.9/5
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">4.9/5</h3>
               <p className="text-gray-600">Student Rating</p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }

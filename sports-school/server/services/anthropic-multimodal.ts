@@ -10,7 +10,7 @@ const anthropic = new Anthropic({
 
 /**
  * Analyzes an educational image and provides detailed explanations
- * 
+ *
  * @param imagePath Path to the image file
  * @param prompt Custom prompt to guide the image analysis
  * @param subject Academic subject context
@@ -21,7 +21,7 @@ export async function analyzeEducationalImage(
   imagePath: string,
   prompt: string,
   subject: string,
-  gradeLevel: string
+  gradeLevel: string,
 ): Promise<string> {
   try {
     // Read the image file as base64
@@ -37,37 +37,39 @@ export async function analyzeEducationalImage(
 
     // Call Anthropic API with the image
     const response = await anthropic.messages.create({
-      model: "claude-3-7-sonnet-20250219",
+      model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1000,
-      messages: [{
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: contextualPrompt
-          },
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: determineMediaType(imagePath),
-              data: base64Image
-            }
-          }
-        ]
-      }]
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: contextualPrompt,
+            },
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: determineMediaType(imagePath),
+                data: base64Image,
+              },
+            },
+          ],
+        },
+      ],
     });
 
     return getTextFromResponse(response);
   } catch (error) {
-    console.error("Error analyzing educational image:", error);
+    console.error('Error analyzing educational image:', error);
     throw new Error(`Failed to analyze educational image: ${error.message}`);
   }
 }
 
 /**
  * Analyzes a student's drawing or artwork and provides developmental feedback
- * 
+ *
  * @param imagePath Path to the image file
  * @param studentAge Age of the student
  * @param neurotype Student's neurotype (if applicable)
@@ -78,7 +80,7 @@ export async function analyzeStudentArtwork(
   imagePath: string,
   studentAge: number,
   neurotype: string | null,
-  artPrompt: string
+  artPrompt: string,
 ): Promise<string> {
   try {
     // Read the image file as base64
@@ -88,11 +90,11 @@ export async function analyzeStudentArtwork(
     // Construct prompt with developmental context
     let contextualPrompt = `You are a supportive art educator analyzing a student's artwork. 
     This artwork was created by a ${studentAge}-year-old student`;
-    
+
     if (neurotype) {
       contextualPrompt += ` with ${neurotype}`;
     }
-    
+
     contextualPrompt += `.
     The student was responding to this prompt: "${artPrompt}"
     
@@ -100,49 +102,51 @@ export async function analyzeStudentArtwork(
     1. Positive, encouraging feedback
     2. Observations about developmental stage
     3. Suggestions for next steps in their artistic development
-    4. If applicable, how this artwork reflects their ${neurotype || "typical"} development
+    4. If applicable, how this artwork reflects their ${neurotype || 'typical'} development
     
     Use a warm, supportive tone appropriate for educators and parents.`;
 
     // Call Anthropic API with the image
     const response = await anthropic.messages.create({
-      model: "claude-3-7-sonnet-20250219",
+      model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1000,
-      messages: [{
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: contextualPrompt
-          },
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: determineMediaType(imagePath),
-              data: base64Image
-            }
-          }
-        ]
-      }]
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: contextualPrompt,
+            },
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: determineMediaType(imagePath),
+                data: base64Image,
+              },
+            },
+          ],
+        },
+      ],
     });
 
     return getTextFromResponse(response);
   } catch (error) {
-    console.error("Error analyzing student artwork:", error);
+    console.error('Error analyzing student artwork:', error);
     throw new Error(`Failed to analyze student artwork: ${error.message}`);
   }
 }
 
 /**
  * Determines the MIME type based on file extension
- * 
+ *
  * @param filePath Path to the image file
  * @returns Appropriate MIME type for the file
  */
 function determineMediaType(filePath: string): string {
   const extension = filePath.split('.').pop()?.toLowerCase();
-  
+
   switch (extension) {
     case 'jpg':
     case 'jpeg':
@@ -160,7 +164,7 @@ function determineMediaType(filePath: string): string {
 
 /**
  * Creates a visual learning assessment based on a diagram or chart
- * 
+ *
  * @param imagePath Path to the diagram or chart image
  * @param subject Academic subject
  * @param conceptName Name of the concept being assessed
@@ -171,7 +175,7 @@ export async function createVisualAssessment(
   imagePath: string,
   subject: string,
   conceptName: string,
-  gradeLevel: string
+  gradeLevel: string,
 ): Promise<string> {
   try {
     // Read the image file as base64
@@ -191,30 +195,32 @@ export async function createVisualAssessment(
 
     // Call Anthropic API with the image
     const response = await anthropic.messages.create({
-      model: "claude-3-7-sonnet-20250219",
+      model: 'claude-3-7-sonnet-20250219',
       max_tokens: 1500,
-      messages: [{
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: contextualPrompt
-          },
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: determineMediaType(imagePath),
-              data: base64Image
-            }
-          }
-        ]
-      }]
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: contextualPrompt,
+            },
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: determineMediaType(imagePath),
+                data: base64Image,
+              },
+            },
+          ],
+        },
+      ],
     });
 
     return getTextFromResponse(response);
   } catch (error) {
-    console.error("Error creating visual assessment:", error);
+    console.error('Error creating visual assessment:', error);
     throw new Error(`Failed to create visual assessment: ${error.message}`);
   }
 }

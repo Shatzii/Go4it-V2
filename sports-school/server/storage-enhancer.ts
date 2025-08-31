@@ -16,16 +16,16 @@ const PostgresSessionStore = connectPg(session);
 export function enhanceStorage() {
   // Patch the memory storage implementation
   const memStorage = MemStorage.prototype as any;
-  
+
   // Add PostgreSQL session store if needed
   if (!memStorage.sessionStore) {
     memStorage.sessionStore = new PostgresSessionStore({
       pool,
-      createTableIfMissing: true
+      createTableIfMissing: true,
     });
     console.log('✅ Added PostgreSQL session store to storage');
   }
-  
+
   // Enhanced versions of the vocabulary methods that use database first
   const enhancedMethods = {
     async getVocabularyLists() {
@@ -33,7 +33,7 @@ export function enhanceStorage() {
       try {
         // First try to get from database
         const dbLists = await db.select().from(schema.vocabularyLists);
-        
+
         if (dbLists && dbLists.length > 0) {
           // Update in-memory maps for compatibility
           for (const list of dbLists) {
@@ -41,7 +41,7 @@ export function enhanceStorage() {
           }
           return dbLists;
         }
-        
+
         // Fall back to in-memory if no results
         return Array.from(this.vocabularyLists.values());
       } catch (error) {
@@ -49,13 +49,13 @@ export function enhanceStorage() {
         return Array.from(this.vocabularyLists.values());
       }
     },
-    
+
     async getLanguageModules() {
       console.log('Using enhanced getLanguageModules method');
       try {
         // First try to get from database
         const dbModules = await db.select().from(schema.languageModules);
-        
+
         if (dbModules && dbModules.length > 0) {
           // Update in-memory maps for compatibility
           for (const module of dbModules) {
@@ -63,7 +63,7 @@ export function enhanceStorage() {
           }
           return dbModules;
         }
-        
+
         // Fall back to in-memory if no results
         return Array.from(this.languageModules.values());
       } catch (error) {
@@ -71,15 +71,13 @@ export function enhanceStorage() {
         return Array.from(this.languageModules.values());
       }
     },
-    
+
     async createVocabularyList(list: any) {
       console.log('Using enhanced createVocabularyList method');
       try {
         // First try to insert into database
-        const [newList] = await db.insert(schema.vocabularyLists)
-          .values(list)
-          .returning();
-          
+        const [newList] = await db.insert(schema.vocabularyLists).values(list).returning();
+
         if (newList) {
           // Update in-memory for compatibility
           this.vocabularyLists.set(newList.id, newList);
@@ -87,7 +85,7 @@ export function enhanceStorage() {
           this.vocabularyListCurrentId = Math.max(this.vocabularyListCurrentId, newList.id + 1);
           return newList;
         }
-        
+
         // Fall back to in-memory implementation if database insert fails
         return this._originalCreateVocabularyList(list);
       } catch (error) {
@@ -95,15 +93,13 @@ export function enhanceStorage() {
         return this._originalCreateVocabularyList(list);
       }
     },
-    
+
     async createVocabularyItem(item: any) {
       console.log('Using enhanced createVocabularyItem method');
       try {
         // First try to insert into database
-        const [newItem] = await db.insert(schema.vocabularyItems)
-          .values(item)
-          .returning();
-          
+        const [newItem] = await db.insert(schema.vocabularyItems).values(item).returning();
+
         if (newItem) {
           // Update in-memory for compatibility
           this.vocabularyItems.set(newItem.id, newItem);
@@ -111,27 +107,27 @@ export function enhanceStorage() {
           this.vocabularyItemCurrentId = Math.max(this.vocabularyItemCurrentId, newItem.id + 1);
           return newItem;
         }
-        
+
         // Fall back to in-memory implementation if database insert fails
         return this._originalCreateVocabularyItem(item);
       } catch (error) {
         console.error('Error in enhanced createVocabularyItem:', error);
         return this._originalCreateVocabularyItem(item);
       }
-    }
+    },
   };
-  
+
   // Store original methods for fallback
   if (!memStorage._originalCreateVocabularyList) {
     memStorage._originalCreateVocabularyList = memStorage.createVocabularyList;
   }
-  
+
   if (!memStorage._originalCreateVocabularyItem) {
     memStorage._originalCreateVocabularyItem = memStorage.createVocabularyItem;
   }
-  
+
   // Apply enhanced methods
   Object.assign(memStorage, enhancedMethods);
-  
+
   console.log('✅ Enhanced storage implementation with database-first methods');
 }

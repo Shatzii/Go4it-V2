@@ -1,7 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { MobileVideoRecorder, MobileVideoUpload, MobileProgressIndicator } from '@/components/mobile/MobileOptimizations';
+import {
+  MobileVideoRecorder,
+  MobileVideoUpload,
+  MobileProgressIndicator,
+} from '@/components/mobile/MobileOptimizations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Camera, Upload, ArrowLeft } from 'lucide-react';
@@ -9,14 +13,14 @@ import { Camera, Upload, ArrowLeft } from 'lucide-react';
 export default function MobileVideoUploadPage() {
   const [uploadMethod, setUploadMethod] = useState<'camera' | 'file' | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
-  
+
   const steps = ['Choose Method', 'Record/Select', 'Analysis', 'Results'];
 
   const handleVideoRecorded = async (videoBlob: Blob) => {
     setCurrentStep(2);
     // Handle video upload and analysis
     console.log('Video recorded:', videoBlob);
-    
+
     // Simulate analysis process
     setTimeout(() => {
       setCurrentStep(3);
@@ -27,7 +31,7 @@ export default function MobileVideoUploadPage() {
     setCurrentStep(2);
     // Handle video upload and analysis
     console.log('Video uploaded:', file);
-    
+
     // Simulate analysis process
     setTimeout(() => {
       setCurrentStep(3);
@@ -44,18 +48,13 @@ export default function MobileVideoUploadPage() {
   };
 
   if (uploadMethod === 'camera') {
-    return (
-      <MobileVideoRecorder 
-        onVideoRecorded={handleVideoRecorded}
-        onCancel={handleBack}
-      />
-    );
+    return <MobileVideoRecorder onVideoRecorded={handleVideoRecorded} onCancel={handleBack} />;
   }
 
   return (
     <div className="min-h-screen bg-slate-900 pb-safe">
       <MobileProgressIndicator steps={steps} currentStep={currentStep} />
-      
+
       {/* Header */}
       <div className="flex items-center p-4 bg-slate-900/95 backdrop-blur border-b border-slate-700">
         <Button variant="ghost" size="sm" onClick={handleBack}>
@@ -88,7 +87,7 @@ export default function MobileVideoUploadPage() {
                     <div className="text-sm opacity-80">Use your camera</div>
                   </div>
                 </Button>
-                
+
                 <Button
                   onClick={() => {
                     setUploadMethod('file');
@@ -143,11 +142,9 @@ export default function MobileVideoUploadPage() {
             <CardContent className="p-6 text-center">
               <div className="text-4xl mb-4">🎉</div>
               <h3 className="text-xl font-semibold text-white mb-2">Analysis Complete!</h3>
-              <p className="text-slate-400 mb-6">
-                Your GAR score and detailed breakdown are ready
-              </p>
-              <Button 
-                onClick={() => window.location.href = '/dashboard'}
+              <p className="text-slate-400 mb-6">Your GAR score and detailed breakdown are ready</p>
+              <Button
+                onClick={() => (window.location.href = '/dashboard')}
                 className="w-full bg-green-600 hover:bg-green-700"
               >
                 View Results

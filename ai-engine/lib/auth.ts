@@ -6,7 +6,7 @@ import { users, userSessions } from './schema';
 import { eq } from 'drizzle-orm';
 
 const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+  process.env.JWT_SECRET || 'your-secret-key-change-in-production',
 );
 
 export async function hashPassword(password: string): Promise<string> {
@@ -37,39 +37,39 @@ export async function verifyJWT(token: string): Promise<{ userId: number } | nul
 export async function getUserFromRequest(request: NextRequest) {
   try {
     // Try to get token from Authorization header first
-    const authHeader = request.headers.get('authorization')
-    let token = null
-    
+    const authHeader = request.headers.get('authorization');
+    let token = null;
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.replace('Bearer ', '')
+      token = authHeader.replace('Bearer ', '');
     }
-    
+
     // If no token in header, try cookies
     if (!token) {
-      token = request.cookies.get('auth-token')?.value
+      token = request.cookies.get('auth-token')?.value;
     }
-    
+
     if (!token) {
-      return null
+      return null;
     }
 
-    const payload = await verifyJWT(token)
+    const payload = await verifyJWT(token);
     if (!payload) {
-      return null
+      return null;
     }
 
-    const [user] = await db.select().from(users).where(eq(users.id, payload.userId))
-    return user || null
+    const [user] = await db.select().from(users).where(eq(users.id, payload.userId));
+    return user || null;
   } catch (error) {
-    console.error('Error getting user from request:', error)
-    return null
+    console.error('Error getting user from request:', error);
+    return null;
   }
 }
 
 export async function createSession(userId: number): Promise<string> {
   const token = await createJWT(userId);
   const sessionId = Math.random().toString(36).substr(2, 9);
-  
+
   await db.insert(userSessions).values({
     id: sessionId,
     userId,

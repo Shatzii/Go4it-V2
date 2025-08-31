@@ -1,14 +1,13 @@
 /**
  * PowerSchool Integration Service
- * 
+ *
  * This service provides methods for connecting to and interacting with the PowerSchool API.
  * It handles authentication, data retrieval, and transformation between PowerSchool and ShatziiOS.
  */
 
 import axios from 'axios';
-import { LmsProvider, type InsertLmsConnection, type InsertLmsClass, type InsertLmsAssignment } from '@shared/schema';
 import { db } from '../../db';
-import { lmsConnections, lmsClasses, lmsAssignments } from '@shared/schema';
+// Note: LMS integration schemas would need to be added to shared/schema.ts
 import { eq } from 'drizzle-orm';
 
 export interface PowerSchoolAuth {
@@ -34,16 +33,16 @@ export class PowerSchoolService {
   async authenticate(): Promise<string> {
     try {
       const authString = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
-      
+
       const response = await axios.post(
         `${this.baseUrl}/oauth/access_token`,
         'grant_type=client_credentials',
         {
           headers: {
-            'Authorization': `Basic ${authString}`,
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
-          }
-        }
+            Authorization: `Basic ${authString}`,
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          },
+        },
       );
 
       return response.data.access_token;
@@ -58,15 +57,12 @@ export class PowerSchoolService {
    */
   async getStudentInfo(accessToken: string, studentId: string): Promise<any> {
     try {
-      const response = await axios.get(
-        `${this.baseUrl}/ws/v1/student/${studentId}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Accept': 'application/json'
-          }
-        }
-      );
+      const response = await axios.get(`${this.baseUrl}/ws/v1/student/${studentId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+        },
+      });
 
       return response.data.student;
     } catch (error: any) {
@@ -80,15 +76,12 @@ export class PowerSchoolService {
    */
   async getStudentClasses(accessToken: string, studentId: string): Promise<any[]> {
     try {
-      const response = await axios.get(
-        `${this.baseUrl}/ws/v1/student/${studentId}/section`,
-        {
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Accept': 'application/json'
-          }
-        }
-      );
+      const response = await axios.get(`${this.baseUrl}/ws/v1/student/${studentId}/section`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          Accept: 'application/json',
+        },
+      });
 
       return response.data.sections.section || [];
     } catch (error: any) {
@@ -100,16 +93,20 @@ export class PowerSchoolService {
   /**
    * Get assignments for a specific class from PowerSchool
    */
-  async getClassAssignments(accessToken: string, studentId: string, sectionId: string): Promise<any[]> {
+  async getClassAssignments(
+    accessToken: string,
+    studentId: string,
+    sectionId: string,
+  ): Promise<any[]> {
     try {
       const response = await axios.get(
         `${this.baseUrl}/ws/v1/student/${studentId}/section/${sectionId}/assignment`,
         {
           headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Accept': 'application/json'
-          }
-        }
+            Authorization: `Bearer ${accessToken}`,
+            Accept: 'application/json',
+          },
+        },
       );
 
       return response.data.assignments.assignment || [];
@@ -122,7 +119,12 @@ export class PowerSchoolService {
   /**
    * Store PowerSchool connection in the database
    */
-  async storeConnection(userId: number, accessToken: string, refreshToken: string, providerUserId: string): Promise<number> {
+  async storeConnection(
+    userId: number,
+    accessToken: string,
+    refreshToken: string,
+    providerUserId: string,
+  ): Promise<number> {
     try {
       const connectionData: InsertLmsConnection = {
         userId,
@@ -134,7 +136,7 @@ export class PowerSchoolService {
         providerUserId,
         providerUsername: '', // Will be filled after getting user info
         isActive: true,
-        additionalInfo: {}
+        additionalInfo: {},
       };
 
       const [connection] = await db.insert(lmsConnections).values(connectionData).returning();
@@ -161,13 +163,14 @@ export class PowerSchoolService {
           subject: psClass.course_number || '',
           teacherIds: [psClass.teacher_id?.toString() || ''],
           isActive: true,
-          additionalInfo: psClass
+          additionalInfo: psClass,
         };
 
         // Check if the class already exists, if not, create it
-        const existingClasses = await db.select().from(lmsClasses).where(
-          eq(lmsClasses.providerClassId, psClass.id.toString())
-        );
+        const existingClasses = await db
+          .select()
+          .from(lmsClasses)
+          .where(eq(lmsClasses.providerClassId, psClass.id.toString()));
 
         if (existingClasses.length === 0) {
           await db.insert(lmsClasses).values(classData);
@@ -192,17 +195,20 @@ export class PowerSchoolService {
           description: psAssignment.description || '',
           contentType: this.mapAssignmentType(psAssignment.type || ''),
           dueDate: psAssignment.due_date ? new Date(psAssignment.due_date) : undefined,
-          pointsPossible: psAssignment.total_points ? parseInt(psAssignment.total_points) : undefined,
+          pointsPossible: psAssignment.total_points
+            ? parseInt(psAssignment.total_points)
+            : undefined,
           materials: {},
           attachmentUrls: [],
           isActive: true,
-          additionalInfo: psAssignment
+          additionalInfo: psAssignment,
         };
 
         // Check if the assignment already exists, if not, create it
-        const existingAssignments = await db.select().from(lmsAssignments).where(
-          eq(lmsAssignments.providerAssignmentId, psAssignment.id.toString())
-        );
+        const existingAssignments = await db
+          .select()
+          .from(lmsAssignments)
+          .where(eq(lmsAssignments.providerAssignmentId, psAssignment.id.toString()));
 
         if (existingAssignments.length === 0) {
           await db.insert(lmsAssignments).values(assignmentData);
@@ -219,14 +225,14 @@ export class PowerSchoolService {
    */
   private mapAssignmentType(psType: string): string {
     const typeMap: Record<string, string> = {
-      'Assignment': 'assignment',
-      'Quiz': 'quiz',
-      'Test': 'test',
-      'Project': 'project',
-      'Homework': 'assignment',
-      'Essay': 'assignment',
-      'Final': 'test',
-      'Lab': 'assignment'
+      Assignment: 'assignment',
+      Quiz: 'quiz',
+      Test: 'test',
+      Project: 'project',
+      Homework: 'assignment',
+      Essay: 'assignment',
+      Final: 'test',
+      Lab: 'assignment',
     };
 
     return typeMap[psType] || 'other';
@@ -235,33 +241,50 @@ export class PowerSchoolService {
   /**
    * Run a complete sync for a user
    */
-  async syncUserData(userId: number, providerUserId: string, accessToken: string, refreshToken: string): Promise<void> {
+  async syncUserData(
+    userId: number,
+    providerUserId: string,
+    accessToken: string,
+    refreshToken: string,
+  ): Promise<void> {
     try {
       // Store the connection
-      const connectionId = await this.storeConnection(userId, accessToken, refreshToken, providerUserId);
-      
+      const connectionId = await this.storeConnection(
+        userId,
+        accessToken,
+        refreshToken,
+        providerUserId,
+      );
+
       // Get student info
       const studentInfo = await this.getStudentInfo(accessToken, providerUserId);
-      
+
       // Update connection with username
-      await db.update(lmsConnections)
-        .set({ 
+      await db
+        .update(lmsConnections)
+        .set({
           providerUsername: `${studentInfo.name.first_name} ${studentInfo.name.last_name}`,
-          lastSynced: new Date()
+          lastSynced: new Date(),
         })
         .where(eq(lmsConnections.id, connectionId));
-      
+
       // Get and sync classes
       const classes = await this.getStudentClasses(accessToken, providerUserId);
       await this.syncClasses(connectionId, classes);
-      
+
       // For each class, sync assignments
       for (const psClass of classes) {
-        const dbClass = await db.select().from(lmsClasses)
+        const dbClass = await db
+          .select()
+          .from(lmsClasses)
           .where(eq(lmsClasses.providerClassId, psClass.id.toString()));
-        
+
         if (dbClass.length > 0) {
-          const assignments = await this.getClassAssignments(accessToken, providerUserId, psClass.id);
+          const assignments = await this.getClassAssignments(
+            accessToken,
+            providerUserId,
+            psClass.id,
+          );
           await this.syncAssignments(dbClass[0].id, assignments);
         }
       }

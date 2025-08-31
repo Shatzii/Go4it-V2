@@ -8,25 +8,25 @@ export class FatigueDetector {
 
   async initialize() {
     console.log('Initializing fatigue detection system...');
-    
+
     // Initialize fatigue detection algorithms
     await this.setupFatigueModels();
-    
+
     console.log('Fatigue detector ready');
   }
 
   async analyzeFatigueLevel(poseSequence: any[], movementData: any[], sport: string): Promise<any> {
     await this.initialize();
-    
+
     // Establish baseline if not calibrated
     if (!this.isCalibrated) {
       await this.establishBaseline(poseSequence, movementData, sport);
     }
-    
+
     // Analyze current performance vs baseline
     const currentMetrics = this.calculateCurrentMetrics(poseSequence, movementData);
     const fatigueAnalysis = await this.detectFatiguePatterns(currentMetrics, sport);
-    
+
     return {
       fatigueLevel: fatigueAnalysis.overallFatigue,
       fatiguePercentage: fatigueAnalysis.fatiguePercentage,
@@ -35,7 +35,7 @@ export class FatigueDetector {
       energyReserves: fatigueAnalysis.energyReserves,
       recoveryRecommendations: this.generateRecoveryRecommendations(fatigueAnalysis),
       optimalRestTime: this.calculateOptimalRestTime(fatigueAnalysis),
-      performanceProjection: this.projectPerformanceDecline(fatigueAnalysis)
+      performanceProjection: this.projectPerformanceDecline(fatigueAnalysis),
     };
   }
 
@@ -43,18 +43,22 @@ export class FatigueDetector {
     // Real-time fatigue monitoring for live sessions
     const quickMetrics = this.calculateQuickMetrics(currentFrame);
     const instantFatigue = this.assessInstantFatigue(quickMetrics);
-    
+
     return {
       instantFatigueLevel: instantFatigue.level,
       alerts: instantFatigue.alerts,
       recommendations: instantFatigue.recommendations,
-      shouldRest: instantFatigue.shouldRest
+      shouldRest: instantFatigue.shouldRest,
     };
   }
 
-  private async establishBaseline(poseSequence: any[], movementData: any[], sport: string): Promise<void> {
+  private async establishBaseline(
+    poseSequence: any[],
+    movementData: any[],
+    sport: string,
+  ): Promise<void> {
     console.log('Establishing performance baseline...');
-    
+
     // Calculate baseline metrics from early performance
     const earlyFrames = poseSequence.slice(0, Math.min(10, poseSequence.length));
     const baseline = {
@@ -65,12 +69,12 @@ export class FatigueDetector {
       reactionTime: this.calculateReactionTime(earlyFrames),
       powerOutput: this.calculatePowerOutput(earlyFrames),
       sport: sport,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
-    
+
     this.baselineMetrics.set('current_session', baseline);
     this.isCalibrated = true;
-    
+
     console.log('Baseline established:', baseline);
   }
 
@@ -83,7 +87,7 @@ export class FatigueDetector {
       techniqueConsistency: this.calculateTechniqueConsistency(poseSequence),
       reactionTime: this.calculateReactionTime(poseSequence),
       powerOutput: this.calculatePowerOutput(poseSequence),
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
   }
 
@@ -92,35 +96,48 @@ export class FatigueDetector {
     if (!baseline) {
       return { overallFatigue: 'baseline_needed', fatiguePercentage: 0 };
     }
-    
+
     // Calculate performance degradation
-    const speedDrop = (baseline.movementSpeed - currentMetrics.movementSpeed) / baseline.movementSpeed;
-    const coordinationDrop = (baseline.coordinationQuality - currentMetrics.coordinationQuality) / baseline.coordinationQuality;
-    const balanceDrop = (baseline.balanceStability - currentMetrics.balanceStability) / baseline.balanceStability;
-    const consistencyDrop = (baseline.techniqueConsistency - currentMetrics.techniqueConsistency) / baseline.techniqueConsistency;
-    const reactionDrop = (currentMetrics.reactionTime - baseline.reactionTime) / baseline.reactionTime;
+    const speedDrop =
+      (baseline.movementSpeed - currentMetrics.movementSpeed) / baseline.movementSpeed;
+    const coordinationDrop =
+      (baseline.coordinationQuality - currentMetrics.coordinationQuality) /
+      baseline.coordinationQuality;
+    const balanceDrop =
+      (baseline.balanceStability - currentMetrics.balanceStability) / baseline.balanceStability;
+    const consistencyDrop =
+      (baseline.techniqueConsistency - currentMetrics.techniqueConsistency) /
+      baseline.techniqueConsistency;
+    const reactionDrop =
+      (currentMetrics.reactionTime - baseline.reactionTime) / baseline.reactionTime;
     const powerDrop = (baseline.powerOutput - currentMetrics.powerOutput) / baseline.powerOutput;
-    
+
     // Calculate overall fatigue percentage
-    const fatiguePercentage = Math.max(0, Math.min(100, 
-      (speedDrop + coordinationDrop + balanceDrop + consistencyDrop + reactionDrop + powerDrop) * 100 / 6
-    ));
-    
+    const fatiguePercentage = Math.max(
+      0,
+      Math.min(
+        100,
+        ((speedDrop + coordinationDrop + balanceDrop + consistencyDrop + reactionDrop + powerDrop) *
+          100) /
+          6,
+      ),
+    );
+
     // Determine fatigue level
     let fatigueLevel = 'fresh';
     if (fatiguePercentage > 60) fatigueLevel = 'severe';
     else if (fatiguePercentage > 40) fatigueLevel = 'moderate';
     else if (fatiguePercentage > 20) fatigueLevel = 'mild';
-    
+
     // Identify specific fatigue indicators
     const indicators = [];
     if (speedDrop > 0.15) indicators.push('Movement speed decline');
     if (coordinationDrop > 0.12) indicators.push('Coordination deterioration');
-    if (balanceDrop > 0.10) indicators.push('Balance instability');
+    if (balanceDrop > 0.1) indicators.push('Balance instability');
     if (consistencyDrop > 0.15) indicators.push('Technique inconsistency');
-    if (reactionDrop > 0.20) indicators.push('Slower reaction times');
+    if (reactionDrop > 0.2) indicators.push('Slower reaction times');
     if (powerDrop > 0.18) indicators.push('Power output reduction');
-    
+
     return {
       overallFatigue: fatigueLevel,
       fatiguePercentage: Math.round(fatiguePercentage),
@@ -131,9 +148,9 @@ export class FatigueDetector {
         balance: Math.round(balanceDrop * 100),
         consistency: Math.round(consistencyDrop * 100),
         reaction: Math.round(reactionDrop * 100),
-        power: Math.round(powerDrop * 100)
+        power: Math.round(powerDrop * 100),
       },
-      energyReserves: Math.max(0, 100 - fatiguePercentage)
+      energyReserves: Math.max(0, 100 - fatiguePercentage),
     };
   }
 
@@ -142,18 +159,20 @@ export class FatigueDetector {
     return {
       posturalSway: 0.15 + Math.random() * 0.1,
       movementJerkiness: 0.12 + Math.random() * 0.08,
-      coordinationLag: 0.08 + Math.random() * 0.06
+      coordinationLag: 0.08 + Math.random() * 0.06,
     };
   }
 
   private assessInstantFatigue(quickMetrics: any): any {
-    const fatigueScore = (quickMetrics.posturalSway + quickMetrics.movementJerkiness + quickMetrics.coordinationLag) * 100;
-    
+    const fatigueScore =
+      (quickMetrics.posturalSway + quickMetrics.movementJerkiness + quickMetrics.coordinationLag) *
+      100;
+
     let level = 'good';
     const alerts = [];
     const recommendations = [];
     let shouldRest = false;
-    
+
     if (fatigueScore > 25) {
       level = 'high_fatigue';
       alerts.push('High fatigue detected');
@@ -167,13 +186,13 @@ export class FatigueDetector {
       level = 'mild_fatigue';
       recommendations.push('Stay hydrated, maintain form');
     }
-    
+
     return { level, alerts, recommendations, shouldRest };
   }
 
   private generateRecoveryRecommendations(fatigueAnalysis: any): string[] {
     const recommendations = [];
-    
+
     if (fatigueAnalysis.fatiguePercentage > 50) {
       recommendations.push('Take extended rest (15-30 minutes)');
       recommendations.push('Hydrate with electrolyte solution');
@@ -187,7 +206,7 @@ export class FatigueDetector {
       recommendations.push('Stay hydrated');
       recommendations.push('Consider reducing session length');
     }
-    
+
     return recommendations.length > 0 ? recommendations : ['Continue current activity level'];
   }
 
@@ -200,13 +219,13 @@ export class FatigueDetector {
 
   private projectPerformanceDecline(fatigueAnalysis: any): any {
     const currentFatigue = fatigueAnalysis.fatiguePercentage;
-    
+
     return {
       next5Minutes: Math.min(100, currentFatigue + 8),
       next10Minutes: Math.min(100, currentFatigue + 15),
       next15Minutes: Math.min(100, currentFatigue + 25),
       projectedPeakFatigue: Math.min(100, currentFatigue + 35),
-      timeToExhaustion: this.calculateTimeToExhaustion(currentFatigue)
+      timeToExhaustion: this.calculateTimeToExhaustion(currentFatigue),
     };
   }
 
@@ -258,9 +277,9 @@ export class FatigueDetector {
   async addPerformanceHistory(sessionData: any): Promise<void> {
     this.performanceHistory.push({
       ...sessionData,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
-    
+
     // Keep only last 10 sessions
     if (this.performanceHistory.length > 10) {
       this.performanceHistory = this.performanceHistory.slice(-10);
@@ -271,15 +290,17 @@ export class FatigueDetector {
     if (this.performanceHistory.length < 2) {
       return { trend: 'insufficient_data' };
     }
-    
+
     const recent = this.performanceHistory.slice(-5);
-    const avgFatigue = recent.reduce((sum, session) => sum + (session.fatigueLevel || 0), 0) / recent.length;
-    
+    const avgFatigue =
+      recent.reduce((sum, session) => sum + (session.fatigueLevel || 0), 0) / recent.length;
+
     return {
       trend: avgFatigue > 40 ? 'declining' : avgFatigue > 20 ? 'stable' : 'improving',
       averageFatigue: Math.round(avgFatigue),
       sessionsAnalyzed: recent.length,
-      recommendation: avgFatigue > 40 ? 'Consider longer rest periods' : 'Maintain current training load'
+      recommendation:
+        avgFatigue > 40 ? 'Consider longer rest periods' : 'Maintain current training load',
     };
   }
 }

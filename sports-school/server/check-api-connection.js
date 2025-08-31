@@ -1,6 +1,6 @@
 /**
  * API Connection Checker
- * 
+ *
  * This script verifies that the API server is running and accessible.
  */
 
@@ -13,23 +13,23 @@ const API_URL = `http://${API_HOST}:${API_PORT}/api/ai/status`;
 async function checkAPIConnection() {
   console.log('Checking API server connection...');
   console.log(`Testing: ${API_URL}`);
-  
+
   try {
     // Add a delay to ensure the server has time to start
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     // Try to connect to the API
     const response = await fetch(API_URL);
-    
+
     if (!response.ok) {
       console.error(`❌ API server is not responding correctly. Status: ${response.status}`);
       return false;
     }
-    
+
     const data = await response.json();
     console.log('✅ API server is running!');
     console.log('API Status:', JSON.stringify(data, null, 2));
-    
+
     // Check if Anthropic is available
     if (data.anthropic && data.anthropic.available) {
       console.log('✅ Anthropic integration is available');
@@ -38,7 +38,7 @@ async function checkAPIConnection() {
       console.warn('⚠️ Anthropic integration is NOT available');
       console.warn('   Make sure ANTHROPIC_API_KEY is set in your .env file');
     }
-    
+
     return true;
   } catch (error) {
     console.error('❌ Failed to connect to API server:', error.message);
@@ -49,7 +49,7 @@ async function checkAPIConnection() {
 
 // If running directly (not imported)
 if (require.main === module) {
-  checkAPIConnection().then(isConnected => {
+  checkAPIConnection().then((isConnected) => {
     if (!isConnected) {
       console.log('\nTroubleshooting tips:');
       console.log('1. Make sure the API server is running: node server/api-server.js');

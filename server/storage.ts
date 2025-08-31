@@ -1,271 +1,217 @@
-import { users, videoAnalysis, type User, type InsertUser, type VideoAnalysis, type InsertVideoAnalysis } from "../shared/schema";
-import { db } from "./db";
-import { eq, desc, and, or, like, sql } from "drizzle-orm";
-import bcrypt from "bcryptjs";
+import { users, type User, type UpsertUser } from '../shared/schema';
+import { db } from './db';
+import { eq, and } from 'drizzle-orm';
+import { databaseStorage } from './database-storage';
 
+// Interface for storage operations
 export interface IStorage {
-  // User management
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
-  createUser(insertUser: InsertUser): Promise<User>;
-  updateUser(id: number, data: Partial<User>): Promise<User>;
-  deleteUser(id: number): Promise<void>;
-  
-  // Authentication
-  validateUserCredentials(email: string, password: string): Promise<User | null>;
-  updateLastLogin(userId: number): Promise<void>;
-  
-  // Video Analysis
-  createVideoAnalysis(data: InsertVideoAnalysis): Promise<VideoAnalysis>;
-  getVideoAnalysisByUserId(userId: number): Promise<VideoAnalysis[]>;
-  getVideoAnalysisById(id: number): Promise<VideoAnalysis | undefined>;
-  updateVideoAnalysis(id: number, data: Partial<VideoAnalysis>): Promise<VideoAnalysis>;
-  deleteVideoAnalysis(id: number): Promise<void>;
-  
-  // GAR Scoring and Rankings
-  getUsersByGARScore(minScore?: number, maxScore?: number, sport?: string): Promise<User[]>;
-  getTopAthletesByGAR(limit: number, sport?: string): Promise<User[]>;
-  
-  // Subscription Management
-  updateUserSubscription(userId: number, subscriptionData: {
-    stripeCustomerId?: string;
-    stripeSubscriptionId?: string;
-    subscriptionPlan?: string;
-    subscriptionStatus?: string;
-    subscriptionEndDate?: Date;
-  }): Promise<User>;
-  
-  // Dashboard Statistics
-  getDashboardStats(userId?: number): Promise<{
-    totalAthletes: number;
-    totalAnalyses: number;
-    averageGAR: number;
-    recentAnalyses: VideoAnalysis[];
-  }>;
+  // User operations (mandatory for Replit Auth)
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
+
+  // Academy courses
+  listCourses(): Promise<any[]>;
+  getCourseById(id: string): Promise<any | undefined>;
+  ensureSeedCourses(): Promise<void>;
+  listEnrollmentsByStudent(studentId: string): Promise<any[]>;
+  enrollStudentInCourse(
+    studentId: string,
+    courseId: string,
+    semester?: string,
+    year?: number,
+  ): Promise<any>;
+  getCourseProgress(studentId: string, courseIds: string[]): Promise<Record<string, number>>;
+
+  // Academy assignments and submissions
+  createAssignment(assignmentData: any): Promise<any>;
+  getAssignmentsByCourse(courseId: string): Promise<any[]>;
+  getStudentAssignments(studentId: string): Promise<any[]>;
+  submitAssignment(submissionData: any): Promise<any>;
+  gradeSubmission(submissionId: string, score: number, feedback?: string): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
+  // User operations (mandatory for Replit Auth)
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    return user;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    // Hash password before storing
-    if (insertUser.password) {
-      insertUser.password = await bcrypt.hash(insertUser.password, 12);
-    }
-    
+  async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values(userData)
+      .onConflictDoUpdate({ target: users.id, set: { ...userData } })
       .returning();
     return user;
   }
 
-  async updateUser(id: number, data: Partial<User>): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set(data)
-      .where(eq(users.id, id))
-      .returning();
-    return user;
-  }
-
-  async deleteUser(id: number): Promise<void> {
-    await db.delete(users).where(eq(users.id, id));
-  }
-
-  async validateUserCredentials(email: string, password: string): Promise<User | null> {
-    const user = await this.getUserByEmail(email);
-    if (!user) return null;
-    
-    const isValid = await bcrypt.compare(password, user.password);
-    return isValid ? user : null;
-  }
-
-  async updateLastLogin(userId: number): Promise<void> {
+  // -------- Academy Courses --------
+  async ensureSeedCourses(): Promise<void> {
+    // Lightweight idempotent seed (dev only or when table empty)
+    // Import dynamically to avoid top-level circular refs
+    const { academyCourses } = await import('../shared/schema');
+    const existing = await db.select({ id: academyCourses.id }).from(academyCourses).limit(1);
+    if (existing.length) return;
     await db
-      .update(users)
-      .set({ lastLoginAt: new Date() })
-      .where(eq(users.id, userId));
+      .insert(academyCourses)
+      .values([
+        { title: 'Algebra I', description: 'Core mathematics foundations', code: 'MATH-ALG1' },
+        { title: 'Biology', description: 'Introduction to life sciences', code: 'SCI-BIO' },
+        {
+          title: 'English Literature',
+          description: 'Reading & analysis of texts',
+          code: 'ENG-LIT',
+        },
+        { title: 'World History', description: 'Global civilizations overview', code: 'SOC-WH' },
+      ])
+      .onConflictDoNothing();
   }
 
-  async createVideoAnalysis(data: InsertVideoAnalysis): Promise<VideoAnalysis> {
-    const [analysis] = await db
-      .insert(videoAnalysis)
-      .values(data)
-      .returning();
-    return analysis;
+  async listCourses(): Promise<any[]> {
+    const { academyCourses } = await import('../shared/schema');
+    return db.select().from(academyCourses).orderBy(academyCourses.createdAt);
   }
 
-  async getVideoAnalysisByUserId(userId: number): Promise<VideoAnalysis[]> {
-    return await db
+  async getCourseById(id: string): Promise<any | undefined> {
+    const { academyCourses } = await import('../shared/schema');
+    const [c] = await db.select().from(academyCourses).where(eq(academyCourses.id, id));
+    return c || undefined;
+  }
+
+  async listEnrollmentsByStudent(studentId: string): Promise<any[]> {
+    const { academyEnrollments, academyCourses } = await import('../shared/schema');
+    const rows = await db
       .select()
-      .from(videoAnalysis)
-      .where(eq(videoAnalysis.userId, userId))
-      .orderBy(desc(videoAnalysis.createdAt));
+      .from(academyEnrollments)
+      .leftJoin(academyCourses, eq(academyEnrollments.courseId, academyCourses.id))
+      .where(eq(academyEnrollments.studentId, studentId));
+    return rows.map((r) => ({
+      enrollment: r.academy_enrollments,
+      course: r.academy_courses,
+    }));
   }
 
-  async getVideoAnalysisById(id: number): Promise<VideoAnalysis | undefined> {
-    const [analysis] = await db
+  async enrollStudentInCourse(
+    studentId: string,
+    courseId: string,
+    _semester = 'Fall',
+    _year = new Date().getFullYear(),
+  ): Promise<any> {
+    const { academyEnrollments } = await import('../shared/schema');
+    // Avoid duplicate enrollment
+    const existing = await db
       .select()
-      .from(videoAnalysis)
-      .where(eq(videoAnalysis.id, id));
-    return analysis || undefined;
-  }
-
-  async updateVideoAnalysis(id: number, data: Partial<VideoAnalysis>): Promise<VideoAnalysis> {
-    const [analysis] = await db
-      .update(videoAnalysis)
-      .set(data)
-      .where(eq(videoAnalysis.id, id))
+      .from(academyEnrollments)
+      .where(
+        and(
+          eq(academyEnrollments.studentId, studentId),
+          eq(academyEnrollments.courseId, parseInt(courseId)),
+        ),
+      )
+      .limit(1);
+    if (existing.length) return existing[0];
+    const [row] = await db
+      .insert(academyEnrollments)
+      .values({
+        studentId,
+        courseId: parseInt(courseId),
+        status: 'active',
+      })
       .returning();
-    return analysis;
+    return row;
   }
 
-  async deleteVideoAnalysis(id: number): Promise<void> {
-    await db.delete(videoAnalysis).where(eq(videoAnalysis.id, id));
-  }
+  async getCourseProgress(studentId: string, courseIds: string[]): Promise<Record<string, number>> {
+    // Calculate progress based on enrollments
+    const { academyEnrollments } = await import('../shared/schema');
+    const enrollments = await db
+      .select()
+      .from(academyEnrollments)
+      .where(
+        and(
+          eq(academyEnrollments.studentId, studentId),
+          academyEnrollments.courseId.in(courseIds.map((id) => parseInt(id))),
+        ),
+      );
 
-  async getUsersByGARScore(minScore?: number, maxScore?: number, sport?: string): Promise<User[]> {
-    let whereConditions = [];
-    
-    if (sport) {
-      whereConditions.push(eq(users.sport, sport));
+    const result: Record<string, number> = {};
+    for (const id of courseIds) {
+      const enrollment = enrollments.find((e) => e.courseId?.toString() === id);
+      result[id] = enrollment?.progress || 0;
     }
-    
-    const baseQuery = whereConditions.length > 0
-      ? db
-          .select()
-          .from(users)
-          .leftJoin(videoAnalysis, eq(users.id, videoAnalysis.userId))
-          .where(and(...whereConditions))
-      : db
-          .select()
-          .from(users)
-          .leftJoin(videoAnalysis, eq(users.id, videoAnalysis.userId));
-
-    const results = await baseQuery;
-    
-    // Group by user and calculate average GAR score
-    const userMap = new Map<number, any>();
-    
-    results.forEach(row => {
-      const user = row.users;
-      const analysis = row.video_analysis;
-      
-      if (!userMap.has(user.id)) {
-        userMap.set(user.id, {
-          ...user,
-          garScores: []
-        });
-      }
-      
-      if (analysis && analysis.garScore) {
-        userMap.get(user.id).garScores.push(Number(analysis.garScore));
-      }
-    });
-    
-    // Calculate average and filter
-    const filteredUsers = Array.from(userMap.values())
-      .map(user => ({
-        ...user,
-        averageGAR: user.garScores.length > 0 
-          ? user.garScores.reduce((a: number, b: number) => a + b, 0) / user.garScores.length 
-          : 0
-      }))
-      .filter(user => {
-        const score = user.averageGAR;
-        if (minScore !== undefined && score < minScore) return false;
-        if (maxScore !== undefined && score > maxScore) return false;
-        return true;
-      });
-    
-    return filteredUsers;
+    return result;
   }
 
-  async getTopAthletesByGAR(limit: number, sport?: string): Promise<User[]> {
-    const users = await this.getUsersByGARScore(undefined, undefined, sport);
-    
-    return users
-      .sort((a: any, b: any) => (b.averageGAR || 0) - (a.averageGAR || 0))
-      .slice(0, limit);
+  // -------- Academy Assignments --------
+  async createAssignment(assignmentData: any): Promise<any> {
+    const { academyAssignments } = await import('../shared/schema');
+    const [assignment] = await db.insert(academyAssignments).values(assignmentData).returning();
+    return assignment;
   }
 
-  async updateUserSubscription(userId: number, subscriptionData: {
-    stripeCustomerId?: string;
-    stripeSubscriptionId?: string;
-    subscriptionPlan?: string;
-    subscriptionStatus?: string;
-    subscriptionEndDate?: Date;
-  }): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set(subscriptionData)
-      .where(eq(users.id, userId))
+  async getAssignmentsByCourse(courseId: string): Promise<any[]> {
+    const { academyAssignments } = await import('../shared/schema');
+    return db
+      .select()
+      .from(academyAssignments)
+      .where(eq(academyAssignments.courseId, parseInt(courseId)))
+      .orderBy(academyAssignments.createdAt);
+  }
+
+  async getStudentAssignments(studentId: string): Promise<any[]> {
+    const { academyAssignments, academySubmissions, academyCourses, academyEnrollments } =
+      await import('../shared/schema');
+
+    // Get assignments for courses the student is enrolled in
+    const rows = await db
+      .select({
+        assignment: academyAssignments,
+        submission: academySubmissions,
+        course: academyCourses,
+      })
+      .from(academyAssignments)
+      .leftJoin(
+        academySubmissions,
+        and(
+          eq(academyAssignments.id, academySubmissions.assignmentId),
+          eq(academySubmissions.studentId, studentId),
+        ),
+      )
+      .leftJoin(academyCourses, eq(academyAssignments.courseId, academyCourses.id))
+      .leftJoin(
+        academyEnrollments,
+        and(
+          eq(academyEnrollments.courseId, academyAssignments.courseId),
+          eq(academyEnrollments.studentId, studentId),
+        ),
+      )
+      .where(academyEnrollments.isActive);
+
+    return rows;
+  }
+
+  async submitAssignment(submissionData: any): Promise<any> {
+    const { academySubmissions } = await import('../shared/schema');
+    const [submission] = await db.insert(academySubmissions).values(submissionData).returning();
+    return submission;
+  }
+
+  async gradeSubmission(submissionId: string, score: number, feedback?: string): Promise<any> {
+    const { academySubmissions } = await import('../shared/schema');
+    const [submission] = await db
+      .update(academySubmissions)
+      .set({
+        score,
+        feedback,
+        gradedAt: new Date(),
+        status: 'graded',
+      })
+      .where(eq(academySubmissions.id, parseInt(submissionId)))
       .returning();
-    return user;
-  }
-
-  async getDashboardStats(userId?: number): Promise<{
-    totalAthletes: number;
-    totalAnalyses: number;
-    averageGAR: number;
-    recentAnalyses: VideoAnalysis[];
-  }> {
-    // Get total athletes
-    const [athleteCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(users)
-      .where(eq(users.role, 'athlete'));
-
-    // Get total analyses
-    const [analysisCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(videoAnalysis);
-
-    // Get average GAR score
-    const [avgGAR] = await db
-      .select({ avg: sql<number>`COALESCE(AVG(CAST(${videoAnalysis.garScore} as DECIMAL)), 0)` })
-      .from(videoAnalysis);
-
-    // Get recent analyses (user-specific or global)
-    let recentAnalyses;
-    
-    if (userId) {
-      recentAnalyses = await db
-        .select()
-        .from(videoAnalysis)
-        .where(eq(videoAnalysis.userId, userId))
-        .orderBy(desc(videoAnalysis.createdAt))
-        .limit(10);
-    } else {
-      recentAnalyses = await db
-        .select()
-        .from(videoAnalysis)
-        .orderBy(desc(videoAnalysis.createdAt))
-        .limit(10);
-    }
-
-    return {
-      totalAthletes: athleteCount.count,
-      totalAnalyses: analysisCount.count,
-      averageGAR: Number(avgGAR.avg),
-      recentAnalyses
-    };
+    return submission;
   }
 }
 
-export const storage = new DatabaseStorage();
+// Export singleton storage instance that includes both academy and social media functionality
+export const storage = Object.assign(new DatabaseStorage(), databaseStorage);

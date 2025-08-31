@@ -53,7 +53,7 @@ export default function LocalModelsPage() {
       const response = await fetch('/api/models/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ modelName })
+        body: JSON.stringify({ modelName }),
       });
 
       const result = await response.json();
@@ -77,7 +77,7 @@ export default function LocalModelsPage() {
       const response = await fetch('/api/models/download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ downloadAll: true })
+        body: JSON.stringify({ downloadAll: true }),
       });
 
       const result = await response.json();
@@ -130,8 +130,8 @@ export default function LocalModelsPage() {
                     {modelsStatus.installed}/{modelsStatus.total}
                   </div>
                   <p className="text-sm text-slate-300">Models Installed</p>
-                  <Progress 
-                    value={(modelsStatus.installed / modelsStatus.total) * 100} 
+                  <Progress
+                    value={(modelsStatus.installed / modelsStatus.total) * 100}
                     className="mt-2"
                   />
                 </div>
@@ -143,7 +143,7 @@ export default function LocalModelsPage() {
                   <p className="text-xs text-slate-400">of {modelsStatus.totalSizeGB}GB total</p>
                 </div>
                 <div className="text-center">
-                  <Button 
+                  <Button
                     onClick={downloadAllModels}
                     disabled={downloadingAll || modelsStatus.installed === modelsStatus.total}
                     className="bg-blue-600 hover:bg-blue-700"
@@ -162,21 +162,27 @@ export default function LocalModelsPage() {
             <CardContent className="p-6 text-center">
               <Zap className="w-8 h-8 text-yellow-400 mx-auto mb-4" />
               <h3 className="text-white font-semibold mb-2">Faster Analysis</h3>
-              <p className="text-sm text-slate-300">Local processing reduces analysis time to 2-4 seconds</p>
+              <p className="text-sm text-slate-300">
+                Local processing reduces analysis time to 2-4 seconds
+              </p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-6 text-center">
               <HardDrive className="w-8 h-8 text-green-400 mx-auto mb-4" />
               <h3 className="text-white font-semibold mb-2">Offline Capability</h3>
-              <p className="text-sm text-slate-300">Works without internet connection for video analysis</p>
+              <p className="text-sm text-slate-300">
+                Works without internet connection for video analysis
+              </p>
             </CardContent>
           </Card>
           <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-6 text-center">
               <AlertCircle className="w-8 h-8 text-blue-400 mx-auto mb-4" />
               <h3 className="text-white font-semibold mb-2">Privacy First</h3>
-              <p className="text-sm text-slate-300">Video data stays on your server, never sent to external APIs</p>
+              <p className="text-sm text-slate-300">
+                Video data stays on your server, never sent to external APIs
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -184,7 +190,7 @@ export default function LocalModelsPage() {
         {/* Available Models */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-white mb-4">Available Models</h2>
-          
+
           {modelsStatus?.models.map((model) => (
             <Card key={model.name} className="bg-slate-800 border-slate-700">
               <CardHeader>
@@ -197,7 +203,7 @@ export default function LocalModelsPage() {
                         <Download className="w-5 h-5 text-blue-400" />
                       )}
                       {model.name}
-                      <Badge variant={model.installed ? "default" : "secondary"}>
+                      <Badge variant={model.installed ? 'default' : 'secondary'}>
                         {model.size}
                       </Badge>
                     </CardTitle>
@@ -206,16 +212,14 @@ export default function LocalModelsPage() {
                   <Button
                     onClick={() => downloadModel(model.name)}
                     disabled={model.installed || downloading === model.name}
-                    variant={model.installed ? "secondary" : "default"}
-                    className={model.installed ? "bg-green-600" : "bg-blue-600 hover:bg-blue-700"}
+                    variant={model.installed ? 'secondary' : 'default'}
+                    className={model.installed ? 'bg-green-600' : 'bg-blue-600 hover:bg-blue-700'}
                   >
-                    {downloading === model.name ? (
-                      'Downloading...'
-                    ) : model.installed ? (
-                      'Installed'
-                    ) : (
-                      'Download'
-                    )}
+                    {downloading === model.name
+                      ? 'Downloading...'
+                      : model.installed
+                        ? 'Installed'
+                        : 'Download'}
                   </Button>
                 </div>
               </CardHeader>
@@ -256,16 +260,28 @@ export default function LocalModelsPage() {
             <Alert className="bg-blue-900/20 border-blue-500/50">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-blue-200">
-                <strong>System Requirements:</strong> At least 4GB free storage space and 8GB RAM recommended for optimal performance.
-                Models download automatically and are ready for immediate use in video analysis.
+                <strong>System Requirements:</strong> At least 4GB free storage space and 8GB RAM
+                recommended for optimal performance. Models download automatically and are ready for
+                immediate use in video analysis.
               </AlertDescription>
             </Alert>
-            
+
             <div className="mt-4 space-y-2 text-slate-300">
-              <p><strong>Step 1:</strong> Click "Download All Models" to install the complete AI analysis suite</p>
-              <p><strong>Step 2:</strong> Wait for download completion (total: ~4GB)</p>
-              <p><strong>Step 3:</strong> Use local analysis in video upload for faster, private processing</p>
-              <p><strong>Note:</strong> Local models provide the same GAR scoring accuracy as cloud models</p>
+              <p>
+                <strong>Step 1:</strong> Click "Download All Models" to install the complete AI
+                analysis suite
+              </p>
+              <p>
+                <strong>Step 2:</strong> Wait for download completion (total: ~4GB)
+              </p>
+              <p>
+                <strong>Step 3:</strong> Use local analysis in video upload for faster, private
+                processing
+              </p>
+              <p>
+                <strong>Note:</strong> Local models provide the same GAR scoring accuracy as cloud
+                models
+              </p>
             </div>
           </CardContent>
         </Card>

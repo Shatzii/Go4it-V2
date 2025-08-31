@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Security Check CLI Tool
- * 
+ *
  * Command-line tool for running comprehensive security audits
  */
 
@@ -12,22 +12,22 @@ import { generateDevEnvironment } from '../startup/security-init';
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
-  
+
   console.log('🛡️ Sports Platform Security Tools\n');
-  
+
   switch (command) {
     case 'audit':
       await runFullAudit();
       break;
-      
+
     case 'check':
       await runQuickCheck();
       break;
-      
+
     case 'generate-dev-env':
       generateDevEnvironment();
       break;
-      
+
     case 'help':
     default:
       showHelp();
@@ -37,10 +37,10 @@ async function main() {
 
 async function runFullAudit() {
   console.log('🔍 Running comprehensive security audit...\n');
-  
+
   try {
     const report = await runSecurityAudit('./');
-    
+
     // Display results
     console.log('📊 AUDIT RESULTS');
     console.log('═'.repeat(50));
@@ -53,16 +53,16 @@ async function runFullAudit() {
     console.log('');
     console.log(report.summary);
     console.log('');
-    
+
     // Show top issues
     if (report.issues.length > 0) {
       console.log('🚨 TOP SECURITY ISSUES:');
       console.log('─'.repeat(50));
-      
-      const criticalIssues = report.issues.filter(i => i.severity === 'critical').slice(0, 5);
-      const highIssues = report.issues.filter(i => i.severity === 'high').slice(0, 3);
-      
-      [...criticalIssues, ...highIssues].forEach(issue => {
+
+      const criticalIssues = report.issues.filter((i) => i.severity === 'critical').slice(0, 5);
+      const highIssues = report.issues.filter((i) => i.severity === 'high').slice(0, 3);
+
+      [...criticalIssues, ...highIssues].forEach((issue) => {
         const icon = issue.severity === 'critical' ? '❌' : '⚠️';
         console.log(`${icon} ${issue.file}:${issue.line || '?'}`);
         console.log(`   ${issue.description}`);
@@ -70,16 +70,15 @@ async function runFullAudit() {
         console.log('');
       });
     }
-    
+
     // Export detailed report
     await exportAuditReport(report);
     console.log('✅ Detailed report saved to security-audit-report.json');
-    
+
     // Exit with error code if critical issues found
     if (report.criticalIssues > 0) {
       process.exit(1);
     }
-    
   } catch (error) {
     console.error('❌ Audit failed:', error);
     process.exit(1);
@@ -88,7 +87,7 @@ async function runFullAudit() {
 
 async function runQuickCheck() {
   console.log('⚡ Running quick security check...\n');
-  
+
   try {
     initializeSecurityChecks();
     console.log('✅ Quick security check completed');
@@ -113,7 +112,7 @@ function showHelp() {
 }
 
 // Run main function
-main().catch(error => {
+main().catch((error) => {
   console.error('Fatal error:', error);
   process.exit(1);
 });

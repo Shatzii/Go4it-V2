@@ -1,12 +1,12 @@
-import { Router } from 'express'
-import { z } from 'zod'
-import { 
+import { Router } from 'express';
+import { z } from 'zod';
+import {
   TexasStudentOnboardingSchema,
   TexasClassScheduleSchema,
-  TEXAS_CURRICULUM_DATA
-} from '../../shared/texas-curriculum-schema'
+  TEXAS_CURRICULUM_DATA,
+} from '../../shared/texas-curriculum-schema';
 
-const router = Router()
+const router = Router();
 
 // Sample students data for demonstration
 const SAMPLE_STUDENTS = [
@@ -23,7 +23,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'maria.rodriguez@email.com',
     emergencyContact: '555-0123',
     medicalNotes: 'No known allergies',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' },
   },
   {
     id: '2',
@@ -38,7 +38,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'jennifer.johnson@email.com',
     emergencyContact: '555-0456',
     medicalNotes: 'ADHD - takes medication daily',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '3',
@@ -53,11 +53,11 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'david.chen@email.com',
     emergencyContact: '555-0789',
     medicalNotes: 'Dyslexia - needs extra time for reading',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '4',
-    name: 'Aiden O\'Connor',
+    name: "Aiden O'Connor",
     grade: '9',
     school: 'secondary',
     learningStyle: 'multimodal',
@@ -68,7 +68,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'sarah.oconnor@email.com',
     emergencyContact: '555-0012',
     medicalNotes: 'Anxiety disorder - needs calm environment',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' },
   },
   {
     id: '5',
@@ -83,54 +83,57 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'robert.williams@email.com',
     emergencyContact: '555-0345',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
-  }
-]
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
+  },
+];
 
 // Get all sample students
 router.get('/students', (req, res) => {
-  res.json(SAMPLE_STUDENTS)
-})
+  res.json(SAMPLE_STUDENTS);
+});
 
 // Get specific student by ID
 router.get('/students/:id', (req, res) => {
-  const student = SAMPLE_STUDENTS.find(s => s.id === req.params.id)
+  const student = SAMPLE_STUDENTS.find((s) => s.id === req.params.id);
   if (!student) {
-    return res.status(404).json({ error: 'Student not found' })
+    return res.status(404).json({ error: 'Student not found' });
   }
-  res.json(student)
-})
+  res.json(student);
+});
 
 // Generate schedule for a student
 router.post('/students/:id/schedule', async (req, res) => {
   try {
-    const student = SAMPLE_STUDENTS.find(s => s.id === req.params.id)
+    const student = SAMPLE_STUDENTS.find((s) => s.id === req.params.id);
     if (!student) {
-      return res.status(404).json({ error: 'Student not found' })
+      return res.status(404).json({ error: 'Student not found' });
     }
 
-    const schedule = await generateScheduleForStudent(student)
-    res.json(schedule)
+    const schedule = await generateScheduleForStudent(student);
+    res.json(schedule);
   } catch (error) {
-    console.error('Error generating schedule:', error)
-    res.status(500).json({ error: 'Failed to generate schedule' })
+    console.error('Error generating schedule:', error);
+    res.status(500).json({ error: 'Failed to generate schedule' });
   }
-})
+});
 
 // Get Texas curriculum requirements for a grade
 router.get('/curriculum/:grade', (req, res) => {
-  const grade = req.params.grade
-  
-  let gradeData = TEXAS_CURRICULUM_DATA.elementary[grade as keyof typeof TEXAS_CURRICULUM_DATA.elementary] ||
-                  TEXAS_CURRICULUM_DATA.middle_school[grade as keyof typeof TEXAS_CURRICULUM_DATA.middle_school] ||
-                  TEXAS_CURRICULUM_DATA.high_school[grade as keyof typeof TEXAS_CURRICULUM_DATA.high_school]
-  
+  const grade = req.params.grade;
+
+  let gradeData =
+    TEXAS_CURRICULUM_DATA.elementary[grade as keyof typeof TEXAS_CURRICULUM_DATA.elementary] ||
+    TEXAS_CURRICULUM_DATA.middle_school[
+      grade as keyof typeof TEXAS_CURRICULUM_DATA.middle_school
+    ] ||
+    TEXAS_CURRICULUM_DATA.high_school[grade as keyof typeof TEXAS_CURRICULUM_DATA.high_school];
+
   if (!gradeData) {
-    return res.status(404).json({ error: 'Grade not found' })
+    return res.status(404).json({ error: 'Grade not found' });
   }
-  
-  res.json(gradeData)
-})
+
+  res.json(gradeData);
+});
 
 // Create or update student onboarding profile
 router.post('/students/:id/onboarding', async (req, res) => {
@@ -138,33 +141,40 @@ router.post('/students/:id/onboarding', async (req, res) => {
     const validatedData = TexasStudentOnboardingSchema.parse({
       ...req.body,
       id: req.params.id,
-      student_id: req.params.id
-    })
-    
+      student_id: req.params.id,
+    });
+
     // In a real implementation, this would save to database
-    res.json({ success: true, data: validatedData })
+    res.json({ success: true, data: validatedData });
   } catch (error) {
-    res.status(400).json({ error: 'Invalid onboarding data', details: error })
+    res.status(400).json({ error: 'Invalid onboarding data', details: error });
   }
-})
+});
 
 // Helper function to generate schedule
 async function generateScheduleForStudent(student: any) {
   // Get appropriate curriculum data for grade
-  const gradeData = TEXAS_CURRICULUM_DATA.elementary[student.grade as keyof typeof TEXAS_CURRICULUM_DATA.elementary] ||
-                   TEXAS_CURRICULUM_DATA.middle_school[student.grade as keyof typeof TEXAS_CURRICULUM_DATA.middle_school] ||
-                   TEXAS_CURRICULUM_DATA.high_school[student.grade as keyof typeof TEXAS_CURRICULUM_DATA.high_school]
-  
+  const gradeData =
+    TEXAS_CURRICULUM_DATA.elementary[
+      student.grade as keyof typeof TEXAS_CURRICULUM_DATA.elementary
+    ] ||
+    TEXAS_CURRICULUM_DATA.middle_school[
+      student.grade as keyof typeof TEXAS_CURRICULUM_DATA.middle_school
+    ] ||
+    TEXAS_CURRICULUM_DATA.high_school[
+      student.grade as keyof typeof TEXAS_CURRICULUM_DATA.high_school
+    ];
+
   if (!gradeData) {
-    throw new Error(`No curriculum data found for grade ${student.grade}`)
+    throw new Error(`No curriculum data found for grade ${student.grade}`);
   }
 
   // Generate time slots for the schedule
-  const timeSlots = generateTimeSlots(gradeData.required_subjects.length)
-  
+  const timeSlots = generateTimeSlots(gradeData.required_subjects.length);
+
   // Create weekly schedule
-  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday']
-  const weeklySchedule = daysOfWeek.map(day => ({
+  const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+  const weeklySchedule = daysOfWeek.map((day) => ({
     day,
     periods: gradeData.required_subjects.map((subject, index) => ({
       period_number: index + 1,
@@ -175,9 +185,9 @@ async function generateScheduleForStudent(student: any) {
       room_number: `${100 + index}`,
       teks_standards: subject.standards,
       ai_teacher_id: getAITeacherForSubject(subject.subject),
-      accommodations: student.accommodations.filter((acc: string) => acc !== 'none')
-    }))
-  }))
+      accommodations: student.accommodations.filter((acc: string) => acc !== 'none'),
+    })),
+  }));
 
   const schedule = {
     id: `schedule-${student.id}`,
@@ -190,64 +200,64 @@ async function generateScheduleForStudent(student: any) {
     meets_texas_requirements: true,
     compliance_notes: `Schedule meets all Texas TEKS requirements for grade ${student.grade}`,
     created_at: new Date(),
-    updated_at: new Date()
-  }
+    updated_at: new Date(),
+  };
 
-  return schedule
+  return schedule;
 }
 
 // Helper function to generate time slots
 function generateTimeSlots(numberOfSubjects: number) {
-  const slots = []
-  let currentHour = 8 // Start at 8:00 AM
-  
+  const slots = [];
+  let currentHour = 8; // Start at 8:00 AM
+
   for (let i = 0; i < numberOfSubjects; i++) {
-    const startTime = `${currentHour.toString().padStart(2, '0')}:00`
-    const endTime = `${(currentHour + 1).toString().padStart(2, '0')}:00`
-    
+    const startTime = `${currentHour.toString().padStart(2, '0')}:00`;
+    const endTime = `${(currentHour + 1).toString().padStart(2, '0')}:00`;
+
     slots.push({
       start: startTime,
-      end: endTime
-    })
-    
-    currentHour++
+      end: endTime,
+    });
+
+    currentHour++;
   }
-  
-  return slots
+
+  return slots;
 }
 
 // Helper function to get teacher for subject
 function getTeacherForSubject(subject: string) {
   const teachers = {
-    'english_language_arts': 'Ms. Shakespeare',
-    'mathematics': 'Professor Newton',
-    'science': 'Dr. Curie',
-    'social_studies': 'Professor Timeline',
-    'fine_arts': 'Maestro Picasso',
-    'physical_education': 'Coach Johnson',
-    'health': 'Dr. Inclusive',
-    'technology_applications': 'Mr. Tech',
-    'world_languages': 'Señora Garcia',
-    'career_technical_education': 'Ms. Career'
-  }
-  return teachers[subject as keyof typeof teachers] || 'General Teacher'
+    english_language_arts: 'Ms. Shakespeare',
+    mathematics: 'Professor Newton',
+    science: 'Dr. Curie',
+    social_studies: 'Professor Timeline',
+    fine_arts: 'Maestro Picasso',
+    physical_education: 'Coach Johnson',
+    health: 'Dr. Inclusive',
+    technology_applications: 'Mr. Tech',
+    world_languages: 'Señora Garcia',
+    career_technical_education: 'Ms. Career',
+  };
+  return teachers[subject as keyof typeof teachers] || 'General Teacher';
 }
 
 // Helper function to get AI teacher for subject
 function getAITeacherForSubject(subject: string) {
   const aiTeachers = {
-    'english_language_arts': 'shakespeare',
-    'mathematics': 'newton',
-    'science': 'curie',
-    'social_studies': 'timeline',
-    'fine_arts': 'picasso',
-    'physical_education': 'inclusive',
-    'health': 'inclusive',
-    'technology_applications': 'tech',
-    'world_languages': 'garcia',
-    'career_technical_education': 'career'
-  }
-  return aiTeachers[subject as keyof typeof aiTeachers] || 'general'
+    english_language_arts: 'shakespeare',
+    mathematics: 'newton',
+    science: 'curie',
+    social_studies: 'timeline',
+    fine_arts: 'picasso',
+    physical_education: 'inclusive',
+    health: 'inclusive',
+    technology_applications: 'tech',
+    world_languages: 'garcia',
+    career_technical_education: 'career',
+  };
+  return aiTeachers[subject as keyof typeof aiTeachers] || 'general';
 }
 
-export default router
+export default router;

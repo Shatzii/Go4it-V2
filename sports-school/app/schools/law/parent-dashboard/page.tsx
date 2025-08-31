@@ -4,19 +4,31 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Scale, BookOpen, GraduationCap, Calendar, 
-  MessageCircle, TrendingUp, Trophy, FileText,
-  DollarSign, Users, Briefcase, Award
+import {
+  Scale,
+  BookOpen,
+  GraduationCap,
+  Calendar,
+  MessageCircle,
+  TrendingUp,
+  Trophy,
+  FileText,
+  DollarSign,
+  Users,
+  Briefcase,
+  Award,
 } from 'lucide-react';
-import { SafeDynamicLoader, createSafeDynamicImport } from '@/components/dynamic/safe-dynamic-loader';
+import {
+  SafeDynamicLoader,
+  createSafeDynamicImport,
+} from '@/components/dynamic/safe-dynamic-loader';
 
 // Safe dynamic imports for better production builds
 const QuickLinks = createSafeDynamicImport(
-  () => import('@/components/dashboard/quick-links').then(mod => ({ default: mod.QuickLinks })),
+  () => import('@/components/dashboard/quick-links').then((mod) => ({ default: mod.QuickLinks })),
   {
-    fallbackTitle: "Quick Links Error",
-    fallbackMessage: "Unable to load quick links component",
+    fallbackTitle: 'Quick Links Error',
+    fallbackMessage: 'Unable to load quick links component',
     loadingComponent: (
       <Card className="bg-gradient-to-r from-gray-500/20 to-blue-500/20 border-gray-500">
         <CardHeader>
@@ -24,21 +36,22 @@ const QuickLinks = createSafeDynamicImport(
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-20 bg-gray-500/10 rounded-lg animate-pulse"></div>
             ))}
           </div>
         </CardContent>
       </Card>
-    )
-  }
+    ),
+  },
 );
 
 const ClassCreator = createSafeDynamicImport(
-  () => import('@/components/dashboard/class-creator').then(mod => ({ default: mod.ClassCreator })),
+  () =>
+    import('@/components/dashboard/class-creator').then((mod) => ({ default: mod.ClassCreator })),
   {
-    fallbackTitle: "Class Creator Error",
-    fallbackMessage: "Unable to load class creator component",
+    fallbackTitle: 'Class Creator Error',
+    fallbackMessage: 'Unable to load class creator component',
     loadingComponent: (
       <Card className="bg-gradient-to-r from-blue-500/20 to-gray-500/20 border-blue-500">
         <CardHeader>
@@ -51,8 +64,8 @@ const ClassCreator = createSafeDynamicImport(
           </div>
         </CardContent>
       </Card>
-    )
-  }
+    ),
+  },
 );
 
 // Force dynamic rendering for this page to prevent static generation issues
@@ -98,9 +111,7 @@ export default function LawParentDashboard() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-400">
                 <Avatar className="w-8 h-8">
-                  <AvatarFallback className="bg-gray-500 text-white">
-                    J
-                  </AvatarFallback>
+                  <AvatarFallback className="bg-gray-500 text-white">J</AvatarFallback>
                 </Avatar>
                 Justice Williams
               </CardTitle>

@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const predictiveEngine = createPredictiveAnalyticsEngine(sport, {
       userId: user.id,
       sport: sport,
-      ...athleteProfile
+      ...athleteProfile,
     });
 
     // Load historical performance data
@@ -41,10 +41,7 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Predictive analytics error:', error);
-    return NextResponse.json(
-      { error: 'Predictive analytics failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Predictive analytics failed' }, { status: 500 });
   }
 }
 
@@ -77,8 +74,8 @@ async function loadHistoricalData(predictiveEngine: any, userId: number) {
             weather: 'normal',
             competition_level: 'practice',
             pressure_situation: false,
-            team_dynamics: 80
-          }
+            team_dynamics: 80,
+          },
         });
       }
     }
@@ -89,59 +86,54 @@ async function loadHistoricalData(predictiveEngine: any, userId: number) {
 
 async function generatePerformanceForecast(predictiveEngine: any, timeframes: string[]) {
   const forecasts = await predictiveEngine.predictPerformance(timeframes);
-  
+
   return NextResponse.json({
     success: true,
     type: 'performance_forecast',
     data: forecasts,
-    generated_at: new Date().toISOString()
+    generated_at: new Date().toISOString(),
   });
 }
 
 async function generateInjuryRiskAssessment(predictiveEngine: any) {
   const injuryRisk = await predictiveEngine.predictInjuryRisk();
-  
+
   return NextResponse.json({
     success: true,
     type: 'injury_risk_assessment',
     data: injuryRisk,
-    generated_at: new Date().toISOString()
+    generated_at: new Date().toISOString(),
   });
 }
 
 async function generateRecruitmentAnalysis(predictiveEngine: any) {
   const recruitment = await predictiveEngine.predictRecruitment();
-  
+
   return NextResponse.json({
     success: true,
     type: 'recruitment_analysis',
     data: recruitment,
-    generated_at: new Date().toISOString()
+    generated_at: new Date().toISOString(),
   });
 }
 
 async function generateOptimizationRecommendations(predictiveEngine: any) {
   const recommendations = await predictiveEngine.generateOptimizationRecommendations();
-  
+
   return NextResponse.json({
     success: true,
     type: 'optimization_recommendations',
     data: recommendations,
-    generated_at: new Date().toISOString()
+    generated_at: new Date().toISOString(),
   });
 }
 
 async function generateComprehensiveReport(predictiveEngine: any, timeframes: string[]) {
-  const [
-    performanceForecasts,
-    injuryRisk,
-    recruitment,
-    optimizationRecs
-  ] = await Promise.all([
+  const [performanceForecasts, injuryRisk, recruitment, optimizationRecs] = await Promise.all([
     predictiveEngine.predictPerformance(timeframes),
     predictiveEngine.predictInjuryRisk(),
     predictiveEngine.predictRecruitment(),
-    predictiveEngine.generateOptimizationRecommendations()
+    predictiveEngine.generateOptimizationRecommendations(),
   ]);
 
   const modelStatus = predictiveEngine.getModelStatus();
@@ -150,9 +142,9 @@ async function generateComprehensiveReport(predictiveEngine: any, timeframes: st
     model_accuracy: {
       performance: modelStatus.performance?.accuracy || 0.87,
       injury_risk: modelStatus.injury_risk?.accuracy || 0.92,
-      recruitment: modelStatus.recruitment?.accuracy || 0.78
+      recruitment: modelStatus.recruitment?.accuracy || 0.78,
     },
-    confidence_score: 0.85
+    confidence_score: 0.85,
   };
 
   return NextResponse.json({
@@ -164,10 +156,10 @@ async function generateComprehensiveReport(predictiveEngine: any, timeframes: st
       recruitment_analysis: recruitment,
       optimization_recommendations: optimizationRecs,
       data_quality: dataQuality,
-      model_status: modelStatus
+      model_status: modelStatus,
     },
     generated_at: new Date().toISOString(),
-    report_id: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    report_id: `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
   });
 }
 
@@ -191,13 +183,10 @@ export async function GET(request: NextRequest) {
       message: 'Prediction history retrieved',
       total: 0,
       limit,
-      type
+      type,
     });
   } catch (error) {
     console.error('Error retrieving predictions:', error);
-    return NextResponse.json(
-      { error: 'Failed to retrieve predictions' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to retrieve predictions' }, { status: 500 });
   }
 }

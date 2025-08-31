@@ -18,28 +18,27 @@ export async function GET(request: NextRequest) {
       .where(eq(starPathProgress.userId, user.id));
 
     const totalXp = userProgress.reduce((sum, node) => sum + node.totalXp, 0);
-    const completedNodes = userProgress.filter(node => node.currentLevel >= 5).length;
-    const activeNodes = userProgress.filter(node => node.isUnlocked && node.currentLevel < 5).length;
-    const overallProgress = totalXp > 0 ? Math.round((totalXp / (userProgress.length * 1000)) * 100) : 0;
+    const completedNodes = userProgress.filter((node) => node.currentLevel >= 5).length;
+    const activeNodes = userProgress.filter(
+      (node) => node.isUnlocked && node.currentLevel < 5,
+    ).length;
+    const overallProgress =
+      totalXp > 0 ? Math.round((totalXp / (userProgress.length * 1000)) * 100) : 0;
 
     return NextResponse.json({
       progress: Math.min(overallProgress, 100),
       totalXp,
       completedNodes,
       activeNodes,
-      skillBreakdown: userProgress.map(node => ({
+      skillBreakdown: userProgress.map((node) => ({
         skillName: node.skillName,
         currentLevel: node.currentLevel,
         totalXp: node.totalXp,
-        isUnlocked: node.isUnlocked
-      }))
+        isUnlocked: node.isUnlocked,
+      })),
     });
-
   } catch (error) {
     console.error('StarPath stats error:', error);
-    return NextResponse.json(
-      { error: 'Failed to load StarPath statistics' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to load StarPath statistics' }, { status: 500 });
   }
 }

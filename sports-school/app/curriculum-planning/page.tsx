@@ -1,17 +1,17 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import AICurriculumGenerator from '@/components/curriculum/ai-curriculum-generator'
-import { 
-  Brain, 
-  Calendar, 
-  BookOpen, 
-  Users, 
+import { useState } from 'react';
+import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import AICurriculumGenerator from '@/components/curriculum/ai-curriculum-generator';
+import {
+  Brain,
+  Calendar,
+  BookOpen,
+  Users,
   GraduationCap,
   Clock,
   MapPin,
@@ -22,38 +22,40 @@ import {
   Globe,
   School,
   Home,
-  UserCheck
-} from 'lucide-react'
+  UserCheck,
+} from 'lucide-react';
 
 export default function CurriculumPlanningPage() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('overview');
 
   const features = [
     {
       icon: <Brain className="h-8 w-8 text-blue-500" />,
       title: 'AI-Powered Generation',
-      description: 'Advanced AI creates personalized curricula based on learning styles, accommodations, and state requirements',
-      benefits: ['Instant generation', 'Personalized content', 'Continuously updated']
+      description:
+        'Advanced AI creates personalized curricula based on learning styles, accommodations, and state requirements',
+      benefits: ['Instant generation', 'Personalized content', 'Continuously updated'],
     },
     {
       icon: <MapPin className="h-8 w-8 text-green-500" />,
       title: 'State Compliance',
       description: 'Automatically aligned with all 50 state standards and requirements',
-      benefits: ['Legal compliance', 'Standards alignment', 'Assessment integration']
+      benefits: ['Legal compliance', 'Standards alignment', 'Assessment integration'],
     },
     {
       icon: <Users className="h-8 w-8 text-purple-500" />,
       title: 'Neurodivergent Support',
-      description: 'Built-in accommodations for ADHD, dyslexia, autism, and other learning differences',
-      benefits: ['Inclusive design', 'Adaptive content', 'Multiple modalities']
+      description:
+        'Built-in accommodations for ADHD, dyslexia, autism, and other learning differences',
+      benefits: ['Inclusive design', 'Adaptive content', 'Multiple modalities'],
     },
     {
       icon: <Calendar className="h-8 w-8 text-orange-500" />,
       title: 'Flexible Scheduling',
       description: 'Create semester, yearly, or custom timeframes with automatic scheduling',
-      benefits: ['Time management', 'Pacing guides', 'Milestone tracking']
-    }
-  ]
+      benefits: ['Time management', 'Pacing guides', 'Milestone tracking'],
+    },
+  ];
 
   const userTypes = [
     {
@@ -65,9 +67,9 @@ export default function CurriculumPlanningPage() {
         'Interest-based learning tracks',
         'Self-paced progression',
         'Achievement tracking',
-        'Peer collaboration tools'
+        'Peer collaboration tools',
       ],
-      color: 'bg-blue-50 border-blue-200'
+      color: 'bg-blue-50 border-blue-200',
     },
     {
       type: 'Parents',
@@ -78,9 +80,9 @@ export default function CurriculumPlanningPage() {
         'State requirement tracking',
         'Progress monitoring tools',
         'Family learning schedules',
-        'Educational resource library'
+        'Educational resource library',
       ],
-      color: 'bg-green-50 border-green-200'
+      color: 'bg-green-50 border-green-200',
     },
     {
       type: 'Teachers',
@@ -91,19 +93,19 @@ export default function CurriculumPlanningPage() {
         'Standards alignment verification',
         'Assessment integration',
         'Lesson plan generation',
-        'Student accommodation tools'
+        'Student accommodation tools',
       ],
-      color: 'bg-purple-50 border-purple-200'
-    }
-  ]
+      color: 'bg-purple-50 border-purple-200',
+    },
+  ];
 
   const stateHighlights = [
     'Texas TEA Requirements',
     'California Common Core',
     'Florida Standards',
     'New York State Learning Standards',
-    'All 50 States Supported'
-  ]
+    'All 50 States Supported',
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -140,8 +142,9 @@ export default function CurriculumPlanningPage() {
                 <h2 className="text-4xl font-bold text-gray-900">AI Curriculum Planning</h2>
               </div>
               <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                Create personalized, state-compliant curricula in minutes with our advanced AI technology. 
-                Perfect for students, parents, and teachers seeking comprehensive educational planning.
+                Create personalized, state-compliant curricula in minutes with our advanced AI
+                technology. Perfect for students, parents, and teachers seeking comprehensive
+                educational planning.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" onClick={() => setActiveTab('generator')} className="px-8">
@@ -163,9 +166,7 @@ export default function CurriculumPlanningPage() {
                       {userType.icon}
                       {userType.type}
                     </CardTitle>
-                    <CardDescription className="text-base">
-                      {userType.description}
-                    </CardDescription>
+                    <CardDescription className="text-base">{userType.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
@@ -176,8 +177,8 @@ export default function CurriculumPlanningPage() {
                         </li>
                       ))}
                     </ul>
-                    <Button 
-                      className="w-full mt-4" 
+                    <Button
+                      className="w-full mt-4"
                       variant="outline"
                       onClick={() => setActiveTab('generator')}
                     >
@@ -209,8 +210,8 @@ export default function CurriculumPlanningPage() {
                   ))}
                 </div>
                 <p className="text-sm text-gray-600 mt-4">
-                  Our AI automatically ensures your curriculum meets local requirements, 
-                  including graduation credits, assessment schedules, and special education compliance.
+                  Our AI automatically ensures your curriculum meets local requirements, including
+                  graduation credits, assessment schedules, and special education compliance.
                 </p>
               </CardContent>
             </Card>
@@ -232,9 +233,7 @@ export default function CurriculumPlanningPage() {
                       {feature.icon}
                       {feature.title}
                     </CardTitle>
-                    <CardDescription className="text-base">
-                      {feature.description}
-                    </CardDescription>
+                    <CardDescription className="text-base">{feature.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-2">
@@ -297,9 +296,7 @@ export default function CurriculumPlanningPage() {
               <Card className="hover:shadow-md transition-shadow">
                 <CardHeader>
                   <CardTitle>Assessment Tools</CardTitle>
-                  <CardDescription>
-                    Ready-to-use assessment templates and rubrics
-                  </CardDescription>
+                  <CardDescription>Ready-to-use assessment templates and rubrics</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Button variant="outline" className="w-full">
@@ -313,5 +310,5 @@ export default function CurriculumPlanningPage() {
         </div>
       </Tabs>
     </div>
-  )
+  );
 }

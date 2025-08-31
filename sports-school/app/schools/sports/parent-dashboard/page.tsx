@@ -6,16 +6,30 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { StaticQuickLinks } from '@/components/static/static-quick-links';
 import { StaticClassCreator } from '@/components/static/static-class-creator';
-import { 
-  BookOpen, Heart, Shield, Calendar, 
-  MessageCircle, TrendingUp, Trophy, Star,
-  Target, Timer, Activity
+import {
+  BookOpen,
+  Heart,
+  Shield,
+  Calendar,
+  MessageCircle,
+  TrendingUp,
+  Trophy,
+  Star,
+  Target,
+  Timer,
+  Activity,
 } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Suspense } from 'react';
 
 // Force dynamic rendering for this page
-function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
+function ErrorFallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
   return (
     <Card className="bg-gradient-to-r from-red-500/20 to-pink-500/20 border-red-500">
       <CardHeader>
@@ -23,7 +37,7 @@ function ErrorFallback({ error, resetErrorBoundary }: { error: Error; resetError
       </CardHeader>
       <CardContent>
         <p className="text-red-300 mb-4">Unable to load component</p>
-        <button 
+        <button
           onClick={resetErrorBoundary}
           className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
@@ -55,38 +69,42 @@ export default function SportsParentDashboard() {
 
         {/* Quick Links */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Suspense fallback={
-            <Card className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-500">
-              <CardHeader>
-                <CardTitle className="text-orange-400">Loading Quick Links...</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="animate-pulse space-y-4">
-                  <div className="h-10 bg-orange-500/10 rounded"></div>
-                  <div className="h-10 bg-orange-500/10 rounded"></div>
-                </div>
-              </CardContent>
-            </Card>
-          }>
+          <Suspense
+            fallback={
+              <Card className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-500">
+                <CardHeader>
+                  <CardTitle className="text-orange-400">Loading Quick Links...</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-10 bg-orange-500/10 rounded"></div>
+                    <div className="h-10 bg-orange-500/10 rounded"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            }
+          >
             <StaticQuickLinks userType="parent" schoolId="sports" />
           </Suspense>
         </ErrorBoundary>
 
         {/* Class Creator */}
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Suspense fallback={
-            <Card className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-500">
-              <CardHeader>
-                <CardTitle className="text-orange-400">Loading Class Information...</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="animate-pulse space-y-4">
-                  <div className="h-10 bg-orange-500/10 rounded"></div>
-                  <div className="h-10 bg-orange-500/10 rounded"></div>
-                </div>
-              </CardContent>
-            </Card>
-          }>
+          <Suspense
+            fallback={
+              <Card className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border-orange-500">
+                <CardHeader>
+                  <CardTitle className="text-orange-400">Loading Class Information...</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-10 bg-orange-500/10 rounded"></div>
+                    <div className="h-10 bg-orange-500/10 rounded"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            }
+          >
             <StaticClassCreator userType="parent" schoolId="sports" userId="parent-demo" />
           </Suspense>
         </ErrorBoundary>
@@ -94,11 +112,32 @@ export default function SportsParentDashboard() {
         {/* Children Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
-            { name: 'Tyler', grade: '10th Grade', sport: 'Basketball', progress: 92, position: 'Point Guard' },
-            { name: 'Maya', grade: '11th Grade', sport: 'Soccer', progress: 88, position: 'Midfielder' },
-            { name: 'Jordan', grade: '12th Grade', sport: 'Track & Field', progress: 95, position: 'Sprinter' }
+            {
+              name: 'Tyler',
+              grade: '10th Grade',
+              sport: 'Basketball',
+              progress: 92,
+              position: 'Point Guard',
+            },
+            {
+              name: 'Maya',
+              grade: '11th Grade',
+              sport: 'Soccer',
+              progress: 88,
+              position: 'Midfielder',
+            },
+            {
+              name: 'Jordan',
+              grade: '12th Grade',
+              sport: 'Track & Field',
+              progress: 95,
+              position: 'Sprinter',
+            },
           ].map((child, index) => (
-            <Card key={index} className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-500">
+            <Card
+              key={index}
+              className="bg-gradient-to-br from-orange-500/20 to-red-500/20 border-orange-500"
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-orange-400">
                   <Avatar className="w-8 h-8">

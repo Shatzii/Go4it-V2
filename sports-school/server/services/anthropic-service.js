@@ -1,8 +1,8 @@
 /**
  * Enhanced Anthropic AI Service
- * 
+ *
  * This service provides advanced AI capabilities for ShotziOS using the Anthropic Claude API.
- * It includes support for multimodal content, personalized learning paths, 
+ * It includes support for multimodal content, personalized learning paths,
  * and neurodivergent-adaptive content generation.
  */
 
@@ -83,7 +83,7 @@ async function generateAdaptedContent(subject, topic, neurotype, level) {
       max_tokens: 2500,
       temperature: 0.7,
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
 
     const adaptedContent = JSON.parse(response.content[0].text);
@@ -133,7 +133,7 @@ async function generateVocabularyList(language, topic, level) {
       max_tokens: 2000,
       temperature: 0.7,
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
 
     const vocabularyList = JSON.parse(response.content[0].text);
@@ -192,7 +192,7 @@ async function generateDialogue(language, situation, level) {
       max_tokens: 2000,
       temperature: 0.7,
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
 
     const dialogue = JSON.parse(response.content[0].text);
@@ -248,7 +248,7 @@ async function generateLegalAnalysis(caseDescription, jurisdiction, legalArea) {
       max_tokens: 2500,
       temperature: 0.5,
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
 
     const legalAnalysis = JSON.parse(response.content[0].text);
@@ -271,24 +271,26 @@ async function analyzeEducationalImage(base64Image, instructions) {
       model: CLAUDE_MODEL,
       max_tokens: 1500,
       temperature: 0.2,
-      messages: [{
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: `Analyze this educational image and ${instructions}. Format your response as JSON with clear, detailed observations appropriate for educational contexts.`
-          },
-          {
-            type: "image",
-            source: {
-              type: "base64",
-              media_type: "image/jpeg",
-              data: base64Image
-            }
-          }
-        ]
-      }],
-      response_format: { type: "json_object" }
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: `Analyze this educational image and ${instructions}. Format your response as JSON with clear, detailed observations appropriate for educational contexts.`,
+            },
+            {
+              type: 'image',
+              source: {
+                type: 'base64',
+                media_type: 'image/jpeg',
+                data: base64Image,
+              },
+            },
+          ],
+        },
+      ],
+      response_format: { type: 'json_object' },
     });
 
     const analysis = JSON.parse(response.content[0].text);
@@ -349,7 +351,7 @@ async function generateLearningRecommendations(studentProfile) {
       max_tokens: 2000,
       temperature: 0.7,
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
 
     const recommendations = JSON.parse(response.content[0].text);
@@ -397,7 +399,7 @@ async function generateAssessmentQuestions(subject, topic, difficulty, questionT
       max_tokens: 2500,
       temperature: 0.7,
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
 
     const questions = JSON.parse(response.content[0].text);
@@ -416,9 +418,14 @@ async function generateAssessmentQuestions(subject, topic, difficulty, questionT
  * @param {string} neurotype - The student's neurotype (optional)
  * @returns {Promise<Object>} - Detailed feedback
  */
-async function generateStudentFeedback(studentWork, assignmentContext, learningObjectives, neurotype = '') {
-  const neurotypeSensitivePrompt = neurotype 
-    ? `This feedback is for a student with ${neurotype}. Tailor your feedback to be supportive and effective for their specific learning style and needs.` 
+async function generateStudentFeedback(
+  studentWork,
+  assignmentContext,
+  learningObjectives,
+  neurotype = '',
+) {
+  const neurotypeSensitivePrompt = neurotype
+    ? `This feedback is for a student with ${neurotype}. Tailor your feedback to be supportive and effective for their specific learning style and needs.`
     : '';
 
   const prompt = `
@@ -457,7 +464,7 @@ async function generateStudentFeedback(studentWork, assignmentContext, learningO
       max_tokens: 2000,
       temperature: 0.7,
       messages: [{ role: 'user', content: prompt }],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
 
     const feedback = JSON.parse(response.content[0].text);
@@ -477,5 +484,5 @@ module.exports = {
   analyzeEducationalImage,
   generateLearningRecommendations,
   generateAssessmentQuestions,
-  generateStudentFeedback
+  generateStudentFeedback,
 };

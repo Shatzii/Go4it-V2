@@ -1,143 +1,149 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { Search, X, Filter, Clock, User, Video, Trophy, Book, Users } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react';
+import { Search, X, Filter, Clock, User, Video, Trophy, Book, Users } from 'lucide-react';
 
 interface SearchResult {
-  id: string
-  type: 'video' | 'athlete' | 'team' | 'achievement' | 'course' | 'coach'
-  title: string
-  description: string
-  url: string
+  id: string;
+  type: 'video' | 'athlete' | 'team' | 'achievement' | 'course' | 'coach';
+  title: string;
+  description: string;
+  url: string;
   metadata: {
-    sport?: string
-    garScore?: number
-    createdAt?: string
-    graduationYear?: number
-    level?: string
-  }
+    sport?: string;
+    garScore?: number;
+    createdAt?: string;
+    graduationYear?: number;
+    level?: string;
+  };
 }
 
 interface SearchFilters {
-  type: string
-  sport: string
-  dateRange: string
-  garScore: string
-  graduationYear: string
+  type: string;
+  sport: string;
+  dateRange: string;
+  garScore: string;
+  graduationYear: string;
 }
 
 export function GlobalSearch() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState<SearchResult[]>([])
-  const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [filters, setFilters] = useState<SearchFilters>({
     type: 'all',
     sport: 'all',
     dateRange: 'all',
     garScore: 'all',
-    graduationYear: 'all'
-  })
-  const [loading, setLoading] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
-  const searchRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLInputElement>(null)
+    graduationYear: 'all',
+  });
+  const [loading, setLoading] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Load recent searches from localStorage
-    const saved = localStorage.getItem('recentSearches')
+    const saved = localStorage.getItem('recentSearches');
     if (saved) {
-      setRecentSearches(JSON.parse(saved))
+      setRecentSearches(JSON.parse(saved));
     }
 
     // Global keyboard shortcut
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        setIsOpen(true)
+        e.preventDefault();
+        setIsOpen(true);
       }
       if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen])
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
 
   useEffect(() => {
     // Close search when clicking outside
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      inputRef.current.focus()
+      inputRef.current.focus();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   useEffect(() => {
     if (query.trim().length > 1) {
-      searchContent()
+      searchContent();
     } else {
-      setResults([])
+      setResults([]);
     }
-  }, [query, filters])
+  }, [query, filters]);
 
   const searchContent = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await fetch('/api/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query, filters })
-      })
+        body: JSON.stringify({ query, filters }),
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        setResults(data.results)
+        const data = await response.json();
+        setResults(data.results);
       }
     } catch (error) {
-      console.error('Search failed:', error)
+      console.error('Search failed:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const saveSearch = (searchQuery: string) => {
-    const updated = [searchQuery, ...recentSearches.filter(s => s !== searchQuery)].slice(0, 5)
-    setRecentSearches(updated)
-    localStorage.setItem('recentSearches', JSON.stringify(updated))
-  }
+    const updated = [searchQuery, ...recentSearches.filter((s) => s !== searchQuery)].slice(0, 5);
+    setRecentSearches(updated);
+    localStorage.setItem('recentSearches', JSON.stringify(updated));
+  };
 
   const handleResultClick = (result: SearchResult) => {
-    saveSearch(query)
-    setIsOpen(false)
-    window.location.href = result.url
-  }
+    saveSearch(query);
+    setIsOpen(false);
+    window.location.href = result.url;
+  };
 
   const getResultIcon = (type: string) => {
     switch (type) {
-      case 'video': return <Video className="w-5 h-5 text-red-500" />
-      case 'athlete': return <User className="w-5 h-5 text-blue-500" />
-      case 'team': return <Users className="w-5 h-5 text-green-500" />
-      case 'achievement': return <Trophy className="w-5 h-5 text-yellow-500" />
-      case 'course': return <Book className="w-5 h-5 text-purple-500" />
-      default: return <Search className="w-5 h-5 text-gray-500" />
+      case 'video':
+        return <Video className="w-5 h-5 text-red-500" />;
+      case 'athlete':
+        return <User className="w-5 h-5 text-blue-500" />;
+      case 'team':
+        return <Users className="w-5 h-5 text-green-500" />;
+      case 'achievement':
+        return <Trophy className="w-5 h-5 text-yellow-500" />;
+      case 'course':
+        return <Book className="w-5 h-5 text-purple-500" />;
+      default:
+        return <Search className="w-5 h-5 text-gray-500" />;
     }
-  }
+  };
 
   const clearFilters = () => {
     setFilters({
@@ -145,11 +151,11 @@ export function GlobalSearch() {
       sport: 'all',
       dateRange: 'all',
       garScore: 'all',
-      graduationYear: 'all'
-    })
-  }
+      graduationYear: 'all',
+    });
+  };
 
-  const hasActiveFilters = Object.values(filters).some(filter => filter !== 'all')
+  const hasActiveFilters = Object.values(filters).some((filter) => filter !== 'all');
 
   if (!isOpen) {
     return (
@@ -161,7 +167,7 @@ export function GlobalSearch() {
         <span className="text-sm">Search...</span>
         <kbd className="ml-2 px-2 py-1 bg-slate-700 text-xs rounded">⌘K</kbd>
       </button>
-    )
+    );
   }
 
   return (
@@ -206,18 +212,15 @@ export function GlobalSearch() {
           <div className="p-4 border-b border-slate-700 bg-slate-800">
             <div className="flex items-center justify-between mb-3">
               <h4 className="text-sm font-medium text-white">Filters</h4>
-              <button
-                onClick={clearFilters}
-                className="text-xs text-blue-400 hover:text-blue-300"
-              >
+              <button onClick={clearFilters} className="text-xs text-blue-400 hover:text-blue-300">
                 Clear all
               </button>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               <select
                 value={filters.type}
-                onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
+                onChange={(e) => setFilters((prev) => ({ ...prev, type: e.target.value }))}
                 className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm"
               >
                 <option value="all">All Types</option>
@@ -230,7 +233,7 @@ export function GlobalSearch() {
 
               <select
                 value={filters.sport}
-                onChange={(e) => setFilters(prev => ({ ...prev, sport: e.target.value }))}
+                onChange={(e) => setFilters((prev) => ({ ...prev, sport: e.target.value }))}
                 className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm"
               >
                 <option value="all">All Sports</option>
@@ -243,7 +246,7 @@ export function GlobalSearch() {
 
               <select
                 value={filters.garScore}
-                onChange={(e) => setFilters(prev => ({ ...prev, garScore: e.target.value }))}
+                onChange={(e) => setFilters((prev) => ({ ...prev, garScore: e.target.value }))}
                 className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm"
               >
                 <option value="all">All GAR Scores</option>
@@ -255,7 +258,9 @@ export function GlobalSearch() {
 
               <select
                 value={filters.graduationYear}
-                onChange={(e) => setFilters(prev => ({ ...prev, graduationYear: e.target.value }))}
+                onChange={(e) =>
+                  setFilters((prev) => ({ ...prev, graduationYear: e.target.value }))
+                }
                 className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm"
               >
                 <option value="all">All Years</option>
@@ -267,7 +272,7 @@ export function GlobalSearch() {
 
               <select
                 value={filters.dateRange}
-                onChange={(e) => setFilters(prev => ({ ...prev, dateRange: e.target.value }))}
+                onChange={(e) => setFilters((prev) => ({ ...prev, dateRange: e.target.value }))}
                 className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white text-sm"
               >
                 <option value="all">All Dates</option>
@@ -296,9 +301,7 @@ export function GlobalSearch() {
                   className="w-full p-3 hover:bg-slate-800 rounded-lg transition-colors text-left"
                 >
                   <div className="flex items-start gap-3">
-                    <div className="mt-1">
-                      {getResultIcon(result.type)}
-                    </div>
+                    <div className="mt-1">{getResultIcon(result.type)}</div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-white truncate">{result.title}</h4>
                       <p className="text-sm text-slate-400 truncate">{result.description}</p>
@@ -308,7 +311,9 @@ export function GlobalSearch() {
                           <span className="text-xs text-slate-500">{result.metadata.sport}</span>
                         )}
                         {result.metadata.garScore && (
-                          <span className="text-xs text-slate-500">GAR: {result.metadata.garScore}</span>
+                          <span className="text-xs text-slate-500">
+                            GAR: {result.metadata.garScore}
+                          </span>
                         )}
                         {result.metadata.createdAt && (
                           <span className="text-xs text-slate-500">
@@ -322,9 +327,7 @@ export function GlobalSearch() {
               ))}
             </div>
           ) : query.trim().length > 1 ? (
-            <div className="p-8 text-center text-slate-400">
-              No results found for &quot;{query}&quot;
-            </div>
+            <div className="p-8 text-center text-slate-400">No results found for "{query}"</div>
           ) : (
             <div className="p-4">
               {recentSearches.length > 0 && (
@@ -346,11 +349,16 @@ export function GlobalSearch() {
                   </div>
                 </div>
               )}
-              
+
               <div className="text-sm text-slate-400">
                 <p className="mb-2">Search suggestions:</p>
                 <div className="flex flex-wrap gap-2">
-                  {['Football highlights', 'Basketball analysis', 'Track events', 'Academic courses'].map((suggestion) => (
+                  {[
+                    'Football highlights',
+                    'Basketball analysis',
+                    'Track events',
+                    'Academic courses',
+                  ].map((suggestion) => (
                     <button
                       key={suggestion}
                       onClick={() => setQuery(suggestion)}
@@ -381,5 +389,5 @@ export function GlobalSearch() {
         </div>
       </div>
     </div>
-  )
+  );
 }

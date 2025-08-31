@@ -1,37 +1,37 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Slider } from '@/components/ui/slider'
-import { 
-  Accessibility, 
-  Volume2, 
-  VolumeX, 
-  Eye, 
-  EyeOff, 
-  Type, 
-  Palette, 
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Slider } from '@/components/ui/slider';
+import {
+  Accessibility,
+  Volume2,
+  VolumeX,
+  Eye,
+  EyeOff,
+  Type,
+  Palette,
   MousePointer,
   Keyboard,
   Settings,
-  X
-} from 'lucide-react'
+  X,
+} from 'lucide-react';
 
 interface AccessibilitySettings {
-  fontSize: number
-  highContrast: boolean
-  reducedMotion: boolean
-  screenReader: boolean
-  colorBlind: boolean
-  keyboardNav: boolean
-  focusVisible: boolean
-  audioDescriptions: boolean
+  fontSize: number;
+  highContrast: boolean;
+  reducedMotion: boolean;
+  screenReader: boolean;
+  colorBlind: boolean;
+  keyboardNav: boolean;
+  focusVisible: boolean;
+  audioDescriptions: boolean;
 }
 
 export default function AccessibilityToolbar() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
   const [settings, setSettings] = useState<AccessibilitySettings>({
     fontSize: 100,
     highContrast: false,
@@ -40,64 +40,64 @@ export default function AccessibilityToolbar() {
     colorBlind: false,
     keyboardNav: false,
     focusVisible: false,
-    audioDescriptions: false
-  })
+    audioDescriptions: false,
+  });
 
   // Load settings from localStorage
   useEffect(() => {
-    const savedSettings = localStorage.getItem('accessibility-settings')
+    const savedSettings = localStorage.getItem('accessibility-settings');
     if (savedSettings) {
-      setSettings(JSON.parse(savedSettings))
+      setSettings(JSON.parse(savedSettings));
     }
-  }, [])
+  }, []);
 
   // Save settings to localStorage and apply
   useEffect(() => {
-    localStorage.setItem('accessibility-settings', JSON.stringify(settings))
-    applySettings()
-  }, [settings])
+    localStorage.setItem('accessibility-settings', JSON.stringify(settings));
+    applySettings();
+  }, [settings]);
 
   const applySettings = () => {
-    const root = document.documentElement
+    const root = document.documentElement;
 
     // Font size
-    root.style.fontSize = `${settings.fontSize}%`
+    root.style.fontSize = `${settings.fontSize}%`;
 
     // High contrast
     if (settings.highContrast) {
-      root.classList.add('high-contrast')
+      root.classList.add('high-contrast');
     } else {
-      root.classList.remove('high-contrast')
+      root.classList.remove('high-contrast');
     }
 
     // Reduced motion
     if (settings.reducedMotion) {
-      root.classList.add('reduced-motion')
+      root.classList.add('reduced-motion');
     } else {
-      root.classList.remove('reduced-motion')
+      root.classList.remove('reduced-motion');
     }
 
     // Color blind support
     if (settings.colorBlind) {
-      root.classList.add('color-blind-support')
+      root.classList.add('color-blind-support');
     } else {
-      root.classList.remove('color-blind-support')
+      root.classList.remove('color-blind-support');
     }
 
     // Focus visible
     if (settings.focusVisible) {
-      root.classList.add('focus-visible')
+      root.classList.add('focus-visible');
     } else {
-      root.classList.remove('focus-visible')
+      root.classList.remove('focus-visible');
     }
 
     // Keyboard navigation
     if (settings.keyboardNav) {
-      root.classList.add('keyboard-nav')
+      root.classList.add('keyboard-nav');
     } else {
-      root.classList.remove('keyboard-nav')
+      root.classList.remove('keyboard-nav');
     }
-  }
+  };
 
   const resetSettings = () => {
     setSettings({
@@ -108,23 +108,23 @@ export default function AccessibilityToolbar() {
       colorBlind: false,
       keyboardNav: false,
       focusVisible: false,
-      audioDescriptions: false
-    })
-  }
+      audioDescriptions: false,
+    });
+  };
 
   const toggleSetting = (key: keyof AccessibilitySettings) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      [key]: !prev[key]
-    }))
-  }
+      [key]: !prev[key],
+    }));
+  };
 
   const updateFontSize = (value: number[]) => {
-    setSettings(prev => ({
+    setSettings((prev) => ({
       ...prev,
-      fontSize: value[0]
-    }))
-  }
+      fontSize: value[0],
+    }));
+  };
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
@@ -176,7 +176,7 @@ export default function AccessibilityToolbar() {
               {/* Visual Settings */}
               <div className="grid grid-cols-2 gap-2">
                 <Button
-                  variant={settings.highContrast ? "default" : "outline"}
+                  variant={settings.highContrast ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleSetting('highContrast')}
                   className="flex items-center gap-2 text-xs"
@@ -186,7 +186,7 @@ export default function AccessibilityToolbar() {
                 </Button>
 
                 <Button
-                  variant={settings.colorBlind ? "default" : "outline"}
+                  variant={settings.colorBlind ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleSetting('colorBlind')}
                   className="flex items-center gap-2 text-xs"
@@ -196,7 +196,7 @@ export default function AccessibilityToolbar() {
                 </Button>
 
                 <Button
-                  variant={settings.reducedMotion ? "default" : "outline"}
+                  variant={settings.reducedMotion ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleSetting('reducedMotion')}
                   className="flex items-center gap-2 text-xs"
@@ -206,7 +206,7 @@ export default function AccessibilityToolbar() {
                 </Button>
 
                 <Button
-                  variant={settings.focusVisible ? "default" : "outline"}
+                  variant={settings.focusVisible ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleSetting('focusVisible')}
                   className="flex items-center gap-2 text-xs"
@@ -219,7 +219,7 @@ export default function AccessibilityToolbar() {
               {/* Navigation Settings */}
               <div className="grid grid-cols-2 gap-2">
                 <Button
-                  variant={settings.keyboardNav ? "default" : "outline"}
+                  variant={settings.keyboardNav ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleSetting('keyboardNav')}
                   className="flex items-center gap-2 text-xs"
@@ -229,7 +229,7 @@ export default function AccessibilityToolbar() {
                 </Button>
 
                 <Button
-                  variant={settings.screenReader ? "default" : "outline"}
+                  variant={settings.screenReader ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => toggleSetting('screenReader')}
                   className="flex items-center gap-2 text-xs"
@@ -241,7 +241,7 @@ export default function AccessibilityToolbar() {
 
               {/* Audio Settings */}
               <Button
-                variant={settings.audioDescriptions ? "default" : "outline"}
+                variant={settings.audioDescriptions ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => toggleSetting('audioDescriptions')}
                 className="flex items-center gap-2 text-xs w-full"
@@ -270,25 +270,39 @@ export default function AccessibilityToolbar() {
                 <p className="text-xs text-gray-600 mb-2">Active Features:</p>
                 <div className="flex flex-wrap gap-1">
                   {settings.highContrast && (
-                    <Badge variant="secondary" className="text-xs">High Contrast</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      High Contrast
+                    </Badge>
                   )}
                   {settings.reducedMotion && (
-                    <Badge variant="secondary" className="text-xs">Reduced Motion</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Reduced Motion
+                    </Badge>
                   )}
                   {settings.colorBlind && (
-                    <Badge variant="secondary" className="text-xs">Color Blind</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Color Blind
+                    </Badge>
                   )}
                   {settings.keyboardNav && (
-                    <Badge variant="secondary" className="text-xs">Keyboard Nav</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Keyboard Nav
+                    </Badge>
                   )}
                   {settings.screenReader && (
-                    <Badge variant="secondary" className="text-xs">Screen Reader</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Screen Reader
+                    </Badge>
                   )}
                   {settings.fontSize !== 100 && (
-                    <Badge variant="secondary" className="text-xs">Font: {settings.fontSize}%</Badge>
+                    <Badge variant="secondary" className="text-xs">
+                      Font: {settings.fontSize}%
+                    </Badge>
                   )}
-                  {Object.values(settings).every(v => v === false || v === 100) && (
-                    <Badge variant="outline" className="text-xs">None Active</Badge>
+                  {Object.values(settings).every((v) => v === false || v === 100) && (
+                    <Badge variant="outline" className="text-xs">
+                      None Active
+                    </Badge>
                   )}
                 </div>
               </div>
@@ -297,5 +311,5 @@ export default function AccessibilityToolbar() {
         </Card>
       )}
     </div>
-  )
+  );
 }

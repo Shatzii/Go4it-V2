@@ -1,6 +1,6 @@
 /**
  * Learning Profile Routes
- * 
+ *
  * This file contains all routes related to the Learning Profile Management System
  * for ShatziiOS neurodivergent education platform.
  */

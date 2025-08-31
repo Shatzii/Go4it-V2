@@ -7,10 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AICoachWidget } from '@/components/ai-coach/AICoachWidget';
-import { 
-  Target, TrendingUp, Award, Users, BookOpen, 
-  GraduationCap, MapPin, Star, Mic, Brain,
-  CheckCircle, AlertCircle, Calendar, Phone
+import {
+  Target,
+  TrendingUp,
+  Award,
+  Users,
+  BookOpen,
+  GraduationCap,
+  MapPin,
+  Star,
+  Mic,
+  Brain,
+  CheckCircle,
+  AlertCircle,
+  Calendar,
+  Phone,
 } from 'lucide-react';
 
 export default function RecruitingReportsPage() {
@@ -22,12 +33,12 @@ export default function RecruitingReportsPage() {
       garScore: 78,
       position: 'Quarterback',
       grade: '11th',
-      height: "6'1\"",
+      height: '6\'1"',
       weight: '185 lbs',
       gpa: 3.7,
       acts: 28,
       eligibilityStatus: 'NCAA Eligible',
-      marketValue: 'High Interest'
+      marketValue: 'High Interest',
     },
     highlights: {
       videoCount: 15,
@@ -35,7 +46,7 @@ export default function RecruitingReportsPage() {
       practiceFootage: 7,
       totalViews: 1247,
       coachViews: 89,
-      avgRating: 4.2
+      avgRating: 4.2,
     },
     schools: [
       {
@@ -46,7 +57,7 @@ export default function RecruitingReportsPage() {
         status: 'Actively Recruiting',
         fit: 92,
         distance: '45 miles',
-        lastContact: '3 days ago'
+        lastContact: '3 days ago',
       },
       {
         name: 'Regional College',
@@ -55,8 +66,8 @@ export default function RecruitingReportsPage() {
         contact: 'Regular',
         status: 'Scholarship Offer',
         fit: 88,
-        distance: '120 miles', 
-        lastContact: '1 week ago'
+        distance: '120 miles',
+        lastContact: '1 week ago',
       },
       {
         name: 'Tech Institute',
@@ -66,34 +77,34 @@ export default function RecruitingReportsPage() {
         status: 'Watching',
         fit: 75,
         distance: '200 miles',
-        lastContact: '2 weeks ago'
-      }
+        lastContact: '2 weeks ago',
+      },
     ],
     timeline: [
       {
         date: '2024-01-15',
         event: 'Scholarship Offer - Regional College',
         type: 'offer',
-        importance: 'high'
+        importance: 'high',
       },
       {
-        date: '2024-01-10', 
+        date: '2024-01-10',
         event: 'Coach Visit - State University',
         type: 'visit',
-        importance: 'high'
+        importance: 'high',
       },
       {
         date: '2024-01-05',
         event: 'Highlight Reel Updated',
         type: 'content',
-        importance: 'medium'
+        importance: 'medium',
       },
       {
         date: '2024-01-01',
         event: 'GAR Score Improvement (+5 points)',
         type: 'performance',
-        importance: 'high'
-      }
+        importance: 'high',
+      },
     ],
     analytics: {
       profileViews: 1247,
@@ -104,9 +115,9 @@ export default function RecruitingReportsPage() {
       recruitingRank: {
         state: 15,
         region: 45,
-        national: 180
-      }
-    }
+        national: 180,
+      },
+    },
   };
 
   const improvementAreas = [
@@ -115,47 +126,56 @@ export default function RecruitingReportsPage() {
       current: 3.7,
       target: 3.8,
       priority: 'Medium',
-      actions: ['Focus on core classes', 'Study hall participation', 'Tutoring if needed']
+      actions: ['Focus on core classes', 'Study hall participation', 'Tutoring if needed'],
     },
     {
       area: 'Test Scores',
       current: 28,
       target: 30,
       priority: 'High',
-      actions: ['ACT prep course', 'Practice tests', 'Test-taking strategies']
+      actions: ['ACT prep course', 'Practice tests', 'Test-taking strategies'],
     },
     {
       area: 'Highlight Reel',
       current: 'Q3 2023',
       target: 'Current Season',
       priority: 'High',
-      actions: ['Add recent game footage', 'Include practice highlights', 'Professional editing']
+      actions: ['Add recent game footage', 'Include practice highlights', 'Professional editing'],
     },
     {
       area: 'Social Media Presence',
       current: 890,
       target: 1500,
       priority: 'Low',
-      actions: ['Consistent posting', 'Engage with coaches', 'Share training updates']
-    }
+      actions: ['Consistent posting', 'Engage with coaches', 'Share training updates'],
+    },
   ];
 
   const getInterestColor = (interest: string) => {
     switch (interest.toLowerCase()) {
-      case 'very high': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'high': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-      case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'low': return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      case 'very high':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'high':
+        return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'medium':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'low':
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      default:
+        return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority.toLowerCase()) {
-      case 'high': return 'text-red-400';
-      case 'medium': return 'text-yellow-400';
-      case 'low': return 'text-green-400';
-      default: return 'text-gray-400';
+      case 'high':
+        return 'text-red-400';
+      case 'medium':
+        return 'text-yellow-400';
+      case 'low':
+        return 'text-green-400';
+      default:
+        return 'text-gray-400';
     }
   };
 
@@ -189,14 +209,14 @@ export default function RecruitingReportsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* AI Coach Integration */}
           <div className="lg:col-span-1">
-            <AICoachWidget 
+            <AICoachWidget
               feature="recruiting_reports"
               context={{
                 recruitingData: recruitingData.overview,
                 rankings: recruitingData.analytics.recruitingRank,
                 highlights: recruitingData.highlights,
                 targetSchools: recruitingData.schools,
-                improvementAreas
+                improvementAreas,
               }}
               className="mb-6"
             />
@@ -217,7 +237,7 @@ export default function RecruitingReportsPage() {
                     </div>
                     <p className="text-sm text-slate-300">GAR Score</p>
                   </div>
-                  
+
                   <div className="text-center p-3 bg-green-500/10 rounded-lg">
                     <div className="text-2xl font-bold text-green-400 mb-1">
                       {recruitingData.analytics.coachContacts}
@@ -234,7 +254,11 @@ export default function RecruitingReportsPage() {
 
                   <div className="text-center p-3 bg-purple-500/10 rounded-lg">
                     <div className="text-2xl font-bold text-purple-400 mb-1">
-                      {recruitingData.schools.filter(s => s.interest === 'High' || s.interest === 'Very High').length}
+                      {
+                        recruitingData.schools.filter(
+                          (s) => s.interest === 'High' || s.interest === 'Very High',
+                        ).length
+                      }
                     </div>
                     <p className="text-sm text-slate-300">High Interest Schools</p>
                   </div>
@@ -268,7 +292,9 @@ export default function RecruitingReportsPage() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-slate-400">Position</p>
-                          <p className="text-white font-medium">{recruitingData.overview.position}</p>
+                          <p className="text-white font-medium">
+                            {recruitingData.overview.position}
+                          </p>
                         </div>
                         <div>
                           <p className="text-slate-400">Grade</p>
@@ -295,7 +321,7 @@ export default function RecruitingReportsPage() {
                             <p className="text-white font-medium">{recruitingData.overview.acts}</p>
                           </div>
                         </div>
-                        
+
                         <div className="mt-4">
                           <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                             <CheckCircle className="w-3 h-3 mr-1" />
@@ -318,21 +344,29 @@ export default function RecruitingReportsPage() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-slate-400">Total Videos</p>
-                          <p className="text-white font-medium">{recruitingData.highlights.videoCount}</p>
+                          <p className="text-white font-medium">
+                            {recruitingData.highlights.videoCount}
+                          </p>
                         </div>
                         <div>
                           <p className="text-slate-400">Total Views</p>
-                          <p className="text-white font-medium">{recruitingData.highlights.totalViews.toLocaleString()}</p>
+                          <p className="text-white font-medium">
+                            {recruitingData.highlights.totalViews.toLocaleString()}
+                          </p>
                         </div>
                         <div>
                           <p className="text-slate-400">Coach Views</p>
-                          <p className="text-white font-medium">{recruitingData.highlights.coachViews}</p>
+                          <p className="text-white font-medium">
+                            {recruitingData.highlights.coachViews}
+                          </p>
                         </div>
                         <div>
                           <p className="text-slate-400">Avg Rating</p>
                           <div className="flex items-center gap-1">
                             <Star className="w-4 h-4 text-yellow-400" />
-                            <p className="text-white font-medium">{recruitingData.highlights.avgRating}</p>
+                            <p className="text-white font-medium">
+                              {recruitingData.highlights.avgRating}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -343,11 +377,15 @@ export default function RecruitingReportsPage() {
                           <div className="space-y-2">
                             <div className="flex justify-between">
                               <span className="text-slate-300">Game Footage</span>
-                              <span className="text-white">{recruitingData.highlights.gameFootage}</span>
+                              <span className="text-white">
+                                {recruitingData.highlights.gameFootage}
+                              </span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-slate-300">Practice Footage</span>
-                              <span className="text-white">{recruitingData.highlights.practiceFootage}</span>
+                              <span className="text-white">
+                                {recruitingData.highlights.practiceFootage}
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -421,12 +459,19 @@ export default function RecruitingReportsPage() {
                   <CardContent>
                     <div className="space-y-4">
                       {recruitingData.timeline.map((event, index) => (
-                        <div key={index} className="flex items-start gap-4 p-4 bg-slate-700/50 rounded-lg">
-                          <div className={`w-3 h-3 rounded-full mt-2 ${
-                            event.importance === 'high' ? 'bg-red-400' :
-                            event.importance === 'medium' ? 'bg-yellow-400' :
-                            'bg-green-400'
-                          }`}></div>
+                        <div
+                          key={index}
+                          className="flex items-start gap-4 p-4 bg-slate-700/50 rounded-lg"
+                        >
+                          <div
+                            className={`w-3 h-3 rounded-full mt-2 ${
+                              event.importance === 'high'
+                                ? 'bg-red-400'
+                                : event.importance === 'medium'
+                                  ? 'bg-yellow-400'
+                                  : 'bg-green-400'
+                            }`}
+                          ></div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
                               <h4 className="font-medium text-white">{event.event}</h4>
@@ -481,19 +526,27 @@ export default function RecruitingReportsPage() {
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-slate-400">Profile Views</p>
-                          <p className="text-2xl font-bold text-white">{recruitingData.analytics.profileViews.toLocaleString()}</p>
+                          <p className="text-2xl font-bold text-white">
+                            {recruitingData.analytics.profileViews.toLocaleString()}
+                          </p>
                         </div>
                         <div>
                           <p className="text-slate-400">Camp Invites</p>
-                          <p className="text-2xl font-bold text-white">{recruitingData.analytics.campInvites}</p>
+                          <p className="text-2xl font-bold text-white">
+                            {recruitingData.analytics.campInvites}
+                          </p>
                         </div>
                         <div>
                           <p className="text-slate-400">Showcases</p>
-                          <p className="text-2xl font-bold text-white">{recruitingData.analytics.showcaseAttended}</p>
+                          <p className="text-2xl font-bold text-white">
+                            {recruitingData.analytics.showcaseAttended}
+                          </p>
                         </div>
                         <div>
                           <p className="text-slate-400">Social Followers</p>
-                          <p className="text-2xl font-bold text-white">{recruitingData.analytics.socialMediaFollowers.toLocaleString()}</p>
+                          <p className="text-2xl font-bold text-white">
+                            {recruitingData.analytics.socialMediaFollowers.toLocaleString()}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -532,7 +585,10 @@ export default function RecruitingReportsPage() {
                           <h5 className="font-medium text-white text-sm mb-2">Action Items:</h5>
                           <ul className="space-y-1">
                             {area.actions.map((action, actionIndex) => (
-                              <li key={actionIndex} className="flex items-center gap-2 text-sm text-slate-300">
+                              <li
+                                key={actionIndex}
+                                className="flex items-center gap-2 text-sm text-slate-300"
+                              >
                                 <CheckCircle className="w-3 h-3 text-green-400" />
                                 {action}
                               </li>

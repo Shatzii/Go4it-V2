@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 // Default payment types for Universal One School
 const DEFAULT_PAYMENT_TYPES = [
@@ -11,7 +11,7 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 450,
     category: 'tuition',
     recurring: true,
-    required: true
+    required: true,
   },
   {
     id: 'enrollment',
@@ -20,7 +20,7 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 125,
     category: 'enrollment',
     recurring: false,
-    required: true
+    required: true,
   },
   {
     id: 'activity',
@@ -29,7 +29,7 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 75,
     category: 'activity',
     recurring: false,
-    required: false
+    required: false,
   },
   {
     id: 'materials',
@@ -38,7 +38,7 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 35,
     category: 'materials',
     recurring: false,
-    required: false
+    required: false,
   },
   {
     id: 'field_trip',
@@ -47,7 +47,7 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 25,
     category: 'activity',
     recurring: false,
-    required: false
+    required: false,
   },
   {
     id: 'graduation',
@@ -56,7 +56,7 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 50,
     category: 'ceremony',
     recurring: false,
-    required: false
+    required: false,
   },
   {
     id: 'technology',
@@ -65,7 +65,7 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 40,
     category: 'technology',
     recurring: true,
-    required: false
+    required: false,
   },
   {
     id: 'library',
@@ -74,9 +74,9 @@ const DEFAULT_PAYMENT_TYPES = [
     defaultAmount: 15,
     category: 'materials',
     recurring: true,
-    required: false
-  }
-]
+    required: false,
+  },
+];
 
 export async function GET() {
   try {
@@ -85,26 +85,24 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       paymentTypes: DEFAULT_PAYMENT_TYPES,
-      message: 'Payment types retrieved successfully'
-    })
+      message: 'Payment types retrieved successfully',
+    });
   } catch (error) {
-    console.error('Error fetching payment types:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch payment types' },
-      { status: 500 }
-    )
+    console.error('Error fetching payment types:', error);
+    return NextResponse.json({ error: 'Failed to fetch payment types' }, { status: 500 });
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, description, defaultAmount, category, recurring, required } = await request.json()
+    const { name, description, defaultAmount, category, recurring, required } =
+      await request.json();
 
     if (!name || !description || !defaultAmount || !category) {
       return NextResponse.json(
         { error: 'Name, description, default amount, and category are required' },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
     // Create new payment type
@@ -117,32 +115,29 @@ export async function POST(request: NextRequest) {
       recurring: Boolean(recurring),
       required: Boolean(required),
       custom: true,
-      createdAt: new Date().toISOString()
-    }
+      createdAt: new Date().toISOString(),
+    };
 
     // In a real application, you would save this to the database
     // For now, we'll just return the new payment type
     return NextResponse.json({
       success: true,
       paymentType: newPaymentType,
-      message: 'Payment type created successfully'
-    })
-
+      message: 'Payment type created successfully',
+    });
   } catch (error) {
-    console.error('Error creating payment type:', error)
-    return NextResponse.json(
-      { error: 'Failed to create payment type' },
-      { status: 500 }
-    )
+    console.error('Error creating payment type:', error);
+    return NextResponse.json({ error: 'Failed to create payment type' }, { status: 500 });
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const { id, name, description, defaultAmount, category, recurring, required } = await request.json()
+    const { id, name, description, defaultAmount, category, recurring, required } =
+      await request.json();
 
     if (!id) {
-      return NextResponse.json({ error: 'Payment type ID is required' }, { status: 400 })
+      return NextResponse.json({ error: 'Payment type ID is required' }, { status: 400 });
     }
 
     // Update existing payment type
@@ -154,21 +149,17 @@ export async function PUT(request: NextRequest) {
       category,
       recurring: Boolean(recurring),
       required: Boolean(required),
-      updatedAt: new Date().toISOString()
-    }
+      updatedAt: new Date().toISOString(),
+    };
 
     // In a real application, you would update this in the database
     return NextResponse.json({
       success: true,
       paymentType: updatedPaymentType,
-      message: 'Payment type updated successfully'
-    })
-
+      message: 'Payment type updated successfully',
+    });
   } catch (error) {
-    console.error('Error updating payment type:', error)
-    return NextResponse.json(
-      { error: 'Failed to update payment type' },
-      { status: 500 }
-    )
+    console.error('Error updating payment type:', error);
+    return NextResponse.json({ error: 'Failed to update payment type' }, { status: 500 });
   }
 }

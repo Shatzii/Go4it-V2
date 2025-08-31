@@ -1,34 +1,34 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Plus, Users, BookOpen } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Plus, Users, BookOpen } from 'lucide-react';
 
 interface ClassCreatorProps {
-  userType: 'teacher' | 'admin' | 'parent'
-  schoolId: string
-  userId: string
+  userType: 'teacher' | 'admin' | 'parent';
+  schoolId: string;
+  userId: string;
 }
 
 export function ClassCreator({ userType, schoolId, userId }: ClassCreatorProps) {
-  const [mounted, setMounted] = useState(false)
-  const [className, setClassName] = useState('')
-  const [subject, setSubject] = useState('')
+  const [mounted, setMounted] = useState(false);
+  const [className, setClassName] = useState('');
+  const [subject, setSubject] = useState('');
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   const handleCreateClass = () => {
-    if (!className.trim() || !subject.trim()) return
+    if (!className.trim() || !subject.trim()) return;
 
     // Simulate class creation
-    console.log('Creating class:', { className, subject, schoolId, userId })
-    setClassName('')
-    setSubject('')
-  }
+    console.log('Creating class:', { className, subject, schoolId, userId });
+    setClassName('');
+    setSubject('');
+  };
 
   if (!mounted) {
     return (
@@ -44,7 +44,7 @@ export function ClassCreator({ userType, schoolId, userId }: ClassCreatorProps) 
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (userType !== 'teacher' && userType !== 'admin') {
@@ -74,7 +74,7 @@ export function ClassCreator({ userType, schoolId, userId }: ClassCreatorProps) 
           </div>
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -112,5 +112,5 @@ export function ClassCreator({ userType, schoolId, userId }: ClassCreatorProps) 
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

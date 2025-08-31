@@ -1,6 +1,6 @@
 /**
  * ShatziiOS Academic AI Engine Adapter
- * 
+ *
  * This service provides an adapter to connect the ShatziiOS platform to the locally
  * hosted academic AI engine. It follows the same interface as the external API services
  * but directs requests to the local AI system instead of external APIs.
@@ -13,7 +13,7 @@ const LOCAL_AI_ENGINE_URL = process.env.LOCAL_AI_ENGINE_URL || 'http://localhost
  * Interface for model inputs
  */
 export interface ModelInput {
-  messages: Array<{role: string, content: string}>;
+  messages: Array<{ role: string; content: string }>;
   model?: string;
   temperature?: number;
   max_tokens?: number;
@@ -27,11 +27,11 @@ export interface ModelInput {
  */
 export class AcademicAIAdapter {
   baseUrl: string;
-  
+
   constructor() {
     this.baseUrl = LOCAL_AI_ENGINE_URL;
   }
-  
+
   /**
    * Send a completion request to the academic AI engine
    */
@@ -44,11 +44,13 @@ export class AcademicAIAdapter {
         },
         body: JSON.stringify(input),
       });
-      
+
       if (!response.ok) {
-        throw new Error(`Academic AI engine request failed: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Academic AI engine request failed: ${response.status} ${response.statusText}`,
+        );
       }
-      
+
       const data = await response.json();
       return data;
     } catch (error) {
@@ -56,7 +58,7 @@ export class AcademicAIAdapter {
       throw error;
     }
   }
-  
+
   /**
    * Format the response to match the expected format from external APIs
    */
@@ -71,7 +73,7 @@ export class AcademicAIAdapter {
       ],
     };
   }
-  
+
   /**
    * Format the response to match Anthropic Claude's format
    */
@@ -81,21 +83,25 @@ export class AcademicAIAdapter {
         {
           type: 'text',
           text: result.generated_text || result.response || '',
-        }
+        },
       ],
     };
   }
-  
+
   /**
    * Get a completion that matches the OpenAI interface
    */
-  async getOpenAICompletion(prompt: string, model: string = 'gpt-4o', options: any = {}): Promise<any> {
+  async getOpenAICompletion(
+    prompt: string,
+    model: string = 'gpt-4o',
+    options: any = {},
+  ): Promise<any> {
     const messages = [{ role: 'user', content: prompt }];
-    
+
     if (options.systemPrompt) {
       messages.unshift({ role: 'system', content: options.systemPrompt });
     }
-    
+
     const result = await this.completion({
       messages,
       model,
@@ -103,41 +109,49 @@ export class AcademicAIAdapter {
       max_tokens: options.max_tokens || 1000,
       response_format: options.response_format,
     });
-    
+
     return this.formatOpenAIResponse(result);
   }
-  
+
   /**
    * Get a completion that matches the Anthropic Claude interface
    */
-  async getAnthropicCompletion(prompt: string, model: string = 'claude-3-7-sonnet-20250219', options: any = {}): Promise<any> {
+  async getAnthropicCompletion(
+    prompt: string,
+    model: string = 'claude-3-7-sonnet-20250219',
+    options: any = {},
+  ): Promise<any> {
     const messages = [{ role: 'user', content: prompt }];
-    
+
     if (options.systemPrompt) {
       messages.unshift({ role: 'system', content: options.systemPrompt });
     }
-    
+
     const result = await this.completion({
       messages,
       model,
       temperature: options.temperature || 0.7,
       max_tokens: options.max_tokens || 1000,
     });
-    
+
     return this.formatAnthropicResponse(result);
   }
 
   /**
    * Get a completion that matches the Perplexity interface
    */
-  async getPerplexityCompletion(prompt: string, model: string = 'llama-3-sonar-small-32k-online', options: any = {}): Promise<any> {
+  async getPerplexityCompletion(
+    prompt: string,
+    model: string = 'llama-3-sonar-small-32k-online',
+    options: any = {},
+  ): Promise<any> {
     const result = await this.completion({
       messages: [{ role: 'user', content: prompt }],
       model,
       temperature: options.temperature || 0.7,
       max_tokens: options.max_tokens || 1000,
     });
-    
+
     return {
       choices: [
         {
@@ -148,7 +162,7 @@ export class AcademicAIAdapter {
       ],
     };
   }
-  
+
   /**
    * Check if the academic AI engine is running
    */

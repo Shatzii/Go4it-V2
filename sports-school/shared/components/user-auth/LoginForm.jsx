@@ -11,27 +11,27 @@ const LoginForm = ({ onSuccess, redirectTo = '/' }) => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [, setLocation] = useLocation();
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-    
+
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      
+
       if (response.status === 200) {
         // Login successful
         if (onSuccess) {
           onSuccess(response.data);
         }
-        
+
         // Redirect to specified location or dashboard
         setLocation(redirectTo);
       }
     } catch (err) {
       console.error('Login error:', err);
-      
+
       if (err.response) {
         // Server responded with error
         setError(err.response.data.message || 'Login failed. Please try again.');
@@ -46,18 +46,14 @@ const LoginForm = ({ onSuccess, redirectTo = '/' }) => {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="auth-form login-form">
       <h2>Log In to ShatziiOS</h2>
-      
+
       <form onSubmit={handleSubmit}>
-        {error && (
-          <div className="auth-error">
-            {error}
-          </div>
-        )}
-        
+        {error && <div className="auth-error">{error}</div>}
+
         <div className="form-group">
           <label htmlFor="email">Email Address</label>
           <input
@@ -70,7 +66,7 @@ const LoginForm = ({ onSuccess, redirectTo = '/' }) => {
             disabled={isLoading}
           />
         </div>
-        
+
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
@@ -83,33 +79,33 @@ const LoginForm = ({ onSuccess, redirectTo = '/' }) => {
             disabled={isLoading}
           />
         </div>
-        
+
         <div className="form-actions">
-          <button 
-            type="submit" 
-            className="btn btn-primary"
-            disabled={isLoading}
-          >
+          <button type="submit" className="btn btn-primary" disabled={isLoading}>
             {isLoading ? 'Logging in...' : 'Log In'}
           </button>
         </div>
       </form>
-      
+
       <div className="auth-separator">
         <span>or</span>
       </div>
-      
+
       <div className="social-auth">
         <a href="/api/auth/google" className="btn btn-google">
           <i className="google-icon"></i>
           Log in with Google
         </a>
       </div>
-      
+
       <div className="auth-links">
-        <a href="#forgot-password" className="auth-link">Forgot your password?</a>
+        <a href="#forgot-password" className="auth-link">
+          Forgot your password?
+        </a>
         <span className="auth-link-separator">•</span>
-        <a href="#register" className="auth-link">Need an account? Sign up</a>
+        <a href="#register" className="auth-link">
+          Need an account? Sign up
+        </a>
       </div>
     </div>
   );

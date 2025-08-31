@@ -1,5 +1,5 @@
 {
-  "school": "secondary", 
+  "school": "secondary",
   "theme": "mature",
   "grades": {
     "grade7": {
@@ -42,9 +42,17 @@
               "description": "Real-world environmental research and solutions",
               "difficulty": "intermediate",
               "adaptations": {
-                "dyslexia": ["hands-on experiments", "visual data representation", "collaborative research"],
+                "dyslexia": [
+                  "hands-on experiments",
+                  "visual data representation",
+                  "collaborative research"
+                ],
                 "adhd": ["outdoor activities", "varied project formats", "immediate applications"],
-                "autism": ["structured methodology", "clear research protocols", "detailed documentation"]
+                "autism": [
+                  "structured methodology",
+                  "clear research protocols",
+                  "detailed documentation"
+                ]
               }
             }
           ]
@@ -65,7 +73,11 @@
               "adaptations": {
                 "dyslexia": ["business plan templates", "presentation tools", "mentor support"],
                 "adhd": ["project-based learning", "flexible timelines", "varied assessment"],
-                "autism": ["structured business frameworks", "clear success metrics", "peer collaboration"]
+                "autism": [
+                  "structured business frameworks",
+                  "clear success metrics",
+                  "peer collaboration"
+                ]
               }
             },
             {
@@ -74,7 +86,11 @@
               "description": "Prepare for post-secondary transitions",
               "difficulty": "advanced",
               "adaptations": {
-                "dyslexia": ["application support tools", "interview practice", "strength identification"],
+                "dyslexia": [
+                  "application support tools",
+                  "interview practice",
+                  "strength identification"
+                ],
                 "adhd": ["organizational systems", "deadline management", "choice in pathways"],
                 "autism": ["transition planning", "social skills practice", "support networks"]
               }
@@ -98,7 +114,7 @@
     },
     {
       "id": "professor-innovation",
-      "name": "Professor Innovation", 
+      "name": "Professor Innovation",
       "specialties": ["STEM", "creative problem solving"],
       "personality": "curious, encouraging, hands-on",
       "adaptations": {

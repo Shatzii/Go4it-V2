@@ -1,18 +1,18 @@
-'use client'
+'use client';
 
-import { useEffect } from 'react'
-import { Button } from '@/components/ui/button'
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function AdminError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Admin page error:', error)
-  }, [error])
+    console.error('Admin page error:', error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -24,13 +24,10 @@ export default function AdminError({
           </p>
         </div>
         <div className="space-y-4">
-          <Button 
-            onClick={reset}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-          >
+          <Button onClick={reset} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
             Try Again
           </Button>
-          <Button 
+          <Button
             onClick={() => {
               localStorage.removeItem('auth-token');
               window.location.href = '/auth';
@@ -43,5 +40,5 @@ export default function AdminError({
         </div>
       </div>
     </div>
-  )
+  );
 }

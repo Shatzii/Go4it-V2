@@ -1,21 +1,21 @@
-'use client'
+'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { 
-  BookOpen, 
-  Calculator, 
-  Microscope, 
-  Globe, 
-  Palette, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  BookOpen,
+  Calculator,
+  Microscope,
+  Globe,
+  Palette,
   Trophy,
   Clock,
   Users,
   Star,
-  Play
-} from 'lucide-react'
-import Link from 'next/link'
+  Play,
+} from 'lucide-react';
+import Link from 'next/link';
 
 export default function Courses() {
   const courseCategories = [
@@ -24,57 +24,127 @@ export default function Courses() {
       description: 'SuperHero themed learning adventures',
       color: 'blue',
       courses: [
-        { name: 'Math Heroes', students: 1240, rating: 4.9, icon: <Calculator className="h-5 w-5" /> },
-        { name: 'Science Quest', students: 980, rating: 4.8, icon: <Microscope className="h-5 w-5" /> },
-        { name: 'Reading Adventures', students: 1580, rating: 4.9, icon: <BookOpen className="h-5 w-5" /> },
-        { name: 'Creative Arts', students: 750, rating: 4.7, icon: <Palette className="h-5 w-5" /> }
-      ]
+        {
+          name: 'Math Heroes',
+          students: 1240,
+          rating: 4.9,
+          icon: <Calculator className="h-5 w-5" />,
+        },
+        {
+          name: 'Science Quest',
+          students: 980,
+          rating: 4.8,
+          icon: <Microscope className="h-5 w-5" />,
+        },
+        {
+          name: 'Reading Adventures',
+          students: 1580,
+          rating: 4.9,
+          icon: <BookOpen className="h-5 w-5" />,
+        },
+        {
+          name: 'Creative Arts',
+          students: 750,
+          rating: 4.7,
+          icon: <Palette className="h-5 w-5" />,
+        },
+      ],
     },
     {
       title: 'Secondary School (7-12)',
       description: 'S.T.A.G.E Prep theatrical education',
       color: 'purple',
       courses: [
-        { name: 'Drama & Theater', students: 340, rating: 4.9, icon: <Trophy className="h-5 w-5" /> },
-        { name: 'Literature Analysis', students: 420, rating: 4.8, icon: <BookOpen className="h-5 w-5" /> },
+        {
+          name: 'Drama & Theater',
+          students: 340,
+          rating: 4.9,
+          icon: <Trophy className="h-5 w-5" />,
+        },
+        {
+          name: 'Literature Analysis',
+          students: 420,
+          rating: 4.8,
+          icon: <BookOpen className="h-5 w-5" />,
+        },
         { name: 'Music Theory', students: 280, rating: 4.7, icon: <Palette className="h-5 w-5" /> },
-        { name: 'Performance Arts', students: 310, rating: 4.9, icon: <Trophy className="h-5 w-5" /> }
-      ]
+        {
+          name: 'Performance Arts',
+          students: 310,
+          rating: 4.9,
+          icon: <Trophy className="h-5 w-5" />,
+        },
+      ],
     },
     {
       title: 'Law School',
       description: 'Future Legal Professionals',
       color: 'indigo',
       courses: [
-        { name: 'Constitutional Law', students: 85, rating: 4.9, icon: <BookOpen className="h-5 w-5" /> },
+        {
+          name: 'Constitutional Law',
+          students: 85,
+          rating: 4.9,
+          icon: <BookOpen className="h-5 w-5" />,
+        },
         { name: 'Contract Law', students: 92, rating: 4.8, icon: <BookOpen className="h-5 w-5" /> },
         { name: 'Criminal Law', students: 78, rating: 4.7, icon: <BookOpen className="h-5 w-5" /> },
-        { name: 'Legal Research', students: 95, rating: 4.9, icon: <BookOpen className="h-5 w-5" /> }
-      ]
+        {
+          name: 'Legal Research',
+          students: 95,
+          rating: 4.9,
+          icon: <BookOpen className="h-5 w-5" />,
+        },
+      ],
     },
     {
       title: 'Language School',
       description: 'Multilingual global education',
       color: 'green',
       courses: [
-        { name: 'Spanish Immersion', students: 450, rating: 4.9, icon: <Globe className="h-5 w-5" /> },
+        {
+          name: 'Spanish Immersion',
+          students: 450,
+          rating: 4.9,
+          icon: <Globe className="h-5 w-5" />,
+        },
         { name: 'French Culture', students: 320, rating: 4.8, icon: <Globe className="h-5 w-5" /> },
-        { name: 'Mandarin Writing', students: 280, rating: 4.7, icon: <Globe className="h-5 w-5" /> },
-        { name: 'ESL Advanced', students: 380, rating: 4.8, icon: <Globe className="h-5 w-5" /> }
-      ]
+        {
+          name: 'Mandarin Writing',
+          students: 280,
+          rating: 4.7,
+          icon: <Globe className="h-5 w-5" />,
+        },
+        { name: 'ESL Advanced', students: 380, rating: 4.8, icon: <Globe className="h-5 w-5" /> },
+      ],
     },
     {
       title: 'Go4it Sports Academy',
       description: 'Elite athletic training',
       color: 'orange',
       courses: [
-        { name: 'Basketball Training', students: 180, rating: 4.9, icon: <Trophy className="h-5 w-5" /> },
-        { name: 'Swimming Technique', students: 120, rating: 4.8, icon: <Trophy className="h-5 w-5" /> },
+        {
+          name: 'Basketball Training',
+          students: 180,
+          rating: 4.9,
+          icon: <Trophy className="h-5 w-5" />,
+        },
+        {
+          name: 'Swimming Technique',
+          students: 120,
+          rating: 4.8,
+          icon: <Trophy className="h-5 w-5" />,
+        },
         { name: 'Track & Field', students: 150, rating: 4.7, icon: <Trophy className="h-5 w-5" /> },
-        { name: 'Sports Psychology', students: 90, rating: 4.9, icon: <Trophy className="h-5 w-5" /> }
-      ]
-    }
-  ]
+        {
+          name: 'Sports Psychology',
+          students: 90,
+          rating: 4.9,
+          icon: <Trophy className="h-5 w-5" />,
+        },
+      ],
+    },
+  ];
 
   const featuredCourses = [
     {
@@ -84,7 +154,7 @@ export default function Courses() {
       rating: 4.9,
       duration: '12 weeks',
       level: 'K-6',
-      description: 'Revolutionary math program using AI to adapt to each student\'s learning pace'
+      description: "Revolutionary math program using AI to adapt to each student's learning pace",
     },
     {
       title: 'Constitutional Law Deep Dive',
@@ -93,7 +163,7 @@ export default function Courses() {
       rating: 4.9,
       duration: '16 weeks',
       level: 'Graduate',
-      description: 'Comprehensive analysis of constitutional principles and landmark cases'
+      description: 'Comprehensive analysis of constitutional principles and landmark cases',
     },
     {
       title: 'Elite Athletic Performance',
@@ -102,9 +172,9 @@ export default function Courses() {
       rating: 4.9,
       duration: 'Year-round',
       level: 'All Levels',
-      description: 'Professional-grade training for competitive athletes'
-    }
-  ]
+      description: 'Professional-grade training for competitive athletes',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-green-50">
@@ -112,7 +182,9 @@ export default function Courses() {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 text-white rounded-lg p-6 mb-6">
           <h1 className="text-3xl font-bold">Course Catalog - Universal One School 📚</h1>
-          <p className="text-blue-100 mt-1">Explore our comprehensive educational programs across all schools</p>
+          <p className="text-blue-100 mt-1">
+            Explore our comprehensive educational programs across all schools
+          </p>
         </div>
 
         {/* Stats Overview */}
@@ -206,7 +278,9 @@ export default function Courses() {
                     <CardTitle className="text-xl">{category.title}</CardTitle>
                     <p className="text-sm text-gray-600">{category.description}</p>
                   </div>
-                  <Link href={`/schools/${category.title.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '')}`}>
+                  <Link
+                    href={`/schools/${category.title.toLowerCase().replace(/\s+/g, '-').replace(/[()]/g, '')}`}
+                  >
                     <Button variant="outline" size="sm">
                       View School
                     </Button>
@@ -220,9 +294,7 @@ export default function Courses() {
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3 mb-3">
                           <div className={`p-2 rounded-full bg-${category.color}-100`}>
-                            <div className={`text-${category.color}-600`}>
-                              {course.icon}
-                            </div>
+                            <div className={`text-${category.color}-600`}>{course.icon}</div>
                           </div>
                           <div>
                             <h4 className="font-medium text-sm">{course.name}</h4>
@@ -254,19 +326,13 @@ export default function Courses() {
               <h3 className="font-medium text-blue-800 mb-4">Ready to Start Learning?</h3>
               <div className="flex justify-center gap-4">
                 <Link href="/ai-teachers">
-                  <Button className="bg-blue-600 hover:bg-blue-700">
-                    Meet Your AI Teachers
-                  </Button>
+                  <Button className="bg-blue-600 hover:bg-blue-700">Meet Your AI Teachers</Button>
                 </Link>
                 <Link href="/virtual-classroom">
-                  <Button variant="outline">
-                    Join Virtual Classroom
-                  </Button>
+                  <Button variant="outline">Join Virtual Classroom</Button>
                 </Link>
                 <Link href="/dashboard">
-                  <Button variant="outline">
-                    Back to Dashboard
-                  </Button>
+                  <Button variant="outline">Back to Dashboard</Button>
                 </Link>
               </div>
             </div>
@@ -274,5 +340,5 @@ export default function Courses() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

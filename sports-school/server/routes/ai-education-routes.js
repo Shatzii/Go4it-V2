@@ -1,6 +1,6 @@
 /**
  * AI Education Routes
- * 
+ *
  * Complete API routes for the AI Education Engine
  * Handles all AI teacher interactions, school management, and student progress
  */
@@ -32,7 +32,7 @@ router.get('/ai-teachers', (req, res) => {
     res.json({
       success: true,
       teachers,
-      count: teachers.length
+      count: teachers.length,
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -57,7 +57,7 @@ router.post('/ai-teachers/:teacherId/session', async (req, res) => {
   try {
     const session = await aiTeachers.startTutoringSession({
       teacherId: req.params.teacherId,
-      ...req.body
+      ...req.body,
     });
     res.json({ success: true, session });
   } catch (error) {
@@ -110,7 +110,10 @@ router.post('/ai-teachers/learning-path', async (req, res) => {
 // Generate assessment with AI teacher
 router.post('/ai-teachers/:teacherId/assessment', async (req, res) => {
   try {
-    const assessment = await aiTeachers.generateAssessmentWithFeedback(req.params.teacherId, req.body);
+    const assessment = await aiTeachers.generateAssessmentWithFeedback(
+      req.params.teacherId,
+      req.body,
+    );
     res.json({ success: true, assessment });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -176,10 +179,10 @@ router.post('/schools/:schoolId/cancel', async (req, res) => {
 // Stripe webhooks
 router.post('/webhooks/stripe', express.raw({ type: 'application/json' }), async (req, res) => {
   const sig = req.headers['stripe-signature'];
-  
+
   try {
     const event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-    
+
     switch (event.type) {
       case 'invoice.payment_succeeded':
         await schoolRegistration.handlePaymentSuccess(event.data.object.subscription);
@@ -190,7 +193,7 @@ router.post('/webhooks/stripe', express.raw({ type: 'application/json' }), async
       default:
         console.log(`Unhandled event type ${event.type}`);
     }
-    
+
     res.json({ received: true });
   } catch (error) {
     console.error('Webhook error:', error);
@@ -230,7 +233,7 @@ router.post('/students/:studentId/progress', async (req, res) => {
   try {
     const updated = await studentManagement.updateProgressFromAIInteraction(
       req.params.studentId,
-      req.body
+      req.body,
     );
     res.json({ success: true, updated });
   } catch (error) {
@@ -342,7 +345,7 @@ router.get('/curriculum/:curriculumId/export', async (req, res) => {
   try {
     const { format = 'json' } = req.query;
     const exportData = await curriculumManagement.exportCurriculum(req.params.curriculumId, format);
-    
+
     if (format === 'json') {
       res.json({ success: true, curriculum: exportData });
     } else {
@@ -359,7 +362,7 @@ router.post('/curriculum/:curriculumId/feedback', async (req, res) => {
   try {
     const updatedCurriculum = await curriculumManagement.updateCurriculum(
       req.params.curriculumId,
-      req.body
+      req.body,
     );
     res.json({ success: true, curriculum: updatedCurriculum });
   } catch (error) {
@@ -390,7 +393,7 @@ router.get('/parents/:parentId/dashboard', async (req, res) => {
       students: [],
       recentActivity: [],
       upcomingEvents: [],
-      progressSummary: {}
+      progressSummary: {},
     };
     res.json({ success: true, dashboard: dashboardData });
   } catch (error) {
@@ -411,7 +414,7 @@ router.get('/schools/:schoolId/analytics', async (req, res) => {
       averageEngagement: 0,
       topPerformingSubjects: [],
       teacherUtilization: {},
-      progressTrends: {}
+      progressTrends: {},
     };
     res.json({ success: true, analytics });
   } catch (error) {
@@ -430,11 +433,11 @@ router.get('/status', (req, res) => {
         'ms-shakespeare': 'online',
         'professor-timeline': 'online',
         'maestro-picasso': 'online',
-        'dr-inclusive': 'online'
+        'dr-inclusive': 'online',
       },
       activeSessions: aiTeachers.activeSessions.size,
       systemHealth: 'excellent',
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
     };
     res.json({ success: true, status });
   } catch (error) {
@@ -456,7 +459,7 @@ router.get('/admin/statistics', async (req, res) => {
       totalTutoringMinutes: 0,
       averageSuccessRate: 92.5,
       platformUptime: '99.9%',
-      monthlyRevenue: 0
+      monthlyRevenue: 0,
     };
     res.json({ success: true, statistics: stats });
   } catch (error) {
@@ -474,8 +477,8 @@ router.get('/health', (req, res) => {
       aiTeachers: 'online',
       contentEngine: 'online',
       studentManagement: 'online',
-      schoolRegistration: 'online'
-    }
+      schoolRegistration: 'online',
+    },
   });
 });
 

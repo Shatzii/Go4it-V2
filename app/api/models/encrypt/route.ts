@@ -49,17 +49,20 @@ async function handleEncryptModel(
       };
     };
   },
-  encryptionManager: any
+  encryptionManager: any,
 ) {
   const { modelName, licenseId, modelPath, metadata } = data;
 
   // Validate license
   const licenseStatus = await encryptionManager.getLicenseStatus(licenseId);
   if (!licenseStatus.valid) {
-    return NextResponse.json({
-      error: 'Invalid license',
-      status: licenseStatus.status
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: 'Invalid license',
+        status: licenseStatus.status,
+      },
+      { status: 400 },
+    );
   }
 
   const license = licenseStatus.license;
@@ -70,16 +73,12 @@ async function handleEncryptModel(
   try {
     // Read the model file
     const modelData = await readFile(modelPath);
-    
+
     // Encrypt the model
-    const encryptedModel = await encryptionManager.encryptModel(
-      modelData,
-      license,
-      {
-        ...metadata,
-        originalSize: modelData.length
-      }
-    );
+    const encryptedModel = await encryptionManager.encryptModel(modelData, license, {
+      ...metadata,
+      originalSize: modelData.length,
+    });
 
     // Save encrypted model
     const encryptedPath = await encryptionManager.saveEncryptedModel(encryptedModel);
@@ -89,7 +88,7 @@ async function handleEncryptModel(
       encryptedPath,
       modelName: encryptedModel.modelName,
       encryptedSize: encryptedModel.encryptedData.length,
-      originalSize: encryptedModel.metadata.originalSize
+      originalSize: encryptedModel.metadata.originalSize,
     });
   } catch (error) {
     console.error('Model encryption failed:', error);
@@ -104,17 +103,20 @@ async function handleDecryptModel(
     licenseKey: string;
     outputPath?: string;
   },
-  encryptionManager: any
+  encryptionManager: any,
 ) {
   const { modelName, licenseKey, outputPath } = data;
 
   // Validate license
   const validation = await encryptionManager.validateLicense(licenseKey);
   if (!validation.valid) {
-    return NextResponse.json({
-      error: 'Invalid license',
-      details: validation.error
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: 'Invalid license',
+        details: validation.error,
+      },
+      { status: 400 },
+    );
   }
 
   const license = validation.license;
@@ -147,7 +149,7 @@ async function handleDecryptModel(
       modelName: encryptedModel.modelName,
       decryptedSize: decryptedData.length,
       metadata: encryptedModel.metadata,
-      outputPath: outputPath || null
+      outputPath: outputPath || null,
     });
   } catch (error) {
     console.error('Model decryption failed:', error);
@@ -161,7 +163,7 @@ async function handleVerifyModel(
     modelName: string;
     licenseKey: string;
   },
-  encryptionManager: any
+  encryptionManager: any,
 ) {
   const { modelName, licenseKey } = data;
 
@@ -170,7 +172,7 @@ async function handleVerifyModel(
   if (!validation.valid) {
     return NextResponse.json({
       valid: false,
-      error: validation.error
+      error: validation.error,
     });
   }
 
@@ -178,7 +180,7 @@ async function handleVerifyModel(
   if (license.userId !== userId) {
     return NextResponse.json({
       valid: false,
-      error: 'License does not belong to user'
+      error: 'License does not belong to user',
     });
   }
 
@@ -188,7 +190,7 @@ async function handleVerifyModel(
     if (!encryptedModel) {
       return NextResponse.json({
         valid: false,
-        error: 'Encrypted model not found'
+        error: 'Encrypted model not found',
       });
     }
 
@@ -196,7 +198,7 @@ async function handleVerifyModel(
     if (encryptedModel.licenseId !== license.id) {
       return NextResponse.json({
         valid: false,
-        error: 'License does not match model'
+        error: 'License does not match model',
       });
     }
 
@@ -208,14 +210,14 @@ async function handleVerifyModel(
         expirationDate: license.expirationDate,
         currentActivations: license.currentActivations,
         maxActivations: license.maxActivations,
-        features: license.features
-      }
+        features: license.features,
+      },
     });
   } catch (error) {
     console.error('Model verification failed:', error);
     return NextResponse.json({
       valid: false,
-      error: 'Failed to verify model'
+      error: 'Failed to verify model',
     });
   }
 }

@@ -1,13 +1,13 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { BookOpen, Users, Clock, Star, Theater, Palette } from 'lucide-react'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Users, Clock, Star, Theater, Palette } from 'lucide-react';
 
 export default function SecondaryCoursesPage() {
-  const [selectedGrade, setSelectedGrade] = useState('all')
+  const [selectedGrade, setSelectedGrade] = useState('all');
 
   const courses = [
     {
@@ -20,7 +20,7 @@ export default function SecondaryCoursesPage() {
       duration: '60 min',
       difficulty: 'Beginner',
       subjects: ['Acting', 'Voice', 'Movement'],
-      color: 'bg-purple-500'
+      color: 'bg-purple-500',
     },
     {
       id: 'english-8',
@@ -32,7 +32,7 @@ export default function SecondaryCoursesPage() {
       duration: '55 min',
       difficulty: 'Intermediate',
       subjects: ['Literature', 'Analysis', 'Writing'],
-      color: 'bg-blue-500'
+      color: 'bg-blue-500',
     },
     {
       id: 'math-9',
@@ -44,7 +44,7 @@ export default function SecondaryCoursesPage() {
       duration: '50 min',
       difficulty: 'Intermediate',
       subjects: ['Algebra', 'Geometry', 'Problem Solving'],
-      color: 'bg-green-500'
+      color: 'bg-green-500',
     },
     {
       id: 'science-10',
@@ -56,7 +56,7 @@ export default function SecondaryCoursesPage() {
       duration: '60 min',
       difficulty: 'Advanced',
       subjects: ['Physics', 'Chemistry', 'Technology'],
-      color: 'bg-orange-500'
+      color: 'bg-orange-500',
     },
     {
       id: 'history-11',
@@ -68,7 +68,7 @@ export default function SecondaryCoursesPage() {
       duration: '55 min',
       difficulty: 'Advanced',
       subjects: ['History', 'Culture', 'Performance'],
-      color: 'bg-red-500'
+      color: 'bg-red-500',
     },
     {
       id: 'arts-12',
@@ -80,7 +80,7 @@ export default function SecondaryCoursesPage() {
       duration: '90 min',
       difficulty: 'Expert',
       subjects: ['Arts Integration', 'Leadership', 'Portfolio'],
-      color: 'bg-pink-500'
+      color: 'bg-pink-500',
     },
     {
       id: 'production-9-12',
@@ -92,15 +92,18 @@ export default function SecondaryCoursesPage() {
       duration: '120 min',
       difficulty: 'Variable',
       subjects: ['Directing', 'Design', 'Management'],
-      color: 'bg-indigo-500'
-    }
-  ]
+      color: 'bg-indigo-500',
+    },
+  ];
 
-  const grades = ['all', '7', '8', '9', '10', '11', '12', '9-12']
+  const grades = ['all', '7', '8', '9', '10', '11', '12', '9-12'];
 
-  const filteredCourses = selectedGrade === 'all' 
-    ? courses 
-    : courses.filter(course => course.grade === selectedGrade || course.grade.includes(selectedGrade))
+  const filteredCourses =
+    selectedGrade === 'all'
+      ? courses
+      : courses.filter(
+          (course) => course.grade === selectedGrade || course.grade.includes(selectedGrade),
+        );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
@@ -110,7 +113,8 @@ export default function SecondaryCoursesPage() {
             🎭 S.T.A.G.E Prep Academy Courses
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Academic excellence meets theatrical arts in our comprehensive curriculum for grades 7-12
+            Academic excellence meets theatrical arts in our comprehensive curriculum for grades
+            7-12
           </p>
         </div>
 
@@ -119,7 +123,7 @@ export default function SecondaryCoursesPage() {
           {grades.map((grade) => (
             <Button
               key={grade}
-              variant={selectedGrade === grade ? "default" : "outline"}
+              variant={selectedGrade === grade ? 'default' : 'outline'}
               onClick={() => setSelectedGrade(grade)}
               className="min-w-[80px]"
             >
@@ -145,7 +149,7 @@ export default function SecondaryCoursesPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">{course.description}</p>
-                
+
                 <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
@@ -182,9 +186,7 @@ export default function SecondaryCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Theater className="w-12 h-12 text-purple-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {courses.length}
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{courses.length}</h3>
               <p className="text-gray-600">Theater Courses</p>
             </CardContent>
           </Card>
@@ -200,14 +202,12 @@ export default function SecondaryCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                4.8/5
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">4.8/5</h3>
               <p className="text-gray-600">Course Rating</p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }

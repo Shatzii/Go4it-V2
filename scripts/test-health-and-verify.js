@@ -18,11 +18,13 @@ async function main() {
     password: 'StrongPassw0rd!',
     firstName: 'Verify',
     lastName: 'Test',
-    acceptTerms: true
+    acceptTerms: true,
   };
   console.log('> POST /api/auth/register (for verify)');
   const reg = await fetch(`${BASE_URL}/api/auth/register`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   });
   const regJson = await reg.json();
   if (!reg.ok) throw new Error(`Register for verify failed: ${JSON.stringify(regJson)}`);
@@ -36,4 +38,7 @@ async function main() {
   if (v.status >= 400) throw new Error('Verify flow failed');
 }
 
-main().catch((e) => { console.error(e.message || e); process.exit(1); });
+main().catch((e) => {
+  console.error(e.message || e);
+  process.exit(1);
+});

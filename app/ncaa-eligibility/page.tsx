@@ -5,308 +5,335 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle, XCircle, AlertTriangle, Globe, Calculator, BookOpen, GraduationCap, Target } from 'lucide-react';
+import {
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Globe,
+  Calculator,
+  BookOpen,
+  GraduationCap,
+  Target,
+} from 'lucide-react';
 
 // NCAA Sliding Scale Data
 const NCAA_SLIDING_SCALE = {
   D1: [
-    { gpa: 3.550, sat: 400, act: 37 },
+    { gpa: 3.55, sat: 400, act: 37 },
     { gpa: 3.525, sat: 410, act: 38 },
-    { gpa: 3.500, sat: 420, act: 39 },
+    { gpa: 3.5, sat: 420, act: 39 },
     { gpa: 3.475, sat: 430, act: 40 },
-    { gpa: 3.450, sat: 440, act: 41 },
+    { gpa: 3.45, sat: 440, act: 41 },
     { gpa: 3.425, sat: 450, act: 41 },
-    { gpa: 3.400, sat: 460, act: 42 },
+    { gpa: 3.4, sat: 460, act: 42 },
     { gpa: 3.375, sat: 470, act: 43 },
-    { gpa: 3.350, sat: 480, act: 44 },
+    { gpa: 3.35, sat: 480, act: 44 },
     { gpa: 3.325, sat: 490, act: 44 },
-    { gpa: 3.300, sat: 500, act: 45 },
+    { gpa: 3.3, sat: 500, act: 45 },
     { gpa: 3.275, sat: 510, act: 46 },
-    { gpa: 3.250, sat: 520, act: 47 },
+    { gpa: 3.25, sat: 520, act: 47 },
     { gpa: 3.225, sat: 530, act: 47 },
-    { gpa: 3.200, sat: 540, act: 48 },
+    { gpa: 3.2, sat: 540, act: 48 },
     { gpa: 3.175, sat: 550, act: 49 },
-    { gpa: 3.150, sat: 560, act: 50 },
+    { gpa: 3.15, sat: 560, act: 50 },
     { gpa: 3.125, sat: 570, act: 50 },
-    { gpa: 3.100, sat: 580, act: 51 },
+    { gpa: 3.1, sat: 580, act: 51 },
     { gpa: 3.075, sat: 590, act: 52 },
-    { gpa: 3.050, sat: 600, act: 53 },
+    { gpa: 3.05, sat: 600, act: 53 },
     { gpa: 3.025, sat: 610, act: 53 },
-    { gpa: 3.000, sat: 620, act: 54 },
+    { gpa: 3.0, sat: 620, act: 54 },
     { gpa: 2.975, sat: 630, act: 55 },
-    { gpa: 2.950, sat: 640, act: 56 },
+    { gpa: 2.95, sat: 640, act: 56 },
     { gpa: 2.925, sat: 650, act: 56 },
-    { gpa: 2.900, sat: 660, act: 57 },
+    { gpa: 2.9, sat: 660, act: 57 },
     { gpa: 2.875, sat: 670, act: 58 },
-    { gpa: 2.850, sat: 680, act: 59 },
+    { gpa: 2.85, sat: 680, act: 59 },
     { gpa: 2.825, sat: 690, act: 59 },
-    { gpa: 2.800, sat: 700, act: 60 },
+    { gpa: 2.8, sat: 700, act: 60 },
     { gpa: 2.775, sat: 710, act: 61 },
-    { gpa: 2.750, sat: 720, act: 62 },
+    { gpa: 2.75, sat: 720, act: 62 },
     { gpa: 2.725, sat: 730, act: 62 },
-    { gpa: 2.700, sat: 740, act: 63 },
+    { gpa: 2.7, sat: 740, act: 63 },
     { gpa: 2.675, sat: 750, act: 64 },
-    { gpa: 2.650, sat: 760, act: 65 },
+    { gpa: 2.65, sat: 760, act: 65 },
     { gpa: 2.625, sat: 770, act: 65 },
-    { gpa: 2.600, sat: 780, act: 66 },
+    { gpa: 2.6, sat: 780, act: 66 },
     { gpa: 2.575, sat: 790, act: 67 },
-    { gpa: 2.550, sat: 800, act: 68 },
+    { gpa: 2.55, sat: 800, act: 68 },
     { gpa: 2.525, sat: 810, act: 68 },
-    { gpa: 2.500, sat: 820, act: 69 },
+    { gpa: 2.5, sat: 820, act: 69 },
     { gpa: 2.475, sat: 830, act: 70 },
-    { gpa: 2.450, sat: 840, act: 71 },
+    { gpa: 2.45, sat: 840, act: 71 },
     { gpa: 2.425, sat: 850, act: 71 },
-    { gpa: 2.400, sat: 860, act: 72 },
+    { gpa: 2.4, sat: 860, act: 72 },
     { gpa: 2.375, sat: 870, act: 73 },
-    { gpa: 2.350, sat: 880, act: 74 },
+    { gpa: 2.35, sat: 880, act: 74 },
     { gpa: 2.325, sat: 890, act: 74 },
-    { gpa: 2.300, sat: 900, act: 75 }
+    { gpa: 2.3, sat: 900, act: 75 },
   ],
   D2: [
-    { gpa: 2.000, sat: 840, act: 70 },
-    { gpa: 2.200, sat: 800, act: 68 },
-    { gpa: 2.300, sat: 780, act: 66 }
-  ]
+    { gpa: 2.0, sat: 840, act: 70 },
+    { gpa: 2.2, sat: 800, act: 68 },
+    { gpa: 2.3, sat: 780, act: 66 },
+  ],
 };
 
 // International Diploma Recognition Database
 const INTERNATIONAL_DIPLOMAS = {
   // European Union Countries
-  'Austria': {
+  Austria: {
     diplomas: ['Matura', 'Reifeprüfung', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Matura with NCAA-approved subjects',
-    gpaConversion: 'Austrian grades converted to 4.0 scale'
+    gpaConversion: 'Austrian grades converted to 4.0 scale',
   },
-  'Belgium': {
-    diplomas: ['Certificat d\'Enseignement Secondaire Supérieur', 'Getuigschrift Secundair Onderwijs', 'International Baccalaureate'],
+  Belgium: {
+    diplomas: [
+      "Certificat d'Enseignement Secondaire Supérieur",
+      'Getuigschrift Secundair Onderwijs',
+      'International Baccalaureate',
+    ],
     recognized: true,
     requirements: 'Secondary education certificate with core subjects',
-    gpaConversion: 'Belgian grades converted to 4.0 scale'
+    gpaConversion: 'Belgian grades converted to 4.0 scale',
   },
-  'Bulgaria': {
+  Bulgaria: {
     diplomas: ['Diploma za Sredno Obrazovanie', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Secondary education diploma with NCAA subjects',
-    gpaConversion: 'Bulgarian grades converted to 4.0 scale'
+    gpaConversion: 'Bulgarian grades converted to 4.0 scale',
   },
-  'Croatia': {
+  Croatia: {
     diplomas: ['Matura', 'Svjedodžba o Maturi', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Matura with NCAA-approved core courses',
-    gpaConversion: 'Croatian grades converted to 4.0 scale'
+    gpaConversion: 'Croatian grades converted to 4.0 scale',
   },
-  'Cyprus': {
+  Cyprus: {
     diplomas: ['Apolytirio Lykeiou', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Lyceum graduation certificate with core subjects',
-    gpaConversion: 'Cypriot grades converted to 4.0 scale'
+    gpaConversion: 'Cypriot grades converted to 4.0 scale',
   },
   'Czech Republic': {
     diplomas: ['Maturita', 'Vysvědčení o Maturitní Zkoušce', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Maturita with NCAA-approved subjects',
-    gpaConversion: 'Czech grades converted to 4.0 scale'
+    gpaConversion: 'Czech grades converted to 4.0 scale',
   },
-  'Denmark': {
+  Denmark: {
     diplomas: ['Studentereksamen', 'Højere Forberedelseseksamen', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Upper secondary education completion',
-    gpaConversion: 'Danish grades converted to 4.0 scale'
+    gpaConversion: 'Danish grades converted to 4.0 scale',
   },
-  'Estonia': {
+  Estonia: {
     diplomas: ['Gümnaasiumi Lõputunnistus', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Gymnasium graduation certificate',
-    gpaConversion: 'Estonian grades converted to 4.0 scale'
+    gpaConversion: 'Estonian grades converted to 4.0 scale',
   },
-  'Finland': {
+  Finland: {
     diplomas: ['Ylioppilastutkinto', 'Studentexamen', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Matriculation examination with core subjects',
-    gpaConversion: 'Finnish grades converted to 4.0 scale'
+    gpaConversion: 'Finnish grades converted to 4.0 scale',
   },
-  'France': {
+  France: {
     diplomas: ['Baccalauréat', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Baccalauréat with NCAA-approved subjects',
-    gpaConversion: 'French grades converted to 4.0 scale'
+    gpaConversion: 'French grades converted to 4.0 scale',
   },
-  'Germany': {
+  Germany: {
     diplomas: ['Abitur', 'Fachhochschulreife', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Abitur with minimum grade requirements',
-    gpaConversion: 'German grades converted using WES scale'
+    gpaConversion: 'German grades converted using WES scale',
   },
-  'Greece': {
+  Greece: {
     diplomas: ['Apolytirio Lykeiou', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Lyceum graduation certificate with core subjects',
-    gpaConversion: 'Greek grades converted to 4.0 scale'
+    gpaConversion: 'Greek grades converted to 4.0 scale',
   },
-  'Hungary': {
+  Hungary: {
     diplomas: ['Érettségi Bizonyítvány', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Maturity certificate with NCAA subjects',
-    gpaConversion: 'Hungarian grades converted to 4.0 scale'
+    gpaConversion: 'Hungarian grades converted to 4.0 scale',
   },
-  'Ireland': {
+  Ireland: {
     diplomas: ['Leaving Certificate', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Leaving Certificate with Higher Level subjects',
-    gpaConversion: 'Irish grades converted to 4.0 scale'
+    gpaConversion: 'Irish grades converted to 4.0 scale',
   },
-  'Italy': {
+  Italy: {
     diplomas: ['Diploma di Maturità', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Maturità with NCAA-approved subjects',
-    gpaConversion: 'Italian grades converted to 4.0 scale'
+    gpaConversion: 'Italian grades converted to 4.0 scale',
   },
-  'Latvia': {
+  Latvia: {
     diplomas: ['Atestāts par Vispārējo Vidējo Izglītību', 'International Baccalaureate'],
     recognized: true,
     requirements: 'General secondary education certificate',
-    gpaConversion: 'Latvian grades converted to 4.0 scale'
+    gpaConversion: 'Latvian grades converted to 4.0 scale',
   },
-  'Lithuania': {
+  Lithuania: {
     diplomas: ['Brandos Atestatas', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Maturity certificate with core subjects',
-    gpaConversion: 'Lithuanian grades converted to 4.0 scale'
+    gpaConversion: 'Lithuanian grades converted to 4.0 scale',
   },
-  'Luxembourg': {
-    diplomas: ['Diplôme de Fin d\'Études Secondaires', 'International Baccalaureate'],
+  Luxembourg: {
+    diplomas: ["Diplôme de Fin d'Études Secondaires", 'International Baccalaureate'],
     recognized: true,
     requirements: 'Secondary education diploma with core subjects',
-    gpaConversion: 'Luxembourg grades converted to 4.0 scale'
+    gpaConversion: 'Luxembourg grades converted to 4.0 scale',
   },
-  'Malta': {
+  Malta: {
     diplomas: ['Matriculation Certificate', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Matriculation with Advanced Level subjects',
-    gpaConversion: 'Maltese grades converted to 4.0 scale'
+    gpaConversion: 'Maltese grades converted to 4.0 scale',
   },
-  'Netherlands': {
+  Netherlands: {
     diplomas: ['VWO Diploma', 'HAVO Diploma', 'International Baccalaureate'],
     recognized: true,
     requirements: 'VWO diploma with NCAA-approved subjects',
-    gpaConversion: 'Dutch grades converted to 4.0 scale'
+    gpaConversion: 'Dutch grades converted to 4.0 scale',
   },
-  'Poland': {
+  Poland: {
     diplomas: ['Świadectwo Dojrzałości', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Maturity certificate with core subjects',
-    gpaConversion: 'Polish grades converted to 4.0 scale'
+    gpaConversion: 'Polish grades converted to 4.0 scale',
   },
-  'Portugal': {
+  Portugal: {
     diplomas: ['Diploma de Ensino Secundário', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Secondary education diploma with NCAA subjects',
-    gpaConversion: 'Portuguese grades converted to 4.0 scale'
+    gpaConversion: 'Portuguese grades converted to 4.0 scale',
   },
-  'Romania': {
+  Romania: {
     diplomas: ['Diploma de Bacalaureat', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Baccalaureate diploma with core subjects',
-    gpaConversion: 'Romanian grades converted to 4.0 scale'
+    gpaConversion: 'Romanian grades converted to 4.0 scale',
   },
-  'Slovakia': {
+  Slovakia: {
     diplomas: ['Maturita', 'Vysvedčenie o Maturitnej Skúške', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Maturita with NCAA-approved subjects',
-    gpaConversion: 'Slovak grades converted to 4.0 scale'
+    gpaConversion: 'Slovak grades converted to 4.0 scale',
   },
-  'Slovenia': {
+  Slovenia: {
     diplomas: ['Matura', 'Spričevalo o Splošni Maturi', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Matura with NCAA-approved core courses',
-    gpaConversion: 'Slovenian grades converted to 4.0 scale'
+    gpaConversion: 'Slovenian grades converted to 4.0 scale',
   },
-  'Spain': {
+  Spain: {
     diplomas: ['Bachillerato', 'Título de Bachiller', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Bachillerato with NCAA-approved subjects',
-    gpaConversion: 'Spanish grades converted to 4.0 scale'
+    gpaConversion: 'Spanish grades converted to 4.0 scale',
   },
-  'Sweden': {
+  Sweden: {
     diplomas: ['Gymnasieexamen', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Upper secondary school certificate',
-    gpaConversion: 'Swedish grades converted to 4.0 scale'
+    gpaConversion: 'Swedish grades converted to 4.0 scale',
   },
   'United Kingdom': {
     diplomas: ['A-Levels', 'GCSE', 'International Baccalaureate', 'BTEC'],
     recognized: true,
     requirements: 'Must complete NCAA-approved core courses or equivalent',
-    gpaConversion: 'UK grades converted using NCAA approved scale'
+    gpaConversion: 'UK grades converted using NCAA approved scale',
   },
 
   // Other International Countries
-  'Canada': {
-    diplomas: ['High School Diploma', 'Ontario Secondary School Diploma', 'Diplôme d\'études secondaires'],
+  Canada: {
+    diplomas: [
+      'High School Diploma',
+      'Ontario Secondary School Diploma',
+      "Diplôme d'études secondaires",
+    ],
     recognized: true,
     requirements: 'Provincial graduation requirements meet NCAA standards',
-    gpaConversion: 'Canadian grades directly transferable'
+    gpaConversion: 'Canadian grades directly transferable',
   },
-  'Australia': {
-    diplomas: ['Higher School Certificate', 'Victorian Certificate of Education', 'International Baccalaureate'],
+  Australia: {
+    diplomas: [
+      'Higher School Certificate',
+      'Victorian Certificate of Education',
+      'International Baccalaureate',
+    ],
     recognized: true,
     requirements: 'Year 12 completion with NCAA-approved subjects',
-    gpaConversion: 'ATAR scores converted to 4.0 scale'
+    gpaConversion: 'ATAR scores converted to 4.0 scale',
   },
-  'India': {
+  India: {
     diplomas: ['CBSE Class XII', 'ICSE Class XII', 'State Board Class XII'],
     recognized: true,
     requirements: 'Class XII with minimum 60% aggregate',
-    gpaConversion: 'Indian percentage converted to 4.0 scale'
+    gpaConversion: 'Indian percentage converted to 4.0 scale',
   },
-  'Brazil': {
+  Brazil: {
     diplomas: ['Ensino Médio', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Ensino Médio completion with NCAA subjects',
-    gpaConversion: 'Brazilian grades converted using approved scale'
+    gpaConversion: 'Brazilian grades converted using approved scale',
   },
-  'Mexico': {
+  Mexico: {
     diplomas: ['Bachillerato', 'Preparatoria', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Bachillerato with NCAA-approved core courses',
-    gpaConversion: 'Mexican grades converted to 4.0 scale'
+    gpaConversion: 'Mexican grades converted to 4.0 scale',
   },
   'South Korea': {
     diplomas: ['High School Diploma', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Korean high school diploma with core subjects',
-    gpaConversion: 'Korean grades converted using approved scale'
+    gpaConversion: 'Korean grades converted using approved scale',
   },
-  'Japan': {
+  Japan: {
     diplomas: ['High School Diploma', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Japanese high school completion with NCAA subjects',
-    gpaConversion: 'Japanese grades converted to 4.0 scale'
+    gpaConversion: 'Japanese grades converted to 4.0 scale',
   },
-  'Switzerland': {
+  Switzerland: {
     diplomas: ['Maturité', 'Maturità', 'Matur', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Maturité with NCAA-approved subjects',
-    gpaConversion: 'Swiss grades converted to 4.0 scale'
+    gpaConversion: 'Swiss grades converted to 4.0 scale',
   },
-  'Norway': {
+  Norway: {
     diplomas: ['Vitnemål fra Videregående Skole', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Upper secondary education certificate',
-    gpaConversion: 'Norwegian grades converted to 4.0 scale'
+    gpaConversion: 'Norwegian grades converted to 4.0 scale',
   },
-  'Iceland': {
+  Iceland: {
     diplomas: ['Stúdentspróf', 'International Baccalaureate'],
     recognized: true,
     requirements: 'Student examination with core subjects',
-    gpaConversion: 'Icelandic grades converted to 4.0 scale'
-  }
+    gpaConversion: 'Icelandic grades converted to 4.0 scale',
+  },
 };
 
 // Core Course Requirements
@@ -315,8 +342,15 @@ const CORE_COURSES = {
   mathematics: { required: 3, description: 'Algebra I, Geometry, Algebra II or higher' },
   science: { required: 2, description: 'Biology, Chemistry, Physics, or Physical Science' },
   socialStudies: { required: 2, description: 'History, Government, Geography, Economics' },
-  additionalCore: { required: 1, description: 'Foreign Language, Computer Science, or additional from above' },
-  additionalAcademic: { required: 4, description: 'Additional courses from any area above, Foreign Language, Comparative Religion, or Philosophy' }
+  additionalCore: {
+    required: 1,
+    description: 'Foreign Language, Computer Science, or additional from above',
+  },
+  additionalAcademic: {
+    required: 4,
+    description:
+      'Additional courses from any area above, Foreign Language, Comparative Religion, or Philosophy',
+  },
 };
 
 interface EligibilityData {
@@ -344,9 +378,9 @@ export default function NCAAEligibilityTracker() {
       science: 0,
       socialStudies: 0,
       additionalCore: 0,
-      additionalAcademic: 0
+      additionalAcademic: 0,
     },
-    testType: 'SAT'
+    testType: 'SAT',
   });
 
   const [eligibilityResult, setEligibilityResult] = useState<any>(null);
@@ -370,13 +404,19 @@ export default function NCAAEligibilityTracker() {
     }
 
     // Check core courses
-    const totalCoreCompleted = Object.values(data.coreCourses).reduce((sum, count) => sum + count, 0);
-    const coreCoursesNeeded = Object.entries(CORE_COURSES).reduce((sum, [_, req]) => sum + req.required, 0);
+    const totalCoreCompleted = Object.values(data.coreCourses).reduce(
+      (sum, count) => sum + count,
+      0,
+    );
+    const coreCoursesNeeded = Object.entries(CORE_COURSES).reduce(
+      (sum, [_, req]) => sum + req.required,
+      0,
+    );
     const coresMet = totalCoreCompleted >= coreCoursesNeeded;
 
     // Individual core requirements
-    const coreRequirementsMet = Object.entries(CORE_COURSES).every(([key, req]) => 
-      data.coreCourses[key] >= req.required
+    const coreRequirementsMet = Object.entries(CORE_COURSES).every(
+      ([key, req]) => data.coreCourses[key] >= req.required,
     );
 
     const overallEligible = eligible && coresMet && coreRequirementsMet;
@@ -384,10 +424,14 @@ export default function NCAAEligibilityTracker() {
     // Generate recommendations
     const newRecommendations = [];
     if (!testMet) {
-      newRecommendations.push(`${data.testType === 'SAT' ? 'SAT' : 'ACT'} score needs to be ${requiredTest} or higher`);
+      newRecommendations.push(
+        `${data.testType === 'SAT' ? 'SAT' : 'ACT'} score needs to be ${requiredTest} or higher`,
+      );
     }
     if (!coresMet) {
-      newRecommendations.push(`Complete ${coreCoursesNeeded - totalCoreCompleted} more core courses`);
+      newRecommendations.push(
+        `Complete ${coreCoursesNeeded - totalCoreCompleted} more core courses`,
+      );
     }
     Object.entries(CORE_COURSES).forEach(([key, req]) => {
       if (data.coreCourses[key] < req.required) {
@@ -402,7 +446,7 @@ export default function NCAAEligibilityTracker() {
       coreRequirementsMet,
       requiredTest,
       totalCoreCompleted,
-      coreCoursesNeeded
+      coreCoursesNeeded,
     });
     setRecommendations(newRecommendations);
   };
@@ -429,7 +473,8 @@ export default function NCAAEligibilityTracker() {
             NCAA Eligibility Tracker
           </h1>
           <p className="text-slate-300 text-lg">
-            Complete eligibility checker with sliding scale calculator and international student support
+            Complete eligibility checker with sliding scale calculator and international student
+            support
           </p>
           <div className="mt-4 p-3 bg-primary/20 border border-primary/30 rounded-lg">
             <div className="flex items-center justify-between">
@@ -475,8 +520,12 @@ export default function NCAAEligibilityTracker() {
                 <CardContent className="space-y-4">
                   <div>
                     <Label className="text-slate-300">Student Type</Label>
-                    <Select value={data.studentType} onValueChange={(value: 'domestic' | 'international') => 
-                      setData(prev => ({ ...prev, studentType: value }))}>
+                    <Select
+                      value={data.studentType}
+                      onValueChange={(value: 'domestic' | 'international') =>
+                        setData((prev) => ({ ...prev, studentType: value }))
+                      }
+                    >
                       <SelectTrigger className="bg-slate-700 border-slate-600">
                         <SelectValue />
                       </SelectTrigger>
@@ -489,8 +538,12 @@ export default function NCAAEligibilityTracker() {
 
                   <div>
                     <Label className="text-slate-300">Division</Label>
-                    <Select value={data.division} onValueChange={(value: 'D1' | 'D2' | 'D3') => 
-                      setData(prev => ({ ...prev, division: value }))}>
+                    <Select
+                      value={data.division}
+                      onValueChange={(value: 'D1' | 'D2' | 'D3') =>
+                        setData((prev) => ({ ...prev, division: value }))
+                      }
+                    >
                       <SelectTrigger className="bg-slate-700 border-slate-600">
                         <SelectValue />
                       </SelectTrigger>
@@ -509,7 +562,9 @@ export default function NCAAEligibilityTracker() {
                       step="0.01"
                       max="4.0"
                       value={data.gpa}
-                      onChange={(e) => setData(prev => ({ ...prev, gpa: parseFloat(e.target.value) || 0 }))}
+                      onChange={(e) =>
+                        setData((prev) => ({ ...prev, gpa: parseFloat(e.target.value) || 0 }))
+                      }
                       className="bg-slate-700 border-slate-600"
                       placeholder="3.0"
                     />
@@ -517,8 +572,12 @@ export default function NCAAEligibilityTracker() {
 
                   <div>
                     <Label className="text-slate-300">Test Score Preference</Label>
-                    <Select value={data.testType} onValueChange={(value: 'SAT' | 'ACT' | 'Both') => 
-                      setData(prev => ({ ...prev, testType: value }))}>
+                    <Select
+                      value={data.testType}
+                      onValueChange={(value: 'SAT' | 'ACT' | 'Both') =>
+                        setData((prev) => ({ ...prev, testType: value }))
+                      }
+                    >
                       <SelectTrigger className="bg-slate-700 border-slate-600">
                         <SelectValue />
                       </SelectTrigger>
@@ -537,7 +596,9 @@ export default function NCAAEligibilityTracker() {
                         type="number"
                         max="1600"
                         value={data.satScore}
-                        onChange={(e) => setData(prev => ({ ...prev, satScore: parseInt(e.target.value) || 0 }))}
+                        onChange={(e) =>
+                          setData((prev) => ({ ...prev, satScore: parseInt(e.target.value) || 0 }))
+                        }
                         className="bg-slate-700 border-slate-600"
                         placeholder="1200"
                       />
@@ -551,7 +612,9 @@ export default function NCAAEligibilityTracker() {
                         type="number"
                         max="36"
                         value={data.actScore}
-                        onChange={(e) => setData(prev => ({ ...prev, actScore: parseInt(e.target.value) || 0 }))}
+                        onChange={(e) =>
+                          setData((prev) => ({ ...prev, actScore: parseInt(e.target.value) || 0 }))
+                        }
                         className="bg-slate-700 border-slate-600"
                         placeholder="24"
                       />
@@ -570,7 +633,9 @@ export default function NCAAEligibilityTracker() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
                         <span className="text-slate-300">Overall Eligibility</span>
-                        <div className={`flex items-center gap-2 ${getEligibilityColor(eligibilityResult.eligible)}`}>
+                        <div
+                          className={`flex items-center gap-2 ${getEligibilityColor(eligibilityResult.eligible)}`}
+                        >
                           {getEligibilityIcon(eligibilityResult.eligible)}
                           <span className="font-semibold">
                             {eligibilityResult.eligible ? 'Eligible' : 'Not Eligible'}
@@ -580,20 +645,27 @@ export default function NCAAEligibilityTracker() {
 
                       <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
                         <span className="text-slate-300">Test Score Requirement</span>
-                        <div className={`flex items-center gap-2 ${getEligibilityColor(eligibilityResult.testMet)}`}>
+                        <div
+                          className={`flex items-center gap-2 ${getEligibilityColor(eligibilityResult.testMet)}`}
+                        >
                           {getEligibilityIcon(eligibilityResult.testMet)}
                           <span className="font-semibold">
-                            {eligibilityResult.testMet ? 'Met' : `Need ${eligibilityResult.requiredTest}+`}
+                            {eligibilityResult.testMet
+                              ? 'Met'
+                              : `Need ${eligibilityResult.requiredTest}+`}
                           </span>
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
                         <span className="text-slate-300">Core Courses</span>
-                        <div className={`flex items-center gap-2 ${getEligibilityColor(eligibilityResult.coresMet)}`}>
+                        <div
+                          className={`flex items-center gap-2 ${getEligibilityColor(eligibilityResult.coresMet)}`}
+                        >
                           {getEligibilityIcon(eligibilityResult.coresMet)}
                           <span className="font-semibold">
-                            {eligibilityResult.totalCoreCompleted}/{eligibilityResult.coreCoursesNeeded}
+                            {eligibilityResult.totalCoreCompleted}/
+                            {eligibilityResult.coreCoursesNeeded}
                           </span>
                         </div>
                       </div>
@@ -614,14 +686,18 @@ export default function NCAAEligibilityTracker() {
                 <div className="space-y-4">
                   <div>
                     <Label className="text-slate-300">Country</Label>
-                    <Select value={data.country} onValueChange={(value) => 
-                      setData(prev => ({ ...prev, country: value }))}>
+                    <Select
+                      value={data.country}
+                      onValueChange={(value) => setData((prev) => ({ ...prev, country: value }))}
+                    >
                       <SelectTrigger className="bg-slate-700 border-slate-600">
                         <SelectValue placeholder="Select your country" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.keys(INTERNATIONAL_DIPLOMAS).map(country => (
-                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        {Object.keys(INTERNATIONAL_DIPLOMAS).map((country) => (
+                          <SelectItem key={country} value={country}>
+                            {country}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -631,14 +707,20 @@ export default function NCAAEligibilityTracker() {
                     <>
                       <div>
                         <Label className="text-slate-300">Diploma Type</Label>
-                        <Select value={data.diplomaType} onValueChange={(value) => 
-                          setData(prev => ({ ...prev, diplomaType: value }))}>
+                        <Select
+                          value={data.diplomaType}
+                          onValueChange={(value) =>
+                            setData((prev) => ({ ...prev, diplomaType: value }))
+                          }
+                        >
                           <SelectTrigger className="bg-slate-700 border-slate-600">
                             <SelectValue placeholder="Select your diploma type" />
                           </SelectTrigger>
                           <SelectContent>
-                            {INTERNATIONAL_DIPLOMAS[data.country].diplomas.map(diploma => (
-                              <SelectItem key={diploma} value={diploma}>{diploma}</SelectItem>
+                            {INTERNATIONAL_DIPLOMAS[data.country].diplomas.map((diploma) => (
+                              <SelectItem key={diploma} value={diploma}>
+                                {diploma}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -647,11 +729,16 @@ export default function NCAAEligibilityTracker() {
                       <Alert className="bg-slate-700 border-slate-600">
                         <Globe className="w-4 h-4" />
                         <AlertDescription className="text-slate-300">
-                          <strong>Recognition Status:</strong> {INTERNATIONAL_DIPLOMAS[data.country].recognized ? 'Recognized' : 'Not Recognized'}
+                          <strong>Recognition Status:</strong>{' '}
+                          {INTERNATIONAL_DIPLOMAS[data.country].recognized
+                            ? 'Recognized'
+                            : 'Not Recognized'}
                           <br />
-                          <strong>Requirements:</strong> {INTERNATIONAL_DIPLOMAS[data.country].requirements}
+                          <strong>Requirements:</strong>{' '}
+                          {INTERNATIONAL_DIPLOMAS[data.country].requirements}
                           <br />
-                          <strong>GPA Conversion:</strong> {INTERNATIONAL_DIPLOMAS[data.country].gpaConversion}
+                          <strong>GPA Conversion:</strong>{' '}
+                          {INTERNATIONAL_DIPLOMAS[data.country].gpaConversion}
                         </AlertDescription>
                       </Alert>
                     </>
@@ -667,7 +754,9 @@ export default function NCAAEligibilityTracker() {
               {Object.entries(CORE_COURSES).map(([key, course]) => (
                 <Card key={key} className="bg-slate-800 border-slate-700">
                   <CardHeader>
-                    <CardTitle className="text-white capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</CardTitle>
+                    <CardTitle className="text-white capitalize">
+                      {key.replace(/([A-Z])/g, ' $1').trim()}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -678,13 +767,15 @@ export default function NCAAEligibilityTracker() {
                           min="0"
                           max="10"
                           value={data.coreCourses[key]}
-                          onChange={(e) => setData(prev => ({
-                            ...prev,
-                            coreCourses: {
-                              ...prev.coreCourses,
-                              [key]: parseInt(e.target.value) || 0
-                            }
-                          }))}
+                          onChange={(e) =>
+                            setData((prev) => ({
+                              ...prev,
+                              coreCourses: {
+                                ...prev.coreCourses,
+                                [key]: parseInt(e.target.value) || 0,
+                              },
+                            }))
+                          }
                           className="bg-slate-700 border-slate-600"
                         />
                       </div>
@@ -693,8 +784,8 @@ export default function NCAAEligibilityTracker() {
                           <span>Required: {course.required}</span>
                           <span>Completed: {data.coreCourses[key]}</span>
                         </div>
-                        <Progress 
-                          value={(data.coreCourses[key] / course.required) * 100} 
+                        <Progress
+                          value={(data.coreCourses[key] / course.required) * 100}
                           className="h-2"
                         />
                       </div>
@@ -716,14 +807,15 @@ export default function NCAAEligibilityTracker() {
                 {eligibilityResult && (
                   <div className="space-y-6">
                     <div className="text-center">
-                      <div className={`text-6xl font-bold mb-4 ${getEligibilityColor(eligibilityResult.eligible)}`}>
+                      <div
+                        className={`text-6xl font-bold mb-4 ${getEligibilityColor(eligibilityResult.eligible)}`}
+                      >
                         {eligibilityResult.eligible ? 'ELIGIBLE' : 'NOT ELIGIBLE'}
                       </div>
                       <p className="text-slate-300">
-                        {eligibilityResult.eligible 
+                        {eligibilityResult.eligible
                           ? 'You meet all NCAA requirements for athletic eligibility!'
-                          : 'You need to complete the requirements below to become eligible.'
-                        }
+                          : 'You need to complete the requirements below to become eligible.'}
                       </p>
                     </div>
 
@@ -746,7 +838,9 @@ export default function NCAAEligibilityTracker() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="bg-slate-700 rounded-lg p-4 text-center">
-                        <div className="text-2xl font-bold text-white mb-1">{data.gpa.toFixed(2)}</div>
+                        <div className="text-2xl font-bold text-white mb-1">
+                          {data.gpa.toFixed(2)}
+                        </div>
                         <div className="text-sm text-slate-400">Core GPA</div>
                       </div>
                       <div className="bg-slate-700 rounded-lg p-4 text-center">

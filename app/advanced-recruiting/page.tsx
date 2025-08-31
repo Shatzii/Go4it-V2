@@ -5,10 +5,27 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Brain, VideoIcon, Search, Target, TrendingUp, Users, Eye, Play, BarChart3, Zap } from 'lucide-react';
+import {
+  Brain,
+  VideoIcon,
+  Search,
+  Target,
+  TrendingUp,
+  Users,
+  Eye,
+  Play,
+  BarChart3,
+  Zap,
+} from 'lucide-react';
 
 interface AdvancedMatch {
   schoolId: string;
@@ -73,14 +90,14 @@ export default function AdvancedRecruitingPage() {
               basketball_iq: 90,
               three_point_shooting: 85,
               court_vision: 92,
-              leadership: 88
-            }
+              leadership: 88,
+            },
           },
           position: selectedPosition,
-          highlightMetrics: {}
-        })
+          highlightMetrics: {},
+        }),
       });
-      
+
       const data = await response.json();
       if (data.success) {
         setAdvancedMatches(data.matches);
@@ -97,7 +114,7 @@ export default function AdvancedRecruitingPage() {
     try {
       const response = await fetch('/api/recruiting/highlight-analysis');
       const data = await response.json();
-      
+
       if (data.success) {
         setHighlightAnalyses(data.highlights);
       }
@@ -117,10 +134,10 @@ export default function AdvancedRecruitingPage() {
         body: JSON.stringify({
           coachId: selectedCoach || 'mick-cronin-ucla',
           searchFilters: {},
-          systemRequirements: {}
-        })
+          systemRequirements: {},
+        }),
       });
-      
+
       const data = await response.json();
       if (data.success) {
         setCoachMatches(data.matches);
@@ -151,10 +168,14 @@ export default function AdvancedRecruitingPage() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-500';
-      case 'medium': return 'bg-yellow-500';
-      case 'low': return 'bg-green-500';
-      default: return 'bg-slate-500';
+      case 'high':
+        return 'bg-red-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      case 'low':
+        return 'bg-green-500';
+      default:
+        return 'bg-slate-500';
     }
   };
 
@@ -167,13 +188,14 @@ export default function AdvancedRecruitingPage() {
             <Brain className="w-5 h-5 mr-2" />
             ADVANCED AI RECRUITING
           </Badge>
-          
+
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
             NEXT-GEN RECRUITING
           </h1>
-          
+
           <p className="text-xl text-slate-300 mb-8 max-w-3xl mx-auto">
-            AI-powered coaching scheme analysis, highlight tape comparison, and reverse coach discovery
+            AI-powered coaching scheme analysis, highlight tape comparison, and reverse coach
+            discovery
           </p>
         </div>
 
@@ -213,7 +235,7 @@ export default function AdvancedRecruitingPage() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {advancedMatches.map(match => (
+                  {advancedMatches.map((match) => (
                     <Card key={match.schoolId} className="bg-slate-700 border-slate-600">
                       <CardHeader>
                         <div className="flex items-center justify-between">
@@ -222,7 +244,9 @@ export default function AdvancedRecruitingPage() {
                             <p className="text-sm text-slate-300">{match.schemeMatch}</p>
                           </div>
                           <div className="text-right">
-                            <div className={`text-2xl font-bold ${getScoreColor(match.matchScore)}`}>
+                            <div
+                              className={`text-2xl font-bold ${getScoreColor(match.matchScore)}`}
+                            >
                               {match.matchScore}%
                             </div>
                             <div className="text-xs text-slate-400">Overall Match</div>
@@ -233,15 +257,21 @@ export default function AdvancedRecruitingPage() {
                         {/* Fit Metrics */}
                         <div className="grid grid-cols-3 gap-4 mb-6">
                           <div className="text-center">
-                            <div className="text-lg font-semibold text-purple-400">{match.schemeFit}%</div>
+                            <div className="text-lg font-semibold text-purple-400">
+                              {match.schemeFit}%
+                            </div>
                             <div className="text-xs text-slate-400">Scheme Fit</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-semibold text-green-400">{match.rosterOpportunity}%</div>
+                            <div className="text-lg font-semibold text-green-400">
+                              {match.rosterOpportunity}%
+                            </div>
                             <div className="text-xs text-slate-400">Roster Opportunity</div>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-semibold text-blue-400">{match.competition}%</div>
+                            <div className="text-lg font-semibold text-blue-400">
+                              {match.competition}%
+                            </div>
                             <div className="text-xs text-slate-400">Competition Level</div>
                           </div>
                         </div>
@@ -252,19 +282,25 @@ export default function AdvancedRecruitingPage() {
                             <Badge className={`${getPriorityColor(match.positionNeed)} text-white`}>
                               {match.positionNeed.toUpperCase()} NEED
                             </Badge>
-                            <span className="text-sm text-slate-300">{match.availableSpots} spots</span>
+                            <span className="text-sm text-slate-300">
+                              {match.availableSpots} spots
+                            </span>
                           </div>
-                          <div className="text-sm text-slate-400">
-                            {match.roleProjection}
-                          </div>
+                          <div className="text-sm text-slate-400">{match.roleProjection}</div>
                         </div>
 
                         {/* Key Requirements */}
                         <div className="mb-4">
-                          <h4 className="font-semibold text-white mb-2 text-sm">System Requirements:</h4>
+                          <h4 className="font-semibold text-white mb-2 text-sm">
+                            System Requirements:
+                          </h4>
                           <div className="flex flex-wrap gap-1">
                             {match.keyRequirements.slice(0, 3).map((req, index) => (
-                              <Badge key={index} variant="outline" className="text-xs text-slate-300">
+                              <Badge
+                                key={index}
+                                variant="outline"
+                                className="text-xs text-slate-300"
+                              >
                                 {req}
                               </Badge>
                             ))}
@@ -300,7 +336,7 @@ export default function AdvancedRecruitingPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
-                  {highlightAnalyses.map(analysis => (
+                  {highlightAnalyses.map((analysis) => (
                     <Card key={analysis.id} className="bg-slate-700 border-slate-600">
                       <CardHeader>
                         <CardTitle className="text-lg flex items-center gap-2">
@@ -316,7 +352,10 @@ export default function AdvancedRecruitingPage() {
                               {analysis.analysis.technical.overall}%
                             </div>
                             <div className="text-sm text-slate-400">Technical</div>
-                            <Progress value={analysis.analysis.technical.overall} className="mt-2" />
+                            <Progress
+                              value={analysis.analysis.technical.overall}
+                              className="mt-2"
+                            />
                           </div>
                           <div className="text-center">
                             <div className="text-2xl font-bold text-green-400 mb-2">
@@ -339,14 +378,21 @@ export default function AdvancedRecruitingPage() {
                           <h4 className="font-semibold text-white mb-4">Key Highlights:</h4>
                           <div className="space-y-2">
                             {analysis.highlights.slice(0, 3).map((highlight, index) => (
-                              <div key={index} className="flex items-center justify-between p-3 bg-slate-600 rounded-lg">
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-3 bg-slate-600 rounded-lg"
+                              >
                                 <div className="flex items-center gap-3">
                                   <Badge variant="outline" className="text-xs">
                                     {highlight.timestamp}
                                   </Badge>
-                                  <span className="text-sm text-slate-200">{highlight.description}</span>
+                                  <span className="text-sm text-slate-200">
+                                    {highlight.description}
+                                  </span>
                                 </div>
-                                <div className={`text-sm font-semibold ${getScoreColor(highlight.rating)}`}>
+                                <div
+                                  className={`text-sm font-semibold ${getScoreColor(highlight.rating)}`}
+                                >
                                   {highlight.rating}%
                                 </div>
                               </div>
@@ -356,10 +402,15 @@ export default function AdvancedRecruitingPage() {
 
                         {/* Coaching Scheme Fits */}
                         <div className="mb-4">
-                          <h4 className="font-semibold text-white mb-4">Coaching Scheme Compatibility:</h4>
+                          <h4 className="font-semibold text-white mb-4">
+                            Coaching Scheme Compatibility:
+                          </h4>
                           <div className="grid grid-cols-2 gap-4">
                             {Object.entries(analysis.coachingSchemesFit).map(([scheme, fit]) => (
-                              <div key={scheme} className="flex items-center justify-between p-2 bg-slate-600 rounded">
+                              <div
+                                key={scheme}
+                                className="flex items-center justify-between p-2 bg-slate-600 rounded"
+                              >
                                 <span className="text-sm text-slate-300 capitalize">
                                   {scheme.replace('-', ' ')}
                                 </span>
@@ -416,7 +467,7 @@ export default function AdvancedRecruitingPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {coachMatches.map(match => (
+                  {coachMatches.map((match) => (
                     <Card key={match.athleteId} className="bg-slate-700 border-slate-600">
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
@@ -427,18 +478,24 @@ export default function AdvancedRecruitingPage() {
                                 {match.matchScore}% Match
                               </Badge>
                             </div>
-                            
+
                             <div className="grid grid-cols-3 gap-4 mb-4">
                               <div className="text-center">
-                                <div className="text-lg font-semibold text-purple-400">{match.systemFit}%</div>
+                                <div className="text-lg font-semibold text-purple-400">
+                                  {match.systemFit}%
+                                </div>
                                 <div className="text-xs text-slate-400">System Fit</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-lg font-semibold text-green-400">{match.characterFit}%</div>
+                                <div className="text-lg font-semibold text-green-400">
+                                  {match.characterFit}%
+                                </div>
                                 <div className="text-xs text-slate-400">Character Fit</div>
                               </div>
                               <div className="text-center">
-                                <div className="text-lg font-semibold text-blue-400">{match.academicFit}%</div>
+                                <div className="text-lg font-semibold text-blue-400">
+                                  {match.academicFit}%
+                                </div>
                                 <div className="text-xs text-slate-400">Academic Fit</div>
                               </div>
                             </div>
@@ -480,19 +537,14 @@ export default function AdvancedRecruitingPage() {
           <Card className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-purple-500/30 max-w-2xl mx-auto">
             <CardContent className="p-8">
               <Brain className="w-16 h-16 text-purple-400 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold mb-4 text-white">
-                Revolutionize Your Recruiting
-              </h3>
+              <h3 className="text-2xl font-bold mb-4 text-white">Revolutionize Your Recruiting</h3>
               <p className="text-slate-300 mb-6">
-                Use AI to match players with coaching schemes, analyze highlight tapes, and discover perfect fits
+                Use AI to match players with coaching schemes, analyze highlight tapes, and discover
+                perfect fits
               </p>
               <div className="flex gap-4 justify-center">
-                <Button className="bg-purple-500 hover:bg-purple-600">
-                  Get Started
-                </Button>
-                <Button variant="outline">
-                  Learn More
-                </Button>
+                <Button className="bg-purple-500 hover:bg-purple-600">Get Started</Button>
+                <Button variant="outline">Learn More</Button>
               </div>
             </CardContent>
           </Card>

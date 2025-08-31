@@ -1,6 +1,6 @@
 /**
  * Curriculum Management System
- * 
+ *
  * Manages the generation and organization of complete curricula for entire school years.
  * Creates scope and sequence, units, lessons, and tracks standards alignment.
  */
@@ -25,14 +25,14 @@ class CurriculumManagementSystem {
       periodsPerWeek = 5,
       minutesPerPeriod = 45,
       includeNeurodivergentAdaptations = true,
-      customRequirements = []
+      customRequirements = [],
     } = options;
 
     console.log(`Generating year-long curriculum: ${subject} Grade ${gradeLevel}`);
 
     // Load curriculum standards for the grade level
     const standards = await this.loadStandardsForGrade(subject, gradeLevel, standardsAlignment);
-    
+
     // Generate scope and sequence
     const scopeAndSequence = await this.generateScopeAndSequence({
       subject,
@@ -40,11 +40,11 @@ class CurriculumManagementSystem {
       standards,
       schoolCalendar,
       periodsPerWeek,
-      customRequirements
+      customRequirements,
     });
 
     // Calculate total instructional time
-    const totalPeriods = Math.floor(schoolCalendar * periodsPerWeek / 5);
+    const totalPeriods = Math.floor((schoolCalendar * periodsPerWeek) / 5);
     const totalHours = totalPeriods * (minutesPerPeriod / 60);
 
     // Generate all units for the year
@@ -62,30 +62,32 @@ class CurriculumManagementSystem {
         minutesPerPeriod,
         includeNeurodivergentAdaptations,
         generatedAt: new Date().toISOString(),
-        version: '1.0'
+        version: '1.0',
       },
       scopeAndSequence,
-      units: []
+      units: [],
     };
 
     // Generate content for each unit
     for (let i = 0; i < scopeAndSequence.length; i++) {
       const unitPlan = scopeAndSequence[i];
       console.log(`Generating Unit ${i + 1}: ${unitPlan.title}`);
-      
+
       const unitContent = await this.generateUnit(unitPlan, {
         ...options,
-        unitNumber: i + 1
+        unitNumber: i + 1,
       });
-      
+
       curriculum.units.push(unitContent);
     }
 
     // Save curriculum to storage
     await this.storage.saveCurriculum(curriculum);
-    
-    console.log(`Curriculum generation completed: ${curriculum.units.length} units, ${curriculum.metadata.totalLessons} lessons`);
-    
+
+    console.log(
+      `Curriculum generation completed: ${curriculum.units.length} units, ${curriculum.metadata.totalLessons} lessons`,
+    );
+
     return curriculum;
   }
 
@@ -93,12 +95,7 @@ class CurriculumManagementSystem {
    * Generate a single curriculum unit
    */
   async generateUnit(unitPlan, options) {
-    const {
-      subject,
-      gradeLevel,
-      includeNeurodivergentAdaptations,
-      unitNumber
-    } = options;
+    const { subject, gradeLevel, includeNeurodivergentAdaptations, unitNumber } = options;
 
     const unit = {
       id: this.generateUnitId(),
@@ -112,32 +109,33 @@ class CurriculumManagementSystem {
       assessments: [],
       resources: [],
       pacing: unitPlan.pacing,
-      generatedAt: new Date().toISOString()
+      generatedAt: new Date().toISOString(),
     };
 
     // Generate all lessons for the unit
     for (let i = 0; i < unitPlan.lessons.length; i++) {
       const lessonTopic = unitPlan.lessons[i];
       console.log(`  Generating Lesson ${i + 1}: ${lessonTopic.title}`);
-      
+
       const lesson = await this.contentEngine.generateCompleteLesson({
         subject,
         gradeLevel,
         topic: lessonTopic.title,
         duration: lessonTopic.duration || 45,
         learningObjectives: lessonTopic.objectives,
-        neurodivergentAdaptations: includeNeurodivergentAdaptations ? 
-          ['adhd', 'dyslexia', 'autism'] : [],
+        neurodivergentAdaptations: includeNeurodivergentAdaptations
+          ? ['adhd', 'dyslexia', 'autism']
+          : [],
         includeAssessment: true,
         includeGames: true,
-        includeWorksheets: true
+        includeWorksheets: true,
       });
-      
+
       unit.lessons.push({
         ...lesson,
         unitId: unit.id,
         lessonNumber: i + 1,
-        estimatedDays: lessonTopic.estimatedDays || 1
+        estimatedDays: lessonTopic.estimatedDays || 1,
       });
     }
 
@@ -146,7 +144,7 @@ class CurriculumManagementSystem {
       unit,
       subject,
       gradeLevel,
-      standards: unitPlan.standards
+      standards: unitPlan.standards,
     });
 
     // Compile resource list
@@ -159,16 +157,10 @@ class CurriculumManagementSystem {
    * Generate scope and sequence for the entire year
    */
   async generateScopeAndSequence(options) {
-    const {
-      subject,
-      gradeLevel,
-      standards,
-      schoolCalendar,
-      periodsPerWeek,
-      customRequirements
-    } = options;
+    const { subject, gradeLevel, standards, schoolCalendar, periodsPerWeek, customRequirements } =
+      options;
 
-    const totalPeriods = Math.floor(schoolCalendar * periodsPerWeek / 5);
+    const totalPeriods = Math.floor((schoolCalendar * periodsPerWeek) / 5);
     const estimatedUnits = Math.floor(totalPeriods / 15); // ~15 periods per unit
 
     const prompt = `Create a comprehensive scope and sequence for a full academic year of ${subject} at Grade ${gradeLevel}.
@@ -204,7 +196,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
 
     const response = await this.contentEngine.aiServer.generateText(prompt, 'curriculum', {
       temperature: 0.6,
-      max_tokens: 4000
+      max_tokens: 4000,
     });
 
     return this.parseScopeAndSequence(response.text, estimatedUnits);
@@ -224,7 +216,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
       topic: unit.title,
       gradeLevel,
       learningObjectives: this.extractUnitObjectives(unit),
-      purpose: 'Determine prior knowledge and readiness'
+      purpose: 'Determine prior knowledge and readiness',
     });
     assessments.push(preAssessment);
 
@@ -234,7 +226,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
       topic: unit.title,
       gradeLevel,
       learningObjectives: this.extractUnitObjectives(unit),
-      purpose: 'Monitor progress and adjust instruction'
+      purpose: 'Monitor progress and adjust instruction',
     });
     assessments.push(formativeAssessment);
 
@@ -244,7 +236,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
       topic: unit.title,
       gradeLevel,
       learningObjectives: this.extractUnitObjectives(unit),
-      purpose: 'Evaluate mastery of unit objectives'
+      purpose: 'Evaluate mastery of unit objectives',
     });
     assessments.push(summativeAssessment);
 
@@ -254,7 +246,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
       topic: unit.title,
       gradeLevel,
       learningObjectives: this.extractUnitObjectives(unit),
-      purpose: 'Authentic application of learning'
+      purpose: 'Authentic application of learning',
     });
     assessments.push(performanceTask);
 
@@ -268,7 +260,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
     const resources = [];
 
     // Extract materials from all lessons
-    unit.lessons.forEach(lesson => {
+    unit.lessons.forEach((lesson) => {
       if (lesson.lessonPlan && lesson.lessonPlan.materials) {
         resources.push(...lesson.lessonPlan.materials);
       }
@@ -279,11 +271,11 @@ Structure as JSON with clear unit and lesson breakdowns.`;
       { type: 'textbook', title: `${unit.title} Chapter Materials` },
       { type: 'digital', title: 'Interactive Whiteboard Slides' },
       { type: 'manipulatives', title: 'Hands-on Learning Materials' },
-      { type: 'technology', title: 'Educational Apps and Websites' }
+      { type: 'technology', title: 'Educational Apps and Websites' },
     );
 
     // Remove duplicates
-    return [...new Set(resources.map(r => JSON.stringify(r)))].map(r => JSON.parse(r));
+    return [...new Set(resources.map((r) => JSON.stringify(r)))].map((r) => JSON.parse(r));
   }
 
   /**
@@ -293,26 +285,29 @@ Structure as JSON with clear unit and lesson breakdowns.`;
     // This would integrate with actual standards databases
     // For now, return simulated standards
     const gradeNum = parseInt(gradeLevel.replace('Grade ', ''));
-    
+
     const sampleStandards = {
-      'math': [
+      math: [
         { id: `${alignment}.MATH.${gradeNum}.NBT.1`, description: 'Understand place value' },
         { id: `${alignment}.MATH.${gradeNum}.NBT.2`, description: 'Compare multi-digit numbers' },
-        { id: `${alignment}.MATH.${gradeNum}.OA.1`, description: 'Solve word problems' }
+        { id: `${alignment}.MATH.${gradeNum}.OA.1`, description: 'Solve word problems' },
       ],
-      'ela': [
+      ela: [
         { id: `${alignment}.ELA.${gradeNum}.RL.1`, description: 'Read and comprehend literature' },
         { id: `${alignment}.ELA.${gradeNum}.W.1`, description: 'Write opinion pieces' },
-        { id: `${alignment}.ELA.${gradeNum}.SL.1`, description: 'Participate in collaborative discussions' }
+        {
+          id: `${alignment}.ELA.${gradeNum}.SL.1`,
+          description: 'Participate in collaborative discussions',
+        },
       ],
-      'science': [
+      science: [
         { id: `NGSS.${gradeNum}-PS1-1`, description: 'Develop models of matter' },
-        { id: `NGSS.${gradeNum}-LS1-1`, description: 'Use evidence to support explanations' }
+        { id: `NGSS.${gradeNum}-LS1-1`, description: 'Use evidence to support explanations' },
       ],
       'social-studies': [
         { id: `NCSS.${gradeNum}.1`, description: 'Understand civic ideals and practices' },
-        { id: `NCSS.${gradeNum}.2`, description: 'Understand connections and interactions' }
-      ]
+        { id: `NCSS.${gradeNum}.2`, description: 'Understand connections and interactions' },
+      ],
     };
 
     return sampleStandards[subject.toLowerCase()] || [];
@@ -324,7 +319,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
   parseScopeAndSequence(response, estimatedUnits) {
     // In production, this would use sophisticated parsing
     // For now, generate a realistic scope and sequence structure
-    
+
     const units = [];
     for (let i = 1; i <= estimatedUnits; i++) {
       units.push({
@@ -332,16 +327,16 @@ Structure as JSON with clear unit and lesson breakdowns.`;
         description: `Comprehensive unit covering key concepts and skills`,
         duration: 15, // periods
         standards: [`Standard.${i}.1`, `Standard.${i}.2`],
-        prerequisites: i > 1 ? [`Unit ${i-1} completion`] : [],
+        prerequisites: i > 1 ? [`Unit ${i - 1} completion`] : [],
         lessons: this.generateLessonOutline(i),
         pacing: {
           introduction: 2,
           development: 10,
-          culmination: 3
-        }
+          culmination: 3,
+        },
       });
     }
-    
+
     return units;
   }
 
@@ -351,7 +346,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
   generateLessonOutline(unitNumber) {
     const lessons = [];
     const lessonCount = 8; // lessons per unit
-    
+
     for (let i = 1; i <= lessonCount; i++) {
       lessons.push({
         title: `Lesson ${i}: Topic ${unitNumber}.${i}`,
@@ -359,12 +354,12 @@ Structure as JSON with clear unit and lesson breakdowns.`;
         objectives: [
           `Students will understand concept ${unitNumber}.${i}`,
           `Students will apply skill ${unitNumber}.${i}`,
-          `Students will analyze examples related to topic ${unitNumber}.${i}`
+          `Students will analyze examples related to topic ${unitNumber}.${i}`,
         ],
-        estimatedDays: 1
+        estimatedDays: 1,
       });
     }
-    
+
     return lessons;
   }
 
@@ -373,7 +368,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
    */
   extractUnitObjectives(unit) {
     const objectives = [];
-    unit.lessons.forEach(lesson => {
+    unit.lessons.forEach((lesson) => {
       if (lesson.lessonPlan && lesson.lessonPlan.objectives) {
         objectives.push(...lesson.lessonPlan.objectives);
       }
@@ -407,7 +402,7 @@ Structure as JSON with clear unit and lesson breakdowns.`;
    */
   async exportCurriculum(curriculumId, format = 'json') {
     const curriculum = await this.storage.getCurriculum(curriculumId);
-    
+
     switch (format) {
       case 'pdf':
         return await this.generateCurriculumPDF(curriculum);
@@ -425,13 +420,13 @@ Structure as JSON with clear unit and lesson breakdowns.`;
    */
   async updateCurriculum(curriculumId, feedback) {
     const curriculum = await this.storage.getCurriculum(curriculumId);
-    
+
     // Apply feedback modifications
     const updatedCurriculum = await this.applyFeedback(curriculum, feedback);
-    
+
     // Save updated version
     await this.storage.updateCurriculum(curriculumId, updatedCurriculum);
-    
+
     return updatedCurriculum;
   }
 
@@ -445,9 +440,9 @@ Structure as JSON with clear unit and lesson breakdowns.`;
       ...curriculum,
       feedback: {
         ...curriculum.feedback,
-        [Date.now()]: feedback
+        [Date.now()]: feedback,
       },
-      lastModified: new Date().toISOString()
+      lastModified: new Date().toISOString(),
     };
   }
 }

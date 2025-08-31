@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Security Scoring System
- * 
+ *
  * This module implements a comprehensive security scoring system that evaluates
  * the overall security posture of the application based on various indicators.
  */
@@ -62,7 +62,7 @@ const DEFAULT_WEIGHTS: SecurityWeights = {
   applicationSecurity: 15,
   incidentResponse: 10,
   securityAwareness: 10,
-  complianceStatus: 10
+  complianceStatus: 10,
 };
 
 // Store the most recent security score
@@ -84,325 +84,331 @@ const securityChecks = {
       name: 'passwordPolicy',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check password policy strength
         let score = 0;
-        
+
         if (settings.passwordMinLength >= 12) score += 25;
         else if (settings.passwordMinLength >= 8) score += 15;
         else score += 5;
-        
+
         if (settings.passwordRequiresUppercase) score += 15;
         if (settings.passwordRequiresLowercase) score += 10;
         if (settings.passwordRequiresNumbers) score += 15;
         if (settings.passwordRequiresSymbols) score += 15;
         if (settings.passwordHistoryCount >= 12) score += 10;
         else if (settings.passwordHistoryCount >= 6) score += 5;
-        
+
         return score;
-      }
+      },
     },
     {
       name: 'mfaAdoption',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Calculate MFA adoption rate
         let score = 0;
-        
+
         if (settings.mfaRequiredForAdmins) score += 40;
         if (settings.mfaEnabled) score += 20;
-        
+
         // Add score based on adoption rate
         score += Math.min(40, settings.mfaAdoptionRate ?? 0);
-        
+
         return score;
-      }
+      },
     },
     {
       name: 'accountLockout',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check account lockout policy
         let score = 0;
-        
+
         if (settings.accountLockoutThreshold <= 5) score += 40;
         else if (settings.accountLockoutThreshold <= 10) score += 25;
         else score += 10;
-        
+
         if (settings.accountLockoutDuration >= 30) score += 30;
         else if (settings.accountLockoutDuration >= 15) score += 20;
         else score += 10;
-        
+
         if (settings.accountLockoutReset >= 15) score += 30;
         else if (settings.accountLockoutReset >= 5) score += 20;
         else score += 10;
-        
+
         return score;
-      }
-    }
+      },
+    },
   ],
-  
+
   dataProtection: [
     {
       name: 'dataEncryption',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check data encryption settings
         let score = 0;
-        
+
         if (settings.dataAtRestEncryption) score += 30;
         if (settings.dataInTransitEncryption) score += 30;
-        
+
         if (settings.encryptionKeyRotation) {
           if (settings.encryptionKeyRotationFrequency <= 90) score += 20;
           else if (settings.encryptionKeyRotationFrequency <= 180) score += 15;
           else score += 10;
         }
-        
+
         if (settings.sensitiveDataMasking) score += 20;
-        
+
         return score;
-      }
+      },
     },
     {
       name: 'apiKeyManagement',
       check: () => {
         // Check API key management
         let score = 0;
-        
+
         const apiKeys = getAllApiKeys();
-        
+
         if (apiKeys.length === 0) return 80; // If no API keys, assume good practice
-        
+
         // Check key status
-        const expiredKeys = apiKeys.filter(key => key.status === ApiKeyStatus.EXPIRED).length;
-        const activeKeys = apiKeys.filter(key => key.status === ApiKeyStatus.ACTIVE).length;
-        
+        const expiredKeys = apiKeys.filter((key) => key.status === ApiKeyStatus.EXPIRED).length;
+        const activeKeys = apiKeys.filter((key) => key.status === ApiKeyStatus.ACTIVE).length;
+
         // Calculate percentage of expired keys
         const expiredPercentage = expiredKeys / apiKeys.length;
-        
+
         if (expiredPercentage <= 0.05) score += 30;
         else if (expiredPercentage <= 0.1) score += 20;
         else score += 10;
-        
+
         // Check for key rotation
-        const rotatedKeys = apiKeys.filter(key => key.status === ApiKeyStatus.ROTATED).length;
+        const rotatedKeys = apiKeys.filter((key) => key.status === ApiKeyStatus.ROTATED).length;
         const rotationPercentage = rotatedKeys / activeKeys;
-        
+
         if (rotationPercentage >= 0.5) score += 40;
         else if (rotationPercentage >= 0.25) score += 25;
         else score += 10;
-        
+
         // Check for key scopes
-        const keysWithScopes = apiKeys.filter(key => key.scopes && key.scopes.length > 0).length;
+        const keysWithScopes = apiKeys.filter((key) => key.scopes && key.scopes.length > 0).length;
         const scopePercentage = keysWithScopes / apiKeys.length;
-        
+
         if (scopePercentage >= 0.9) score += 30;
         else if (scopePercentage >= 0.7) score += 20;
         else score += 10;
-        
+
         return score;
-      }
-    }
+      },
+    },
   ],
-  
+
   networkSecurity: [
     {
       name: 'firewallRules',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check firewall rules
         let score = 0;
-        
+
         if (settings.firewallEnabled) score += 40;
-        
+
         if (settings.firewallRules) {
           const ruleCount = settings.firewallRules.length;
-          
+
           if (ruleCount >= 10) score += 20;
           else if (ruleCount >= 5) score += 15;
           else score += 10;
-          
-          const denyRuleCount = settings.firewallRules.filter(rule => rule.action === 'deny').length;
+
+          const denyRuleCount = settings.firewallRules.filter(
+            (rule) => rule.action === 'deny',
+          ).length;
           const denyPercentage = denyRuleCount / ruleCount;
-          
+
           if (denyPercentage >= 0.8) score += 20;
           else if (denyPercentage >= 0.5) score += 15;
           else score += 10;
         }
-        
+
         if (settings.ipBlockingEnabled) score += 20;
-        
+
         return score;
-      }
+      },
     },
     {
       name: 'tlsConfiguration',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check TLS configuration
         let score = 0;
-        
+
         if (settings.tlsVersion === '1.3') score += 50;
         else if (settings.tlsVersion === '1.2') score += 30;
         else score += 10;
-        
+
         if (settings.hsts) score += 25;
-        
+
         if (settings.securityHeaders && settings.securityHeaders.length >= 5) score += 25;
         else if (settings.securityHeaders && settings.securityHeaders.length >= 3) score += 15;
         else score += 5;
-        
+
         return score;
-      }
-    }
+      },
+    },
   ],
-  
+
   applicationSecurity: [
     {
       name: 'inputValidation',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check input validation practices
         let score = 0;
-        
+
         if (settings.inputValidation) score += 30;
         if (settings.sqlPreparedStatements) score += 30;
         if (settings.contentSecurityPolicy) score += 20;
         if (settings.xssProtection) score += 20;
-        
+
         return score;
-      }
+      },
     },
     {
       name: 'fileUploadSecurity',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check file upload security
         let score = 0;
-        
+
         if (settings.fileUploadValidation) score += 30;
         if (settings.fileUploadScanning) score += 30;
         if (settings.fileUploadSizeLimit) score += 20;
         if (settings.fileUploadTypeRestriction) score += 20;
-        
+
         return score;
-      }
-    }
+      },
+    },
   ],
-  
+
   incidentResponse: [
     {
       name: 'incidentDetection',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Check incident detection capabilities
         let score = 0;
-        
+
         if (settings.securityMonitoringEnabled) score += 30;
         if (settings.anomalyDetectionEnabled) score += 30;
         if (settings.alertingEnabled) score += 20;
         if (settings.loggingEnabled) score += 20;
-        
+
         return score;
-      }
+      },
     },
     {
       name: 'incidentResolution',
       check: () => {
         // Calculate incident resolution metrics
         let score = 0;
-        
+
         const incidents = getAllSecurityIncidents();
-        
+
         if (incidents.length === 0) return 80; // If no incidents, assume good practice
-        
+
         // Calculate percentage of resolved incidents
-        const resolvedIncidents = incidents.filter(inc => inc.status === 'resolved').length;
+        const resolvedIncidents = incidents.filter((inc) => inc.status === 'resolved').length;
         const resolvedPercentage = resolvedIncidents / incidents.length;
-        
+
         if (resolvedPercentage >= 0.9) score += 40;
         else if (resolvedPercentage >= 0.7) score += 25;
         else if (resolvedPercentage >= 0.5) score += 15;
         else score += 5;
-        
+
         // Calculate percentage of mitigated incidents
-        const mitigatedIncidents = incidents.filter(inc => inc.status === 'mitigated').length;
+        const mitigatedIncidents = incidents.filter((inc) => inc.status === 'mitigated').length;
         const mitigatedPercentage = mitigatedIncidents / incidents.length;
-        
+
         if (mitigatedPercentage >= 0.8) score += 30;
         else if (mitigatedPercentage >= 0.6) score += 20;
         else if (mitigatedPercentage >= 0.4) score += 10;
         else score += 5;
-        
+
         // Calculate mean time to resolution
-        const resolvedIncidentsWithTime = incidents.filter(inc => inc.status === 'resolved' && inc.resolvedAt);
+        const resolvedIncidentsWithTime = incidents.filter(
+          (inc) => inc.status === 'resolved' && inc.resolvedAt,
+        );
         if (resolvedIncidentsWithTime.length > 0) {
           const totalResolutionTime = resolvedIncidentsWithTime.reduce((total, inc) => {
             return total + ((inc.resolvedAt || 0) - inc.timestamp);
           }, 0);
-          
+
           const averageResolutionTime = totalResolutionTime / resolvedIncidentsWithTime.length;
           const averageResolutionHours = averageResolutionTime / (1000 * 60 * 60);
-          
+
           if (averageResolutionHours <= 4) score += 30;
           else if (averageResolutionHours <= 12) score += 20;
           else if (averageResolutionHours <= 24) score += 10;
           else score += 5;
         }
-        
+
         return score;
-      }
-    }
+      },
+    },
   ],
-  
+
   securityAwareness: [
     {
       name: 'trainingCompletion',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Calculate security training completion rate
         let score = 0;
-        
+
         if (settings.securityTrainingRequired) score += 30;
-        
+
         if (settings.securityTrainingCompletionRate) {
           const completionRate = settings.securityTrainingCompletionRate;
-          
+
           if (completionRate >= 90) score += 35;
           else if (completionRate >= 75) score += 25;
           else if (completionRate >= 50) score += 15;
           else score += 5;
         }
-        
+
         if (settings.securityTrainingFrequency) {
-          if (settings.securityTrainingFrequency <= 90) score += 35; // Quarterly
-          else if (settings.securityTrainingFrequency <= 180) score += 25; // Bi-annually
+          if (settings.securityTrainingFrequency <= 90)
+            score += 35; // Quarterly
+          else if (settings.securityTrainingFrequency <= 180)
+            score += 25; // Bi-annually
           else score += 15; // Annually
         }
-        
+
         return score;
-      }
+      },
     },
     {
       name: 'securityIncidentReporting',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Calculate security incident reporting metrics
         let score = 0;
-        
+
         if (settings.securityIncidentReportingEnabled) score += 40;
-        
+
         if (settings.securityIncidentReportsCount && settings.securityIncidentReportingRate) {
           if (settings.securityIncidentReportingRate >= 80) score += 40;
           else if (settings.securityIncidentReportingRate >= 60) score += 30;
@@ -411,47 +417,47 @@ const securityChecks = {
         } else {
           score += 20; // Assume average if no data
         }
-        
+
         if (settings.securityAwarenessProgram) score += 20;
-        
+
         return score;
-      }
-    }
+      },
+    },
   ],
-  
+
   complianceStatus: [
     {
       name: 'complianceRequirements',
       check: () => {
         const settings = getSecuritySettings();
-        
+
         // Calculate compliance status
         let score = 0;
-        
+
         if (settings.complianceStatus) {
           const complianceData = settings.complianceStatus;
-          
+
           // Check GDPR compliance
           if (complianceData.gdpr) {
             if (complianceData.gdpr.complianceRate >= 90) score += 30;
             else if (complianceData.gdpr.complianceRate >= 75) score += 20;
             else score += 10;
           }
-          
+
           // Check HIPAA compliance
           if (complianceData.hipaa) {
             if (complianceData.hipaa.complianceRate >= 90) score += 25;
             else if (complianceData.hipaa.complianceRate >= 75) score += 15;
             else score += 5;
           }
-          
+
           // Check PCI DSS compliance
           if (complianceData.pciDss) {
             if (complianceData.pciDss.complianceRate >= 90) score += 25;
             else if (complianceData.pciDss.complianceRate >= 75) score += 15;
             else score += 5;
           }
-          
+
           // Check SOC 2 compliance
           if (complianceData.soc2) {
             if (complianceData.soc2.complianceRate >= 90) score += 20;
@@ -461,23 +467,26 @@ const securityChecks = {
         } else {
           score = 50; // Default if no compliance data
         }
-        
+
         return score;
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
 
 // Initialize the security scoring system
 export function initSecurityScoring(): void {
   // Calculate initial security score
   calculateSecurityScore();
-  
+
   // Schedule regular score calculations
-  setInterval(() => {
-    calculateSecurityScore();
-  }, 24 * 60 * 60 * 1000); // Daily recalculation
-  
+  setInterval(
+    () => {
+      calculateSecurityScore();
+    },
+    24 * 60 * 60 * 1000,
+  ); // Daily recalculation
+
   console.log('Security Scoring module initialized');
 }
 
@@ -488,18 +497,18 @@ export function calculateSecurityScore(weights: Partial<SecurityWeights> = {}): 
   // Merge custom weights with defaults
   const activeWeights = {
     ...DEFAULT_WEIGHTS,
-    ...weights
+    ...weights,
   };
-  
+
   // Normalize weights to ensure they sum to 100
   const weightSum = Object.values(activeWeights).reduce((sum, weight) => sum + weight, 0);
   const normalizedWeights = Object.fromEntries(
-    Object.entries(activeWeights).map(([key, weight]) => [key, (weight / weightSum) * 100])
+    Object.entries(activeWeights).map(([key, weight]) => [key, (weight / weightSum) * 100]),
   ) as SecurityWeights;
-  
+
   // Store previous score for comparison
   const previousScore = currentSecurityScore?.overall;
-  
+
   // Calculate score for each category
   const categoryScores = {
     authenticationSecurity: calculateCategoryScore('authenticationSecurity'),
@@ -508,49 +517,50 @@ export function calculateSecurityScore(weights: Partial<SecurityWeights> = {}): 
     applicationSecurity: calculateCategoryScore('applicationSecurity'),
     incidentResponse: calculateCategoryScore('incidentResponse'),
     securityAwareness: calculateCategoryScore('securityAwareness'),
-    complianceStatus: calculateCategoryScore('complianceStatus')
+    complianceStatus: calculateCategoryScore('complianceStatus'),
   };
-  
+
   // Calculate overall score using weighted average
   const overallScore = Object.entries(categoryScores).reduce((score, [category, categoryScore]) => {
-    return score + (categoryScore * (normalizedWeights[category as keyof SecurityWeights] / 100));
+    return score + categoryScore * (normalizedWeights[category as keyof SecurityWeights] / 100);
   }, 0);
-  
+
   // Round to nearest integer
   const roundedOverallScore = Math.round(overallScore);
-  
+
   // Generate recommendations
   const recommendations = generateRecommendations(categoryScores);
-  
+
   // Create the security score object
   const securityScore: SecurityScore = {
     overall: roundedOverallScore,
     categories: categoryScores,
     lastCalculated: Date.now(),
-    recommendations
+    recommendations,
   };
-  
+
   // Calculate score change if there was a previous score
   if (previousScore !== undefined) {
     securityScore.previousScore = previousScore;
     securityScore.scoreChange = roundedOverallScore - previousScore;
   }
-  
+
   // Store current score
   currentSecurityScore = securityScore;
-  
+
   // Add to history
   securityScoreHistory.push({
     timestamp: securityScore.lastCalculated,
     overall: securityScore.overall,
-    categories: securityScore.categories
+    categories: securityScore.categories,
   });
-  
+
   // Trim history if too long
-  if (securityScoreHistory.length > 365) { // Keep a year of daily scores
+  if (securityScoreHistory.length > 365) {
+    // Keep a year of daily scores
     securityScoreHistory.shift();
   }
-  
+
   // Log the calculation
   logSecurityEvent(
     'system',
@@ -558,15 +568,15 @@ export function calculateSecurityScore(weights: Partial<SecurityWeights> = {}): 
     {
       score: roundedOverallScore,
       change: securityScore.scoreChange,
-      categories: categoryScores
+      categories: categoryScores,
     },
-    'system'
+    'system',
   );
-  
+
   // Alert on significant score changes
   if (securityScore.scoreChange !== undefined && Math.abs(securityScore.scoreChange) >= 5) {
     const isIncrease = securityScore.scoreChange > 0;
-    
+
     sendAlert(
       isIncrease ? AlertSeverity.LOW : AlertSeverity.MEDIUM,
       AlertType.SYSTEM,
@@ -577,12 +587,12 @@ export function calculateSecurityScore(weights: Partial<SecurityWeights> = {}): 
         change: securityScore.scoreChange,
         categories: Object.entries(categoryScores).map(([category, score]) => ({
           category,
-          score
-        }))
-      }
+          score,
+        })),
+      },
     );
   }
-  
+
   return securityScore;
 }
 
@@ -592,11 +602,11 @@ export function calculateSecurityScore(weights: Partial<SecurityWeights> = {}): 
 function calculateCategoryScore(category: keyof typeof securityChecks): number {
   const checks = securityChecks[category];
   if (!checks || checks.length === 0) return 0;
-  
+
   // Calculate total score as average of all checks
   const totalScore = checks.reduce((sum, check) => sum + check.check(), 0);
   const averageScore = totalScore / checks.length;
-  
+
   // Return score rounded to nearest integer
   return Math.round(averageScore);
 }
@@ -606,7 +616,7 @@ function calculateCategoryScore(category: keyof typeof securityChecks): number {
  */
 function generateRecommendations(categoryScores: Record<string, number>): SecurityRecommendation[] {
   const recommendations: SecurityRecommendation[] = [];
-  
+
   // Authentication recommendations
   if (categoryScores.authenticationSecurity < 70) {
     if (categoryScores.authenticationSecurity < 50) {
@@ -618,10 +628,10 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
         impact: 'high',
         effort: 'medium',
         potentialScoreImprovement: 15,
-        status: 'pending'
+        status: 'pending',
       });
     }
-    
+
     recommendations.push({
       id: `rec-auth-${Date.now()}-2`,
       category: 'authenticationSecurity',
@@ -630,10 +640,10 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
       impact: 'medium',
       effort: 'low',
       potentialScoreImprovement: 10,
-      status: 'pending'
+      status: 'pending',
     });
   }
-  
+
   // Data protection recommendations
   if (categoryScores.dataProtection < 75) {
     recommendations.push({
@@ -644,9 +654,9 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
       impact: 'high',
       effort: 'high',
       potentialScoreImprovement: 20,
-      status: 'pending'
+      status: 'pending',
     });
-    
+
     if (categoryScores.dataProtection < 60) {
       recommendations.push({
         id: `rec-data-${Date.now()}-2`,
@@ -656,11 +666,11 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
         impact: 'medium',
         effort: 'medium',
         potentialScoreImprovement: 15,
-        status: 'pending'
+        status: 'pending',
       });
     }
   }
-  
+
   // Network security recommendations
   if (categoryScores.networkSecurity < 70) {
     recommendations.push({
@@ -671,9 +681,9 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
       impact: 'medium',
       effort: 'low',
       potentialScoreImprovement: 10,
-      status: 'pending'
+      status: 'pending',
     });
-    
+
     if (categoryScores.networkSecurity < 50) {
       recommendations.push({
         id: `rec-net-${Date.now()}-2`,
@@ -683,11 +693,11 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
         impact: 'medium',
         effort: 'medium',
         potentialScoreImprovement: 15,
-        status: 'pending'
+        status: 'pending',
       });
     }
   }
-  
+
   // Application security recommendations
   if (categoryScores.applicationSecurity < 70) {
     recommendations.push({
@@ -698,23 +708,24 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
       impact: 'high',
       effort: 'medium',
       potentialScoreImprovement: 15,
-      status: 'pending'
+      status: 'pending',
     });
-    
+
     if (categoryScores.applicationSecurity < 60) {
       recommendations.push({
         id: `rec-app-${Date.now()}-2`,
         category: 'applicationSecurity',
         title: 'Enhance File Upload Validation',
-        description: 'Implement comprehensive file validation including content type verification and virus scanning.',
+        description:
+          'Implement comprehensive file validation including content type verification and virus scanning.',
         impact: 'high',
         effort: 'high',
         potentialScoreImprovement: 20,
-        status: 'pending'
+        status: 'pending',
       });
     }
   }
-  
+
   // Incident response recommendations
   if (categoryScores.incidentResponse < 65) {
     recommendations.push({
@@ -725,10 +736,10 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
       impact: 'high',
       effort: 'high',
       potentialScoreImprovement: 25,
-      status: 'pending'
+      status: 'pending',
     });
   }
-  
+
   // Security awareness recommendations
   if (categoryScores.securityAwareness < 70) {
     recommendations.push({
@@ -739,10 +750,10 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
       impact: 'medium',
       effort: 'medium',
       potentialScoreImprovement: 20,
-      status: 'pending'
+      status: 'pending',
     });
   }
-  
+
   // Compliance recommendations
   if (categoryScores.complianceStatus < 70) {
     recommendations.push({
@@ -753,10 +764,10 @@ function generateRecommendations(categoryScores: Record<string, number>): Securi
       impact: 'high',
       effort: 'high',
       potentialScoreImprovement: 15,
-      status: 'pending'
+      status: 'pending',
     });
   }
-  
+
   return recommendations;
 }
 
@@ -770,9 +781,7 @@ export function getCurrentSecurityScore(): SecurityScore | null {
 /**
  * Get historical security scores
  */
-export function getSecurityScoreHistory(
-  days: number = 30
-): Array<{
+export function getSecurityScoreHistory(days: number = 30): Array<{
   timestamp: number;
   overall: number;
   categories: {
@@ -780,10 +789,10 @@ export function getSecurityScoreHistory(
   };
 }> {
   // Calculate cutoff date
-  const cutoffTime = Date.now() - (days * 24 * 60 * 60 * 1000);
-  
+  const cutoffTime = Date.now() - days * 24 * 60 * 60 * 1000;
+
   // Filter history by date
-  return securityScoreHistory.filter(score => score.timestamp >= cutoffTime);
+  return securityScoreHistory.filter((score) => score.timestamp >= cutoffTime);
 }
 
 /**
@@ -792,28 +801,28 @@ export function getSecurityScoreHistory(
 export function updateRecommendationStatus(
   recommendationId: string,
   status: 'pending' | 'in-progress' | 'completed' | 'deferred',
-  updatedBy: string
+  updatedBy: string,
 ): boolean {
   if (!currentSecurityScore) return false;
-  
+
   // Find recommendation
   const recommendationIndex = currentSecurityScore.recommendations.findIndex(
-    rec => rec.id === recommendationId
+    (rec) => rec.id === recommendationId,
   );
-  
+
   if (recommendationIndex === -1) return false;
-  
+
   // Update status
   currentSecurityScore.recommendations[recommendationIndex].status = status;
-  
+
   // If completed, set implementation date
   if (status === 'completed') {
     currentSecurityScore.recommendations[recommendationIndex].implementedAt = Date.now();
-    
+
     // Recalculate security score
     calculateSecurityScore();
   }
-  
+
   // Log the update
   logAuditEvent(
     updatedBy,
@@ -821,10 +830,10 @@ export function updateRecommendationStatus(
     {
       recommendationId,
       status,
-      title: currentSecurityScore.recommendations[recommendationIndex].title
+      title: currentSecurityScore.recommendations[recommendationIndex].title,
     },
-    'system'
+    'system',
   );
-  
+
   return true;
 }

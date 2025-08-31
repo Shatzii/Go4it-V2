@@ -1,6 +1,6 @@
 /**
  * Language Learning School API Routes
- * 
+ *
  * This module provides API endpoints for language learning functionality,
  * including vocabulary generation, conversation practice, and cultural lessons.
  */
@@ -10,7 +10,7 @@ import { Anthropic } from '@anthropic-ai/sdk';
 
 const router = express.Router();
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY
+  apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
 // Get supported languages
@@ -22,45 +22,45 @@ router.get('/languages', (req, res) => {
         code: 'es',
         name: 'Spanish',
         levels: ['beginner', 'intermediate', 'advanced'],
-        available: true
+        available: true,
       },
       {
         code: 'de',
         name: 'German',
         levels: ['beginner', 'intermediate', 'advanced'],
-        available: true
+        available: true,
       },
       {
         code: 'fr',
         name: 'French',
         levels: ['beginner', 'intermediate', 'advanced'],
-        available: true
+        available: true,
       },
       {
         code: 'it',
         name: 'Italian',
         levels: ['beginner', 'intermediate', 'advanced'],
-        available: true
+        available: true,
       },
       {
         code: 'ja',
         name: 'Japanese',
         levels: ['beginner', 'intermediate'],
-        available: true
+        available: true,
       },
       {
         code: 'zh',
         name: 'Chinese',
         levels: ['beginner', 'intermediate'],
-        available: true
+        available: true,
       },
       {
         code: 'ru',
         name: 'Russian',
         levels: ['beginner'],
-        available: true
-      }
-    ]
+        available: true,
+      },
+    ],
   });
 });
 
@@ -68,14 +68,14 @@ router.get('/languages', (req, res) => {
 router.post('/generate/vocabulary', async (req, res) => {
   try {
     const { language, topic, level } = req.body;
-    
+
     if (!language || !topic || !level) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Language, topic, and level are required' 
+      return res.status(400).json({
+        success: false,
+        error: 'Language, topic, and level are required',
       });
     }
-    
+
     const prompt = `Generate a vocabulary list for ${language} language learners at ${level} level about the topic "${topic}".
 Format as a JSON array with objects containing these fields:
 - word: the vocabulary word in ${language}
@@ -85,43 +85,40 @@ Format as a JSON array with objects containing these fields:
 - notes: brief usage notes or cultural context
 
 Keep the list to 10 words maximum and ensure the vocabulary is appropriate for ${level} level learners.`;
-    
+
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
       max_tokens: 1000,
-      messages: [
-        { role: 'user', content: prompt }
-      ],
+      messages: [{ role: 'user', content: prompt }],
     });
-    
+
     // Try to extract JSON from the response
     try {
       const content = response.content[0].text;
       // Find JSON in the content (it might be wrapped in markdown code blocks)
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || 
-                        content.match(/```\n([\s\S]*?)\n```/) || 
-                        [null, content];
-      
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
+        content.match(/```\n([\s\S]*?)\n```/) || [null, content];
+
       const jsonContent = jsonMatch[1];
       const vocabularyList = JSON.parse(jsonContent);
-      
-      res.json({ 
-        success: true, 
-        vocabulary: vocabularyList
+
+      res.json({
+        success: true,
+        vocabulary: vocabularyList,
       });
     } catch (jsonError) {
       console.error('JSON parsing error:', jsonError);
-      res.status(500).json({ 
-        success: false, 
+      res.status(500).json({
+        success: false,
         error: 'Failed to parse AI response as JSON',
-        rawResponse: response.content[0].text
+        rawResponse: response.content[0].text,
       });
     }
   } catch (error) {
     console.error('Vocabulary generation error:', error);
-    res.status(500).json({ 
-      success: false, 
-      error: error.message
+    res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 });
@@ -130,14 +127,14 @@ Keep the list to 10 words maximum and ensure the vocabulary is appropriate for $
 router.post('/generate/dialogue', async (req, res) => {
   try {
     const { language, scenario, level } = req.body;
-    
+
     if (!language || !scenario || !level) {
       return res.status(400).json({
         success: false,
-        error: 'Language, scenario, and level are required'
+        error: 'Language, scenario, and level are required',
       });
     }
-    
+
     const prompt = `Create a realistic dialogue in ${language} for ${level} level learners in the scenario: "${scenario}".
 The dialogue should include at least 2 speakers and be 10-15 exchanges long.
 Format the response as a JSON object with these fields:
@@ -155,39 +152,36 @@ For intermediate and advanced levels, introduce more complex grammar and vocabul
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
       max_tokens: 1500,
-      messages: [
-        { role: 'user', content: prompt }
-      ],
+      messages: [{ role: 'user', content: prompt }],
     });
-    
+
     // Extract JSON from the response
     try {
       const content = response.content[0].text;
       // Find JSON in the content
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || 
-                        content.match(/```\n([\s\S]*?)\n```/) || 
-                        [null, content];
-      
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
+        content.match(/```\n([\s\S]*?)\n```/) || [null, content];
+
       const jsonContent = jsonMatch[1];
       const dialogue = JSON.parse(jsonContent);
-      
+
       res.json({
         success: true,
-        dialogue
+        dialogue,
       });
     } catch (jsonError) {
       console.error('JSON parsing error:', jsonError);
       res.status(500).json({
         success: false,
         error: 'Failed to parse AI response as JSON',
-        rawResponse: response.content[0].text
+        rawResponse: response.content[0].text,
       });
     }
   } catch (error) {
     console.error('Dialogue generation error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -196,14 +190,14 @@ For intermediate and advanced levels, introduce more complex grammar and vocabul
 router.post('/generate/cultural-lesson', async (req, res) => {
   try {
     const { language, topic, level } = req.body;
-    
+
     if (!language || !topic || !level) {
       return res.status(400).json({
         success: false,
-        error: 'Language, topic, and level are required'
+        error: 'Language, topic, and level are required',
       });
     }
-    
+
     const prompt = `Create a cultural lesson about ${topic} for ${language} language learners at ${level} level.
 Format the response as a JSON object with these fields:
 - title: A title for the cultural lesson
@@ -219,39 +213,36 @@ The content should be appropriate for ${level} level language learners, with com
     const response = await anthropic.messages.create({
       model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
       max_tokens: 1500,
-      messages: [
-        { role: 'user', content: prompt }
-      ],
+      messages: [{ role: 'user', content: prompt }],
     });
-    
+
     // Extract JSON from the response
     try {
       const content = response.content[0].text;
       // Find JSON in the content
-      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || 
-                        content.match(/```\n([\s\S]*?)\n```/) || 
-                        [null, content];
-      
+      const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) ||
+        content.match(/```\n([\s\S]*?)\n```/) || [null, content];
+
       const jsonContent = jsonMatch[1];
       const culturalLesson = JSON.parse(jsonContent);
-      
+
       res.json({
         success: true,
-        culturalLesson
+        culturalLesson,
       });
     } catch (jsonError) {
       console.error('JSON parsing error:', jsonError);
       res.status(500).json({
         success: false,
         error: 'Failed to parse AI response as JSON',
-        rawResponse: response.content[0].text
+        rawResponse: response.content[0].text,
       });
     }
   } catch (error) {
     console.error('Cultural lesson generation error:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 });

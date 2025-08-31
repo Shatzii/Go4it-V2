@@ -5,10 +5,7 @@ export async function POST(req: NextRequest) {
     const { userId, garScore } = await req.json();
 
     if (!userId || garScore === undefined) {
-      return NextResponse.json(
-        { error: 'User ID and GAR Score are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'User ID and GAR Score are required' }, { status: 400 });
     }
 
     // Import database connection
@@ -29,10 +26,7 @@ export async function POST(req: NextRequest) {
     `);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Log the verification event
@@ -57,15 +51,11 @@ export async function POST(req: NextRequest) {
       verificationBadge: {
         type: 'gar_verified',
         score: garScore,
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     console.error('Auto-verification error:', error);
-    return NextResponse.json(
-      { error: 'Failed to auto-verify user' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to auto-verify user' }, { status: 500 });
   }
 }

@@ -7,11 +7,33 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Globe, Clock, Play, Pause, RotateCcw, Search, Filter,
-  Eye, Volume2, Book, Users, Sword, Shield, Crown,
-  MapPin, Calendar, Zap, Brain, Star, ChevronRight,
-  Mountain, Ship, Castle, Target, Award, TrendingUp
+import {
+  Globe,
+  Clock,
+  Play,
+  Pause,
+  RotateCcw,
+  Search,
+  Filter,
+  Eye,
+  Volume2,
+  Book,
+  Users,
+  Sword,
+  Shield,
+  Crown,
+  MapPin,
+  Calendar,
+  Zap,
+  Brain,
+  Star,
+  ChevronRight,
+  Mountain,
+  Ship,
+  Castle,
+  Target,
+  Award,
+  TrendingUp,
 } from 'lucide-react';
 
 // AI-Powered Historical Event Data
@@ -25,11 +47,13 @@ const historicalEvents = [
     region: 'africa',
     coordinates: { x: 52, y: 25 },
     visualType: 'kingdom',
-    aiAnalysis: 'The birth of one of history\'s greatest civilizations marked the beginning of centralized government and monumental architecture.',
+    aiAnalysis:
+      "The birth of one of history's greatest civilizations marked the beginning of centralized government and monumental architecture.",
     battleDetails: null,
     impact: 'high',
     primarySource: 'Egyptian hieroglyphic records',
-    modernConnection: 'Modern Egypt still follows the Nile River patterns established in ancient times'
+    modernConnection:
+      'Modern Egypt still follows the Nile River patterns established in ancient times',
   },
   {
     id: 2,
@@ -40,17 +64,19 @@ const historicalEvents = [
     region: 'europe',
     coordinates: { x: 55, y: 35 },
     visualType: 'battle',
-    aiAnalysis: 'This decisive victory demonstrated that the mighty Persian Empire could be defeated, inspiring Greek resistance and preserving democratic ideals.',
+    aiAnalysis:
+      'This decisive victory demonstrated that the mighty Persian Empire could be defeated, inspiring Greek resistance and preserving democratic ideals.',
     battleDetails: {
       attackers: 'Persian Empire (25,000 troops)',
       defenders: 'Athens & Plataea (11,000 troops)',
       strategy: 'Athenian phalanx formation with weakened center',
       outcome: 'Decisive Greek victory, 6,400 Persian casualties vs 192 Greek',
-      significance: 'Preserved Greek independence and democratic development'
+      significance: 'Preserved Greek independence and democratic development',
     },
     impact: 'high',
     primarySource: 'Herodotus Histories',
-    modernConnection: 'The marathon race commemorates the messenger who ran from Marathon to Athens'
+    modernConnection:
+      'The marathon race commemorates the messenger who ran from Marathon to Athens',
   },
   {
     id: 3,
@@ -61,11 +87,12 @@ const historicalEvents = [
     region: 'europe',
     coordinates: { x: 48, y: 40 },
     visualType: 'political',
-    aiAnalysis: 'Caesar\'s death marked the end of the Roman Republic and began the transition to imperial rule under Augustus.',
+    aiAnalysis:
+      "Caesar's death marked the end of the Roman Republic and began the transition to imperial rule under Augustus.",
     battleDetails: null,
     impact: 'high',
-    primarySource: 'Plutarch\'s Lives, Suetonius',
-    modernConnection: 'The term "Caesar" became synonymous with emperor in many languages'
+    primarySource: "Plutarch's Lives, Suetonius",
+    modernConnection: 'The term "Caesar" became synonymous with emperor in many languages',
   },
   {
     id: 4,
@@ -76,17 +103,18 @@ const historicalEvents = [
     region: 'europe',
     coordinates: { x: 45, y: 48 },
     visualType: 'battle',
-    aiAnalysis: 'William the Conqueror\'s victory fundamentally changed English culture, language, and governance for centuries.',
+    aiAnalysis:
+      "William the Conqueror's victory fundamentally changed English culture, language, and governance for centuries.",
     battleDetails: {
       attackers: 'Norman Forces (7,000-8,000 troops)',
       defenders: 'Anglo-Saxon England (7,000-8,000 troops)',
       strategy: 'Norman cavalry and archers vs Saxon shield wall',
       outcome: 'Norman victory, King Harold II killed',
-      significance: 'Established Norman rule in England, transformed English society'
+      significance: 'Established Norman rule in England, transformed English society',
     },
     impact: 'high',
     primarySource: 'Bayeux Tapestry, Anglo-Saxon Chronicle',
-    modernConnection: 'Modern English contains thousands of Norman French words'
+    modernConnection: 'Modern English contains thousands of Norman French words',
   },
   {
     id: 5,
@@ -97,11 +125,13 @@ const historicalEvents = [
     region: 'americas',
     coordinates: { x: 25, y: 45 },
     visualType: 'exploration',
-    aiAnalysis: 'This voyage connected two worlds that had been separate for millennia, beginning an era of global exchange and colonization.',
+    aiAnalysis:
+      'This voyage connected two worlds that had been separate for millennia, beginning an era of global exchange and colonization.',
     battleDetails: null,
     impact: 'high',
-    primarySource: 'Columbus\'s logbook, Spanish colonial records',
-    modernConnection: 'The Columbian Exchange still influences global food, culture, and disease patterns'
+    primarySource: "Columbus's logbook, Spanish colonial records",
+    modernConnection:
+      'The Columbian Exchange still influences global food, culture, and disease patterns',
   },
   {
     id: 6,
@@ -112,11 +142,12 @@ const historicalEvents = [
     region: 'americas',
     coordinates: { x: 30, y: 52 },
     visualType: 'political',
-    aiAnalysis: 'The principles of self-governance and individual rights established here influenced democratic movements worldwide.',
+    aiAnalysis:
+      'The principles of self-governance and individual rights established here influenced democratic movements worldwide.',
     battleDetails: null,
     impact: 'high',
     primarySource: 'Original Declaration document, Continental Congress records',
-    modernConnection: 'Modern democratic constitutions worldwide draw from these principles'
+    modernConnection: 'Modern democratic constitutions worldwide draw from these principles',
   },
   {
     id: 7,
@@ -127,12 +158,14 @@ const historicalEvents = [
     region: 'global',
     coordinates: { x: 50, y: 50 },
     visualType: 'exploration',
-    aiAnalysis: 'Humanity\'s first steps on another celestial body demonstrated the power of science, technology, and international cooperation.',
+    aiAnalysis:
+      "Humanity's first steps on another celestial body demonstrated the power of science, technology, and international cooperation.",
     battleDetails: null,
     impact: 'high',
     primarySource: 'NASA mission transcripts, television broadcasts',
-    modernConnection: 'Space technology developed for the moon landing now powers GPS, satellites, and modern communications'
-  }
+    modernConnection:
+      'Space technology developed for the moon landing now powers GPS, satellites, and modern communications',
+  },
 ];
 
 // Interactive Map Component
@@ -140,50 +173,67 @@ function InteractiveHistoryMap({ selectedYear, onEventSelect, selectedEvent }) {
   const mapRef = useRef<HTMLDivElement>(null);
 
   const getVisibleEvents = () => {
-    return historicalEvents.filter(event => 
-      Math.abs(event.year) <= Math.abs(selectedYear) + 100
-    );
+    return historicalEvents.filter((event) => Math.abs(event.year) <= Math.abs(selectedYear) + 100);
   };
 
   const getEventIcon = (visualType: string) => {
     switch (visualType) {
-      case 'battle': return <Sword className="w-4 h-4" />;
-      case 'kingdom': return <Crown className="w-4 h-4" />;
-      case 'political': return <Users className="w-4 h-4" />;
-      case 'exploration': return <Ship className="w-4 h-4" />;
-      default: return <MapPin className="w-4 h-4" />;
+      case 'battle':
+        return <Sword className="w-4 h-4" />;
+      case 'kingdom':
+        return <Crown className="w-4 h-4" />;
+      case 'political':
+        return <Users className="w-4 h-4" />;
+      case 'exploration':
+        return <Ship className="w-4 h-4" />;
+      default:
+        return <MapPin className="w-4 h-4" />;
     }
   };
 
   const getEventColor = (category: string, isSelected: boolean) => {
     if (isSelected) return 'bg-yellow-500 border-yellow-300 text-black';
     switch (category) {
-      case 'battle': return 'bg-red-500/80 border-red-300 text-white hover:bg-red-400';
-      case 'civilization': return 'bg-purple-500/80 border-purple-300 text-white hover:bg-purple-400';
-      case 'political': return 'bg-blue-500/80 border-blue-300 text-white hover:bg-blue-400';
-      case 'exploration': return 'bg-green-500/80 border-green-300 text-white hover:bg-green-400';
-      default: return 'bg-gray-500/80 border-gray-300 text-white hover:bg-gray-400';
+      case 'battle':
+        return 'bg-red-500/80 border-red-300 text-white hover:bg-red-400';
+      case 'civilization':
+        return 'bg-purple-500/80 border-purple-300 text-white hover:bg-purple-400';
+      case 'political':
+        return 'bg-blue-500/80 border-blue-300 text-white hover:bg-blue-400';
+      case 'exploration':
+        return 'bg-green-500/80 border-green-300 text-white hover:bg-green-400';
+      default:
+        return 'bg-gray-500/80 border-gray-300 text-white hover:bg-gray-400';
     }
   };
 
   return (
     <div className="relative w-full h-96 bg-gradient-to-br from-blue-900 to-green-900 rounded-lg border border-cyan-500 overflow-hidden">
       {/* World Map Background */}
-      <div 
+      <div
         ref={mapRef}
         className="absolute inset-0 bg-cover bg-center opacity-30"
         style={{
-          backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 1000 500\'%3E%3Cpath fill=\'%23334155\' d=\'M100,100 Q200,50 300,100 T500,100 T700,100 T900,100 L900,400 Q700,350 500,400 T300,400 T100,400 Z\'/%3E%3Cpath fill=\'%23475569\' d=\'M150,150 Q250,120 350,150 T550,150 T750,150 L750,350 Q550,320 350,350 T150,350 Z\'/%3E%3C/svg%3E")'
+          backgroundImage:
+            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 500'%3E%3Cpath fill='%23334155' d='M100,100 Q200,50 300,100 T500,100 T700,100 T900,100 L900,400 Q700,350 500,400 T300,400 T100,400 Z'/%3E%3Cpath fill='%23475569' d='M150,150 Q250,120 350,150 T550,150 T750,150 L750,350 Q550,320 350,350 T150,350 Z'/%3E%3C/svg%3E\")",
         }}
       />
-      
+
       {/* Grid Lines */}
       <div className="absolute inset-0">
         {[...Array(10)].map((_, i) => (
-          <div key={`v-${i}`} className="absolute top-0 bottom-0 border-l border-cyan-500/20" style={{ left: `${i * 10}%` }} />
+          <div
+            key={`v-${i}`}
+            className="absolute top-0 bottom-0 border-l border-cyan-500/20"
+            style={{ left: `${i * 10}%` }}
+          />
         ))}
         {[...Array(6)].map((_, i) => (
-          <div key={`h-${i}`} className="absolute left-0 right-0 border-t border-cyan-500/20" style={{ top: `${i * 16.67}%` }} />
+          <div
+            key={`h-${i}`}
+            className="absolute left-0 right-0 border-t border-cyan-500/20"
+            style={{ top: `${i * 16.67}%` }}
+          />
         ))}
       </div>
 
@@ -191,13 +241,14 @@ function InteractiveHistoryMap({ selectedYear, onEventSelect, selectedEvent }) {
       {getVisibleEvents().map((event) => (
         <button
           key={event.id}
-          className={`absolute w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all transform hover:scale-110 z-10 ${
-            getEventColor(event.category, selectedEvent?.id === event.id)
-          }`}
-          style={{ 
-            left: `${event.coordinates.x}%`, 
+          className={`absolute w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all transform hover:scale-110 z-10 ${getEventColor(
+            event.category,
+            selectedEvent?.id === event.id,
+          )}`}
+          style={{
+            left: `${event.coordinates.x}%`,
             top: `${event.coordinates.y}%`,
-            transform: 'translate(-50%, -50%)'
+            transform: 'translate(-50%, -50%)',
           }}
           onClick={() => onEventSelect(event)}
           title={event.title}
@@ -245,7 +296,7 @@ function BattleVisualization({ battleDetails }) {
   useEffect(() => {
     if (battleDetails) {
       const interval = setInterval(() => {
-        setAnimationPhase(prev => (prev + 1) % 4);
+        setAnimationPhase((prev) => (prev + 1) % 4);
       }, 2000);
       return () => clearInterval(interval);
     }
@@ -267,30 +318,42 @@ function BattleVisualization({ battleDetails }) {
           <div className="relative w-full h-48 bg-gradient-to-b from-green-800 to-yellow-800 rounded-lg border border-red-500 overflow-hidden">
             {/* Terrain */}
             <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-r from-green-700 to-yellow-700"></div>
-            
+
             {/* Attacking Forces */}
-            <div className={`absolute transition-all duration-2000 ${
-              animationPhase >= 2 ? 'left-1/3' : 'left-4'
-            } top-8`}>
+            <div
+              className={`absolute transition-all duration-2000 ${
+                animationPhase >= 2 ? 'left-1/3' : 'left-4'
+              } top-8`}
+            >
               <div className="flex items-center gap-1">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className={`w-3 h-6 bg-red-500 transition-all duration-500 ${
-                    animationPhase >= 1 ? 'transform -translate-y-1' : ''
-                  }`} style={{ animationDelay: `${i * 100}ms` }} />
+                  <div
+                    key={i}
+                    className={`w-3 h-6 bg-red-500 transition-all duration-500 ${
+                      animationPhase >= 1 ? 'transform -translate-y-1' : ''
+                    }`}
+                    style={{ animationDelay: `${i * 100}ms` }}
+                  />
                 ))}
               </div>
               <div className="text-xs text-red-300 mt-1">Attackers</div>
             </div>
 
             {/* Defending Forces */}
-            <div className={`absolute transition-all duration-2000 ${
-              animationPhase >= 2 ? 'right-1/3' : 'right-4'
-            } top-8`}>
+            <div
+              className={`absolute transition-all duration-2000 ${
+                animationPhase >= 2 ? 'right-1/3' : 'right-4'
+              } top-8`}
+            >
               <div className="flex items-center gap-1">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className={`w-3 h-6 bg-blue-500 transition-all duration-500 ${
-                    animationPhase >= 3 ? 'transform translate-y-2 opacity-60' : ''
-                  }`} style={{ animationDelay: `${i * 150}ms` }} />
+                  <div
+                    key={i}
+                    className={`w-3 h-6 bg-blue-500 transition-all duration-500 ${
+                      animationPhase >= 3 ? 'transform translate-y-2 opacity-60' : ''
+                    }`}
+                    style={{ animationDelay: `${i * 150}ms` }}
+                  />
                 ))}
               </div>
               <div className="text-xs text-blue-300 mt-1">Defenders</div>
@@ -319,16 +382,27 @@ function BattleVisualization({ battleDetails }) {
             <div className="space-y-2">
               <h5 className="font-semibold text-red-400">Forces & Strategy</h5>
               <div className="text-sm space-y-1">
-                <div><span className="text-red-300">Attackers:</span> {battleDetails.attackers}</div>
-                <div><span className="text-blue-300">Defenders:</span> {battleDetails.defenders}</div>
-                <div><span className="text-yellow-300">Strategy:</span> {battleDetails.strategy}</div>
+                <div>
+                  <span className="text-red-300">Attackers:</span> {battleDetails.attackers}
+                </div>
+                <div>
+                  <span className="text-blue-300">Defenders:</span> {battleDetails.defenders}
+                </div>
+                <div>
+                  <span className="text-yellow-300">Strategy:</span> {battleDetails.strategy}
+                </div>
               </div>
             </div>
             <div className="space-y-2">
               <h5 className="font-semibold text-orange-400">Outcome & Impact</h5>
               <div className="text-sm space-y-1">
-                <div><span className="text-green-300">Result:</span> {battleDetails.outcome}</div>
-                <div><span className="text-purple-300">Significance:</span> {battleDetails.significance}</div>
+                <div>
+                  <span className="text-green-300">Result:</span> {battleDetails.outcome}
+                </div>
+                <div>
+                  <span className="text-purple-300">Significance:</span>{' '}
+                  {battleDetails.significance}
+                </div>
               </div>
             </div>
           </div>
@@ -347,7 +421,7 @@ function AIHistoricalAnalysis({ event }) {
     if (event) {
       setIsAnalyzing(true);
       setAnalysisComplete(false);
-      
+
       const timer = setTimeout(() => {
         setIsAnalyzing(false);
         setAnalysisComplete(true);
@@ -376,7 +450,9 @@ function AIHistoricalAnalysis({ event }) {
         <CardTitle className="flex items-center gap-2 text-cyan-400">
           <Brain className="w-5 h-5" />
           AI Historical Analysis
-          {isAnalyzing && <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin ml-2" />}
+          {isAnalyzing && (
+            <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin ml-2" />
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -384,19 +460,26 @@ function AIHistoricalAnalysis({ event }) {
           <div className="space-y-3">
             <div className="text-sm text-cyan-300">Analyzing historical significance...</div>
             <Progress value={75} className="h-2" />
-            <div className="text-xs text-gray-400">Processing primary sources, cross-referencing data, generating insights...</div>
+            <div className="text-xs text-gray-400">
+              Processing primary sources, cross-referencing data, generating insights...
+            </div>
           </div>
         ) : (
           <>
             {/* Event Overview */}
             <div className="space-y-3">
               <div>
-                <Badge className={`mb-2 ${
-                  event.category === 'battle' ? 'bg-red-500' :
-                  event.category === 'political' ? 'bg-blue-500' :
-                  event.category === 'exploration' ? 'bg-green-500' :
-                  'bg-purple-500'
-                }`}>
+                <Badge
+                  className={`mb-2 ${
+                    event.category === 'battle'
+                      ? 'bg-red-500'
+                      : event.category === 'political'
+                        ? 'bg-blue-500'
+                        : event.category === 'exploration'
+                          ? 'bg-green-500'
+                          : 'bg-purple-500'
+                  }`}
+                >
                   {event.category.toUpperCase()}
                 </Badge>
                 <h4 className="text-lg font-bold text-white">{event.title}</h4>
@@ -416,11 +499,15 @@ function AIHistoricalAnalysis({ event }) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-black/30 p-3 rounded border border-gray-600">
                   <div className="text-xs text-gray-400 mb-1">Historical Impact</div>
-                  <div className={`text-lg font-bold ${
-                    event.impact === 'high' ? 'text-red-400' :
-                    event.impact === 'medium' ? 'text-yellow-400' :
-                    'text-green-400'
-                  }`}>
+                  <div
+                    className={`text-lg font-bold ${
+                      event.impact === 'high'
+                        ? 'text-red-400'
+                        : event.impact === 'medium'
+                          ? 'text-yellow-400'
+                          : 'text-green-400'
+                    }`}
+                  >
                     {event.impact.toUpperCase()}
                   </div>
                 </div>
@@ -477,14 +564,14 @@ function TimelineNavigation({ currentYear, onYearChange, isPlaying, onPlayToggle
       <CardContent className="space-y-4">
         {/* Play Controls */}
         <div className="flex items-center gap-4">
-          <Button 
+          <Button
             onClick={onPlayToggle}
             className={`${isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}
           >
             {isPlaying ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
             {isPlaying ? 'Pause' : 'Play'}
           </Button>
-          
+
           <div className="text-2xl font-bold text-white">
             {currentYear < 0 ? `${Math.abs(currentYear)} BCE` : `${currentYear} CE`}
           </div>
@@ -500,7 +587,7 @@ function TimelineNavigation({ currentYear, onYearChange, isPlaying, onPlayToggle
             step={50}
             className="w-full"
           />
-          
+
           {/* Era Markers */}
           <div className="flex justify-between text-xs text-gray-400">
             <span>3500 BCE</span>
@@ -514,16 +601,36 @@ function TimelineNavigation({ currentYear, onYearChange, isPlaying, onPlayToggle
 
         {/* Quick Jump Buttons */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          <Button size="sm" variant="outline" onClick={() => onYearChange(-3000)} className="border-purple-500 text-purple-400">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onYearChange(-3000)}
+            className="border-purple-500 text-purple-400"
+          >
             Ancient
           </Button>
-          <Button size="sm" variant="outline" onClick={() => onYearChange(-500)} className="border-purple-500 text-purple-400">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onYearChange(-500)}
+            className="border-purple-500 text-purple-400"
+          >
             Classical
           </Button>
-          <Button size="sm" variant="outline" onClick={() => onYearChange(1000)} className="border-purple-500 text-purple-400">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onYearChange(1000)}
+            className="border-purple-500 text-purple-400"
+          >
             Medieval
           </Button>
-          <Button size="sm" variant="outline" onClick={() => onYearChange(1800)} className="border-purple-500 text-purple-400">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => onYearChange(1800)}
+            className="border-purple-500 text-purple-400"
+          >
             Modern
           </Button>
         </div>
@@ -543,7 +650,7 @@ export default function InteractiveHistoryMapPage() {
   useEffect(() => {
     if (isPlaying) {
       const interval = setInterval(() => {
-        setCurrentYear(prev => {
+        setCurrentYear((prev) => {
           const newYear = prev + 100;
           return newYear > 2024 ? -3500 : newYear;
         });
@@ -557,9 +664,10 @@ export default function InteractiveHistoryMapPage() {
     setCurrentYear(event.year);
   };
 
-  const filteredEvents = historicalEvents.filter(event =>
-    event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    event.description.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEvents = historicalEvents.filter(
+    (event) =>
+      event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   return (
@@ -571,9 +679,10 @@ export default function InteractiveHistoryMapPage() {
             Interactive Visual History Map
           </h1>
           <p className="text-xl text-gray-300 mb-6">
-            AI-powered historical exploration with immersive battle visualizations and timeline navigation
+            AI-powered historical exploration with immersive battle visualizations and timeline
+            navigation
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-6">
             <Badge variant="outline" className="border-cyan-500 text-cyan-400">
               <Globe className="w-4 h-4 mr-2" />
@@ -605,7 +714,7 @@ export default function InteractiveHistoryMapPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Timeline Navigation */}
           <div className="lg:col-span-3">
-            <TimelineNavigation 
+            <TimelineNavigation
               currentYear={currentYear}
               onYearChange={setCurrentYear}
               isPlaying={isPlaying}
@@ -623,7 +732,7 @@ export default function InteractiveHistoryMapPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <InteractiveHistoryMap 
+                <InteractiveHistoryMap
                   selectedYear={currentYear}
                   onEventSelect={handleEventSelect}
                   selectedEvent={selectedEvent}
@@ -660,18 +769,23 @@ export default function InteractiveHistoryMapPage() {
                       key={event.id}
                       onClick={() => handleEventSelect(event)}
                       className={`p-4 rounded-lg border text-left transition-all hover:scale-105 ${
-                        selectedEvent?.id === event.id 
-                          ? 'bg-yellow-500/20 border-yellow-400' 
+                        selectedEvent?.id === event.id
+                          ? 'bg-yellow-500/20 border-yellow-400'
                           : 'bg-black/30 border-gray-600 hover:border-green-400'
                       }`}
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <Badge className={`${
-                          event.category === 'battle' ? 'bg-red-500' :
-                          event.category === 'political' ? 'bg-blue-500' :
-                          event.category === 'exploration' ? 'bg-green-500' :
-                          'bg-purple-500'
-                        }`}>
+                        <Badge
+                          className={`${
+                            event.category === 'battle'
+                              ? 'bg-red-500'
+                              : event.category === 'political'
+                                ? 'bg-blue-500'
+                                : event.category === 'exploration'
+                                  ? 'bg-green-500'
+                                  : 'bg-purple-500'
+                          }`}
+                        >
                           {event.category}
                         </Badge>
                         <div className="text-sm text-gray-400">
@@ -691,7 +805,9 @@ export default function InteractiveHistoryMapPage() {
         {/* Educational Impact Stats */}
         <Card className="mt-8 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-yellow-500">
           <CardHeader>
-            <CardTitle className="text-yellow-400">Interactive History Map - Educational Impact</CardTitle>
+            <CardTitle className="text-yellow-400">
+              Interactive History Map - Educational Impact
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid md:grid-cols-4 gap-6 text-center">

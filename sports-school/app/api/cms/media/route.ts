@@ -41,12 +41,12 @@ let mediaLibrary: MediaItem[] = [
     metadata: {
       educational: {
         gradeLevel: ['K', '1', '2', '3'],
-        subject: ['Math']
+        subject: ['Math'],
       },
       accessibility: {
-        isHighContrast: true
-      }
-    }
+        isHighContrast: true,
+      },
+    },
   },
   {
     id: 'img_002',
@@ -62,9 +62,9 @@ let mediaLibrary: MediaItem[] = [
     metadata: {
       educational: {
         gradeLevel: ['7', '8', '9', '10', '11', '12'],
-        subject: ['Theater Arts', 'Drama']
-      }
-    }
+        subject: ['Theater Arts', 'Drama'],
+      },
+    },
   },
   {
     id: 'vid_001',
@@ -81,13 +81,13 @@ let mediaLibrary: MediaItem[] = [
     metadata: {
       educational: {
         gradeLevel: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-        subject: ['All']
+        subject: ['All'],
       },
       accessibility: {
         hasTranscript: true,
-        hasClosedCaptions: true
-      }
-    }
+        hasClosedCaptions: true,
+      },
+    },
   },
   {
     id: 'aud_001',
@@ -103,12 +103,12 @@ let mediaLibrary: MediaItem[] = [
     metadata: {
       educational: {
         gradeLevel: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-        subject: ['Support']
+        subject: ['Support'],
       },
       accessibility: {
-        hasTranscript: false
-      }
-    }
+        hasTranscript: false,
+      },
+    },
   },
   {
     id: 'doc_001',
@@ -123,12 +123,12 @@ let mediaLibrary: MediaItem[] = [
     metadata: {
       educational: {
         gradeLevel: ['Parent Resource'],
-        subject: ['Digital Safety']
+        subject: ['Digital Safety'],
       },
       accessibility: {
-        hasTranscript: false
-      }
-    }
+        hasTranscript: false,
+      },
+    },
   },
   {
     id: 'img_003',
@@ -144,13 +144,13 @@ let mediaLibrary: MediaItem[] = [
     metadata: {
       educational: {
         gradeLevel: ['All'],
-        subject: ['Branding']
+        subject: ['Branding'],
       },
       accessibility: {
-        isHighContrast: true
-      }
-    }
-  }
+        isHighContrast: true,
+      },
+    },
+  },
 ];
 
 export async function GET(request: NextRequest) {
@@ -166,28 +166,29 @@ export async function GET(request: NextRequest) {
 
     // Apply type filter
     if (type && type !== 'all') {
-      filteredMedia = filteredMedia.filter(item => item.type === type);
+      filteredMedia = filteredMedia.filter((item) => item.type === type);
     }
 
     // Apply search filter
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredMedia = filteredMedia.filter(item =>
-        item.name.toLowerCase().includes(searchLower) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
-        item.alt?.toLowerCase().includes(searchLower)
+      filteredMedia = filteredMedia.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchLower) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(searchLower)) ||
+          item.alt?.toLowerCase().includes(searchLower),
       );
     }
 
     // Apply tag filter
     if (tags.length > 0) {
-      filteredMedia = filteredMedia.filter(item =>
-        tags.some(tag => item.tags.includes(tag))
-      );
+      filteredMedia = filteredMedia.filter((item) => tags.some((tag) => item.tags.includes(tag)));
     }
 
     // Sort by upload date (newest first)
-    filteredMedia.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+    filteredMedia.sort(
+      (a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime(),
+    );
 
     // Apply pagination
     const paginatedMedia = filteredMedia.slice(offset, offset + limit);
@@ -197,24 +198,24 @@ export async function GET(request: NextRequest) {
       totalItems: filteredMedia.length,
       totalSize: filteredMedia.reduce((sum, item) => sum + item.size, 0),
       byType: {
-        image: filteredMedia.filter(item => item.type === 'image').length,
-        video: filteredMedia.filter(item => item.type === 'video').length,
-        audio: filteredMedia.filter(item => item.type === 'audio').length,
-        document: filteredMedia.filter(item => item.type === 'document').length,
-        archive: filteredMedia.filter(item => item.type === 'archive').length
-      }
+        image: filteredMedia.filter((item) => item.type === 'image').length,
+        video: filteredMedia.filter((item) => item.type === 'video').length,
+        audio: filteredMedia.filter((item) => item.type === 'audio').length,
+        document: filteredMedia.filter((item) => item.type === 'document').length,
+        archive: filteredMedia.filter((item) => item.type === 'archive').length,
+      },
     };
 
     return NextResponse.json({
       items: paginatedMedia,
       stats,
-      allTags: [...new Set(mediaLibrary.flatMap(item => item.tags))],
+      allTags: [...new Set(mediaLibrary.flatMap((item) => item.tags))],
       pagination: {
         offset,
         limit,
         total: filteredMedia.length,
-        hasMore: offset + limit < filteredMedia.length
-      }
+        hasMore: offset + limit < filteredMedia.length,
+      },
     });
   } catch (error) {
     console.error('Error fetching media:', error);
@@ -225,7 +226,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
+
     const newMediaItem: MediaItem = {
       id: `media_${Date.now()}`,
       name: body.name || 'untitled',
@@ -238,7 +239,7 @@ export async function POST(request: NextRequest) {
       uploadedAt: new Date().toISOString(),
       tags: body.tags || [],
       alt: body.alt || '',
-      metadata: body.metadata || {}
+      metadata: body.metadata || {},
     };
 
     mediaLibrary.push(newMediaItem);
@@ -260,14 +261,14 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Media ID is required' }, { status: 400 });
     }
 
-    const mediaIndex = mediaLibrary.findIndex(item => item.id === id);
+    const mediaIndex = mediaLibrary.findIndex((item) => item.id === id);
     if (mediaIndex === -1) {
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }
 
     const updatedMedia = {
       ...mediaLibrary[mediaIndex],
-      ...body
+      ...body,
     };
 
     mediaLibrary[mediaIndex] = updatedMedia;
@@ -288,7 +289,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Media ID is required' }, { status: 400 });
     }
 
-    const mediaIndex = mediaLibrary.findIndex(item => item.id === id);
+    const mediaIndex = mediaLibrary.findIndex((item) => item.id === id);
     if (mediaIndex === -1) {
       return NextResponse.json({ error: 'Media not found' }, { status: 404 });
     }

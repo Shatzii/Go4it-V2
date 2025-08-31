@@ -4,7 +4,7 @@ import { smsService } from '@/lib/twilio-client';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { 
+    const {
       sessionId,
       athletePhone,
       coachName,
@@ -12,14 +12,17 @@ export async function POST(request: NextRequest) {
       sessionTime,
       sessionType,
       notificationType, // 'confirmation', 'reminder', 'cancellation', 'rescheduled'
-      additionalInfo 
+      additionalInfo,
     } = body;
 
     if (!athletePhone || !coachName || !sessionDate || !sessionTime) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing required session information for SMS notification'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required session information for SMS notification',
+        },
+        { status: 400 },
+      );
     }
 
     let smsResult;
@@ -29,7 +32,7 @@ export async function POST(request: NextRequest) {
       case 'confirmation':
         smsResult = await smsService.sendSMS({
           to: athletePhone,
-          message: `✅ Session confirmed with ${coachName} on ${formattedDate} at ${sessionTime}. Prepare to dominate! Details: go4it.app/sessions/${sessionId}`
+          message: `✅ Session confirmed with ${coachName} on ${formattedDate} at ${sessionTime}. Prepare to dominate! Details: go4it.app/sessions/${sessionId}`,
         });
         break;
 
@@ -38,29 +41,32 @@ export async function POST(request: NextRequest) {
           athletePhone,
           coachName,
           sessionTime,
-          sessionType
+          sessionType,
         );
         break;
 
       case 'cancellation':
         smsResult = await smsService.sendSMS({
           to: athletePhone,
-          message: `❌ Session with ${coachName} on ${formattedDate} at ${sessionTime} has been cancelled. ${additionalInfo || 'We apologize for any inconvenience.'} Reschedule: go4it.app/coaches-corner`
+          message: `❌ Session with ${coachName} on ${formattedDate} at ${sessionTime} has been cancelled. ${additionalInfo || 'We apologize for any inconvenience.'} Reschedule: go4it.app/coaches-corner`,
         });
         break;
 
       case 'rescheduled':
         smsResult = await smsService.sendSMS({
           to: athletePhone,
-          message: `📅 Session with ${coachName} rescheduled to ${formattedDate} at ${sessionTime}. ${additionalInfo || 'Looking forward to seeing you!'} Details: go4it.app/sessions/${sessionId}`
+          message: `📅 Session with ${coachName} rescheduled to ${formattedDate} at ${sessionTime}. ${additionalInfo || 'Looking forward to seeing you!'} Details: go4it.app/sessions/${sessionId}`,
         });
         break;
 
       default:
-        return NextResponse.json({
-          success: false,
-          error: 'Invalid notification type'
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Invalid notification type',
+          },
+          { status: 400 },
+        );
     }
 
     return NextResponse.json({
@@ -68,14 +74,16 @@ export async function POST(request: NextRequest) {
       smsStatus: smsResult.success,
       messageId: smsResult.messageId,
       notificationType,
-      message: `Coach session ${notificationType} SMS sent successfully`
+      message: `Coach session ${notificationType} SMS sent successfully`,
     });
-
   } catch (error: any) {
     console.error('Coach session SMS notification error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to send coach session SMS notification'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to send coach session SMS notification',
+      },
+      { status: 500 },
+    );
   }
 }

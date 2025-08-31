@@ -6,15 +6,21 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Languages, 
-  Globe, 
-  Volume2, 
-  BookOpen, 
-  Users, 
+import {
+  Languages,
+  Globe,
+  Volume2,
+  BookOpen,
+  Users,
   Settings,
   Download,
   Upload,
@@ -22,7 +28,7 @@ import {
   CheckCircle,
   AlertCircle,
   Mic,
-  Play
+  Play,
 } from 'lucide-react';
 
 interface Language {
@@ -56,21 +62,101 @@ interface CulturalAdaptation {
 }
 
 const supportedLanguages: Language[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸', rtl: false, completeness: 100, isActive: true },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸', rtl: false, completeness: 95, isActive: true },
-  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷', rtl: false, completeness: 90, isActive: true },
-  { code: 'de', name: 'German', nativeName: 'Deutsch', flag: '🇩🇪', rtl: false, completeness: 85, isActive: true },
-  { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳', rtl: false, completeness: 80, isActive: true },
-  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵', rtl: false, completeness: 75, isActive: true },
-  { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦', rtl: true, completeness: 70, isActive: true },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳', rtl: false, completeness: 65, isActive: false },
-  { code: 'pt', name: 'Portuguese', nativeName: 'Português', flag: '🇵🇹', rtl: false, completeness: 60, isActive: false },
-  { code: 'ru', name: 'Russian', nativeName: 'Русский', flag: '🇷🇺', rtl: false, completeness: 55, isActive: false }
+  {
+    code: 'en',
+    name: 'English',
+    nativeName: 'English',
+    flag: '🇺🇸',
+    rtl: false,
+    completeness: 100,
+    isActive: true,
+  },
+  {
+    code: 'es',
+    name: 'Spanish',
+    nativeName: 'Español',
+    flag: '🇪🇸',
+    rtl: false,
+    completeness: 95,
+    isActive: true,
+  },
+  {
+    code: 'fr',
+    name: 'French',
+    nativeName: 'Français',
+    flag: '🇫🇷',
+    rtl: false,
+    completeness: 90,
+    isActive: true,
+  },
+  {
+    code: 'de',
+    name: 'German',
+    nativeName: 'Deutsch',
+    flag: '🇩🇪',
+    rtl: false,
+    completeness: 85,
+    isActive: true,
+  },
+  {
+    code: 'zh',
+    name: 'Chinese',
+    nativeName: '中文',
+    flag: '🇨🇳',
+    rtl: false,
+    completeness: 80,
+    isActive: true,
+  },
+  {
+    code: 'ja',
+    name: 'Japanese',
+    nativeName: '日本語',
+    flag: '🇯🇵',
+    rtl: false,
+    completeness: 75,
+    isActive: true,
+  },
+  {
+    code: 'ar',
+    name: 'Arabic',
+    nativeName: 'العربية',
+    flag: '🇸🇦',
+    rtl: true,
+    completeness: 70,
+    isActive: true,
+  },
+  {
+    code: 'hi',
+    name: 'Hindi',
+    nativeName: 'हिन्दी',
+    flag: '🇮🇳',
+    rtl: false,
+    completeness: 65,
+    isActive: false,
+  },
+  {
+    code: 'pt',
+    name: 'Portuguese',
+    nativeName: 'Português',
+    flag: '🇵🇹',
+    rtl: false,
+    completeness: 60,
+    isActive: false,
+  },
+  {
+    code: 'ru',
+    name: 'Russian',
+    nativeName: 'Русский',
+    flag: '🇷🇺',
+    rtl: false,
+    completeness: 55,
+    isActive: false,
+  },
 ];
 
 export function MultilingualSupport() {
   const [activeLanguages, setActiveLanguages] = useState<Language[]>(
-    supportedLanguages.filter(lang => lang.isActive)
+    supportedLanguages.filter((lang) => lang.isActive),
   );
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [translationText, setTranslationText] = useState('');
@@ -99,7 +185,7 @@ export function MultilingualSupport() {
         progress: 85,
         totalStrings: 1500,
         translatedStrings: 1275,
-        status: 'active'
+        status: 'active',
       },
       {
         id: '2',
@@ -109,7 +195,7 @@ export function MultilingualSupport() {
         progress: 60,
         totalStrings: 800,
         translatedStrings: 480,
-        status: 'active'
+        status: 'active',
       },
       {
         id: '3',
@@ -119,8 +205,8 @@ export function MultilingualSupport() {
         progress: 100,
         totalStrings: 500,
         translatedStrings: 500,
-        status: 'completed'
-      }
+        status: 'completed',
+      },
     ];
     setProjects(mockProjects);
   };
@@ -134,7 +220,11 @@ export function MultilingualSupport() {
         numberFormat: '1.234,56',
         currencyFormat: '€1.234,56',
         educationalSystem: 'European/Spanish System',
-        culturalNotes: ['Siesta time consideration', 'Family-oriented learning', 'Religious holidays']
+        culturalNotes: [
+          'Siesta time consideration',
+          'Family-oriented learning',
+          'Religious holidays',
+        ],
       },
       {
         language: 'ja',
@@ -142,7 +232,7 @@ export function MultilingualSupport() {
         numberFormat: '1,234.56',
         currencyFormat: '¥1,234',
         educationalSystem: 'Japanese System',
-        culturalNotes: ['Respect for teachers', 'Group harmony', 'Seasonal celebrations']
+        culturalNotes: ['Respect for teachers', 'Group harmony', 'Seasonal celebrations'],
       },
       {
         language: 'ar',
@@ -150,15 +240,15 @@ export function MultilingualSupport() {
         numberFormat: '1,234.56',
         currencyFormat: '1,234.56 ر.س',
         educationalSystem: 'Islamic/Arabic System',
-        culturalNotes: ['Prayer times', 'Islamic holidays', 'Gender considerations']
-      }
+        culturalNotes: ['Prayer times', 'Islamic holidays', 'Gender considerations'],
+      },
     ];
     setCulturalAdaptations(mockAdaptations);
   };
 
   const translateText = async () => {
     if (!translationText.trim()) return;
-    
+
     setIsTranslating(true);
     try {
       const response = await fetch('/api/translate', {
@@ -167,10 +257,10 @@ export function MultilingualSupport() {
         body: JSON.stringify({
           text: translationText,
           targetLanguage: targetLanguage,
-          sourceLanguage: autoDetectLanguage ? 'auto' : currentLanguage
-        })
+          sourceLanguage: autoDetectLanguage ? 'auto' : currentLanguage,
+        }),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         setTranslatedText(data.translatedText);
@@ -197,12 +287,10 @@ export function MultilingualSupport() {
   };
 
   const toggleLanguage = (languageCode: string) => {
-    setActiveLanguages(prev => 
-      prev.map(lang => 
-        lang.code === languageCode 
-          ? { ...lang, isActive: !lang.isActive }
-          : lang
-      )
+    setActiveLanguages((prev) =>
+      prev.map((lang) =>
+        lang.code === languageCode ? { ...lang, isActive: !lang.isActive } : lang,
+      ),
     );
   };
 
@@ -210,9 +298,9 @@ export function MultilingualSupport() {
     const data = {
       languages: activeLanguages,
       projects: projects,
-      culturalAdaptations: culturalAdaptations
+      culturalAdaptations: culturalAdaptations,
     };
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -230,10 +318,14 @@ export function MultilingualSupport() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'active': return 'bg-blue-100 text-blue-800';
-      case 'paused': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'active':
+        return 'bg-blue-100 text-blue-800';
+      case 'paused':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -248,7 +340,7 @@ export function MultilingualSupport() {
           </h1>
           <p className="text-gray-600">Manage translations and cultural adaptations</p>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={exportTranslations}>
             <Download className="w-4 h-4 mr-2" />
@@ -272,9 +364,7 @@ export function MultilingualSupport() {
             <Globe className="w-5 h-5" />
             Supported Languages
           </CardTitle>
-          <CardDescription>
-            Manage active languages and translation completeness
-          </CardDescription>
+          <CardDescription>Manage active languages and translation completeness</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -293,14 +383,14 @@ export function MultilingualSupport() {
                     onCheckedChange={() => toggleLanguage(language.code)}
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Completeness</span>
                     <span className="text-sm font-medium">{language.completeness}%</span>
                   </div>
                   <Progress value={language.completeness} className="h-2" />
-                  
+
                   <div className="flex items-center gap-2 text-xs text-gray-600">
                     {language.rtl && <Badge variant="outline">RTL</Badge>}
                     <Badge variant={language.isActive ? 'default' : 'secondary'}>
@@ -318,35 +408,24 @@ export function MultilingualSupport() {
       <Card>
         <CardHeader>
           <CardTitle>Real-time Translation</CardTitle>
-          <CardDescription>
-            Translate text instantly with AI-powered translation
-          </CardDescription>
+          <CardDescription>Translate text instantly with AI-powered translation</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-4 mb-4">
             <div className="flex items-center gap-2">
-              <Switch
-                checked={autoDetectLanguage}
-                onCheckedChange={setAutoDetectLanguage}
-              />
+              <Switch checked={autoDetectLanguage} onCheckedChange={setAutoDetectLanguage} />
               <label className="text-sm">Auto-detect language</label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch
-                checked={enableSpeechToText}
-                onCheckedChange={setEnableSpeechToText}
-              />
+              <Switch checked={enableSpeechToText} onCheckedChange={setEnableSpeechToText} />
               <label className="text-sm">Speech-to-text</label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch
-                checked={enableTextToSpeech}
-                onCheckedChange={setEnableTextToSpeech}
-              />
+              <Switch checked={enableTextToSpeech} onCheckedChange={setEnableTextToSpeech} />
               <label className="text-sm">Text-to-speech</label>
             </div>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -380,7 +459,7 @@ export function MultilingualSupport() {
                 className="min-h-32"
               />
             </div>
-            
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium">Translated Text</label>
@@ -390,16 +469,18 @@ export function MultilingualSupport() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {activeLanguages.filter(lang => lang.code !== currentLanguage).map((lang) => (
-                        <SelectItem key={lang.code} value={lang.code}>
-                          {lang.flag} {lang.code.toUpperCase()}
-                        </SelectItem>
-                      ))}
+                      {activeLanguages
+                        .filter((lang) => lang.code !== currentLanguage)
+                        .map((lang) => (
+                          <SelectItem key={lang.code} value={lang.code}>
+                            {lang.flag} {lang.code.toUpperCase()}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   {enableTextToSpeech && translatedText && (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => speakText(translatedText, targetLanguage)}
                     >
@@ -416,8 +497,8 @@ export function MultilingualSupport() {
               />
             </div>
           </div>
-          
-          <Button 
+
+          <Button
             onClick={translateText}
             disabled={isTranslating || !translationText.trim()}
             className="w-full"
@@ -431,9 +512,7 @@ export function MultilingualSupport() {
       <Card>
         <CardHeader>
           <CardTitle>Translation Projects</CardTitle>
-          <CardDescription>
-            Manage large-scale translation projects
-          </CardDescription>
+          <CardDescription>Manage large-scale translation projects</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -441,11 +520,9 @@ export function MultilingualSupport() {
               <div key={project.id} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-medium">{project.name}</h3>
-                  <Badge className={getStatusColor(project.status)}>
-                    {project.status}
-                  </Badge>
+                  <Badge className={getStatusColor(project.status)}>{project.status}</Badge>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-sm">Progress</span>
@@ -454,11 +531,14 @@ export function MultilingualSupport() {
                     </span>
                   </div>
                   <Progress value={project.progress} className="h-2" />
-                  
+
                   <div className="flex items-center gap-2 text-sm">
                     <span>Source: {project.sourceLanguage.toUpperCase()}</span>
                     <span>→</span>
-                    <span>Targets: {project.targetLanguages.map(lang => lang.toUpperCase()).join(', ')}</span>
+                    <span>
+                      Targets:{' '}
+                      {project.targetLanguages.map((lang) => lang.toUpperCase()).join(', ')}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -471,9 +551,7 @@ export function MultilingualSupport() {
       <Card>
         <CardHeader>
           <CardTitle>Cultural Adaptations</CardTitle>
-          <CardDescription>
-            Customize content for different cultural contexts
-          </CardDescription>
+          <CardDescription>Customize content for different cultural contexts</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -481,13 +559,13 @@ export function MultilingualSupport() {
               <div key={adaptation.language} className="border rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-2xl">
-                    {supportedLanguages.find(lang => lang.code === adaptation.language)?.flag}
+                    {supportedLanguages.find((lang) => lang.code === adaptation.language)?.flag}
                   </span>
                   <h3 className="font-medium">
-                    {supportedLanguages.find(lang => lang.code === adaptation.language)?.name}
+                    {supportedLanguages.find((lang) => lang.code === adaptation.language)?.name}
                   </h3>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
@@ -507,7 +585,7 @@ export function MultilingualSupport() {
                       <span className="text-sm">{adaptation.educationalSystem}</span>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Cultural Notes</h4>
                     <ul className="text-sm text-gray-600 space-y-1">

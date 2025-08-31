@@ -1,21 +1,21 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getUserFromRequest } from '@/lib/auth'
+import { NextRequest, NextResponse } from 'next/server';
+import { getUserFromRequest } from '@/lib/auth';
 
 interface ContentItem {
-  id: string
-  title: string
-  type: 'blog' | 'article' | 'announcement' | 'training' | 'news'
-  content: string
-  excerpt: string
-  author: string
-  status: 'draft' | 'published' | 'scheduled'
-  publishDate: string
-  lastModified: string
-  tags: string[]
-  category: string
-  featured: boolean
-  viewCount: number
-  readTime: number
+  id: string;
+  title: string;
+  type: 'blog' | 'article' | 'announcement' | 'training' | 'news';
+  content: string;
+  excerpt: string;
+  author: string;
+  status: 'draft' | 'published' | 'scheduled';
+  publishDate: string;
+  lastModified: string;
+  tags: string[];
+  category: string;
+  featured: boolean;
+  viewCount: number;
+  readTime: number;
 }
 
 // Mock data store - in production, this would be a database
@@ -24,7 +24,8 @@ let contentStore: ContentItem[] = [
     id: '1',
     title: 'Advanced Basketball Training Techniques',
     type: 'blog',
-    content: 'Comprehensive guide to advanced basketball training methods including proper form, drills, and conditioning exercises specifically designed for student athletes.',
+    content:
+      'Comprehensive guide to advanced basketball training methods including proper form, drills, and conditioning exercises specifically designed for student athletes.',
     excerpt: 'Learn advanced basketball techniques from professional coaches',
     author: 'Coach Martinez',
     status: 'published',
@@ -34,13 +35,14 @@ let contentStore: ContentItem[] = [
     category: 'Training',
     featured: true,
     viewCount: 1248,
-    readTime: 8
+    readTime: 8,
   },
   {
     id: '2',
     title: 'NCAA Recruitment Timeline Guide',
     type: 'article',
-    content: 'Essential timeline for NCAA recruitment process including key dates, required documents, and communication strategies for student athletes.',
+    content:
+      'Essential timeline for NCAA recruitment process including key dates, required documents, and communication strategies for student athletes.',
     excerpt: 'Navigate the NCAA recruitment process with our comprehensive timeline',
     author: 'Recruitment Team',
     status: 'published',
@@ -50,13 +52,14 @@ let contentStore: ContentItem[] = [
     category: 'Recruitment',
     featured: false,
     viewCount: 892,
-    readTime: 12
+    readTime: 12,
   },
   {
     id: '3',
     title: 'Platform Maintenance Notice',
     type: 'announcement',
-    content: 'Scheduled maintenance on January 20th from 2:00 AM to 4:00 AM EST. Platform will be temporarily unavailable during this time.',
+    content:
+      'Scheduled maintenance on January 20th from 2:00 AM to 4:00 AM EST. Platform will be temporarily unavailable during this time.',
     excerpt: 'Important system maintenance scheduled for this weekend',
     author: 'System Admin',
     status: 'scheduled',
@@ -66,13 +69,14 @@ let contentStore: ContentItem[] = [
     category: 'System',
     featured: false,
     viewCount: 0,
-    readTime: 2
+    readTime: 2,
   },
   {
     id: '4',
     title: 'Neurodivergent Athletes: Special Considerations',
     type: 'training',
-    content: 'Training strategies and accommodations for neurodivergent student athletes, including ADHD, autism, and learning differences.',
+    content:
+      'Training strategies and accommodations for neurodivergent student athletes, including ADHD, autism, and learning differences.',
     excerpt: 'Specialized training approaches for neurodivergent athletes',
     author: 'Dr. Sarah Chen',
     status: 'published',
@@ -82,13 +86,14 @@ let contentStore: ContentItem[] = [
     category: 'Training',
     featured: true,
     viewCount: 1567,
-    readTime: 15
+    readTime: 15,
   },
   {
     id: '5',
     title: 'StarPath System Update v2.1',
     type: 'news',
-    content: 'New features in StarPath including enhanced skill tracking, improved XP calculations, and new achievement unlocks.',
+    content:
+      'New features in StarPath including enhanced skill tracking, improved XP calculations, and new achievement unlocks.',
     excerpt: 'Latest updates to the StarPath progression system',
     author: 'Development Team',
     status: 'published',
@@ -98,55 +103,56 @@ let contentStore: ContentItem[] = [
     category: 'Platform',
     featured: false,
     viewCount: 743,
-    readTime: 6
-  }
-]
+    readTime: 6,
+  },
+];
 
 export async function GET(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
-    
+    const user = await getUserFromRequest(request);
+
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const url = new URL(request.url)
-    const type = url.searchParams.get('type')
-    const status = url.searchParams.get('status')
-    const search = url.searchParams.get('search')
-    const limit = parseInt(url.searchParams.get('limit') || '10')
-    const offset = parseInt(url.searchParams.get('offset') || '0')
+    const url = new URL(request.url);
+    const type = url.searchParams.get('type');
+    const status = url.searchParams.get('status');
+    const search = url.searchParams.get('search');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const offset = parseInt(url.searchParams.get('offset') || '0');
 
-    let filteredContent = [...contentStore]
+    let filteredContent = [...contentStore];
 
     // Filter by type
     if (type && type !== 'all') {
-      filteredContent = filteredContent.filter(item => item.type === type)
+      filteredContent = filteredContent.filter((item) => item.type === type);
     }
 
     // Filter by status
     if (status && status !== 'all') {
-      filteredContent = filteredContent.filter(item => item.status === status)
+      filteredContent = filteredContent.filter((item) => item.status === status);
     }
 
     // Search filter
     if (search) {
-      const searchTerm = search.toLowerCase()
-      filteredContent = filteredContent.filter(item =>
-        item.title.toLowerCase().includes(searchTerm) ||
-        item.content.toLowerCase().includes(searchTerm) ||
-        item.tags.some(tag => tag.toLowerCase().includes(searchTerm))
-      )
+      const searchTerm = search.toLowerCase();
+      filteredContent = filteredContent.filter(
+        (item) =>
+          item.title.toLowerCase().includes(searchTerm) ||
+          item.content.toLowerCase().includes(searchTerm) ||
+          item.tags.some((tag) => tag.toLowerCase().includes(searchTerm)),
+      );
     }
 
     // Sort by last modified (newest first)
-    filteredContent.sort((a, b) => 
-      new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime()
-    )
+    filteredContent.sort(
+      (a, b) => new Date(b.lastModified).getTime() - new Date(a.lastModified).getTime(),
+    );
 
     // Pagination
-    const paginatedContent = filteredContent.slice(offset, offset + limit)
-    const totalCount = filteredContent.length
+    const paginatedContent = filteredContent.slice(offset, offset + limit);
+    const totalCount = filteredContent.length;
 
     return NextResponse.json({
       content: paginatedContent,
@@ -154,38 +160,43 @@ export async function GET(request: NextRequest) {
         total: totalCount,
         limit,
         offset,
-        hasMore: offset + limit < totalCount
-      }
-    })
-
+        hasMore: offset + limit < totalCount,
+      },
+    });
   } catch (error) {
-    console.error('Error fetching content:', error)
-    return NextResponse.json({ 
-      error: 'Failed to fetch content' 
-    }, { status: 500 })
+    console.error('Error fetching content:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch content',
+      },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
-    
+    const user = await getUserFromRequest(request);
+
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
-    
+    const body = await request.json();
+
     // Validate required fields
     if (!body.title || !body.content || !body.type) {
-      return NextResponse.json({ 
-        error: 'Missing required fields: title, content, type' 
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Missing required fields: title, content, type',
+        },
+        { status: 400 },
+      );
     }
 
     // Calculate read time (average 200 words per minute)
-    const wordCount = body.content.split(/\s+/).length
-    const readTime = Math.ceil(wordCount / 200)
+    const wordCount = body.content.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / 200);
 
     const newContent: ContentItem = {
       id: Date.now().toString(),
@@ -201,110 +212,128 @@ export async function POST(request: NextRequest) {
       category: body.category || 'General',
       featured: body.featured || false,
       viewCount: 0,
-      readTime
-    }
+      readTime,
+    };
 
-    contentStore.push(newContent)
+    contentStore.push(newContent);
 
-    return NextResponse.json({ 
-      success: true, 
-      content: newContent 
-    })
-
+    return NextResponse.json({
+      success: true,
+      content: newContent,
+    });
   } catch (error) {
-    console.error('Error creating content:', error)
-    return NextResponse.json({ 
-      error: 'Failed to create content' 
-    }, { status: 500 })
+    console.error('Error creating content:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to create content',
+      },
+      { status: 500 },
+    );
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
-    
+    const user = await getUserFromRequest(request);
+
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json()
-    
+    const body = await request.json();
+
     if (!body.id) {
-      return NextResponse.json({ 
-        error: 'Content ID is required' 
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Content ID is required',
+        },
+        { status: 400 },
+      );
     }
 
-    const contentIndex = contentStore.findIndex(item => item.id === body.id)
-    
+    const contentIndex = contentStore.findIndex((item) => item.id === body.id);
+
     if (contentIndex === -1) {
-      return NextResponse.json({ 
-        error: 'Content not found' 
-      }, { status: 404 })
+      return NextResponse.json(
+        {
+          error: 'Content not found',
+        },
+        { status: 404 },
+      );
     }
 
     // Calculate read time
-    const wordCount = body.content.split(/\s+/).length
-    const readTime = Math.ceil(wordCount / 200)
+    const wordCount = body.content.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / 200);
 
     const updatedContent: ContentItem = {
       ...contentStore[contentIndex],
       ...body,
       lastModified: new Date().toISOString().split('T')[0],
-      readTime
-    }
+      readTime,
+    };
 
-    contentStore[contentIndex] = updatedContent
+    contentStore[contentIndex] = updatedContent;
 
-    return NextResponse.json({ 
-      success: true, 
-      content: updatedContent 
-    })
-
+    return NextResponse.json({
+      success: true,
+      content: updatedContent,
+    });
   } catch (error) {
-    console.error('Error updating content:', error)
-    return NextResponse.json({ 
-      error: 'Failed to update content' 
-    }, { status: 500 })
+    console.error('Error updating content:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to update content',
+      },
+      { status: 500 },
+    );
   }
 }
 
 export async function DELETE(request: NextRequest) {
   try {
-    const user = await getUserFromRequest(request)
-    
+    const user = await getUserFromRequest(request);
+
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const url = new URL(request.url)
-    const id = url.searchParams.get('id')
-    
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+
     if (!id) {
-      return NextResponse.json({ 
-        error: 'Content ID is required' 
-      }, { status: 400 })
+      return NextResponse.json(
+        {
+          error: 'Content ID is required',
+        },
+        { status: 400 },
+      );
     }
 
-    const contentIndex = contentStore.findIndex(item => item.id === id)
-    
+    const contentIndex = contentStore.findIndex((item) => item.id === id);
+
     if (contentIndex === -1) {
-      return NextResponse.json({ 
-        error: 'Content not found' 
-      }, { status: 404 })
+      return NextResponse.json(
+        {
+          error: 'Content not found',
+        },
+        { status: 404 },
+      );
     }
 
-    contentStore.splice(contentIndex, 1)
+    contentStore.splice(contentIndex, 1);
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Content deleted successfully' 
-    })
-
+    return NextResponse.json({
+      success: true,
+      message: 'Content deleted successfully',
+    });
   } catch (error) {
-    console.error('Error deleting content:', error)
-    return NextResponse.json({ 
-      error: 'Failed to delete content' 
-    }, { status: 500 })
+    console.error('Error deleting content:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to delete content',
+      },
+      { status: 500 },
+    );
   }
 }

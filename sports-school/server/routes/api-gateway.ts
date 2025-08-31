@@ -1,6 +1,6 @@
 /**
  * API Gateway
- * 
+ *
  * This module provides a unified entry point to discover and access
  * all available API endpoints in the ShotziOS platform.
  */
@@ -28,19 +28,19 @@ router.get('/discovery', async (req: Request, res: Response) => {
             {
               path: '/api/law-school/ai/legal-analysis',
               description: 'AI-powered legal analysis of case documents',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/law-school/ai/case-study',
               description: 'Generate case studies and hypotheticals',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/bar-exams',
               description: 'Get available UAE Bar Exam practice tests',
-              methods: ['GET']
-            }
-          ]
+              methods: ['GET'],
+            },
+          ],
         },
         {
           name: 'Superhero School',
@@ -49,24 +49,24 @@ router.get('/discovery', async (req: Request, res: Response) => {
             {
               path: '/api/superhero-school/ai/personalized-content',
               description: 'Generate personalized educational content',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/superhero-curricula',
               description: 'Access superhero-themed curriculum modules',
-              methods: ['GET']
+              methods: ['GET'],
             },
             {
               path: '/api/learning-minigames',
               description: 'Interactive educational mini-games',
-              methods: ['GET']
+              methods: ['GET'],
             },
             {
               path: '/api/learning-mood',
               description: 'Track and analyze learning mood data',
-              methods: ['GET', 'POST']
-            }
-          ]
+              methods: ['GET', 'POST'],
+            },
+          ],
         },
         {
           name: 'Language School',
@@ -75,19 +75,19 @@ router.get('/discovery', async (req: Request, res: Response) => {
             {
               path: '/api/language-school/ai/translation',
               description: 'AI-powered language translation',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/language-school/ai/conversation',
               description: 'Generate conversational practice scenarios',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/language-modules',
               description: 'Access language learning modules',
-              methods: ['GET']
-            }
-          ]
+              methods: ['GET'],
+            },
+          ],
         },
         {
           name: 'AI Services',
@@ -96,24 +96,24 @@ router.get('/discovery', async (req: Request, res: Response) => {
             {
               path: '/api/ai/educational-analysis',
               description: 'Analyze educational content with AI',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/ai/content-generation',
               description: 'Generate personalized educational content',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/ai/image-analysis',
               description: 'Analyze educational diagrams and images',
-              methods: ['POST']
+              methods: ['POST'],
             },
             {
               path: '/api/multimodal-ai/analyze',
               description: 'Analyze multimedia educational content',
-              methods: ['POST']
-            }
-          ]
+              methods: ['POST'],
+            },
+          ],
         },
         {
           name: 'Educational Compliance',
@@ -122,24 +122,24 @@ router.get('/discovery', async (req: Request, res: Response) => {
             {
               path: '/api/compliance/iep',
               description: 'Individualized Education Program verification',
-              methods: ['GET', 'POST']
+              methods: ['GET', 'POST'],
             },
             {
               path: '/api/compliance/504-plans',
               description: 'Section 504 accommodation plan management',
-              methods: ['GET', 'POST']
+              methods: ['GET', 'POST'],
             },
             {
               path: '/api/compliance/standards',
               description: 'Curriculum standards verification',
-              methods: ['GET']
+              methods: ['GET'],
             },
             {
               path: '/api/compliance/assessment',
               description: 'Assessment requirements verification',
-              methods: ['GET', 'POST']
-            }
-          ]
+              methods: ['GET', 'POST'],
+            },
+          ],
         },
         {
           name: 'User Management',
@@ -148,14 +148,14 @@ router.get('/discovery', async (req: Request, res: Response) => {
             {
               path: '/api/users',
               description: 'User management endpoints',
-              methods: ['GET', 'POST', 'PUT']
+              methods: ['GET', 'POST', 'PUT'],
             },
             {
               path: '/api/auth/login',
               description: 'User authentication endpoint',
-              methods: ['POST']
-            }
-          ]
+              methods: ['POST'],
+            },
+          ],
         },
         {
           name: 'Learning Analytics',
@@ -164,19 +164,19 @@ router.get('/discovery', async (req: Request, res: Response) => {
             {
               path: '/api/learning-path-demo',
               description: 'Demo learning path visualization data',
-              methods: ['GET']
-            }
-          ]
-        }
-      ]
+              methods: ['GET'],
+            },
+          ],
+        },
+      ],
     };
 
     res.json(apiCatalog);
   } catch (error) {
     console.error('API discovery error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Failed to retrieve API catalog',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
@@ -190,7 +190,7 @@ router.get('/health', async (req: Request, res: Response) => {
   try {
     const startTime = process.uptime();
     const memoryUsage = process.memoryUsage();
-    
+
     // Health status information
     const healthInfo = {
       status: 'UP',
@@ -200,39 +200,39 @@ router.get('/health', async (req: Request, res: Response) => {
       memory: {
         rss: `${Math.round(memoryUsage.rss / 1024 / 1024)} MB`,
         heapTotal: `${Math.round(memoryUsage.heapTotal / 1024 / 1024)} MB`,
-        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)} MB`
+        heapUsed: `${Math.round(memoryUsage.heapUsed / 1024 / 1024)} MB`,
       },
       services: [
         {
           name: 'API Gateway',
           status: 'UP',
-          version: '1.0'
+          version: '1.0',
         },
         {
           name: 'Educational Analysis AI',
           status: 'UP',
-          version: '1.0'
+          version: '1.0',
         },
         {
           name: 'Learning Progress Tracking',
           status: 'UP',
-          version: '1.0'
+          version: '1.0',
         },
         {
           name: 'Compliance Module',
           status: 'UP',
-          version: '1.0'
-        }
-      ]
+          version: '1.0',
+        },
+      ],
     };
-    
+
     res.json(healthInfo);
   } catch (error) {
     console.error('Health check error:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       status: 'DOWN',
       error: 'Health check failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });

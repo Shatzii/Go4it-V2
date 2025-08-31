@@ -1,6 +1,6 @@
 /**
  * AI Professor API Routes
- * 
+ *
  * This file contains the API routes for managing and interacting
  * with AI professors in the ShotziOS platform.
  */
@@ -58,18 +58,13 @@ router.patch('/:id', (req, res) => {
 router.post('/:id/ask', async (req, res) => {
   try {
     const { studentId, question, context } = req.body;
-    
+
     if (!studentId || !question) {
       return res.status(400).json({ error: 'studentId and question are required' });
     }
-    
-    const answer = await professorService.askProfessor(
-      req.params.id,
-      studentId,
-      question,
-      context
-    );
-    
+
+    const answer = await professorService.askProfessor(req.params.id, studentId, question, context);
+
     res.json({ answer });
   } catch (error) {
     console.error('Error asking AI professor:', error.message);
@@ -82,9 +77,9 @@ router.get('/:id/history/:studentId', (req, res) => {
   try {
     const history = professorService.getProfessorStudentHistory(
       req.params.id,
-      req.params.studentId
+      req.params.studentId,
     );
-    
+
     res.json(history);
   } catch (error) {
     console.error('Error getting conversation history:', error.message);
@@ -96,17 +91,13 @@ router.get('/:id/history/:studentId', (req, res) => {
 router.post('/:id/lesson-plan', async (req, res) => {
   try {
     const { topic, duration } = req.body;
-    
+
     if (!topic || !duration) {
       return res.status(400).json({ error: 'topic and duration are required' });
     }
-    
-    const lessonPlan = await professorService.generateLessonPlan(
-      req.params.id,
-      topic,
-      duration
-    );
-    
+
+    const lessonPlan = await professorService.generateLessonPlan(req.params.id, topic, duration);
+
     res.json(lessonPlan);
   } catch (error) {
     console.error('Error generating lesson plan:', error.message);
@@ -118,18 +109,18 @@ router.post('/:id/lesson-plan', async (req, res) => {
 router.post('/:id/quiz', async (req, res) => {
   try {
     const { topic, questionCount, difficulty } = req.body;
-    
+
     if (!topic) {
       return res.status(400).json({ error: 'topic is required' });
     }
-    
+
     const quiz = await professorService.createQuiz(
       req.params.id,
       topic,
       questionCount || 5,
-      difficulty || 'medium'
+      difficulty || 'medium',
     );
-    
+
     res.json(quiz);
   } catch (error) {
     console.error('Error creating quiz:', error.message);
@@ -141,16 +132,13 @@ router.post('/:id/quiz', async (req, res) => {
 router.post('/:id/study-guide', async (req, res) => {
   try {
     const { topic } = req.body;
-    
+
     if (!topic) {
       return res.status(400).json({ error: 'topic is required' });
     }
-    
-    const studyGuide = await professorService.generateStudyGuide(
-      req.params.id,
-      topic
-    );
-    
+
+    const studyGuide = await professorService.generateStudyGuide(req.params.id, topic);
+
     res.json(studyGuide);
   } catch (error) {
     console.error('Error generating study guide:', error.message);
@@ -162,17 +150,17 @@ router.post('/:id/study-guide', async (req, res) => {
 router.post('/:id/feedback', async (req, res) => {
   try {
     const { studentWork, criteria } = req.body;
-    
+
     if (!studentWork) {
       return res.status(400).json({ error: 'studentWork is required' });
     }
-    
+
     const feedback = await professorService.provideStudentFeedback(
       req.params.id,
       studentWork,
-      criteria
+      criteria,
     );
-    
+
     res.json(feedback);
   } catch (error) {
     console.error('Error providing student feedback:', error.message);

@@ -1,6 +1,6 @@
 /**
  * Sentinel 4.5 Security Incident Response Automation
- * 
+ *
  * This module handles automated responses to security incidents,
  * implementing predefined workflows for different types of threats.
  */
@@ -25,7 +25,7 @@ export enum IncidentType {
   XSS_ATTEMPT = 'xss_attempt',
   SQL_INJECTION = 'sql_injection',
   HONEYPOT_TRIGGERED = 'honeypot_triggered',
-  SYSTEM_MISCONFIGURATION = 'system_misconfiguration'
+  SYSTEM_MISCONFIGURATION = 'system_misconfiguration',
 }
 
 // Response action status
@@ -34,7 +34,7 @@ export enum ResponseStatus {
   IN_PROGRESS = 'in_progress',
   COMPLETED = 'completed',
   FAILED = 'failed',
-  REQUIRES_APPROVAL = 'requires_approval'
+  REQUIRES_APPROVAL = 'requires_approval',
 }
 
 // Response action with status
@@ -80,12 +80,15 @@ const securityIncidents: Map<string, SecurityIncident> = new Map();
 const responseActions: Map<string, ResponseAction> = new Map();
 
 // Default response workflows by incident type
-const defaultResponseWorkflows: Record<IncidentType, Array<{
-  name: string;
-  description: string;
-  handler: (incident: SecurityIncident) => Promise<any>;
-  requiresApproval: boolean;
-}>> = {
+const defaultResponseWorkflows: Record<
+  IncidentType,
+  Array<{
+    name: string;
+    description: string;
+    handler: (incident: SecurityIncident) => Promise<any>;
+    requiresApproval: boolean;
+  }>
+> = {
   [IncidentType.BRUTE_FORCE]: [
     {
       name: 'Block Source IP',
@@ -94,7 +97,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
       handler: async (incident) => {
         if (!incident.sourceIP) throw new Error('No source IP available');
         return blockIP(incident.sourceIP, 'Brute force attack detected');
-      }
+      },
     },
     {
       name: 'Lock User Account',
@@ -104,7 +107,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would be replaced with actual account locking code
         return { accountLocked: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Send Notification',
@@ -113,12 +116,12 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
       handler: async (incident) => {
         return sendSecurityNotification(
           `Brute Force Attack Detected: ${incident.summary}`,
-          formatIncidentDetails(incident)
+          formatIncidentDetails(incident),
         );
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.ACCOUNT_TAKEOVER]: [
     {
       name: 'Force Password Reset',
@@ -128,7 +131,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would be replaced with actual password reset code
         return { passwordResetInitiated: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Invalidate Sessions',
@@ -138,7 +141,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would be replaced with actual session invalidation code
         return { sessionsInvalidated: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Reset 2FA',
@@ -147,10 +150,10 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
       handler: async (incident) => {
         if (!incident.user) throw new Error('No user specified');
         return disableTwoFactor(incident.user);
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.DATA_EXFILTRATION]: [
     {
       name: 'Throttle User Requests',
@@ -160,7 +163,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would apply stricter rate limits
         return { rateLimit: 'strict', user: incident.user };
-      }
+      },
     },
     {
       name: 'Block Data Access',
@@ -170,7 +173,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would block access to sensitive data
         return { dataAccessBlocked: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Send High Priority Alert',
@@ -180,12 +183,12 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         return sendSecurityNotification(
           `URGENT: Data Exfiltration Detected: ${incident.summary}`,
           formatIncidentDetails(incident),
-          true
+          true,
         );
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.API_ABUSE]: [
     {
       name: 'Disable API Key',
@@ -196,7 +199,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!apiKey) throw new Error('No API key specified');
         // This would disable the API key
         return { apiKeyDisabled: true, key: apiKey };
-      }
+      },
     },
     {
       name: 'Block Source IP',
@@ -205,10 +208,10 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
       handler: async (incident) => {
         if (!incident.sourceIP) throw new Error('No source IP available');
         return blockIP(incident.sourceIP, 'API abuse detected');
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.SUSPICIOUS_ACTIVITY]: [
     {
       name: 'Increase Risk Score',
@@ -218,7 +221,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // In a real implementation, you would update the risk score
         return { riskScoreIncreased: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Enable Enhanced Monitoring',
@@ -228,10 +231,10 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would enable enhanced monitoring
         return { enhancedMonitoring: true, user: incident.user };
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.FILE_UPLOAD_ABUSE]: [
     {
       name: 'Quarantine File',
@@ -242,7 +245,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!filePath) throw new Error('No file path specified');
         // This would quarantine the file
         return { fileQuarantined: true, path: filePath };
-      }
+      },
     },
     {
       name: 'Block Upload Capability',
@@ -252,10 +255,10 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would block upload capability
         return { uploadBlocked: true, user: incident.user };
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.XSS_ATTEMPT]: [
     {
       name: 'Sanitize User Input',
@@ -265,20 +268,20 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would enable additional input sanitization
         return { sanitizationEnhanced: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Block User Session',
       description: 'Terminate and block the current user session',
-      requiresApproval: false, 
+      requiresApproval: false,
       handler: async (incident) => {
         if (!incident.user) throw new Error('No user specified');
         // This would block the session
         return { sessionBlocked: true, user: incident.user };
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.SQL_INJECTION]: [
     {
       name: 'Block Database Access',
@@ -288,7 +291,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would block database access
         return { databaseAccessBlocked: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Apply Query Sanitization',
@@ -298,7 +301,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.user) throw new Error('No user specified');
         // This would enable additional query sanitization
         return { querySanitizationEnhanced: true, user: incident.user };
-      }
+      },
     },
     {
       name: 'Send Critical Alert',
@@ -308,12 +311,12 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         return sendSecurityNotification(
           `CRITICAL: SQL Injection Attempt: ${incident.summary}`,
           formatIncidentDetails(incident),
-          true
+          true,
         );
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.HONEYPOT_TRIGGERED]: [
     {
       name: 'Block Source IP',
@@ -322,7 +325,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
       handler: async (incident) => {
         if (!incident.sourceIP) throw new Error('No source IP available');
         return blockIP(incident.sourceIP, 'Honeypot triggered');
-      }
+      },
     },
     {
       name: 'Add to Watchlist',
@@ -332,10 +335,10 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!incident.sourceIP) throw new Error('No source IP available');
         // This would add the IP to a watchlist
         return { addedToWatchlist: true, ip: incident.sourceIP };
-      }
-    }
+      },
+    },
   ],
-  
+
   [IncidentType.SYSTEM_MISCONFIGURATION]: [
     {
       name: 'Apply Default Configuration',
@@ -346,7 +349,7 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
         if (!component) throw new Error('No component specified');
         // This would apply default configuration
         return { defaultConfigApplied: true, component };
-      }
+      },
     },
     {
       name: 'Notify Administrator',
@@ -355,11 +358,11 @@ const defaultResponseWorkflows: Record<IncidentType, Array<{
       handler: async (incident) => {
         return sendSecurityNotification(
           `System Misconfiguration Detected: ${incident.summary}`,
-          formatIncidentDetails(incident)
+          formatIncidentDetails(incident),
         );
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
 
 /**
@@ -381,7 +384,7 @@ Details:
 ${JSON.stringify(incident.details, null, 2)}
 
 Actions:
-${incident.actions.map(a => `- ${a.name}: ${a.status}`).join('\n')}
+${incident.actions.map((a) => `- ${a.name}: ${a.status}`).join('\n')}
 `;
 }
 
@@ -391,20 +394,15 @@ ${incident.actions.map(a => `- ${a.name}: ${a.status}`).join('\n')}
 async function sendSecurityNotification(
   subject: string,
   message: string,
-  highPriority: boolean = false
+  highPriority: boolean = false,
 ): Promise<any> {
   // Log the notification
-  logSecurityEvent(
-    'system',
-    `Security notification sent: ${subject}`,
-    { highPriority },
-    'system'
-  );
-  
+  logSecurityEvent('system', `Security notification sent: ${subject}`, { highPriority }, 'system');
+
   // This would send an email in a real implementation
   console.log(`[Security Notification] ${highPriority ? 'HIGH PRIORITY: ' : ''}${subject}`);
   console.log(message);
-  
+
   // If Discord webhook is configured, send notification
   if (DISCORD_WEBHOOK) {
     try {
@@ -413,19 +411,21 @@ async function sendSecurityNotification(
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           content: highPriority ? '@here ' : '',
-          embeds: [{
-            title: subject,
-            description: message.length > 2000 ? message.substring(0, 1997) + '...' : message,
-            color: highPriority ? 16711680 : 15105570, // Red or orange
-            timestamp: new Date().toISOString()
-          }]
-        })
+          embeds: [
+            {
+              title: subject,
+              description: message.length > 2000 ? message.substring(0, 1997) + '...' : message,
+              color: highPriority ? 16711680 : 15105570, // Red or orange
+              timestamp: new Date().toISOString(),
+            },
+          ],
+        }),
       });
     } catch (error) {
       console.error('Error sending Discord notification:', error);
     }
   }
-  
+
   return { notificationSent: true, subject };
 }
 
@@ -439,12 +439,12 @@ export function createSecurityIncident(
   details: any,
   sourceIP?: string,
   user?: string,
-  alert?: SecurityAlert
+  alert?: SecurityAlert,
 ): SecurityIncident {
   // Generate a unique ID
   const id = `INC-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   const timestamp = Date.now();
-  
+
   // Create the incident record
   const incident: SecurityIncident = {
     id,
@@ -457,23 +457,23 @@ export function createSecurityIncident(
     user,
     status: 'open',
     alert,
-    actions: []
+    actions: [],
   };
-  
+
   // Store the incident
   securityIncidents.set(id, incident);
-  
+
   // Log the incident creation
   logSecurityEvent(
     'system',
     `Security incident created: ${summary}`,
     { incidentId: id, type, severity },
-    sourceIP || 'system'
+    sourceIP || 'system',
   );
-  
+
   // Create automated response actions based on incident type
   createResponseActions(incident);
-  
+
   return incident;
 }
 
@@ -484,12 +484,12 @@ function createResponseActions(incident: SecurityIncident): void {
   // Get default workflow for this incident type
   const workflow = defaultResponseWorkflows[incident.type];
   if (!workflow) return;
-  
+
   // Create response actions
   for (const action of workflow) {
     const actionId = `ACT-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const now = Date.now();
-    
+
     const responseAction: ResponseAction = {
       id: actionId,
       name: action.name,
@@ -497,21 +497,21 @@ function createResponseActions(incident: SecurityIncident): void {
       status: action.requiresApproval ? ResponseStatus.REQUIRES_APPROVAL : ResponseStatus.PENDING,
       createdAt: now,
       updatedAt: now,
-      incident
+      incident,
     };
-    
+
     // Add action to incident
     incident.actions.push(responseAction);
-    
+
     // Store the action
     responseActions.set(actionId, responseAction);
-    
+
     // Execute actions that don't require approval
     if (!action.requiresApproval) {
       executeResponseAction(actionId, action.handler);
     }
   }
-  
+
   // Update the incident with actions
   securityIncidents.set(incident.id, incident);
 }
@@ -521,84 +521,85 @@ function createResponseActions(incident: SecurityIncident): void {
  */
 async function executeResponseAction(
   actionId: string,
-  handler: (incident: SecurityIncident) => Promise<any>
+  handler: (incident: SecurityIncident) => Promise<any>,
 ): Promise<void> {
   // Get the action
   const action = responseActions.get(actionId);
   if (!action) return;
-  
+
   // Update status to in progress
   action.status = ResponseStatus.IN_PROGRESS;
   action.updatedAt = Date.now();
   responseActions.set(actionId, action);
-  
+
   try {
     // Execute the handler
     const result = await handler(action.incident);
-    
+
     // Update action with result
     action.status = ResponseStatus.COMPLETED;
     action.completedAt = Date.now();
     action.updatedAt = Date.now();
     action.result = result;
-    
+
     // Log the successful action
     logAuditEvent(
       'system',
       `Security response action completed: ${action.name}`,
-      { 
+      {
         incidentId: action.incident.id,
         actionId,
-        result
+        result,
       },
-      'system'
+      'system',
     );
   } catch (error) {
     // Update action with error
     action.status = ResponseStatus.FAILED;
     action.updatedAt = Date.now();
     action.error = error.message;
-    
+
     // Log the failed action
     logSecurityEvent(
       'system',
       `Security response action failed: ${action.name}`,
-      { 
+      {
         incidentId: action.incident.id,
         actionId,
-        error: error.message
+        error: error.message,
       },
-      'system'
+      'system',
     );
   }
-  
+
   // Update the action
   responseActions.set(actionId, action);
-  
+
   // Check if all actions are completed or failed
   const incident = action.incident;
-  const allActionsComplete = incident.actions.every(a => 
-    a.status === ResponseStatus.COMPLETED || 
-    a.status === ResponseStatus.FAILED ||
-    a.status === ResponseStatus.REQUIRES_APPROVAL
+  const allActionsComplete = incident.actions.every(
+    (a) =>
+      a.status === ResponseStatus.COMPLETED ||
+      a.status === ResponseStatus.FAILED ||
+      a.status === ResponseStatus.REQUIRES_APPROVAL,
   );
-  
+
   // If all actions are complete, update incident status
   if (allActionsComplete) {
-    const anySuccessful = incident.actions.some(a => a.status === ResponseStatus.COMPLETED);
-    
+    const anySuccessful = incident.actions.some((a) => a.status === ResponseStatus.COMPLETED);
+
     if (anySuccessful) {
       incident.status = 'mitigated';
-      
+
       // Log the mitigation
       logSecurityEvent(
         'system',
         `Security incident mitigated: ${incident.summary}`,
         { incidentId: incident.id },
-        'system'
+        'system',
       );
     }
-    
+
     // Update the incident
     securityIncidents.set(incident.id, incident);
   }
@@ -611,81 +612,85 @@ export function approveResponseAction(actionId: string, approvedBy: string): boo
   // Get the action
   const action = responseActions.get(actionId);
   if (!action) return false;
-  
+
   // Check if action requires approval
   if (action.status !== ResponseStatus.REQUIRES_APPROVAL) return false;
-  
+
   // Update approval information
   action.approvedBy = approvedBy;
   action.approvedAt = Date.now();
   action.status = ResponseStatus.PENDING;
   action.updatedAt = Date.now();
-  
+
   // Update the action
   responseActions.set(actionId, action);
-  
+
   // Log the approval
   logAuditEvent(
     approvedBy,
     `Security response action approved: ${action.name}`,
-    { 
+    {
       incidentId: action.incident.id,
-      actionId
+      actionId,
     },
-    'system'
+    'system',
   );
-  
+
   // Get the workflow for this incident type
   const workflow = defaultResponseWorkflows[action.incident.type];
   if (!workflow) return true;
-  
+
   // Find the matching handler
-  const workflowAction = workflow.find(wa => wa.name === action.name);
+  const workflowAction = workflow.find((wa) => wa.name === action.name);
   if (!workflowAction) return true;
-  
+
   // Execute the action
   executeResponseAction(actionId, workflowAction.handler);
-  
+
   return true;
 }
 
 /**
  * Resolve a security incident
  */
-export function resolveSecurityIncident(incidentId: string, resolvedBy: string, notes?: string): boolean {
+export function resolveSecurityIncident(
+  incidentId: string,
+  resolvedBy: string,
+  notes?: string,
+): boolean {
   // Get the incident
   const incident = securityIncidents.get(incidentId);
   if (!incident) return false;
-  
+
   // Update incident status
   incident.status = 'resolved';
   incident.resolvedBy = resolvedBy;
   incident.resolvedAt = Date.now();
-  
+
   if (notes) {
     if (!incident.notes) incident.notes = [];
     incident.notes.push(notes);
   }
-  
+
   // Update the incident
   securityIncidents.set(incidentId, incident);
-  
+
   // Log the resolution
   logAuditEvent(
     resolvedBy,
     `Security incident resolved: ${incident.summary}`,
-    { 
+    {
       incidentId,
-      notes
+      notes,
     },
-    'system'
+    'system',
   );
-  
+
   // Clear user risk score if applicable
   if (incident.user) {
     resetUserRiskScore(incident.user);
   }
-  
+
   return true;
 }
 
@@ -696,36 +701,36 @@ export function markAsfalsePositive(incidentId: string, markedBy: string, notes?
   // Get the incident
   const incident = securityIncidents.get(incidentId);
   if (!incident) return false;
-  
+
   // Update incident status
   incident.status = 'false_positive';
   incident.resolvedBy = markedBy;
   incident.resolvedAt = Date.now();
-  
+
   if (notes) {
     if (!incident.notes) incident.notes = [];
     incident.notes.push(notes);
   }
-  
+
   // Update the incident
   securityIncidents.set(incidentId, incident);
-  
+
   // Log the false positive
   logAuditEvent(
     markedBy,
     `Security incident marked as false positive: ${incident.summary}`,
-    { 
+    {
       incidentId,
-      notes
+      notes,
     },
-    'system'
+    'system',
   );
-  
+
   // Clear user risk score if applicable
   if (incident.user) {
     resetUserRiskScore(incident.user);
   }
-  
+
   return true;
 }
 
@@ -750,56 +755,60 @@ export function addIncidentNote(incidentId: string, note: string, addedBy: strin
   // Get the incident
   const incident = securityIncidents.get(incidentId);
   if (!incident) return false;
-  
+
   // Initialize notes array if it doesn't exist
   if (!incident.notes) incident.notes = [];
-  
+
   // Add the note with context
   const formattedNote = `[${new Date().toISOString()}] ${addedBy}: ${note}`;
   incident.notes.push(formattedNote);
-  
+
   // Update the incident
   securityIncidents.set(incidentId, incident);
-  
+
   // Log the note addition
   logAuditEvent(
     addedBy,
     `Note added to security incident`,
-    { 
+    {
       incidentId,
-      note
+      note,
     },
-    'system'
+    'system',
   );
-  
+
   return true;
 }
 
 /**
  * Assign a security incident to a user
  */
-export function assignSecurityIncident(incidentId: string, assignedTo: string, assignedBy: string): boolean {
+export function assignSecurityIncident(
+  incidentId: string,
+  assignedTo: string,
+  assignedBy: string,
+): boolean {
   // Get the incident
   const incident = securityIncidents.get(incidentId);
   if (!incident) return false;
-  
+
   // Update assignment
   incident.assignedTo = assignedTo;
-  
+
   // Update the incident
   securityIncidents.set(incidentId, incident);
-  
+
   // Log the assignment
   logAuditEvent(
     assignedBy,
     `Security incident assigned`,
-    { 
+    {
       incidentId,
-      assignedTo
+      assignedTo,
     },
-    'system'
+    'system',
   );
-  
+
   return true;
 }
 
@@ -809,31 +818,31 @@ export function assignSecurityIncident(incidentId: string, assignedTo: string, a
 export function securityResponseMiddleware(req: Request, res: Response, next: NextFunction): void {
   // Store original res.end to intercept responses
   const originalEnd = res.end;
-  
+
   // Override end method to check for security indicators after request is processed
-  res.end = function(chunk?: any, encoding?: BufferEncoding | string, callback?: () => void): any {
+  res.end = function (chunk?: any, encoding?: BufferEncoding | string, callback?: () => void): any {
     // Restore original end
     res.end = originalEnd;
-    
+
     // Check for indicators of security issues
     const statusCode = res.statusCode;
     const path = req.path;
     const method = req.method;
     const ip = req.ip || req.socket.remoteAddress || 'unknown';
     const user = (req as any).user?.username || 'anonymous';
-    
+
     // Check for authentication failures
     if (statusCode === 401 && (path.includes('/login') || path.includes('/auth'))) {
       // Could be part of a brute force attack
       // This would be expanded in a real implementation with tracking of repeated failures
     }
-    
+
     // Check for authorization failures
     if (statusCode === 403) {
       // Could indicate privilege escalation attempts
       // This would be expanded in a real implementation
     }
-    
+
     // Check for signs of injection attempts in request parameters
     const possibleInjectionPatterns = [
       /SELECT.*FROM/i,
@@ -843,23 +852,25 @@ export function securityResponseMiddleware(req: Request, res: Response, next: Ne
       /<script>/i,
       /javascript:/i,
       /eval\(/i,
-      /document\.cookie/i
+      /document\.cookie/i,
     ];
-    
+
     // Check query params, body, and headers for injection patterns
     const queryParams = req.query ? JSON.stringify(req.query) : '';
     const bodyContent = req.body ? JSON.stringify(req.body) : '';
     const headerContent = req.headers ? JSON.stringify(req.headers) : '';
-    
+
     // Combine all content to check
     const contentToCheck = `${queryParams} ${bodyContent} ${headerContent}`;
-    
+
     // Check for injection patterns
     for (const pattern of possibleInjectionPatterns) {
       if (pattern.test(contentToCheck)) {
         // Create an incident for possible injection attempt
-        const type = pattern.toString().includes('SELECT') ? IncidentType.SQL_INJECTION : IncidentType.XSS_ATTEMPT;
-        
+        const type = pattern.toString().includes('SELECT')
+          ? IncidentType.SQL_INJECTION
+          : IncidentType.XSS_ATTEMPT;
+
         createSecurityIncident(
           type,
           AlertSeverity.HIGH,
@@ -869,19 +880,19 @@ export function securityResponseMiddleware(req: Request, res: Response, next: Ne
             method,
             pattern: pattern.toString(),
             matchedContent: contentToCheck.match(pattern)?.[0],
-            statusCode
+            statusCode,
           },
           ip,
-          user
+          user,
         );
-        
+
         break;
       }
     }
-    
+
     // Call the original end
     return originalEnd.call(this, chunk, encoding as BufferEncoding, callback);
   };
-  
+
   next();
 }

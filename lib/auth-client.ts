@@ -40,19 +40,19 @@ export const AuthClient = {
 
   authenticatedFetch: async (url: string, options: RequestInit = {}) => {
     const token = AuthClient.getToken();
-    
+
     if (!token) {
       throw new Error('No authentication token available');
     }
 
     const headers = {
       ...options.headers,
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     };
 
     const response = await fetch(url, {
       ...options,
-      headers
+      headers,
     });
 
     if (response.status === 401) {
@@ -67,16 +67,16 @@ export const AuthClient = {
   checkAuthStatus: async () => {
     try {
       const response = await AuthClient.authenticatedFetch('/api/auth/me');
-      
+
       if (response.ok) {
         const userData = await response.json();
         return userData;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Auth status check failed:', error);
       return null;
     }
-  }
+  },
 };

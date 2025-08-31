@@ -17,17 +17,17 @@ export default function NotFound() {
         </CardHeader>
         <CardContent className="space-y-4 text-center">
           <div className="text-6xl font-bold text-blue-300">404</div>
-          
+
           <p className="text-blue-200">
             The page you're looking for doesn't exist or has been moved.
           </p>
-          
+
           <div className="bg-blue-900/20 p-3 rounded-lg">
             <p className="text-sm text-blue-200">
               You might want to check the URL or navigate to one of our schools:
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 gap-2 text-sm">
             <Link href="/schools/primary">
               <Button variant="outline" size="sm" className="w-full">
@@ -54,9 +54,9 @@ export default function NotFound() {
               </Button>
             </Link>
           </div>
-          
+
           <div className="flex gap-2">
-            <Button 
+            <Button
               onClick={() => window.history.back()}
               className="flex-1 bg-blue-600 hover:bg-blue-700"
               size="sm"
@@ -65,10 +65,7 @@ export default function NotFound() {
               Go Back
             </Button>
             <Link href="/" className="flex-1">
-              <Button 
-                className="w-full bg-purple-600 hover:bg-purple-700"
-                size="sm"
-              >
+              <Button className="w-full bg-purple-600 hover:bg-purple-700" size="sm">
                 <Home className="w-4 h-4 mr-2" />
                 Home
               </Button>

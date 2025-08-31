@@ -1,25 +1,32 @@
+'use client';
 
-'use client'
-
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Progress } from '@/components/ui/progress'
-import { QuickLinks } from '@/components/dashboard/quick-links'
-import { ClassCreator } from '@/components/dashboard/class-creator'
-import { 
-  BookOpen, Users, Brain, Calendar, 
-  MessageCircle, TrendingUp, Trophy, Star,
-  GraduationCap, FileText, Clock
-} from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Progress } from '@/components/ui/progress';
+import { QuickLinks } from '@/components/dashboard/quick-links';
+import { ClassCreator } from '@/components/dashboard/class-creator';
+import {
+  BookOpen,
+  Users,
+  Brain,
+  Calendar,
+  MessageCircle,
+  TrendingUp,
+  Trophy,
+  Star,
+  GraduationCap,
+  FileText,
+  Clock,
+} from 'lucide-react';
 
 export default function PrimaryTeacherDashboard() {
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true)
-  }, [])
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
     return (
@@ -28,14 +35,14 @@ export default function PrimaryTeacherDashboard() {
           <div className="animate-pulse">
             <div className="h-32 bg-blue-600 rounded-lg mb-6"></div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map(i => (
+              {[1, 2, 3].map((i) => (
                 <div key={i} className="h-48 bg-blue-500/20 rounded-lg"></div>
               ))}
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -75,9 +82,12 @@ export default function PrimaryTeacherDashboard() {
           {[
             { name: 'Math Heroes', students: 24, subject: 'Mathematics', progress: 85 },
             { name: 'Reading Rangers', students: 20, subject: 'Reading', progress: 92 },
-            { name: 'Science Explorers', students: 18, subject: 'Science', progress: 78 }
+            { name: 'Science Explorers', students: 18, subject: 'Science', progress: 78 },
           ].map((classData, index) => (
-            <Card key={index} className="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-blue-500">
+            <Card
+              key={index}
+              className="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 border-blue-500"
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-blue-400">
                   <BookOpen className="w-5 h-5" />
@@ -155,5 +165,5 @@ export default function PrimaryTeacherDashboard() {
         </div>
       </div>
     </div>
-  )
+  );
 }

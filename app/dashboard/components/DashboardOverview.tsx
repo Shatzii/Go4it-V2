@@ -64,8 +64,8 @@ export function DashboardOverview() {
 
       const response = await fetch('/api/dashboard/overview', {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.ok) {
@@ -98,9 +98,7 @@ export function DashboardOverview() {
     <div className="p-6 space-y-6">
       {/* Welcome Section */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">
-          Welcome back, {dashboardData.user.username}!
-        </h1>
+        <h1 className="text-3xl font-bold mb-2">Welcome back, {dashboardData.user.username}!</h1>
         <p className="text-muted-foreground">
           Ready to elevate your {dashboardData.user.sport} performance today?
         </p>
@@ -126,7 +124,9 @@ export function DashboardOverview() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{dashboardData.statistics.total_xp}</div>
-            <p className="text-xs text-muted-foreground">Tier {dashboardData.statistics.current_tier}</p>
+            <p className="text-xs text-muted-foreground">
+              Tier {dashboardData.statistics.current_tier}
+            </p>
           </CardContent>
         </Card>
 
@@ -162,7 +162,10 @@ export function DashboardOverview() {
           {dashboardData.recent_analyses.length > 0 ? (
             <div className="space-y-4">
               {dashboardData.recent_analyses.map((analysis) => (
-                <div key={analysis.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div
+                  key={analysis.id}
+                  className="flex items-center justify-between p-4 border rounded-lg"
+                >
                   <div>
                     <div className="font-medium">{analysis.sport} Analysis</div>
                     <div className="text-sm text-muted-foreground">{analysis.feedback}</div>
@@ -180,7 +183,7 @@ export function DashboardOverview() {
             <div className="text-center py-8">
               <p className="text-muted-foreground">No video analyses yet</p>
               <button
-                onClick={() => window.location.href = '/upload'}
+                onClick={() => (window.location.href = '/upload')}
                 className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
               >
                 Upload Your First Video
@@ -240,7 +243,9 @@ export function DashboardOverview() {
                   <div className="space-y-1">
                     <div className="flex justify-between text-sm">
                       <span>Progress</span>
-                      <span>{goal.current}/{goal.target}</span>
+                      <span>
+                        {goal.current}/{goal.target}
+                      </span>
                     </div>
                     <Progress value={(goal.current / goal.target) * 100} className="h-2" />
                   </div>

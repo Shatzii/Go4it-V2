@@ -1,6 +1,6 @@
 /**
  * Environment Variable Validation System
- * 
+ *
  * Centralized validation and management of all environment variables
  * to ensure secure credential management across the platform.
  */
@@ -9,16 +9,16 @@ interface EnvConfig {
   // Database
   DATABASE_URL: string;
   USE_MEMORY_STORAGE?: string;
-  
+
   // AI/ML Services
   ANTHROPIC_API_KEY?: string;
   OPENAI_API_KEY?: string;
-  
+
   // Authentication & Security
   JWT_SECRET: string;
   SESSION_SECRET?: string;
   BCRYPT_SALT_ROUNDS?: string;
-  
+
   // Admin Credentials
   MASTER_ADMIN_USERNAME?: string;
   MASTER_ADMIN_PASSWORD?: string;
@@ -31,57 +31,57 @@ interface EnvConfig {
   LANGUAGE_ADMIN_USERNAME?: string;
   LANGUAGE_ADMIN_PASSWORD?: string;
   DEMO_USER_PASSWORD?: string;
-  
+
   // Email Services
   SMTP_HOST?: string;
   SMTP_PORT?: string;
   SMTP_SECURE?: string;
   SMTP_USER?: string;
   SMTP_PASS?: string;
-  
+
   // External APIs
   SPORTS_API_KEY?: string;
   RECRUITING_API_KEY?: string;
   VIDEO_PROCESSING_API_KEY?: string;
-  
+
   // Cloud Storage
   AWS_ACCESS_KEY_ID?: string;
   AWS_SECRET_ACCESS_KEY?: string;
   AWS_REGION?: string;
   AWS_BUCKET_NAME?: string;
-  
+
   // Development
   NODE_ENV?: string;
   API_BASE_URL?: string;
   CLIENT_URL?: string;
   DEBUG_MODE?: string;
-  
+
   // Production
   PRODUCTION_DOMAIN?: string;
   SSL_CERT_PATH?: string;
   SSL_KEY_PATH?: string;
   REDIS_URL?: string;
-  
+
   // Monitoring
   SENTRY_DSN?: string;
   GOOGLE_ANALYTICS_ID?: string;
   NEW_RELIC_LICENSE_KEY?: string;
-  
+
   // Licensing
   LICENSE_VALIDATION_KEY?: string;
   HARDWARE_BINDING_SECRET?: string;
-  
+
   // Feature Flags
   ENABLE_AI_FEATURES?: string;
   ENABLE_VIDEO_ANALYSIS?: string;
   ENABLE_RECRUITING_TOOLS?: string;
   ENABLE_WELLNESS_TRACKING?: string;
-  
+
   // Social Media
   TWITTER_API_KEY?: string;
   TWITTER_API_SECRET?: string;
   INSTAGRAM_API_KEY?: string;
-  
+
   // Payment Processing
   STRIPE_PUBLISHABLE_KEY?: string;
   STRIPE_SECRET_KEY?: string;
@@ -92,18 +92,9 @@ interface EnvConfig {
  * Required environment variables for different environments
  */
 const REQUIRED_VARS = {
-  development: [
-    'DATABASE_URL',
-    'JWT_SECRET'
-  ],
-  production: [
-    'DATABASE_URL',
-    'JWT_SECRET',
-    'PRODUCTION_DOMAIN'
-  ],
-  test: [
-    'JWT_SECRET'
-  ]
+  development: ['DATABASE_URL', 'JWT_SECRET'],
+  production: ['DATABASE_URL', 'JWT_SECRET', 'PRODUCTION_DOMAIN'],
+  test: ['JWT_SECRET'],
 };
 
 /**
@@ -122,7 +113,7 @@ const DEFAULT_VALUES = {
   ENABLE_AI_FEATURES: 'true',
   ENABLE_VIDEO_ANALYSIS: 'true',
   ENABLE_RECRUITING_TOOLS: 'true',
-  ENABLE_WELLNESS_TRACKING: 'true'
+  ENABLE_WELLNESS_TRACKING: 'true',
 };
 
 /**
@@ -142,8 +133,9 @@ function generateSecureKey(length: number = 64): string {
  */
 export function validateEnvironment(): EnvConfig {
   const env = process.env.NODE_ENV || 'development';
-  const requiredVars = REQUIRED_VARS[env as keyof typeof REQUIRED_VARS] || REQUIRED_VARS.development;
-  
+  const requiredVars =
+    REQUIRED_VARS[env as keyof typeof REQUIRED_VARS] || REQUIRED_VARS.development;
+
   // Check for required variables
   const missing: string[] = [];
   for (const varName of requiredVars) {
@@ -151,40 +143,40 @@ export function validateEnvironment(): EnvConfig {
       missing.push(varName);
     }
   }
-  
+
   // Generate JWT_SECRET if missing in development
   if (missing.includes('JWT_SECRET') && env === 'development') {
     console.warn('⚠️ JWT_SECRET not found, generating secure random key for development');
     process.env.JWT_SECRET = generateSecureKey(64);
     missing.splice(missing.indexOf('JWT_SECRET'), 1);
   }
-  
+
   // Report missing variables
   if (missing.length > 0) {
     console.error('❌ Missing required environment variables:');
-    missing.forEach(varName => {
+    missing.forEach((varName) => {
       console.error(`   - ${varName}`);
     });
-    
+
     if (env === 'production') {
       throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
     } else {
       console.warn('⚠️ Continuing with missing variables (development mode)');
     }
   }
-  
+
   // Apply default values
   for (const [key, defaultValue] of Object.entries(DEFAULT_VALUES)) {
     if (!process.env[key]) {
       process.env[key] = defaultValue;
     }
   }
-  
+
   // Validate specific formats
   validateDatabaseUrl();
   validateJwtSecret();
   validateNumericEnvVars();
-  
+
   console.log(`✅ Environment validation complete (${env})`);
   return process.env as unknown as EnvConfig;
 }
@@ -214,7 +206,7 @@ function validateJwtSecret(): void {
  */
 function validateNumericEnvVars(): void {
   const numericVars = ['BCRYPT_SALT_ROUNDS', 'SMTP_PORT'];
-  
+
   for (const varName of numericVars) {
     const value = process.env[varName];
     if (value && isNaN(Number(value))) {
@@ -244,7 +236,7 @@ export function isFeatureEnabled(feature: string): boolean {
 export function getDatabaseConfig() {
   return {
     url: getEnvVar('DATABASE_URL'),
-    useMemoryStorage: getEnvVar('USE_MEMORY_STORAGE') === 'true'
+    useMemoryStorage: getEnvVar('USE_MEMORY_STORAGE') === 'true',
   };
 }
 
@@ -255,7 +247,7 @@ export function getAIConfig() {
   return {
     anthropicApiKey: getEnvVar('ANTHROPIC_API_KEY'),
     openaiApiKey: getEnvVar('OPENAI_API_KEY'),
-    enabled: isFeatureEnabled('AI_FEATURES')
+    enabled: isFeatureEnabled('AI_FEATURES'),
   };
 }
 
@@ -266,7 +258,7 @@ export function getAuthConfig() {
   return {
     jwtSecret: getEnvVar('JWT_SECRET'),
     sessionSecret: getEnvVar('SESSION_SECRET') || getEnvVar('JWT_SECRET'),
-    bcryptRounds: parseInt(getEnvVar('BCRYPT_SALT_ROUNDS', '12'))
+    bcryptRounds: parseInt(getEnvVar('BCRYPT_SALT_ROUNDS', '12')),
   };
 }
 

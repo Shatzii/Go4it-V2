@@ -1,6 +1,6 @@
 /**
  * Self-Hosted AI Education Engine
- * 
+ *
  * Complete AI system for educational content generation without external dependencies.
  * Includes 6 specialized AI teachers with adaptive learning capabilities.
  */
@@ -9,13 +9,13 @@ class SelfHostedAIEngine {
   constructor() {
     this.teachers = {
       'professor-newton': new MathTeacher(),
-      'dr-curie': new ScienceTeacher(), 
+      'dr-curie': new ScienceTeacher(),
       'ms-shakespeare': new EnglishTeacher(),
       'professor-timeline': new SocialStudiesTeacher(),
       'maestro-picasso': new ArtsTeacher(),
-      'dr-inclusive': new SpecialEducationTeacher()
+      'dr-inclusive': new SpecialEducationTeacher(),
     };
-    
+
     this.learningStyles = ['visual', 'auditory', 'kinesthetic', 'reading'];
     this.difficultyLevels = ['beginner', 'intermediate', 'advanced', 'expert'];
     this.neurodivergentAdaptations = ['adhd', 'dyslexia', 'autism', 'processing'];
@@ -23,7 +23,7 @@ class SelfHostedAIEngine {
 
   async generateContent(request) {
     const { teacherId, subject, topic, studentLevel, learningStyle, adaptations } = request;
-    
+
     const teacher = this.teachers[teacherId];
     if (!teacher) {
       throw new Error(`Teacher ${teacherId} not found`);
@@ -34,7 +34,7 @@ class SelfHostedAIEngine {
       topic,
       studentLevel: studentLevel || 'intermediate',
       learningStyle: learningStyle || 'visual',
-      adaptations: adaptations || []
+      adaptations: adaptations || [],
     });
 
     return {
@@ -43,14 +43,14 @@ class SelfHostedAIEngine {
       metadata: {
         teacher: teacher.getProfile(),
         generatedAt: new Date().toISOString(),
-        adaptations: content.adaptations
-      }
+        adaptations: content.adaptations,
+      },
     };
   }
 
   async provideTutoring(request) {
     const { teacherId, question, context, studentProfile } = request;
-    
+
     const teacher = this.teachers[teacherId];
     if (!teacher) {
       throw new Error(`Teacher ${teacherId} not found`);
@@ -59,40 +59,40 @@ class SelfHostedAIEngine {
     const response = await teacher.answerQuestion({
       question,
       context: context || {},
-      studentProfile: studentProfile || {}
+      studentProfile: studentProfile || {},
     });
 
     return {
       success: true,
       response,
       followUp: teacher.generateFollowUpQuestions(question, context),
-      resources: teacher.suggestResources(question, studentProfile)
+      resources: teacher.suggestResources(question, studentProfile),
     };
   }
 
   async assessStudent(request) {
     const { teacherId, subject, questions, studentAnswers, adaptations } = request;
-    
+
     const teacher = this.teachers[teacherId];
     const assessment = await teacher.assessPerformance({
       subject,
       questions,
       answers: studentAnswers,
-      adaptations: adaptations || []
+      adaptations: adaptations || [],
     });
 
     return {
       success: true,
       assessment,
       recommendations: teacher.generateRecommendations(assessment),
-      nextSteps: teacher.planNextLearning(assessment)
+      nextSteps: teacher.planNextLearning(assessment),
     };
   }
 
   getAvailableTeachers() {
-    return Object.keys(this.teachers).map(id => ({
+    return Object.keys(this.teachers).map((id) => ({
       id,
-      ...this.teachers[id].getProfile()
+      ...this.teachers[id].getProfile(),
     }));
   }
 }
@@ -111,49 +111,49 @@ class BaseTeacher {
       name: this.name,
       subject: this.subject,
       specialties: this.specialties,
-      description: this.getDescription()
+      description: this.getDescription(),
     };
   }
 
   async generateLesson(params) {
     const { topic, studentLevel, learningStyle, adaptations } = params;
-    
+
     const baseContent = this.createBaseContent(topic, studentLevel);
     const adaptedContent = this.applyLearningStyleAdaptations(baseContent, learningStyle);
     const finalContent = this.applyNeurodivergentAdaptations(adaptedContent, adaptations);
-    
+
     return {
       title: `${topic} - ${this.subject}`,
       content: finalContent,
       activities: this.generateActivities(topic, learningStyle),
       assessments: this.generateAssessments(topic, studentLevel),
       resources: this.generateResources(topic),
-      adaptations: this.getAppliedAdaptations(adaptations)
+      adaptations: this.getAppliedAdaptations(adaptations),
     };
   }
 
   async answerQuestion(params) {
     const { question, context, studentProfile } = params;
-    
+
     // Analyze question complexity and student level
     const complexity = this.analyzeQuestionComplexity(question);
     const studentLevel = studentProfile.level || 'intermediate';
-    
+
     // Generate appropriate response
     const response = this.generateResponse(question, complexity, studentLevel);
-    
+
     return {
       answer: response.answer,
       explanation: response.explanation,
       examples: response.examples,
       difficulty: complexity,
-      confidence: response.confidence
+      confidence: response.confidence,
     };
   }
 
   async assessPerformance(params) {
     const { questions, answers, adaptations } = params;
-    
+
     const results = questions.map((question, index) => {
       const answer = answers[index];
       return this.evaluateAnswer(question, answer, adaptations);
@@ -169,48 +169,56 @@ class BaseTeacher {
       strengths,
       weaknesses,
       masteryLevel: this.determineMasteryLevel(overallScore),
-      timeSpent: this.calculateTimeSpent(results)
+      timeSpent: this.calculateTimeSpent(results),
     };
   }
 
   // Abstract methods to be implemented by specific teachers
-  initializeTemplates() { return {}; }
-  initializeQuestionBank() { return []; }
-  getDescription() { return `${this.name} teaches ${this.subject}`; }
-  createBaseContent(topic, level) { return { topic, level, content: "Base content" }; }
-  
+  initializeTemplates() {
+    return {};
+  }
+  initializeQuestionBank() {
+    return [];
+  }
+  getDescription() {
+    return `${this.name} teaches ${this.subject}`;
+  }
+  createBaseContent(topic, level) {
+    return { topic, level, content: 'Base content' };
+  }
+
   applyLearningStyleAdaptations(content, style) {
     const adaptations = {
       visual: {
         addVisualAids: true,
         includeCharts: true,
         useColorCoding: true,
-        provideDiagrams: true
+        provideDiagrams: true,
       },
       auditory: {
         includeAudioElements: true,
         addRhymes: true,
         useRepetition: true,
-        providePronunciation: true
+        providePronunciation: true,
       },
       kinesthetic: {
         addHandsOnActivities: true,
         includeMovement: true,
         useManipulatives: true,
-        provideRealWorldExamples: true
+        provideRealWorldExamples: true,
       },
       reading: {
         provideTextResources: true,
         includeWritingActivities: true,
         addVocabulary: true,
-        useDetailedExplanations: true
-      }
+        useDetailedExplanations: true,
+      },
     };
 
     return {
       ...content,
       adaptations: adaptations[style] || adaptations.visual,
-      learningStyle: style
+      learningStyle: style,
     };
   }
 
@@ -221,33 +229,33 @@ class BaseTeacher {
         addBreakReminders: true,
         useTimers: true,
         minimizeDistractions: true,
-        provideStructure: true
+        provideStructure: true,
       },
       dyslexia: {
         useDyslexiaFriendlyFonts: true,
         increaseLineSpacing: true,
         provideAudioAlternatives: true,
         useHighContrast: true,
-        breakDownWords: true
+        breakDownWords: true,
       },
       autism: {
         provideRoutine: true,
         useVisualSchedules: true,
         minimizeSensoryOverload: true,
         offerChoices: true,
-        useClearInstructions: true
+        useClearInstructions: true,
       },
       processing: {
         allowExtraTime: true,
         provideMultipleFormats: true,
         useSimpleLanguage: true,
         offerRepetition: true,
-        checkUnderstanding: true
-      }
+        checkUnderstanding: true,
+      },
     };
 
     const appliedAdaptations = {};
-    adaptations.forEach(adaptation => {
+    adaptations.forEach((adaptation) => {
       if (neurodivergentSupport[adaptation]) {
         Object.assign(appliedAdaptations, neurodivergentSupport[adaptation]);
       }
@@ -256,7 +264,7 @@ class BaseTeacher {
     return {
       ...content,
       neurodivergentSupport: appliedAdaptations,
-      adaptations: [...(content.adaptations || []), ...adaptations]
+      adaptations: [...(content.adaptations || []), ...adaptations],
     };
   }
 
@@ -266,26 +274,26 @@ class BaseTeacher {
         `Create a mind map about ${topic}`,
         `Draw diagrams to illustrate key concepts`,
         `Use color-coding to organize information`,
-        `Make flashcards with visual elements`
+        `Make flashcards with visual elements`,
       ],
       auditory: [
         `Discuss ${topic} with a study partner`,
         `Create rhymes or songs about key concepts`,
         `Listen to educational podcasts on ${topic}`,
-        `Record yourself explaining the material`
+        `Record yourself explaining the material`,
       ],
       kinesthetic: [
         `Build a model related to ${topic}`,
         `Act out scenarios or processes`,
         `Use physical manipulatives for problem-solving`,
-        `Take breaks to move around while studying`
+        `Take breaks to move around while studying`,
       ],
       reading: [
         `Write a summary of ${topic}`,
         `Create an outline of key points`,
         `Research additional resources on ${topic}`,
-        `Keep a learning journal`
-      ]
+        `Keep a learning journal`,
+      ],
     };
 
     return activities[learningStyle] || activities.visual;
@@ -293,31 +301,32 @@ class BaseTeacher {
 
   generateAssessments(topic, level) {
     const assessmentTypes = ['multiple_choice', 'short_answer', 'essay', 'practical'];
-    
-    return assessmentTypes.map(type => ({
+
+    return assessmentTypes.map((type) => ({
       type,
       topic,
       difficulty: level,
-      questions: this.generateQuestions(type, topic, level)
+      questions: this.generateQuestions(type, topic, level),
     }));
   }
 
   generateQuestions(type, topic, level) {
     // Generate questions based on type, topic, and level
     const questionCount = { beginner: 5, intermediate: 7, advanced: 10, expert: 12 }[level] || 7;
-    
+
     return Array.from({ length: questionCount }, (_, i) => ({
       id: `q_${i + 1}`,
       question: `${type} question about ${topic} (${level} level)`,
       type,
       difficulty: level,
-      points: this.calculateQuestionPoints(type, level)
+      points: this.calculateQuestionPoints(type, level),
     }));
   }
 
   calculateQuestionPoints(type, level) {
     const basePoints = { beginner: 1, intermediate: 2, advanced: 3, expert: 4 }[level] || 2;
-    const typeMultiplier = { multiple_choice: 1, short_answer: 1.5, essay: 2, practical: 2.5 }[type] || 1;
+    const typeMultiplier =
+      { multiple_choice: 1, short_answer: 1.5, essay: 2, practical: 2.5 }[type] || 1;
     return Math.round(basePoints * typeMultiplier);
   }
 
@@ -328,37 +337,37 @@ class BaseTeacher {
         title: `Introduction to ${topic}`,
         description: 'Comprehensive video explanation',
         duration: '15-20 minutes',
-        difficulty: 'intermediate'
+        difficulty: 'intermediate',
       },
       {
         type: 'reading',
         title: `${topic} Study Guide`,
         description: 'Detailed written materials',
         pages: '5-8 pages',
-        difficulty: 'intermediate'
+        difficulty: 'intermediate',
       },
       {
         type: 'interactive',
         title: `${topic} Practice Exercises`,
         description: 'Hands-on practice problems',
         exercises: '10-15 problems',
-        difficulty: 'intermediate'
+        difficulty: 'intermediate',
       },
       {
         type: 'game',
         title: `${topic} Learning Game`,
         description: 'Educational game for skill reinforcement',
         playtime: '10-15 minutes',
-        difficulty: 'beginner'
-      }
+        difficulty: 'beginner',
+      },
     ];
   }
 
   getAppliedAdaptations(adaptations) {
-    return adaptations.map(adaptation => ({
+    return adaptations.map((adaptation) => ({
       type: adaptation,
       description: this.getAdaptationDescription(adaptation),
-      applied: true
+      applied: true,
     }));
   }
 
@@ -367,7 +376,7 @@ class BaseTeacher {
       adhd: 'Content broken into smaller chunks with built-in breaks',
       dyslexia: 'Dyslexia-friendly formatting and audio alternatives provided',
       autism: 'Structured routine with clear instructions and visual supports',
-      processing: 'Extra time allowed with multiple format options'
+      processing: 'Extra time allowed with multiple format options',
     };
     return descriptions[adaptation] || 'General accommodation applied';
   }
@@ -383,7 +392,7 @@ class BaseTeacher {
       questionId: question.id,
       score: Math.min(1.0, correctnessScore + effortScore + adaptationBonus),
       feedback: this.generateFeedback(question, answer, correctnessScore),
-      timeSpent: Math.random() * 300 + 60 // Mock time in seconds
+      timeSpent: Math.random() * 300 + 60, // Mock time in seconds
     };
   }
 
@@ -399,22 +408,23 @@ class BaseTeacher {
 
   generateFeedback(question, answer, score) {
     if (score > 0.8) return "Excellent work! You've demonstrated strong understanding.";
-    if (score > 0.6) return "Good effort! Consider reviewing the key concepts.";
-    if (score > 0.4) return "You're on the right track. Let's work on strengthening your understanding.";
+    if (score > 0.6) return 'Good effort! Consider reviewing the key concepts.';
+    if (score > 0.4)
+      return "You're on the right track. Let's work on strengthening your understanding.";
     return "This is a challenging topic. Let's break it down together.";
   }
 
   identifyStrengths(results) {
     return results
-      .filter(r => r.score > 0.7)
-      .map(r => `Strong performance on question ${r.questionId}`)
+      .filter((r) => r.score > 0.7)
+      .map((r) => `Strong performance on question ${r.questionId}`)
       .slice(0, 3);
   }
 
   identifyWeaknesses(results) {
     return results
-      .filter(r => r.score < 0.5)
-      .map(r => `Needs improvement on question ${r.questionId}`)
+      .filter((r) => r.score < 0.5)
+      .map((r) => `Needs improvement on question ${r.questionId}`)
       .slice(0, 3);
   }
 
@@ -432,8 +442,9 @@ class BaseTeacher {
   // Helper methods for tutoring
   analyzeQuestionComplexity(question) {
     const length = question.length;
-    const keywordCount = (question.match(/\b(why|how|explain|analyze|compare|evaluate)\b/gi) || []).length;
-    
+    const keywordCount = (question.match(/\b(why|how|explain|analyze|compare|evaluate)\b/gi) || [])
+      .length;
+
     if (keywordCount > 2 || length > 200) return 'advanced';
     if (keywordCount > 0 || length > 100) return 'intermediate';
     return 'beginner';
@@ -444,15 +455,15 @@ class BaseTeacher {
       answer: `Based on your question about ${question.substring(0, 50)}..., here's an explanation tailored to ${studentLevel} level.`,
       explanation: `This concept involves several key elements that I'll break down for you.`,
       examples: [`Example 1 related to your question`, `Example 2 for further clarification`],
-      confidence: 0.85
+      confidence: 0.85,
     };
   }
 
   generateFollowUpQuestions(question, context) {
     return [
-      "Would you like me to explain any specific part in more detail?",
-      "Do you have any questions about the examples I provided?",
-      "Would you like to try a practice problem on this topic?"
+      'Would you like me to explain any specific part in more detail?',
+      'Do you have any questions about the examples I provided?',
+      'Would you like to try a practice problem on this topic?',
     ];
   }
 
@@ -461,13 +472,13 @@ class BaseTeacher {
       {
         type: 'practice',
         title: 'Additional Practice Problems',
-        description: 'Similar problems to reinforce understanding'
+        description: 'Similar problems to reinforce understanding',
       },
       {
         type: 'video',
         title: 'Visual Explanation',
-        description: 'Video walkthrough of the concept'
-      }
+        description: 'Video walkthrough of the concept',
+      },
     ];
   }
 }
@@ -489,7 +500,7 @@ class MathTeacher extends BaseTeacher {
       content: `Welcome to ${topic}! Let's explore this mathematical concept step by step.`,
       steps: this.generateMathSteps(topic, level),
       examples: this.generateMathExamples(topic, level),
-      formulas: this.getRelevantFormulas(topic)
+      formulas: this.getRelevantFormulas(topic),
     };
   }
 
@@ -503,7 +514,7 @@ class MathTeacher extends BaseTeacher {
     return Array.from({ length: exampleCount }, (_, i) => ({
       problem: `Example ${i + 1}: ${topic} problem`,
       solution: `Solution steps for ${topic}`,
-      explanation: `Why this solution works for ${topic}`
+      explanation: `Why this solution works for ${topic}`,
     }));
   }
 
@@ -513,9 +524,9 @@ class MathTeacher extends BaseTeacher {
       algebra: ['y = mx + b', 'ax² + bx + c = 0'],
       geometry: ['A = πr²', 'V = ⁴⁄₃πr³'],
       calculus: ['d/dx(xⁿ) = nxⁿ⁻¹', '∫xⁿdx = xⁿ⁺¹/(n+1)'],
-      statistics: ['x̄ = Σx/n', 'σ = √(Σ(x-μ)²/n)']
+      statistics: ['x̄ = Σx/n', 'σ = √(Σ(x-μ)²/n)'],
     };
-    
+
     return formulas[topic.toLowerCase()] || [];
   }
 }
@@ -536,7 +547,7 @@ class ScienceTeacher extends BaseTeacher {
       content: `Let's explore the fascinating world of ${topic}!`,
       scientificMethod: this.applyScientificMethod(topic),
       experiments: this.suggestExperiments(topic, level),
-      realWorldApplications: this.findRealWorldApplications(topic)
+      realWorldApplications: this.findRealWorldApplications(topic),
     };
   }
 
@@ -545,20 +556,25 @@ class ScienceTeacher extends BaseTeacher {
       observation: `What do we observe about ${topic}?`,
       hypothesis: `What predictions can we make about ${topic}?`,
       experiment: `How can we test our understanding of ${topic}?`,
-      conclusion: `What can we conclude about ${topic}?`
+      conclusion: `What can we conclude about ${topic}?`,
     };
   }
 
   suggestExperiments(topic, level) {
-    const safetyLevels = { beginner: 'low_risk', intermediate: 'medium_risk', advanced: 'supervised', expert: 'advanced' };
+    const safetyLevels = {
+      beginner: 'low_risk',
+      intermediate: 'medium_risk',
+      advanced: 'supervised',
+      expert: 'advanced',
+    };
     return [
       {
         name: `${topic} Demonstration`,
         safetyLevel: safetyLevels[level],
         materials: [`Materials needed for ${topic} experiment`],
         procedure: [`Steps to explore ${topic} safely`],
-        expectedResults: `What you should observe with ${topic}`
-      }
+        expectedResults: `What you should observe with ${topic}`,
+      },
     ];
   }
 
@@ -567,14 +583,19 @@ class ScienceTeacher extends BaseTeacher {
       `How ${topic} is used in medicine`,
       `${topic} applications in technology`,
       `Environmental connections to ${topic}`,
-      `Career opportunities involving ${topic}`
+      `Career opportunities involving ${topic}`,
     ];
   }
 }
 
 class EnglishTeacher extends BaseTeacher {
   constructor() {
-    super('Ms. Shakespeare', 'English Language Arts', ['Literature', 'Writing', 'Grammar', 'Reading Comprehension']);
+    super('Ms. Shakespeare', 'English Language Arts', [
+      'Literature',
+      'Writing',
+      'Grammar',
+      'Reading Comprehension',
+    ]);
   }
 
   getDescription() {
@@ -588,7 +609,7 @@ class EnglishTeacher extends BaseTeacher {
       content: `Let's dive into the rich world of ${topic}!`,
       literaryElements: this.identifyLiteraryElements(topic),
       vocabulary: this.buildVocabulary(topic, level),
-      writingPrompts: this.generateWritingPrompts(topic, level)
+      writingPrompts: this.generateWritingPrompts(topic, level),
     };
   }
 
@@ -598,38 +619,54 @@ class EnglishTeacher extends BaseTeacher {
       characterization: `Character development in ${topic}`,
       setting: `Importance of setting in ${topic}`,
       plot: `Plot structure and development`,
-      literaryDevices: [`Metaphors in ${topic}`, `Symbolism in ${topic}`]
+      literaryDevices: [`Metaphors in ${topic}`, `Symbolism in ${topic}`],
     };
   }
 
   buildVocabulary(topic, level) {
     const wordCounts = { beginner: 10, intermediate: 15, advanced: 20, expert: 25 };
     const count = wordCounts[level] || 15;
-    
+
     return Array.from({ length: count }, (_, i) => ({
       word: `vocabulary_word_${i + 1}`,
       definition: `Definition related to ${topic}`,
       example: `Example sentence using the word in context of ${topic}`,
-      level: level
+      level: level,
     }));
   }
 
   generateWritingPrompts(topic, level) {
     const promptTypes = ['narrative', 'expository', 'persuasive', 'descriptive'];
-    return promptTypes.map(type => ({
+    return promptTypes.map((type) => ({
       type,
       prompt: `Write a ${type} piece about ${topic}`,
       level,
-      guidelines: this.getWritingGuidelines(type, level)
+      guidelines: this.getWritingGuidelines(type, level),
     }));
   }
 
   getWritingGuidelines(type, level) {
     const guidelines = {
-      narrative: ['Include a clear beginning, middle, and end', 'Develop characters and setting', 'Use descriptive language'],
-      expository: ['Present information clearly', 'Use evidence and examples', 'Organize ideas logically'],
-      persuasive: ['State your position clearly', 'Provide supporting arguments', 'Address counterarguments'],
-      descriptive: ['Use sensory details', 'Create vivid imagery', 'Organize spatially or by importance']
+      narrative: [
+        'Include a clear beginning, middle, and end',
+        'Develop characters and setting',
+        'Use descriptive language',
+      ],
+      expository: [
+        'Present information clearly',
+        'Use evidence and examples',
+        'Organize ideas logically',
+      ],
+      persuasive: [
+        'State your position clearly',
+        'Provide supporting arguments',
+        'Address counterarguments',
+      ],
+      descriptive: [
+        'Use sensory details',
+        'Create vivid imagery',
+        'Organize spatially or by importance',
+      ],
     };
     return guidelines[type] || guidelines.expository;
   }
@@ -651,7 +688,7 @@ class SocialStudiesTeacher extends BaseTeacher {
       content: `Let's explore the fascinating story of ${topic}!`,
       timeline: this.createTimeline(topic),
       connections: this.findConnections(topic),
-      perspectives: this.presentMultiplePerspectives(topic)
+      perspectives: this.presentMultiplePerspectives(topic),
     };
   }
 
@@ -660,7 +697,7 @@ class SocialStudiesTeacher extends BaseTeacher {
       { date: 'Ancient Times', event: `Early developments in ${topic}` },
       { date: 'Medieval Period', event: `${topic} during the middle ages` },
       { date: 'Modern Era', event: `${topic} in the modern world` },
-      { date: 'Contemporary', event: `Current state of ${topic}` }
+      { date: 'Contemporary', event: `Current state of ${topic}` },
     ];
   }
 
@@ -670,7 +707,7 @@ class SocialStudiesTeacher extends BaseTeacher {
       political: `Political implications of ${topic}`,
       social: `Social impact of ${topic}`,
       cultural: `Cultural significance of ${topic}`,
-      global: `Global connections to ${topic}`
+      global: `Global connections to ${topic}`,
     };
   }
 
@@ -679,7 +716,7 @@ class SocialStudiesTeacher extends BaseTeacher {
       { perspective: 'Historical', viewpoint: `How historians view ${topic}` },
       { perspective: 'Cultural', viewpoint: `Different cultural views on ${topic}` },
       { perspective: 'Economic', viewpoint: `Economic analysis of ${topic}` },
-      { perspective: 'Social', viewpoint: `Social implications of ${topic}` }
+      { perspective: 'Social', viewpoint: `Social implications of ${topic}` },
     ];
   }
 }
@@ -700,7 +737,7 @@ class ArtsTeacher extends BaseTeacher {
       content: `Let's unleash your creativity with ${topic}!`,
       techniques: this.teachTechniques(topic, level),
       inspiration: this.provideInspiration(topic),
-      projects: this.suggestProjects(topic, level)
+      projects: this.suggestProjects(topic, level),
     };
   }
 
@@ -709,9 +746,9 @@ class ArtsTeacher extends BaseTeacher {
       beginner: ['Basic techniques', 'Fundamental concepts'],
       intermediate: ['Intermediate skills', 'Style development'],
       advanced: ['Advanced methods', 'Personal expression'],
-      expert: ['Master techniques', 'Innovation and experimentation']
+      expert: ['Master techniques', 'Innovation and experimentation'],
     };
-    
+
     return complexityLevels[level] || complexityLevels.intermediate;
   }
 
@@ -719,16 +756,16 @@ class ArtsTeacher extends BaseTeacher {
     return {
       artists: [`Famous artists who worked with ${topic}`, `Contemporary creators in ${topic}`],
       movements: [`Art movements related to ${topic}`, `Cultural influences on ${topic}`],
-      examples: [`Masterpieces in ${topic}`, `Innovative approaches to ${topic}`]
+      examples: [`Masterpieces in ${topic}`, `Innovative approaches to ${topic}`],
     };
   }
 
   suggestProjects(topic, level) {
     const projectComplexity = {
       beginner: 'simple',
-      intermediate: 'moderate', 
+      intermediate: 'moderate',
       advanced: 'complex',
-      expert: 'masterwork'
+      expert: 'masterwork',
     };
 
     return [
@@ -737,20 +774,30 @@ class ArtsTeacher extends BaseTeacher {
         complexity: projectComplexity[level],
         timeEstimate: this.estimateProjectTime(level),
         materials: [`Materials needed for ${topic} project`],
-        steps: [`Step-by-step guide for ${topic} project`]
-      }
+        steps: [`Step-by-step guide for ${topic} project`],
+      },
     ];
   }
 
   estimateProjectTime(level) {
-    const times = { beginner: '1-2 hours', intermediate: '3-5 hours', advanced: '1-2 weeks', expert: '2-4 weeks' };
+    const times = {
+      beginner: '1-2 hours',
+      intermediate: '3-5 hours',
+      advanced: '1-2 weeks',
+      expert: '2-4 weeks',
+    };
     return times[level] || times.intermediate;
   }
 }
 
 class SpecialEducationTeacher extends BaseTeacher {
   constructor() {
-    super('Dr. Inclusive', 'Special Education', ['ADHD Support', 'Dyslexia Assistance', 'Autism Accommodations', 'Learning Disabilities']);
+    super('Dr. Inclusive', 'Special Education', [
+      'ADHD Support',
+      'Dyslexia Assistance',
+      'Autism Accommodations',
+      'Learning Disabilities',
+    ]);
   }
 
   getDescription() {
@@ -764,7 +811,7 @@ class SpecialEducationTeacher extends BaseTeacher {
       content: `Let's make ${topic} accessible for every learner!`,
       accommodations: this.designAccommodations(topic),
       alternativeFormats: this.createAlternativeFormats(topic),
-      supportStrategies: this.provideSupportStrategies(topic)
+      supportStrategies: this.provideSupportStrategies(topic),
     };
   }
 
@@ -773,20 +820,20 @@ class SpecialEducationTeacher extends BaseTeacher {
       visual: {
         dyslexia: `Dyslexia-friendly formatting for ${topic}`,
         autism: `Visual supports for ${topic} learning`,
-        processing: `Visual processing aids for ${topic}`
+        processing: `Visual processing aids for ${topic}`,
       },
       auditory: {
         adhd: `Audio focus techniques for ${topic}`,
-        processing: `Auditory processing support for ${topic}`
+        processing: `Auditory processing support for ${topic}`,
       },
       kinesthetic: {
         adhd: `Movement breaks during ${topic} learning`,
-        autism: `Sensory-friendly ${topic} activities`
+        autism: `Sensory-friendly ${topic} activities`,
       },
       cognitive: {
         processing: `Cognitive load management for ${topic}`,
-        memory: `Memory support strategies for ${topic}`
-      }
+        memory: `Memory support strategies for ${topic}`,
+      },
     };
   }
 
@@ -796,7 +843,7 @@ class SpecialEducationTeacher extends BaseTeacher {
       { format: 'Audio', description: `${topic} content in audio format` },
       { format: 'Visual', description: `${topic} presented with visual aids` },
       { format: 'Interactive', description: `Hands-on ${topic} activities` },
-      { format: 'Simplified', description: `${topic} broken into manageable chunks` }
+      { format: 'Simplified', description: `${topic} broken into manageable chunks` },
     ];
   }
 
@@ -804,9 +851,12 @@ class SpecialEducationTeacher extends BaseTeacher {
     return {
       attention: [`Focus strategies for ${topic}`, `Attention management during ${topic}`],
       organization: [`Organizational tools for ${topic}`, `Structure supports for ${topic}`],
-      processing: [`Processing speed accommodations for ${topic}`, `Multiple format options for ${topic}`],
+      processing: [
+        `Processing speed accommodations for ${topic}`,
+        `Multiple format options for ${topic}`,
+      ],
       social: [`Social skills integration with ${topic}`, `Collaborative ${topic} activities`],
-      emotional: [`Emotional regulation during ${topic}`, `Confidence building with ${topic}`]
+      emotional: [`Emotional regulation during ${topic}`, `Confidence building with ${topic}`],
     };
   }
 }

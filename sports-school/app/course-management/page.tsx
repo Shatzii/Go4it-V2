@@ -1,19 +1,11 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import CourseManagement from '@/components/ui/course-management'
-import { 
-  BookOpen, 
-  Users, 
-  Calendar, 
-  GraduationCap,
-  Home,
-  BarChart3,
-  Settings
-} from 'lucide-react'
-import Link from 'next/link'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import CourseManagement from '@/components/ui/course-management';
+import { BookOpen, Users, Calendar, GraduationCap, Home, BarChart3, Settings } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CourseManagementPage() {
   return (
@@ -53,5 +45,5 @@ export default function CourseManagementPage() {
         <CourseManagement />
       </div>
     </div>
-  )
+  );
 }

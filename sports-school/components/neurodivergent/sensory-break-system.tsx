@@ -1,44 +1,44 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Brain, 
-  Heart, 
-  Eye, 
-  Ear, 
-  Hand, 
-  Clock, 
-  Play, 
-  Pause, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Brain,
+  Heart,
+  Eye,
+  Ear,
+  Hand,
+  Clock,
+  Play,
+  Pause,
   RotateCcw,
   Settings,
   Zap,
   Wind,
-  Waves
-} from 'lucide-react'
+  Waves,
+} from 'lucide-react';
 
 interface SensoryActivity {
-  id: string
-  name: string
-  type: 'visual' | 'auditory' | 'tactile' | 'movement' | 'breathing'
-  duration: number
-  description: string
-  instructions: string[]
-  neurotype: string[]
-  difficulty: 'easy' | 'medium' | 'hard'
+  id: string;
+  name: string;
+  type: 'visual' | 'auditory' | 'tactile' | 'movement' | 'breathing';
+  duration: number;
+  description: string;
+  instructions: string[];
+  neurotype: string[];
+  difficulty: 'easy' | 'medium' | 'hard';
 }
 
 export default function SensoryBreakSystem() {
-  const [selectedNeurotype, setSelectedNeurotype] = useState<string>('ADHD')
-  const [currentActivity, setCurrentActivity] = useState<SensoryActivity | null>(null)
-  const [isActive, setIsActive] = useState(false)
-  const [timeRemaining, setTimeRemaining] = useState(0)
-  const [completedBreaks, setCompletedBreaks] = useState(0)
+  const [selectedNeurotype, setSelectedNeurotype] = useState<string>('ADHD');
+  const [currentActivity, setCurrentActivity] = useState<SensoryActivity | null>(null);
+  const [isActive, setIsActive] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(0);
+  const [completedBreaks, setCompletedBreaks] = useState(0);
 
   const sensoryActivities: SensoryActivity[] = [
     {
@@ -52,10 +52,10 @@ export default function SensoryBreakSystem() {
         'Breathe in slowly through your nose for 4 counts',
         'Hold your breath for 4 counts',
         'Exhale slowly through your mouth for 6 counts',
-        'Repeat this pattern'
+        'Repeat this pattern',
       ],
       neurotype: ['ADHD', 'autism', 'anxiety'],
-      difficulty: 'easy'
+      difficulty: 'easy',
     },
     {
       id: 'fidget_sequence',
@@ -67,10 +67,10 @@ export default function SensoryBreakSystem() {
         'Follow the on-screen patterns with your finger',
         'Press and hold different textured areas',
         'Match the rhythm of the vibration patterns',
-        'Focus on the tactile sensations'
+        'Focus on the tactile sensations',
       ],
       neurotype: ['ADHD', 'autism'],
-      difficulty: 'medium'
+      difficulty: 'medium',
     },
     {
       id: 'eye_movement',
@@ -82,10 +82,10 @@ export default function SensoryBreakSystem() {
         'Follow the moving dot with your eyes only',
         'Keep your head still',
         'Blink naturally throughout',
-        'Focus on smooth, controlled movements'
+        'Focus on smooth, controlled movements',
       ],
       neurotype: ['dyslexia', 'autism', 'processing'],
-      difficulty: 'easy'
+      difficulty: 'easy',
     },
     {
       id: 'progressive_muscle',
@@ -98,10 +98,10 @@ export default function SensoryBreakSystem() {
         'Move up to your calves, thighs, and so on',
         'Tense each muscle group firmly but not painfully',
         'Notice the contrast between tension and relaxation',
-        'End with deep breathing'
+        'End with deep breathing',
       ],
       neurotype: ['ADHD', 'autism', 'anxiety'],
-      difficulty: 'medium'
+      difficulty: 'medium',
     },
     {
       id: 'auditory_focus',
@@ -113,10 +113,10 @@ export default function SensoryBreakSystem() {
         'Listen to the layered sounds',
         'Focus on one sound at a time',
         'Identify different instruments or tones',
-        'Notice how sounds fade in and out'
+        'Notice how sounds fade in and out',
       ],
       neurotype: ['ADHD', 'auditory_processing'],
-      difficulty: 'hard'
+      difficulty: 'hard',
     },
     {
       id: 'movement_break',
@@ -129,77 +129,87 @@ export default function SensoryBreakSystem() {
         'Do 10 jumping jacks or march in place',
         'Roll your shoulders and neck gently',
         'Do wall push-ups if space allows',
-        'End with gentle stretching'
+        'End with gentle stretching',
       ],
       neurotype: ['ADHD', 'hyperactivity'],
-      difficulty: 'easy'
-    }
-  ]
+      difficulty: 'easy',
+    },
+  ];
 
   useEffect(() => {
-    let interval: NodeJS.Timeout
+    let interval: NodeJS.Timeout;
     if (isActive && timeRemaining > 0) {
       interval = setInterval(() => {
-        setTimeRemaining(prev => {
+        setTimeRemaining((prev) => {
           if (prev <= 1) {
-            setIsActive(false)
-            setCompletedBreaks(prev => prev + 1)
-            return 0
+            setIsActive(false);
+            setCompletedBreaks((prev) => prev + 1);
+            return 0;
           }
-          return prev - 1
-        })
-      }, 1000)
+          return prev - 1;
+        });
+      }, 1000);
     }
-    return () => clearInterval(interval)
-  }, [isActive, timeRemaining])
+    return () => clearInterval(interval);
+  }, [isActive, timeRemaining]);
 
   const startActivity = (activity: SensoryActivity) => {
-    setCurrentActivity(activity)
-    setTimeRemaining(activity.duration)
-    setIsActive(true)
-  }
+    setCurrentActivity(activity);
+    setTimeRemaining(activity.duration);
+    setIsActive(true);
+  };
 
   const pauseActivity = () => {
-    setIsActive(!isActive)
-  }
+    setIsActive(!isActive);
+  };
 
   const resetActivity = () => {
-    setIsActive(false)
-    setTimeRemaining(currentActivity?.duration || 0)
-  }
+    setIsActive(false);
+    setTimeRemaining(currentActivity?.duration || 0);
+  };
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const getActivitiesByNeurotype = () => {
-    return sensoryActivities.filter(activity => 
-      activity.neurotype.includes(selectedNeurotype) || 
-      activity.neurotype.includes('all')
-    )
-  }
+    return sensoryActivities.filter(
+      (activity) =>
+        activity.neurotype.includes(selectedNeurotype) || activity.neurotype.includes('all'),
+    );
+  };
 
   const getIconForType = (type: string) => {
     switch (type) {
-      case 'visual': return <Eye className="h-5 w-5" />
-      case 'auditory': return <Ear className="h-5 w-5" />
-      case 'tactile': return <Hand className="h-5 w-5" />
-      case 'movement': return <Zap className="h-5 w-5" />
-      case 'breathing': return <Wind className="h-5 w-5" />
-      default: return <Brain className="h-5 w-5" />
+      case 'visual':
+        return <Eye className="h-5 w-5" />;
+      case 'auditory':
+        return <Ear className="h-5 w-5" />;
+      case 'tactile':
+        return <Hand className="h-5 w-5" />;
+      case 'movement':
+        return <Zap className="h-5 w-5" />;
+      case 'breathing':
+        return <Wind className="h-5 w-5" />;
+      default:
+        return <Brain className="h-5 w-5" />;
     }
-  }
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-500'
-      case 'medium': return 'bg-yellow-500'
-      case 'hard': return 'bg-red-500'
-      default: return 'bg-gray-500'
+      case 'easy':
+        return 'bg-green-500';
+      case 'medium':
+        return 'bg-yellow-500';
+      case 'hard':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -259,7 +269,9 @@ export default function SensoryBreakSystem() {
               </div>
               <div className="flex items-center space-x-2">
                 <Badge variant="outline">{currentActivity.type}</Badge>
-                <div className={`w-3 h-3 rounded-full ${getDifficultyColor(currentActivity.difficulty)}`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${getDifficultyColor(currentActivity.difficulty)}`}
+                />
               </div>
             </CardTitle>
             <CardDescription>{currentActivity.description}</CardDescription>
@@ -269,8 +281,12 @@ export default function SensoryBreakSystem() {
               <div className="text-4xl font-bold text-blue-600 mb-2">
                 {formatTime(timeRemaining)}
               </div>
-              <Progress 
-                value={currentActivity.duration > 0 ? ((currentActivity.duration - timeRemaining) / currentActivity.duration) * 100 : 0} 
+              <Progress
+                value={
+                  currentActivity.duration > 0
+                    ? ((currentActivity.duration - timeRemaining) / currentActivity.duration) * 100
+                    : 0
+                }
                 className="w-full h-3 mb-4"
               />
               <div className="flex justify-center space-x-2">
@@ -315,33 +331,44 @@ export default function SensoryBreakSystem() {
 
         <TabsContent value="recommended" className="space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
-            {getActivitiesByNeurotype().slice(0, 4).map((activity) => (
-              <Card key={activity.id} className="hover:shadow-lg transition-shadow cursor-pointer">
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between text-lg">
-                    <div className="flex items-center space-x-2">
-                      {getIconForType(activity.type)}
-                      <span>{activity.name}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-500">{Math.floor(activity.duration / 60)}m</span>
-                      <div className={`w-3 h-3 rounded-full ${getDifficultyColor(activity.difficulty)}`} />
-                    </div>
-                  </CardTitle>
-                  <CardDescription>{activity.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button 
-                    onClick={() => startActivity(activity)}
-                    className="w-full"
-                    disabled={isActive && currentActivity?.id === activity.id}
-                  >
-                    {isActive && currentActivity?.id === activity.id ? 'In Progress' : 'Start Activity'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+            {getActivitiesByNeurotype()
+              .slice(0, 4)
+              .map((activity) => (
+                <Card
+                  key={activity.id}
+                  className="hover:shadow-lg transition-shadow cursor-pointer"
+                >
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between text-lg">
+                      <div className="flex items-center space-x-2">
+                        {getIconForType(activity.type)}
+                        <span>{activity.name}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-4 w-4 text-gray-500" />
+                        <span className="text-sm text-gray-500">
+                          {Math.floor(activity.duration / 60)}m
+                        </span>
+                        <div
+                          className={`w-3 h-3 rounded-full ${getDifficultyColor(activity.difficulty)}`}
+                        />
+                      </div>
+                    </CardTitle>
+                    <CardDescription>{activity.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Button
+                      onClick={() => startActivity(activity)}
+                      className="w-full"
+                      disabled={isActive && currentActivity?.id === activity.id}
+                    >
+                      {isActive && currentActivity?.id === activity.id
+                        ? 'In Progress'
+                        : 'Start Activity'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </TabsContent>
 
@@ -355,16 +382,22 @@ export default function SensoryBreakSystem() {
                       {getIconForType(activity.type)}
                       <span>{activity.name}</span>
                     </div>
-                    <div className={`w-3 h-3 rounded-full ${getDifficultyColor(activity.difficulty)}`} />
+                    <div
+                      className={`w-3 h-3 rounded-full ${getDifficultyColor(activity.difficulty)}`}
+                    />
                   </CardTitle>
                   <CardDescription className="text-sm">{activity.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between mb-3">
-                    <Badge variant="outline" className="text-xs">{activity.type}</Badge>
-                    <span className="text-sm text-gray-500">{Math.floor(activity.duration / 60)}m</span>
+                    <Badge variant="outline" className="text-xs">
+                      {activity.type}
+                    </Badge>
+                    <span className="text-sm text-gray-500">
+                      {Math.floor(activity.duration / 60)}m
+                    </span>
                   </div>
-                  <Button 
+                  <Button
                     onClick={() => startActivity(activity)}
                     size="sm"
                     className="w-full"
@@ -415,5 +448,5 @@ export default function SensoryBreakSystem() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

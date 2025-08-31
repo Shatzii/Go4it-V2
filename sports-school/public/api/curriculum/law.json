@@ -13,7 +13,11 @@
           "adaptations": {
             "dyslexia": ["case law summaries", "visual constitutional maps", "audio case briefs"],
             "adhd": ["interactive case studies", "debate formats", "varied assessment methods"],
-            "autism": ["structured legal frameworks", "clear precedent chains", "predictable analysis methods"]
+            "autism": [
+              "structured legal frameworks",
+              "clear precedent chains",
+              "predictable analysis methods"
+            ]
           }
         },
         {
@@ -23,7 +27,11 @@
           "level": "foundational",
           "adaptations": {
             "dyslexia": ["writing templates", "citation tools", "collaborative drafting"],
-            "adhd": ["breaking large briefs into sections", "immediate feedback", "choice in topics"],
+            "adhd": [
+              "breaking large briefs into sections",
+              "immediate feedback",
+              "choice in topics"
+            ],
             "autism": ["standardized formats", "clear rubrics", "step-by-step processes"]
           }
         }
@@ -38,9 +46,17 @@
           "description": "Legal frameworks for disability rights and accommodation",
           "level": "advanced",
           "adaptations": {
-            "dyslexia": ["lived experience integration", "visual rights frameworks", "advocacy practice"],
+            "dyslexia": [
+              "lived experience integration",
+              "visual rights frameworks",
+              "advocacy practice"
+            ],
             "adhd": ["case-based learning", "real-world applications", "mentorship programs"],
-            "autism": ["systematic rights analysis", "clear advocacy procedures", "structured practice"]
+            "autism": [
+              "systematic rights analysis",
+              "clear advocacy procedures",
+              "structured practice"
+            ]
           }
         },
         {
@@ -49,9 +65,21 @@
           "description": "Legal issues in educational settings and policy development",
           "level": "advanced",
           "adaptations": {
-            "dyslexia": ["policy analysis tools", "collaborative research", "multiple presentation formats"],
-            "adhd": ["current event integration", "varied learning formats", "practical applications"],
-            "autism": ["systematic policy frameworks", "clear legal hierarchies", "structured analysis"]
+            "dyslexia": [
+              "policy analysis tools",
+              "collaborative research",
+              "multiple presentation formats"
+            ],
+            "adhd": [
+              "current event integration",
+              "varied learning formats",
+              "practical applications"
+            ],
+            "autism": [
+              "systematic policy frameworks",
+              "clear legal hierarchies",
+              "structured analysis"
+            ]
           }
         }
       ]

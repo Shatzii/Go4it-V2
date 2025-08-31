@@ -1,12 +1,9 @@
-import { pgTable, text, uuid, timestamp, boolean, integer, jsonb } from 'drizzle-orm/pg-core'
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
-import { z } from 'zod'
+import { pgTable, text, uuid, timestamp, boolean, integer, jsonb } from 'drizzle-orm/pg-core';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
 // Import Texas curriculum schemas
-import { 
-  TexasGradeLevelSchema, 
-  TexasSubjectSchema
-} from './texas-curriculum-schema'
+import { TexasGradeLevelSchema, TexasSubjectSchema } from './texas-curriculum-schema';
 
 // Users table
 export const users = pgTable('users', {
@@ -21,7 +18,7 @@ export const users = pgTable('users', {
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Schools table
 export const schools = pgTable('schools', {
@@ -33,7 +30,7 @@ export const schools = pgTable('schools', {
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Courses table
 export const courses = pgTable('courses', {
@@ -49,7 +46,7 @@ export const courses = pgTable('courses', {
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Assignments table
 export const assignments = pgTable('assignments', {
@@ -64,7 +61,7 @@ export const assignments = pgTable('assignments', {
   isActive: boolean('is_active').default(true),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Submissions table
 export const submissions = pgTable('submissions', {
@@ -79,7 +76,7 @@ export const submissions = pgTable('submissions', {
   gradedAt: timestamp('graded_at'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Progress table
 export const progress = pgTable('progress', {
@@ -95,7 +92,7 @@ export const progress = pgTable('progress', {
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // AI Sessions table
 export const aiSessions = pgTable('ai_sessions', {
@@ -108,7 +105,7 @@ export const aiSessions = pgTable('ai_sessions', {
   satisfaction: integer('satisfaction'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Payments table
 export const payments = pgTable('payments', {
@@ -118,7 +115,9 @@ export const payments = pgTable('payments', {
   amount: integer('amount').notNull(), // Amount in cents
   currency: text('currency').notNull().default('usd'),
   status: text('status').notNull().$type<'pending' | 'completed' | 'failed' | 'refunded'>(),
-  paymentType: text('payment_type').notNull().$type<'tuition' | 'enrollment' | 'activity' | 'materials' | 'other'>(),
+  paymentType: text('payment_type')
+    .notNull()
+    .$type<'tuition' | 'enrollment' | 'activity' | 'materials' | 'other'>(),
   description: text('description'),
   stripePaymentIntentId: text('stripe_payment_intent_id'),
   metadata: jsonb('metadata'),
@@ -126,7 +125,7 @@ export const payments = pgTable('payments', {
   updatedAt: timestamp('updated_at').defaultNow(),
   completedAt: timestamp('completed_at'),
   failedAt: timestamp('failed_at'),
-})
+});
 
 // Customers table for Stripe
 export const customers = pgTable('customers', {
@@ -138,7 +137,7 @@ export const customers = pgTable('customers', {
   stripeCustomerId: text('stripe_customer_id').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Subscriptions table
 export const subscriptions = pgTable('subscriptions', {
@@ -148,115 +147,129 @@ export const subscriptions = pgTable('subscriptions', {
   customerId: text('customer_id').notNull(),
   stripeSubscriptionId: text('stripe_subscription_id').notNull().unique(),
   priceId: text('price_id').notNull(),
-  status: text('status').notNull().$type<'active' | 'canceled' | 'incomplete' | 'incomplete_expired' | 'past_due' | 'trialing' | 'unpaid'>(),
+  status: text('status')
+    .notNull()
+    .$type<
+      | 'active'
+      | 'canceled'
+      | 'incomplete'
+      | 'incomplete_expired'
+      | 'past_due'
+      | 'trialing'
+      | 'unpaid'
+    >(),
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
   canceledAt: timestamp('canceled_at'),
-})
+});
 
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertSchoolSchema = createInsertSchema(schools).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertCourseSchema = createInsertSchema(courses).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertAssignmentSchema = createInsertSchema(assignments).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertSubmissionSchema = createInsertSchema(submissions).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertProgressSchema = createInsertSchema(progress).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertAiSessionSchema = createInsertSchema(aiSessions).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertPaymentSchema = createInsertSchema(payments).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertCustomerSchema = createInsertSchema(customers).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 // Select schemas
-export const selectUserSchema = createSelectSchema(users)
-export const selectSchoolSchema = createSelectSchema(schools)
-export const selectCourseSchema = createSelectSchema(courses)
-export const selectAssignmentSchema = createSelectSchema(assignments)
-export const selectSubmissionSchema = createSelectSchema(submissions)
-export const selectProgressSchema = createSelectSchema(progress)
-export const selectAiSessionSchema = createSelectSchema(aiSessions)
-export const selectPaymentSchema = createSelectSchema(payments)
-export const selectCustomerSchema = createSelectSchema(customers)
-export const selectSubscriptionSchema = createSelectSchema(subscriptions)
+export const selectUserSchema = createSelectSchema(users);
+export const selectSchoolSchema = createSelectSchema(schools);
+export const selectCourseSchema = createSelectSchema(courses);
+export const selectAssignmentSchema = createSelectSchema(assignments);
+export const selectSubmissionSchema = createSelectSchema(submissions);
+export const selectProgressSchema = createSelectSchema(progress);
+export const selectAiSessionSchema = createSelectSchema(aiSessions);
+export const selectPaymentSchema = createSelectSchema(payments);
+export const selectCustomerSchema = createSelectSchema(customers);
+export const selectSubscriptionSchema = createSelectSchema(subscriptions);
 
 // Types
-export type User = typeof users.$inferSelect
-export type NewUser = typeof users.$inferInsert
-export type School = typeof schools.$inferSelect
-export type NewSchool = typeof schools.$inferInsert
-export type Course = typeof courses.$inferSelect
-export type NewCourse = typeof courses.$inferInsert
-export type Assignment = typeof assignments.$inferSelect
-export type NewAssignment = typeof assignments.$inferInsert
-export type Submission = typeof submissions.$inferSelect
-export type NewSubmission = typeof submissions.$inferInsert
-export type Progress = typeof progress.$inferSelect
-export type NewProgress = typeof progress.$inferInsert
-export type AiSession = typeof aiSessions.$inferSelect
-export type NewAiSession = typeof aiSessions.$inferInsert
-export type Payment = typeof payments.$inferSelect
-export type NewPayment = typeof payments.$inferInsert
-export type Customer = typeof customers.$inferSelect
-export type NewCustomer = typeof customers.$inferInsert
-export type Subscription = typeof subscriptions.$inferSelect
-export type NewSubscription = typeof subscriptions.$inferInsert
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+export type School = typeof schools.$inferSelect;
+export type NewSchool = typeof schools.$inferInsert;
+export type Course = typeof courses.$inferSelect;
+export type NewCourse = typeof courses.$inferInsert;
+export type Assignment = typeof assignments.$inferSelect;
+export type NewAssignment = typeof assignments.$inferInsert;
+export type Submission = typeof submissions.$inferSelect;
+export type NewSubmission = typeof submissions.$inferInsert;
+export type Progress = typeof progress.$inferSelect;
+export type NewProgress = typeof progress.$inferInsert;
+export type AiSession = typeof aiSessions.$inferSelect;
+export type NewAiSession = typeof aiSessions.$inferInsert;
+export type Payment = typeof payments.$inferSelect;
+export type NewPayment = typeof payments.$inferInsert;
+export type Customer = typeof customers.$inferSelect;
+export type NewCustomer = typeof customers.$inferInsert;
+export type Subscription = typeof subscriptions.$inferSelect;
+export type NewSubscription = typeof subscriptions.$inferInsert;
 
 // Student onboarding table
 export const studentOnboarding = pgTable('student_onboarding', {
   id: uuid('id').primaryKey().defaultRandom(),
   studentId: text('student_id').notNull(),
   gradeLevel: text('grade_level').notNull(),
-  schoolType: text('school_type').notNull().$type<'primary' | 'secondary' | 'law' | 'language' | 'sports'>(),
-  learningStyle: text('learning_style').notNull().$type<'visual' | 'auditory' | 'kinesthetic' | 'reading_writing' | 'multimodal'>(),
+  schoolType: text('school_type')
+    .notNull()
+    .$type<'primary' | 'secondary' | 'law' | 'language' | 'sports'>(),
+  learningStyle: text('learning_style')
+    .notNull()
+    .$type<'visual' | 'auditory' | 'kinesthetic' | 'reading_writing' | 'multimodal'>(),
   accommodations: jsonb('accommodations').$type<string[]>(),
   academicStrengths: jsonb('academic_strengths').$type<string[]>(),
   academicChallenges: jsonb('academic_challenges').$type<string[]>(),
@@ -272,7 +285,7 @@ export const studentOnboarding = pgTable('student_onboarding', {
   }>(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Class schedules table
 export const classSchedules = pgTable('class_schedules', {
@@ -287,7 +300,7 @@ export const classSchedules = pgTable('class_schedules', {
   complianceNotes: text('compliance_notes'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Texas curriculum standards table
 export const texasCurriculumStandards = pgTable('texas_curriculum_standards', {
@@ -301,36 +314,38 @@ export const texasCurriculumStandards = pgTable('texas_curriculum_standards', {
   crossCurricularConnections: jsonb('cross_curricular_connections').$type<string[]>(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
-})
+});
 
 // Onboarding insert schemas
 export const insertStudentOnboardingSchema = createInsertSchema(studentOnboarding).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 export const insertClassScheduleSchema = createInsertSchema(classSchedules).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
-export const insertTexasCurriculumStandardSchema = createInsertSchema(texasCurriculumStandards).omit({
+export const insertTexasCurriculumStandardSchema = createInsertSchema(
+  texasCurriculumStandards,
+).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-})
+});
 
 // Onboarding select schemas
-export const selectStudentOnboardingSchema = createSelectSchema(studentOnboarding)
-export const selectClassScheduleSchema = createSelectSchema(classSchedules)
-export const selectTexasCurriculumStandardSchema = createSelectSchema(texasCurriculumStandards)
+export const selectStudentOnboardingSchema = createSelectSchema(studentOnboarding);
+export const selectClassScheduleSchema = createSelectSchema(classSchedules);
+export const selectTexasCurriculumStandardSchema = createSelectSchema(texasCurriculumStandards);
 
 // Onboarding types
-export type StudentOnboarding = typeof studentOnboarding.$inferSelect
-export type NewStudentOnboarding = typeof studentOnboarding.$inferInsert
-export type ClassSchedule = typeof classSchedules.$inferSelect
-export type NewClassSchedule = typeof classSchedules.$inferInsert
-export type TexasCurriculumStandard = typeof texasCurriculumStandards.$inferSelect
-export type NewTexasCurriculumStandard = typeof texasCurriculumStandards.$inferInsert
+export type StudentOnboarding = typeof studentOnboarding.$inferSelect;
+export type NewStudentOnboarding = typeof studentOnboarding.$inferInsert;
+export type ClassSchedule = typeof classSchedules.$inferSelect;
+export type NewClassSchedule = typeof classSchedules.$inferInsert;
+export type TexasCurriculumStandard = typeof texasCurriculumStandards.$inferSelect;
+export type NewTexasCurriculumStandard = typeof texasCurriculumStandards.$inferInsert;

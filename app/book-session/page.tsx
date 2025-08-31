@@ -14,9 +14,8 @@ const getStripePublicKey = () => {
   return process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
 };
 
-const stripePromise = typeof window !== 'undefined' 
-  ? loadStripe(getStripePublicKey()) 
-  : Promise.resolve(null);
+const stripePromise =
+  typeof window !== 'undefined' ? loadStripe(getStripePublicKey()) : Promise.resolve(null);
 
 const BookingForm = ({ sessionData }: { sessionData: any }) => {
   const stripe = useStripe();
@@ -26,9 +25,9 @@ const BookingForm = ({ sessionData }: { sessionData: any }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!stripe || !elements) return;
-    
+
     setIsProcessing(true);
     setPaymentError(null);
 
@@ -48,15 +47,15 @@ const BookingForm = ({ sessionData }: { sessionData: any }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <PaymentElement />
-      
+
       {paymentError && (
         <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
           <p className="text-red-400 text-sm">{paymentError}</p>
         </div>
       )}
-      
-      <Button 
-        type="submit" 
+
+      <Button
+        type="submit"
         disabled={!stripe || isProcessing}
         className="w-full bg-green-600 hover:bg-green-700"
       >
@@ -80,11 +79,11 @@ export default function BookSessionPage() {
       coachName: urlParams.get('coachName'),
       sessionType: urlParams.get('sessionType'),
       rate: parseInt(urlParams.get('rate') || '0'),
-      specialty: urlParams.get('specialty')
+      specialty: urlParams.get('specialty'),
     };
-    
+
     setSessionData(data);
-    
+
     // Create payment intent
     if (data.rate > 0) {
       createPaymentIntent(data);
@@ -97,7 +96,7 @@ export default function BookSessionPage() {
       console.error('Stripe public key not configured');
       return;
     }
-    
+
     try {
       const response = await fetch('/api/payments/class', {
         method: 'POST',
@@ -108,10 +107,10 @@ export default function BookSessionPage() {
           coach: data.coachName,
           price: data.rate,
           userId: 'current_user_id', // In production, get from auth
-          userEmail: 'user@example.com' // In production, get from auth
-        })
+          userEmail: 'user@example.com', // In production, get from auth
+        }),
       });
-      
+
       const result = await response.json();
       if (result.success) {
         setClientSecret(result.clientSecret);
@@ -132,7 +131,7 @@ export default function BookSessionPage() {
   const sessionTypes = {
     consultation: 'Consultation Session',
     training: '1-on-1 Training',
-    live_class: 'Live Class Access'
+    live_class: 'Live Class Access',
   };
 
   return (
@@ -166,7 +165,9 @@ export default function BookSessionPage() {
 
               <div className="border-t border-slate-600 pt-4">
                 <h4 className="font-medium text-white mb-2">Session Type</h4>
-                <p className="text-slate-300">{sessionTypes[sessionData.sessionType as keyof typeof sessionTypes]}</p>
+                <p className="text-slate-300">
+                  {sessionTypes[sessionData.sessionType as keyof typeof sessionTypes]}
+                </p>
               </div>
 
               <div className="border-t border-slate-600 pt-4">
@@ -250,7 +251,9 @@ export default function BookSessionPage() {
                 </Elements>
               ) : !getStripePublicKey() ? (
                 <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
-                  <p className="text-red-400 text-sm">Payment system not configured. Please contact support.</p>
+                  <p className="text-red-400 text-sm">
+                    Payment system not configured. Please contact support.
+                  </p>
                 </div>
               ) : (
                 <div className="flex items-center justify-center py-8">
@@ -262,8 +265,8 @@ export default function BookSessionPage() {
               <div className="mt-6 p-4 bg-slate-700/50 rounded-lg">
                 <h5 className="font-medium text-white mb-2">Cancellation Policy</h5>
                 <p className="text-sm text-slate-400">
-                  Full refund available up to 24 hours before your scheduled session. 
-                  Cancellations within 24 hours are subject to a 50% cancellation fee.
+                  Full refund available up to 24 hours before your scheduled session. Cancellations
+                  within 24 hours are subject to a 50% cancellation fee.
                 </p>
               </div>
             </CardContent>

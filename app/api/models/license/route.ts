@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const licenseId = searchParams.get('licenseId');
-    
+
     const encryptionManager = createModelEncryptionManager();
 
     if (licenseId) {
@@ -68,25 +68,28 @@ async function handleGenerateLicense(
     maxActivations?: number;
     validityDays?: number;
   },
-  encryptionManager: any
+  encryptionManager: any,
 ) {
   const { modelName, features = [], maxActivations = 1, validityDays = 365 } = data;
 
   // Check if user already has a license for this model
   const existingLicenses = await encryptionManager.getUserLicenses(userId);
   const existingLicense = existingLicenses.find(
-    (license: any) => license.modelName === modelName && license.isActive
+    (license: any) => license.modelName === modelName && license.isActive,
   );
 
   if (existingLicense) {
-    return NextResponse.json({
-      error: 'License already exists for this model',
-      existingLicense: {
-        id: existingLicense.id,
-        licenseKey: existingLicense.licenseKey,
-        expirationDate: existingLicense.expirationDate
-      }
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: 'License already exists for this model',
+        existingLicense: {
+          id: existingLicense.id,
+          licenseKey: existingLicense.licenseKey,
+          expirationDate: existingLicense.expirationDate,
+        },
+      },
+      { status: 400 },
+    );
   }
 
   const license = await encryptionManager.generateLicense(
@@ -94,7 +97,7 @@ async function handleGenerateLicense(
     modelName,
     features,
     maxActivations,
-    validityDays
+    validityDays,
   );
 
   return NextResponse.json({
@@ -105,28 +108,28 @@ async function handleGenerateLicense(
       modelName: license.modelName,
       expirationDate: license.expirationDate,
       maxActivations: license.maxActivations,
-      features: license.features
-    }
+      features: license.features,
+    },
   });
 }
 
-async function handleValidateLicense(
-  data: { licenseKey: string },
-  encryptionManager: any
-) {
+async function handleValidateLicense(data: { licenseKey: string }, encryptionManager: any) {
   const { licenseKey } = data;
-  
+
   if (!licenseKey) {
     return NextResponse.json({ error: 'License key is required' }, { status: 400 });
   }
 
   const validation = await encryptionManager.validateLicense(licenseKey);
-  
+
   if (!validation.valid) {
-    return NextResponse.json({
-      valid: false,
-      error: validation.error
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        valid: false,
+        error: validation.error,
+      },
+      { status: 400 },
+    );
   }
 
   return NextResponse.json({
@@ -137,50 +140,50 @@ async function handleValidateLicense(
       expirationDate: validation.license.expirationDate,
       features: validation.license.features,
       currentActivations: validation.license.currentActivations,
-      maxActivations: validation.license.maxActivations
-    }
+      maxActivations: validation.license.maxActivations,
+    },
   });
 }
 
-async function handleActivateLicense(
-  data: { licenseId: string },
-  encryptionManager: any
-) {
+async function handleActivateLicense(data: { licenseId: string }, encryptionManager: any) {
   const { licenseId } = data;
-  
+
   if (!licenseId) {
     return NextResponse.json({ error: 'License ID is required' }, { status: 400 });
   }
 
   const result = await encryptionManager.activateLicense(licenseId);
-  
+
   if (!result.success) {
-    return NextResponse.json({
-      success: false,
-      error: result.error
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: result.error,
+      },
+      { status: 400 },
+    );
   }
 
   return NextResponse.json({ success: true });
 }
 
-async function handleDeactivateLicense(
-  data: { licenseId: string },
-  encryptionManager: any
-) {
+async function handleDeactivateLicense(data: { licenseId: string }, encryptionManager: any) {
   const { licenseId } = data;
-  
+
   if (!licenseId) {
     return NextResponse.json({ error: 'License ID is required' }, { status: 400 });
   }
 
   const result = await encryptionManager.deactivateLicense(licenseId);
-  
+
   if (!result.success) {
-    return NextResponse.json({
-      success: false,
-      error: result.error
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: result.error,
+      },
+      { status: 400 },
+    );
   }
 
   return NextResponse.json({ success: true });

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server';
 
 // Sample students data (same as in the main route)
 const SAMPLE_STUDENTS = [
@@ -15,7 +15,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'maria.rodriguez@email.com',
     emergencyContact: '555-0123',
     medicalNotes: 'No known allergies',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' },
   },
   {
     id: '2',
@@ -30,7 +30,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'jennifer.johnson@email.com',
     emergencyContact: '555-0456',
     medicalNotes: 'ADHD - takes medication daily',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '3',
@@ -45,11 +45,11 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'david.chen@email.com',
     emergencyContact: '555-0789',
     medicalNotes: 'Dyslexia - needs extra time for reading',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '4',
-    name: 'Aiden O\'Connor',
+    name: "Aiden O'Connor",
     grade: '9',
     school: 'secondary',
     learningStyle: 'multimodal',
@@ -60,7 +60,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'sarah.oconnor@email.com',
     emergencyContact: '555-0012',
     medicalNotes: 'Anxiety disorder - needs calm environment',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' },
   },
   {
     id: '5',
@@ -75,7 +75,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'robert.williams@email.com',
     emergencyContact: '555-0345',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '6',
@@ -90,7 +90,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'carlos.martinez@email.com',
     emergencyContact: '555-0678',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' },
   },
   {
     id: '7',
@@ -105,7 +105,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'lisa.thompson@email.com',
     emergencyContact: '555-0901',
     medicalNotes: 'No known allergies',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '8',
@@ -120,7 +120,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'raj.patel@email.com',
     emergencyContact: '555-0234',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' },
   },
   {
     id: '9',
@@ -135,7 +135,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'melissa.brown@email.com',
     emergencyContact: '555-0567',
     medicalNotes: 'No known allergies',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '10',
@@ -150,7 +150,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'james.davis@email.com',
     emergencyContact: '555-0890',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '11',
@@ -165,7 +165,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'sarah.wilson@email.com',
     emergencyContact: '555-0123',
     medicalNotes: 'ADHD - needs movement breaks',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'tablet' },
   },
   {
     id: '12',
@@ -180,7 +180,7 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'miguel.garcia@email.com',
     emergencyContact: '555-0456',
     medicalNotes: 'Dyslexia - needs visual aids',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' }
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'laptop' },
   },
   {
     id: '13',
@@ -195,24 +195,21 @@ const SAMPLE_STUDENTS = [
     parentEmail: 'jennifer.lee@email.com',
     emergencyContact: '555-0789',
     medicalNotes: 'No medical concerns',
-    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' }
-  }
-]
+    technologyAccess: { hasDevice: true, hasInternet: true, deviceType: 'desktop' },
+  },
+];
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const student = SAMPLE_STUDENTS.find(s => s.id === params.id)
-    
+    const student = SAMPLE_STUDENTS.find((s) => s.id === params.id);
+
     if (!student) {
-      return NextResponse.json({ error: 'Student not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Student not found' }, { status: 404 });
     }
-    
-    return NextResponse.json(student)
+
+    return NextResponse.json(student);
   } catch (error) {
-    console.error('Error fetching student:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error fetching student:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

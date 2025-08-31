@@ -1,6 +1,6 @@
 /**
  * Soundtrack Generator Service
- * 
+ *
  * This service generates personalized learning soundtracks based on
  * student profiles, learning activities, and mood states.
  * It uses the Anthropic API to create tailored audio environment
@@ -23,37 +23,37 @@ async function generateSoundtrack(
   activity,
   duration = 25,
   anthropicClient,
-  options = {}
+  options = {},
 ) {
   try {
     const neurotype = studentProfile?.neurotype || 'default';
     const useAI = studentProfile?.aiPersonalization || false;
-    
+
     // If we don't have access to the Anthropic client, return a mock soundtrack
     if (!anthropicClient) {
       console.warn('Warning: Anthropic client not available. Returning sample soundtrack.');
       return generateSampleSoundtrack(neurotype, activity, duration);
     }
-    
+
     // Build the prompt for Claude
     const prompt = buildSoundtrackPrompt(neurotype, activity, duration, options);
-    
+
     // Use Anthropic to generate the soundtrack
     const response = await anthropicClient.messages.create({
-      model: "claude-3-7-sonnet-20250219", // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
+      model: 'claude-3-7-sonnet-20250219', // the newest Anthropic model is "claude-3-7-sonnet-20250219" which was released February 24, 2025
       max_tokens: 2000,
       messages: [
         {
-          role: "user",
-          content: prompt
-        }
+          role: 'user',
+          content: prompt,
+        },
       ],
-      response_format: { type: "json_object" }
+      response_format: { type: 'json_object' },
     });
-    
+
     // Parse the response
     const soundtrackData = JSON.parse(response.content[0].text);
-    
+
     // Format and return the soundtrack
     return {
       id: uuidv4(),
@@ -67,13 +67,13 @@ async function generateSoundtrack(
       createdAt: new Date().toISOString(),
       specialConsiderations: soundtrackData.specialConsiderations,
       aiGenerated: true,
-      ...(soundtrackData.moodRecommendation && { 
-        moodRecommendation: soundtrackData.moodRecommendation 
-      })
+      ...(soundtrackData.moodRecommendation && {
+        moodRecommendation: soundtrackData.moodRecommendation,
+      }),
     };
   } catch (error) {
     console.error('Error generating soundtrack:', error);
-    
+
     // Fall back to sample soundtrack if AI generation fails
     return generateSampleSoundtrack(neurotype, activity, duration);
   }
@@ -84,7 +84,7 @@ async function generateSoundtrack(
  */
 function buildSoundtrackPrompt(neurotype, activity, duration, options) {
   const { isMoodBased, mood, isStudySession, activities } = options;
-  
+
   let basePrompt = `
 You are an expert in designing therapeutic sound environments for neurodivergent learners.
 I need you to create a personalized learning soundtrack for a student with the following details:
@@ -177,23 +177,27 @@ function generateSampleSoundtrack(neurotype, activity, duration) {
   // Neurotype-specific considerations
   let specialConsiderations = '';
   let elements = [];
-  
+
   switch (neurotype) {
     case 'adhd':
       elements = ['white noise', 'low frequency beats', 'gentle pulses'];
-      specialConsiderations = 'Includes rhythmic patterns to aid working memory and reduce distraction sensitivity';
+      specialConsiderations =
+        'Includes rhythmic patterns to aid working memory and reduce distraction sensitivity';
       break;
     case 'autism':
       elements = ['consistent ambient tones', 'gentle nature sounds', 'predictable patterns'];
-      specialConsiderations = 'Maintains consistent sound profile with minimal unexpected changes to prevent sensory overload';
+      specialConsiderations =
+        'Maintains consistent sound profile with minimal unexpected changes to prevent sensory overload';
       break;
     case 'dyslexia':
       elements = ['rhythmic beats', 'spatial audio cues', 'melodic patterns'];
-      specialConsiderations = 'Incorporates rhythmic elements that support sequential processing and visual focus';
+      specialConsiderations =
+        'Incorporates rhythmic elements that support sequential processing and visual focus';
       break;
     case 'anxiety':
       elements = ['binaural beats', 'deep breathing pacing', 'nature sounds'];
-      specialConsiderations = 'Designed to regulate nervous system activation and reduce cortisol levels';
+      specialConsiderations =
+        'Designed to regulate nervous system activation and reduce cortisol levels';
       break;
     default:
       elements = ['ambient sounds', 'focus beats', 'light background tones'];
@@ -212,25 +216,25 @@ function generateSampleSoundtrack(neurotype, activity, duration) {
         type: 'focus',
         elements: elements,
         duration: focusSegmentLength,
-        description: 'Steady focus sounds to enhance concentration'
+        description: 'Steady focus sounds to enhance concentration',
       },
       {
         type: 'break',
         elements: ['nature sounds', 'birds', 'light wind'],
         duration: breakSegmentLength,
-        description: 'Brief relaxation interlude to prevent mental fatigue'
+        description: 'Brief relaxation interlude to prevent mental fatigue',
       },
       {
         type: 'energize',
         elements: ['upbeat rhythms', 'motivational pace'],
         duration: energizeSegmentLength,
-        description: 'Energizing sounds to maintain momentum in final stretch'
-      }
+        description: 'Energizing sounds to maintain momentum in final stretch',
+      },
     ],
     description: `Optimized for ${neurotype} needs during ${activity}`,
     createdAt: new Date().toISOString(),
     specialConsiderations: specialConsiderations,
-    aiGenerated: false
+    aiGenerated: false,
   };
 }
 

@@ -1,13 +1,13 @@
 /**
  * ShatziiOS Bootstrap Server
- * 
+ *
  * This is a minimal bootstrap server that starts immediately to secure the port,
  * then loads the full application in the background. This solves the Replit
  * workflow timeout issue by opening port 5000 quickly while the main app loads.
  */
 
-import express from "express";
-import { createServer } from "http";
+import express from 'express';
+import { createServer } from 'http';
 
 // Capture the port and create a reference we'll pass to the main app
 const PORT = process.env.PORT || 5000;
@@ -17,16 +17,16 @@ const httpServer = createServer(app);
 console.log(`🚀 ShatziiOS Bootstrap Server starting on port ${PORT}...`);
 
 // Setup a basic health check endpoint that will respond immediately
-app.get("/api/health", (req, res) => {
-  res.json({ 
-    status: "initializing", 
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'initializing',
     timestamp: new Date(),
-    message: "ShatziiOS is starting up. Please wait..."
+    message: 'ShatziiOS is starting up. Please wait...',
   });
 });
 
 // Setup a catch-all route while we're initializing
-app.use("*", (req, res) => {
+app.use('*', (req, res) => {
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
@@ -94,23 +94,23 @@ app.use("*", (req, res) => {
 });
 
 // Start the server immediately to claim the port
-httpServer.listen(Number(PORT), "0.0.0.0", () => {
+httpServer.listen(Number(PORT), '0.0.0.0', () => {
   console.log(`✅ Bootstrap server running at http://0.0.0.0:${PORT}`);
-  
+
   // Now load the main application in the background
-  import("./index.js").catch(error => {
-    console.error("Error loading main application:", error);
+  import('./index.js').catch((error) => {
+    console.error('Error loading main application:', error);
   });
 });
 
 // Handle graceful shutdown
 const shutdown = () => {
-  console.log("Shutting down bootstrap server...");
+  console.log('Shutting down bootstrap server...');
   httpServer.close(() => {
-    console.log("Bootstrap server closed");
+    console.log('Bootstrap server closed');
     process.exit(0);
   });
 };
 
-process.on("SIGTERM", shutdown);
-process.on("SIGINT", shutdown);
+process.on('SIGTERM', shutdown);
+process.on('SIGINT', shutdown);

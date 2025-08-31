@@ -1,15 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
-  Save, 
-  Plus, 
-  Trash2, 
-  Eye, 
-  EyeOff, 
-  Image as ImageIcon, 
-  FileText, 
-  Settings, 
+import {
+  Save,
+  Plus,
+  Trash2,
+  Eye,
+  EyeOff,
+  Image as ImageIcon,
+  FileText,
+  Settings,
   Upload,
   Edit3,
   Copy,
@@ -23,7 +23,7 @@ import {
   CheckCircle,
   AlertCircle,
   Video,
-  Play
+  Play,
 } from 'lucide-react';
 import { MediaIntegration, FeaturedMediaSection } from '../../../components/cms/media-integration';
 
@@ -91,17 +91,18 @@ export default function SeamlessCMS() {
               order: 1,
               content: {
                 headline: 'Get Verified. Get Ranked. Get Recruited.',
-                subheadline: 'The first AI-powered platform built for neurodivergent student athletes',
+                subheadline:
+                  'The first AI-powered platform built for neurodivergent student athletes',
                 ctaText: 'Start Free. Get Ranked. Go4It.',
                 ctaLink: '/register',
                 backgroundImage: '/hero-bg.jpg',
                 features: [
                   'GAR Score Analysis (13 sports)',
                   'StarPath XP Progression System',
-                  '24/7 AI Coaching Engine'
-                ]
+                  '24/7 AI Coaching Engine',
+                ],
               },
-              lastUpdated: new Date().toISOString()
+              lastUpdated: new Date().toISOString(),
             },
             {
               id: 'events',
@@ -116,7 +117,8 @@ export default function SeamlessCMS() {
                   {
                     id: '1',
                     title: 'Friday Night Lights',
-                    description: 'UniversalOne School open house with tryouts for basketball, soccer, and flag football',
+                    description:
+                      'UniversalOne School open house with tryouts for basketball, soccer, and flag football',
                     price: '$20USD',
                     location: 'Conkal, Mexico',
                     dates: 'August 15th, 2025',
@@ -126,13 +128,13 @@ export default function SeamlessCMS() {
                       'Tryouts for basketball, soccer, and flag football',
                       'Boys and girls welcome',
                       'USA Football flag football season',
-                      'Professional coaching evaluation'
+                      'Professional coaching evaluation',
                     ],
                     maxParticipants: 50,
                     schedule: 'Evening Training Session - Times TBA',
                     featuredStaff: [
                       '2x Super Bowl Champion Derrick Martin',
-                      'NFL alumnus Talib Wise'
+                      'NFL alumnus Talib Wise',
                     ],
                     usaFootballBenefits: {
                       membershipType: 'Standard Edition',
@@ -144,13 +146,13 @@ export default function SeamlessCMS() {
                         '$100,000 accident medical coverage',
                         'USA Football age verification',
                         'Access to sanctioned tournaments',
-                        'National Team Development eligibility'
-                      ]
-                    }
-                  }
-                ]
+                        'National Team Development eligibility',
+                      ],
+                    },
+                  },
+                ],
               },
-              lastUpdated: new Date().toISOString()
+              lastUpdated: new Date().toISOString(),
             },
             {
               id: 'pricing',
@@ -170,8 +172,8 @@ export default function SeamlessCMS() {
                     features: [
                       'Basic GAR analysis',
                       'Limited StarPath access',
-                      'Community support'
-                    ]
+                      'Community support',
+                    ],
                   },
                   {
                     id: 'starter',
@@ -182,13 +184,13 @@ export default function SeamlessCMS() {
                       'Full GAR analysis',
                       'Complete StarPath system',
                       'AI coaching insights',
-                      'Performance tracking'
-                    ]
-                  }
-                ]
+                      'Performance tracking',
+                    ],
+                  },
+                ],
               },
-              lastUpdated: new Date().toISOString()
-            }
+              lastUpdated: new Date().toISOString(),
+            },
           ],
           globalSettings: {
             siteName: 'Go4It Sports',
@@ -200,9 +202,9 @@ export default function SeamlessCMS() {
             metaDescription: 'AI-powered athletics platform for neurodivergent student athletes',
             socialMediaLinks: {
               instagram: 'https://instagram.com/go4itsports',
-              twitter: 'https://twitter.com/go4itsports'
-            }
-          }
+              twitter: 'https://twitter.com/go4itsports',
+            },
+          },
         });
       }
     } catch (error) {
@@ -217,7 +219,7 @@ export default function SeamlessCMS() {
       const response = await fetch('/api/admin/media', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'getForCMS' })
+        body: JSON.stringify({ action: 'getForCMS' }),
       });
       if (response.ok) {
         const data = await response.json();
@@ -234,12 +236,12 @@ export default function SeamlessCMS() {
       const response = await fetch('/api/admin/media', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           action: 'updateFeatured',
-          featuredAssets: assetIds 
-        })
+          featuredAssets: assetIds,
+        }),
       });
-      
+
       if (response.ok) {
         setFeaturedAssets(assetIds);
         console.log('Featured assets updated successfully');
@@ -251,13 +253,13 @@ export default function SeamlessCMS() {
 
   const saveContent = async () => {
     if (!cmsContent) return;
-    
+
     setSaving(true);
     try {
       const response = await fetch('/api/admin/cms', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cmsContent)
+        body: JSON.stringify(cmsContent),
       });
 
       if (response.ok) {
@@ -276,32 +278,32 @@ export default function SeamlessCMS() {
 
   const updateSection = (sectionId: string, updates: Partial<CMSSection>) => {
     if (!cmsContent) return;
-    
+
     setCmsContent({
       ...cmsContent,
-      sections: cmsContent.sections.map(section =>
-        section.id === sectionId 
+      sections: cmsContent.sections.map((section) =>
+        section.id === sectionId
           ? { ...section, ...updates, lastUpdated: new Date().toISOString() }
-          : section
-      )
+          : section,
+      ),
     });
     setUnsavedChanges(true);
   };
 
   const updateGlobalSettings = (updates: Partial<CMSContent['globalSettings']>) => {
     if (!cmsContent) return;
-    
+
     setCmsContent({
       ...cmsContent,
-      globalSettings: { ...cmsContent.globalSettings, ...updates }
+      globalSettings: { ...cmsContent.globalSettings, ...updates },
     });
     setUnsavedChanges(true);
   };
 
   const toggleSectionVisibility = (sectionId: string) => {
     if (!cmsContent) return;
-    
-    const section = cmsContent.sections.find(s => s.id === sectionId);
+
+    const section = cmsContent.sections.find((s) => s.id === sectionId);
     if (section) {
       updateSection(sectionId, { isVisible: !section.isVisible });
     }
@@ -309,8 +311,8 @@ export default function SeamlessCMS() {
 
   const addNewEvent = () => {
     if (!cmsContent) return;
-    
-    const eventsSection = cmsContent.sections.find(s => s.id === 'events');
+
+    const eventsSection = cmsContent.sections.find((s) => s.id === 'events');
     if (eventsSection) {
       const newEvent = {
         id: Date.now().toString(),
@@ -323,34 +325,34 @@ export default function SeamlessCMS() {
         features: ['Feature 1', 'Feature 2'],
         maxParticipants: 50,
         schedule: 'TBD',
-        featuredStaff: []
+        featuredStaff: [],
       };
 
       updateSection('events', {
         content: {
           ...eventsSection.content,
-          events: [...eventsSection.content.events, newEvent]
-        }
+          events: [...eventsSection.content.events, newEvent],
+        },
       });
     }
   };
 
   const removeEvent = (eventId: string) => {
     if (!cmsContent) return;
-    
-    const eventsSection = cmsContent.sections.find(s => s.id === 'events');
+
+    const eventsSection = cmsContent.sections.find((s) => s.id === 'events');
     if (eventsSection) {
       updateSection('events', {
         content: {
           ...eventsSection.content,
-          events: eventsSection.content.events.filter((e: any) => e.id !== eventId)
-        }
+          events: eventsSection.content.events.filter((e: any) => e.id !== eventId),
+        },
       });
     }
   };
 
   const renderHeroEditor = () => {
-    const heroSection = cmsContent?.sections.find(s => s.id === 'hero');
+    const heroSection = cmsContent?.sections.find((s) => s.id === 'hero');
     if (!heroSection) return null;
 
     return (
@@ -360,9 +362,11 @@ export default function SeamlessCMS() {
           <input
             type="text"
             value={heroSection.content.headline || ''}
-            onChange={(e) => updateSection('hero', {
-              content: { ...heroSection.content, headline: e.target.value }
-            })}
+            onChange={(e) =>
+              updateSection('hero', {
+                content: { ...heroSection.content, headline: e.target.value },
+              })
+            }
             className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             placeholder="Enter main headline"
           />
@@ -372,9 +376,11 @@ export default function SeamlessCMS() {
           <label className="block text-sm font-medium text-slate-300 mb-2">Subheadline</label>
           <textarea
             value={heroSection.content.subheadline || ''}
-            onChange={(e) => updateSection('hero', {
-              content: { ...heroSection.content, subheadline: e.target.value }
-            })}
+            onChange={(e) =>
+              updateSection('hero', {
+                content: { ...heroSection.content, subheadline: e.target.value },
+              })
+            }
             className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             rows={3}
             placeholder="Enter subheadline"
@@ -387,9 +393,11 @@ export default function SeamlessCMS() {
             <input
               type="text"
               value={heroSection.content.ctaText || ''}
-              onChange={(e) => updateSection('hero', {
-                content: { ...heroSection.content, ctaText: e.target.value }
-              })}
+              onChange={(e) =>
+                updateSection('hero', {
+                  content: { ...heroSection.content, ctaText: e.target.value },
+                })
+              }
               className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               placeholder="Button text"
             />
@@ -399,9 +407,11 @@ export default function SeamlessCMS() {
             <input
               type="text"
               value={heroSection.content.ctaLink || ''}
-              onChange={(e) => updateSection('hero', {
-                content: { ...heroSection.content, ctaLink: e.target.value }
-              })}
+              onChange={(e) =>
+                updateSection('hero', {
+                  content: { ...heroSection.content, ctaLink: e.target.value },
+                })
+              }
               className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               placeholder="/register"
             />
@@ -409,15 +419,19 @@ export default function SeamlessCMS() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">Key Features (one per line)</label>
+          <label className="block text-sm font-medium text-slate-300 mb-2">
+            Key Features (one per line)
+          </label>
           <textarea
             value={heroSection.content.features?.join('\n') || ''}
-            onChange={(e) => updateSection('hero', {
-              content: { 
-                ...heroSection.content, 
-                features: e.target.value.split('\n').filter(f => f.trim()) 
-              }
-            })}
+            onChange={(e) =>
+              updateSection('hero', {
+                content: {
+                  ...heroSection.content,
+                  features: e.target.value.split('\n').filter((f) => f.trim()),
+                },
+              })
+            }
             className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             rows={5}
             placeholder="GAR Score Analysis (13 sports)&#10;StarPath XP Progression System&#10;24/7 AI Coaching Engine"
@@ -428,7 +442,7 @@ export default function SeamlessCMS() {
   };
 
   const renderEventsEditor = () => {
-    const eventsSection = cmsContent?.sections.find(s => s.id === 'events');
+    const eventsSection = cmsContent?.sections.find((s) => s.id === 'events');
     if (!eventsSection) return null;
 
     return (
@@ -439,20 +453,26 @@ export default function SeamlessCMS() {
             <input
               type="text"
               value={eventsSection.content.title || ''}
-              onChange={(e) => updateSection('events', {
-                content: { ...eventsSection.content, title: e.target.value }
-              })}
+              onChange={(e) =>
+                updateSection('events', {
+                  content: { ...eventsSection.content, title: e.target.value },
+                })
+              }
               className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Section Subtitle</label>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Section Subtitle
+            </label>
             <input
               type="text"
               value={eventsSection.content.subtitle || ''}
-              onChange={(e) => updateSection('events', {
-                content: { ...eventsSection.content, subtitle: e.target.value }
-              })}
+              onChange={(e) =>
+                updateSection('events', {
+                  content: { ...eventsSection.content, subtitle: e.target.value },
+                })
+              }
               className="w-full bg-slate-800 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -490,10 +510,10 @@ export default function SeamlessCMS() {
                     value={event.title || ''}
                     onChange={(e) => {
                       const updatedEvents = eventsSection.content.events.map((ev: any) =>
-                        ev.id === event.id ? { ...ev, title: e.target.value } : ev
+                        ev.id === event.id ? { ...ev, title: e.target.value } : ev,
                       );
                       updateSection('events', {
-                        content: { ...eventsSection.content, events: updatedEvents }
+                        content: { ...eventsSection.content, events: updatedEvents },
                       });
                     }}
                     className="w-full bg-slate-700 border border-slate-500 rounded px-3 py-2 text-white text-sm"
@@ -506,10 +526,10 @@ export default function SeamlessCMS() {
                     value={event.price || ''}
                     onChange={(e) => {
                       const updatedEvents = eventsSection.content.events.map((ev: any) =>
-                        ev.id === event.id ? { ...ev, price: e.target.value } : ev
+                        ev.id === event.id ? { ...ev, price: e.target.value } : ev,
                       );
                       updateSection('events', {
-                        content: { ...eventsSection.content, events: updatedEvents }
+                        content: { ...eventsSection.content, events: updatedEvents },
                       });
                     }}
                     className="w-full bg-slate-700 border border-slate-500 rounded px-3 py-2 text-white text-sm"
@@ -525,10 +545,10 @@ export default function SeamlessCMS() {
                     value={event.location || ''}
                     onChange={(e) => {
                       const updatedEvents = eventsSection.content.events.map((ev: any) =>
-                        ev.id === event.id ? { ...ev, location: e.target.value } : ev
+                        ev.id === event.id ? { ...ev, location: e.target.value } : ev,
                       );
                       updateSection('events', {
-                        content: { ...eventsSection.content, events: updatedEvents }
+                        content: { ...eventsSection.content, events: updatedEvents },
                       });
                     }}
                     className="w-full bg-slate-700 border border-slate-500 rounded px-3 py-2 text-white text-sm"
@@ -541,10 +561,10 @@ export default function SeamlessCMS() {
                     value={event.dates || ''}
                     onChange={(e) => {
                       const updatedEvents = eventsSection.content.events.map((ev: any) =>
-                        ev.id === event.id ? { ...ev, dates: e.target.value } : ev
+                        ev.id === event.id ? { ...ev, dates: e.target.value } : ev,
                       );
                       updateSection('events', {
-                        content: { ...eventsSection.content, events: updatedEvents }
+                        content: { ...eventsSection.content, events: updatedEvents },
                       });
                     }}
                     className="w-full bg-slate-700 border border-slate-500 rounded px-3 py-2 text-white text-sm"
@@ -553,18 +573,22 @@ export default function SeamlessCMS() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1">Features (one per line)</label>
+                <label className="block text-sm font-medium text-slate-300 mb-1">
+                  Features (one per line)
+                </label>
                 <textarea
                   value={event.features?.join('\n') || ''}
                   onChange={(e) => {
                     const updatedEvents = eventsSection.content.events.map((ev: any) =>
-                      ev.id === event.id ? { 
-                        ...ev, 
-                        features: e.target.value.split('\n').filter(f => f.trim()) 
-                      } : ev
+                      ev.id === event.id
+                        ? {
+                            ...ev,
+                            features: e.target.value.split('\n').filter((f) => f.trim()),
+                          }
+                        : ev,
                     );
                     updateSection('events', {
-                      content: { ...eventsSection.content, events: updatedEvents }
+                      content: { ...eventsSection.content, events: updatedEvents },
                     });
                   }}
                   className="w-full bg-slate-700 border border-slate-500 rounded px-3 py-2 text-white text-sm"
@@ -643,12 +667,14 @@ export default function SeamlessCMS() {
               <input
                 type="url"
                 value={cmsContent.globalSettings.socialMediaLinks?.instagram || ''}
-                onChange={(e) => updateGlobalSettings({
-                  socialMediaLinks: {
-                    ...cmsContent.globalSettings.socialMediaLinks,
-                    instagram: e.target.value
-                  }
-                })}
+                onChange={(e) =>
+                  updateGlobalSettings({
+                    socialMediaLinks: {
+                      ...cmsContent.globalSettings.socialMediaLinks,
+                      instagram: e.target.value,
+                    },
+                  })
+                }
                 className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white text-sm"
                 placeholder="https://instagram.com/..."
               />
@@ -658,12 +684,14 @@ export default function SeamlessCMS() {
               <input
                 type="url"
                 value={cmsContent.globalSettings.socialMediaLinks?.twitter || ''}
-                onChange={(e) => updateGlobalSettings({
-                  socialMediaLinks: {
-                    ...cmsContent.globalSettings.socialMediaLinks,
-                    twitter: e.target.value
-                  }
-                })}
+                onChange={(e) =>
+                  updateGlobalSettings({
+                    socialMediaLinks: {
+                      ...cmsContent.globalSettings.socialMediaLinks,
+                      twitter: e.target.value,
+                    },
+                  })
+                }
                 className="w-full bg-slate-800 border border-slate-600 rounded px-3 py-2 text-white text-sm"
                 placeholder="https://twitter.com/..."
               />
@@ -700,9 +728,7 @@ export default function SeamlessCMS() {
             <button
               onClick={() => setPreviewMode(!previewMode)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-                previewMode 
-                  ? 'bg-green-600 hover:bg-green-700' 
-                  : 'bg-slate-600 hover:bg-slate-500'
+                previewMode ? 'bg-green-600 hover:bg-green-700' : 'bg-slate-600 hover:bg-slate-500'
               }`}
             >
               {previewMode ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -713,7 +739,11 @@ export default function SeamlessCMS() {
               disabled={saving || !unsavedChanges}
               className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors"
             >
-              {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {saving ? (
+                <RefreshCw className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
               {saving ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
@@ -725,7 +755,7 @@ export default function SeamlessCMS() {
         <div className="w-80 bg-slate-800 border-r border-slate-700 min-h-screen p-6">
           <nav className="space-y-2">
             <div className="text-sm font-medium text-slate-400 mb-3">Content Sections</div>
-            {cmsContent?.sections.map(section => (
+            {cmsContent?.sections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
@@ -736,7 +766,9 @@ export default function SeamlessCMS() {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${section.isVisible ? 'bg-green-400' : 'bg-slate-500'}`} />
+                  <div
+                    className={`w-2 h-2 rounded-full ${section.isVisible ? 'bg-green-400' : 'bg-slate-500'}`}
+                  />
                   <span>{section.name}</span>
                 </div>
                 <button
@@ -750,7 +782,7 @@ export default function SeamlessCMS() {
                 </button>
               </button>
             ))}
-            
+
             <div className="border-t border-slate-700 pt-4 mt-6">
               <button
                 onClick={() => setActiveSection('media')}
@@ -763,7 +795,7 @@ export default function SeamlessCMS() {
                 <Video className="w-4 h-4" />
                 Featured Media
               </button>
-              
+
               <button
                 onClick={() => setActiveSection('global')}
                 className={`w-full flex items-center gap-3 p-3 rounded-lg transition-colors text-left ${
@@ -788,28 +820,29 @@ export default function SeamlessCMS() {
                 {renderGlobalSettings()}
               </div>
             )}
-            
+
             {activeSection === 'hero' && (
               <div>
                 <h2 className="text-2xl font-bold mb-6">Hero Section</h2>
                 {renderHeroEditor()}
               </div>
             )}
-            
+
             {activeSection === 'events' && (
               <div>
                 <h2 className="text-2xl font-bold mb-6">Events & Camps</h2>
                 {renderEventsEditor()}
               </div>
             )}
-            
+
             {activeSection === 'media' && (
               <div>
                 <h2 className="text-2xl font-bold mb-6">Featured Media Management</h2>
                 <p className="text-slate-400 mb-6">
-                  Select up to 6 media assets to feature on the homepage. These will be displayed in the Featured Content and Training in Action sections.
+                  Select up to 6 media assets to feature on the homepage. These will be displayed in
+                  the Featured Content and Training in Action sections.
                 </p>
-                
+
                 <FeaturedMediaSection
                   mediaAssets={mediaAssets}
                   featuredAssets={featuredAssets}

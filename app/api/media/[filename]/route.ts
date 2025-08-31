@@ -4,11 +4,11 @@ import { join } from 'path';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ filename: string }> }
+  { params }: { params: Promise<{ filename: string }> },
 ) {
   try {
     const { filename } = await params;
-    
+
     // List of possible locations for uploaded files
     const possiblePaths = [
       join(process.cwd(), filename), // Root directory
@@ -16,10 +16,10 @@ export async function GET(
       join(process.cwd(), 'uploads', filename), // Uploads directory
       join(process.cwd(), 'attached_assets', filename), // Attached assets
     ];
-    
+
     let filePath = null;
     let fileBuffer = null;
-    
+
     // Try to find the file in possible locations
     for (const path of possiblePaths) {
       if (existsSync(path)) {
@@ -28,11 +28,11 @@ export async function GET(
         break;
       }
     }
-    
+
     if (!fileBuffer) {
       return new NextResponse('File not found', { status: 404 });
     }
-    
+
     // Determine content type based on file extension
     const getContentType = (filename: string): string => {
       const ext = filename.toLowerCase().split('.').pop();
@@ -58,9 +58,9 @@ export async function GET(
           return 'application/octet-stream';
       }
     };
-    
+
     const contentType = getContentType(filename);
-    
+
     return new NextResponse(fileBuffer, {
       headers: {
         'Content-Type': contentType,
@@ -68,7 +68,6 @@ export async function GET(
         'Content-Length': fileBuffer.length.toString(),
       },
     });
-    
   } catch (error) {
     console.error('Error serving media file:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

@@ -1,851 +1,279 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Language School Curriculum Creator - ShotziOS</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="assets/js/helpBubble.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #000000;
-      color: #ffffff;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: #ffffff !important;
-    }
-    p {
-      color: #e0e0e0 !important;
-    }
-    a {
-      color: #0070f3;
-    }
-    .text-gray-600, .text-gray-800, .text-gray-500, .text-gray-700 {
-      color: #e0e0e0 !important;
-    }
-    .bg-white {
-      background-color: #121212 !important;
-    }
-    .bg-gray-50, .bg-gray-100 {
-      background-color: #181818 !important;
-    }
-    .border-gray-300 {
-      border-color: #333333 !important;
-    }
-    .card {
-      background-color: #121212 !important;
-      border: 1px solid #0070f3 !important;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 112, 243, 0.4), 0 10px 10px -5px rgba(0, 112, 243, 0.3);
-    }
-    .header-gradient {
-      background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
-    }
-    button, .button {
-      background-color: #0070f3 !important;
-      color: white !important;
-      border: none !important;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-      font-weight: 600;
-      transition: background-color 0.2s ease;
-    }
-    button:hover, .button:hover {
-      background-color: #0060d0 !important;
-    }
-    footer {
-      background-color: #121212 !important;
-      border-top: 1px solid #333333;
-    }
-    .tabs-container {
-      border-bottom: 1px solid #333333;
-    }
-    .tab {
-      border-bottom: 2px solid transparent;
-      transition: all 0.3s ease;
-    }
-    .tab.active {
-      border-bottom: 2px solid #0070f3;
-      color: #0070f3 !important;
-    }
-    textarea, select, input[type="text"] {
-      background-color: #1a1a1a !important;
-      border: 1px solid #333333 !important;
-      color: #e0e0e0 !important;
-      border-radius: 6px;
-      padding: 0.5rem 1rem;
-    }
-    textarea:focus, select:focus, input[type="text"]:focus {
-      border-color: #0070f3 !important;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
-    }
-    label {
-      color: #ffffff !important;
-      margin-bottom: 0.5rem;
-      display: block;
-    }
-    .option-card {
-      background-color: #121212;
-      border: 1px solid #333333;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      transition: all 0.3s ease;
-    }
-    .option-card:hover {
-      border-color: #0070f3;
-      transform: translateY(-2px);
-    }
-    .step-indicator {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 2rem;
-      position: relative;
-    }
-    .step-indicator::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background-color: #333333;
-      transform: translateY(-50%);
-      z-index: 1;
-    }
-    .step {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: #333333;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      position: relative;
-      z-index: 2;
-    }
-    .step.active {
-      background-color: #0070f3;
-    }
-    .step.completed {
-      background-color: #0EB100;
-    }
-    /* AI-generated content styles */
-    .ai-generated {
-      border-left: 4px solid #0070f3;
-      padding-left: 1rem;
-      background-color: rgba(0, 112, 243, 0.1);
-    }
-    /* Language-specific styles */
-    .language-flag {
-      width: 24px;
-      height: 16px;
-      border-radius: 2px;
-      margin-right: 0.5rem;
-    }
-    .difficulty-badge {
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.125rem 0.5rem;
-      border-radius: 9999px;
-    }
-    .difficulty-beginner {
-      background-color: rgba(74, 222, 128, 0.2);
-      color: #4ade80;
-    }
-    .difficulty-intermediate {
-      background-color: rgba(250, 204, 21, 0.2);
-      color: #facc15;
-    }
-    .difficulty-advanced {
-      background-color: rgba(249, 115, 22, 0.2);
-      color: #f97316;
-    }
-    .translation-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-bottom: 0.5rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #333333;
-    }
-  </style>
-</head>
-<body>
-  <!-- Header -->
-  <header class="header-gradient text-white shadow-lg">
-    <div class="container mx-auto px-4 py-4">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-4">
-          <a href="language-school.html" class="text-white hover:bg-blue-600 px-3 py-1 rounded-lg">
-            &larr; Back to Language School
-          </a>
-          <h1 class="text-2xl font-bold flex items-center">
-            <span class="mr-2">🌍</span> Language Curriculum Creator
-          </h1>
-        </div>
-        <div class="flex items-center space-x-3">
-          <button class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg">
-            <span>💾</span>
-            <span>Save</span>
-          </button>
-          <button class="flex items-center space-x-1 bg-blue-800 px-3 py-1 rounded-lg">
-            <span>👤</span>
-            <span>Admin</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="container mx-auto py-8 px-4">
-    <!-- Curriculum Creator -->
-    <div class="bg-white rounded-xl p-6 mb-8">
-      <h2 class="text-xl font-bold mb-6">Create New Language Learning Curriculum</h2>
-      
-      <!-- Step Indicator -->
-      <div class="step-indicator mb-8">
-        <div class="step active">1</div>
-        <div class="step">2</div>
-        <div class="step">3</div>
-        <div class="step">4</div>
-      </div>
-      
-      <!-- Form Step 1: Basic Information -->
-      <div id="step-1" class="mb-8">
-        <h3 class="text-lg font-bold mb-4">Basic Information</h3>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label for="curriculum-title">Curriculum Title</label>
-            <input type="text" id="curriculum-title" class="w-full" placeholder="e.g., Spanish for Beginners: Everyday Conversations">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Language School Curriculum Creator - ShotziOS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="assets/js/helpBubble.js"></script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #ffffff !important;
+      }
+      p {
+        color: #e0e0e0 !important;
+      }
+      a {
+        color: #0070f3;
+      }
+      .text-gray-600,
+      .text-gray-800,
+      .text-gray-500,
+      .text-gray-700 {
+        color: #e0e0e0 !important;
+      }
+      .bg-white {
+        background-color: #121212 !important;
+      }
+      .bg-gray-50,
+      .bg-gray-100 {
+        background-color: #181818 !important;
+      }
+      .border-gray-300 {
+        border-color: #333333 !important;
+      }
+      .card {
+        background-color: #121212 !important;
+        border: 1px solid #0070f3 !important;
+        border-radius: 10px;
+        overflow: hidden;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 112, 243, 0.4),
+          0 10px 10px -5px rgba(0, 112, 243, 0.3);
+      }
+      .header-gradient {
+        background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
+      }
+      button,
+      .button {
+        background-color: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+      }
+      button:hover,
+      .button:hover {
+        background-color: #0060d0 !important;
+      }
+      footer {
+        background-color: #121212 !important;
+        border-top: 1px solid #333333;
+      }
+      .tabs-container {
+        border-bottom: 1px solid #333333;
+      }
+      .tab {
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+      .tab.active {
+        border-bottom: 2px solid #0070f3;
+        color: #0070f3 !important;
+      }
+      textarea,
+      select,
+      input[type='text'] {
+        background-color: #1a1a1a !important;
+        border: 1px solid #333333 !important;
+        color: #e0e0e0 !important;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+      }
+      textarea:focus,
+      select:focus,
+      input[type='text']:focus {
+        border-color: #0070f3 !important;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+      }
+      label {
+        color: #ffffff !important;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      .option-card {
+        background-color: #121212;
+        border: 1px solid #333333;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+      .option-card:hover {
+        border-color: #0070f3;
+        transform: translateY(-2px);
+      }
+      .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .step-indicator::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #333333;
+        transform: translateY(-50%);
+        z-index: 1;
+      }
+      .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #333333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        position: relative;
+        z-index: 2;
+      }
+      .step.active {
+        background-color: #0070f3;
+      }
+      .step.completed {
+        background-color: #0eb100;
+      }
+      /* AI-generated content styles */
+      .ai-generated {
+        border-left: 4px solid #0070f3;
+        padding-left: 1rem;
+        background-color: rgba(0, 112, 243, 0.1);
+      }
+      /* Language-specific styles */
+      .language-flag {
+        width: 24px;
+        height: 16px;
+        border-radius: 2px;
+        margin-right: 0.5rem;
+      }
+      .difficulty-badge {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+      }
+      .difficulty-beginner {
+        background-color: rgba(74, 222, 128, 0.2);
+        color: #4ade80;
+      }
+      .difficulty-intermediate {
+        background-color: rgba(250, 204, 21, 0.2);
+        color: #facc15;
+      }
+      .difficulty-advanced {
+        background-color: rgba(249, 115, 22, 0.2);
+        color: #f97316;
+      }
+      .translation-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #333333;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <a
+              href="language-school.html"
+              class="text-white hover:bg-blue-600 px-3 py-1 rounded-lg"
+            >
+              &larr; Back to Language School
+            </a>
+            <h1 class="text-2xl font-bold flex items-center">
+              <span class="mr-2">🌍</span> Language Curriculum Creator
+            </h1>
           </div>
-          
-          <div>
-            <label for="curriculum-type">Curriculum Type</label>
-            <select id="curriculum-type" class="w-full">
-              <option value="course">Full Course</option>
-              <option value="module">Module</option>
-              <option value="conversationPractice">Conversation Practice</option>
-              <option value="vocabularyBuilding">Vocabulary Building</option>
-              <option value="culturalImmersion">Cultural Immersion</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="target-language">Target Language</label>
-            <select id="target-language" class="w-full">
-              <option value="spanish">Spanish</option>
-              <option value="french">French</option>
-              <option value="german">German</option>
-              <option value="italian">Italian</option>
-              <option value="japanese">Japanese</option>
-              <option value="chinese">Chinese (Mandarin)</option>
-              <option value="russian">Russian</option>
-              <option value="arabic">Arabic</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="proficiency-level">Proficiency Level</label>
-            <select id="proficiency-level" class="w-full">
-              <option value="beginner">Beginner (A1-A2)</option>
-              <option value="intermediate">Intermediate (B1-B2)</option>
-              <option value="advanced">Advanced (C1-C2)</option>
-              <option value="mixed">Mixed Levels</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="learning-focus">Primary Learning Focus</label>
-            <select id="learning-focus" class="w-full">
-              <option value="conversation">Conversation Skills</option>
-              <option value="grammar">Grammar & Structure</option>
-              <option value="vocabulary">Vocabulary Building</option>
-              <option value="reading">Reading Comprehension</option>
-              <option value="writing">Writing Skills</option>
-              <option value="listening">Listening Comprehension</option>
-              <option value="cultural">Cultural Understanding</option>
-              <option value="comprehensive">Comprehensive (All Skills)</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="duration">Duration</label>
-            <select id="duration" class="w-full">
-              <option value="short">Short Course (1-4 weeks)</option>
-              <option value="standard">Standard Course (5-12 weeks)</option>
-              <option value="intensive">Intensive Course (2-4 weeks, daily sessions)</option>
-              <option value="semester">Full Semester (14-16 weeks)</option>
-              <option value="selfPaced">Self-Paced (No time limit)</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="mt-6">
-          <label for="curriculum-description">Description</label>
-          <textarea id="curriculum-description" class="w-full min-h-[120px]" placeholder="Describe the curriculum, its purpose, and target learners..."></textarea>
-        </div>
-        
-        <div class="flex justify-end mt-6">
-          <button class="px-4 py-2" onclick="nextStep(2)">Next: Learning Outcomes</button>
-        </div>
-      </div>
-      
-      <!-- Form Step 2: Learning Outcomes (Initially Hidden) -->
-      <div id="step-2" class="hidden mb-8">
-        <h3 class="text-lg font-bold mb-4">Learning Outcomes</h3>
-        
-        <div class="mb-6">
-          <p class="mb-4">Define what students will be able to do after completing this curriculum.</p>
-          
-          <div id="learning-outcomes-container">
-            <div class="option-card">
-              <div class="flex justify-between mb-2">
-                <label>Learning Outcome #1</label>
-                <button class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent">Remove</button>
-              </div>
-              <input type="text" class="w-full" placeholder="e.g., Introduce yourself and ask basic questions in Spanish using appropriate greetings">
-            </div>
-            
-            <div class="option-card">
-              <div class="flex justify-between mb-2">
-                <label>Learning Outcome #2</label>
-                <button class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent">Remove</button>
-              </div>
-              <input type="text" class="w-full" placeholder="e.g., Order food and drinks in a restaurant with proper vocabulary and etiquette">
-            </div>
-          </div>
-          
-          <button class="flex items-center mt-2 bg-blue-700 px-3 py-1 rounded-lg text-sm">
-            <span class="mr-1">+</span> Add Learning Outcome
-          </button>
-        </div>
-        
-        <div class="flex justify-between mt-8">
-          <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600" onclick="prevStep(1)">Previous: Basic Information</button>
-          <button class="px-4 py-2" onclick="nextStep(3)">Next: Content Structure</button>
-        </div>
-      </div>
-      
-      <!-- Form Step 3: Content Structure (Initially Hidden) -->
-      <div id="step-3" class="hidden mb-8">
-        <h3 class="text-lg font-bold mb-4">Content Structure</h3>
-        
-        <div class="mb-6">
-          <p class="mb-4">Organize your curriculum into modules, topics, or lessons.</p>
-          
-          <div id="modules-container">
-            <div class="option-card">
-              <div class="flex justify-between mb-2">
-                <label>Module #1</label>
-                <button class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent">Remove</button>
-              </div>
-              <input type="text" class="w-full mb-3" placeholder="Module Title">
-              <textarea class="w-full min-h-[80px]" placeholder="Module description and key topics..."></textarea>
-              
-              <div class="mt-4">
-                <h4 class="text-sm font-medium mb-2">Lessons</h4>
-                <div class="pl-4 border-l-2 border-blue-800">
-                  <div class="mb-2">
-                    <input type="text" class="w-full" placeholder="Lesson 1 Title">
-                  </div>
-                  <div class="mb-2">
-                    <input type="text" class="w-full" placeholder="Lesson 2 Title">
-                  </div>
-                  <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
-                    <span class="mr-1">+</span> Add Lesson
-                  </button>
-                </div>
-              </div>
-              
-              <div class="mt-4">
-                <h4 class="text-sm font-medium mb-2">Key Vocabulary</h4>
-                <div class="pl-4 border-l-2 border-blue-800">
-                  <div class="translation-row">
-                    <input type="text" placeholder="English term">
-                    <input type="text" placeholder="Translation">
-                  </div>
-                  <div class="translation-row">
-                    <input type="text" placeholder="English term">
-                    <input type="text" placeholder="Translation">
-                  </div>
-                  <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
-                    <span class="mr-1">+</span> Add Vocabulary
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div class="option-card">
-              <div class="flex justify-between mb-2">
-                <label>Module #2</label>
-                <button class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent">Remove</button>
-              </div>
-              <input type="text" class="w-full mb-3" placeholder="Module Title">
-              <textarea class="w-full min-h-[80px]" placeholder="Module description and key topics..."></textarea>
-              
-              <div class="mt-4">
-                <h4 class="text-sm font-medium mb-2">Lessons</h4>
-                <div class="pl-4 border-l-2 border-blue-800">
-                  <div class="mb-2">
-                    <input type="text" class="w-full" placeholder="Lesson 1 Title">
-                  </div>
-                  <div class="mb-2">
-                    <input type="text" class="w-full" placeholder="Lesson 2 Title">
-                  </div>
-                  <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
-                    <span class="mr-1">+</span> Add Lesson
-                  </button>
-                </div>
-              </div>
-              
-              <div class="mt-4">
-                <h4 class="text-sm font-medium mb-2">Key Vocabulary</h4>
-                <div class="pl-4 border-l-2 border-blue-800">
-                  <div class="translation-row">
-                    <input type="text" placeholder="English term">
-                    <input type="text" placeholder="Translation">
-                  </div>
-                  <div class="translation-row">
-                    <input type="text" placeholder="English term">
-                    <input type="text" placeholder="Translation">
-                  </div>
-                  <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
-                    <span class="mr-1">+</span> Add Vocabulary
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <button class="flex items-center mt-4 bg-blue-700 px-3 py-1 rounded-lg text-sm">
-            <span class="mr-1">+</span> Add Module
-          </button>
-        </div>
-        
-        <div class="flex justify-between mt-8">
-          <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600" onclick="prevStep(2)">Previous: Learning Outcomes</button>
-          <button class="px-4 py-2" onclick="nextStep(4)">Next: Assessment Methods</button>
-        </div>
-      </div>
-      
-      <!-- Form Step 4: Assessment Methods (Initially Hidden) -->
-      <div id="step-4" class="hidden mb-8">
-        <h3 class="text-lg font-bold mb-4">Assessment Methods</h3>
-        
-        <div class="mb-6">
-          <p class="mb-4">Define how students will be assessed.</p>
-          
-          <div id="assessments-container">
-            <div class="option-card">
-              <div class="flex justify-between mb-2">
-                <label>Assessment #1</label>
-                <button class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent">Remove</button>
-              </div>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                <div>
-                  <label class="text-sm">Assessment Type</label>
-                  <select class="w-full">
-                    <option value="quiz">Vocabulary Quiz</option>
-                    <option value="conversation">Conversation Practice</option>
-                    <option value="role-play">Role-Play Scenario</option>
-                    <option value="writing">Writing Assignment</option>
-                    <option value="reading">Reading Comprehension</option>
-                    <option value="listening">Listening Exercise</option>
-                    <option value="presentation">Oral Presentation</option>
-                    <option value="project">Cultural Project</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label class="text-sm">Weight (%)</label>
-                  <input type="text" class="w-full" placeholder="e.g., 20">
-                </div>
-              </div>
-              
-              <textarea class="w-full min-h-[80px]" placeholder="Description of assessment method, requirements, and grading criteria..."></textarea>
-            </div>
-            
-            <div class="option-card">
-              <div class="flex justify-between mb-2">
-                <label>Assessment #2</label>
-                <button class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent">Remove</button>
-              </div>
-              
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
-                <div>
-                  <label class="text-sm">Assessment Type</label>
-                  <select class="w-full">
-                    <option value="quiz">Vocabulary Quiz</option>
-                    <option value="conversation">Conversation Practice</option>
-                    <option value="role-play">Role-Play Scenario</option>
-                    <option value="writing">Writing Assignment</option>
-                    <option value="reading">Reading Comprehension</option>
-                    <option value="listening">Listening Exercise</option>
-                    <option value="presentation">Oral Presentation</option>
-                    <option value="project">Cultural Project</option>
-                  </select>
-                </div>
-                
-                <div>
-                  <label class="text-sm">Weight (%)</label>
-                  <input type="text" class="w-full" placeholder="e.g., 20">
-                </div>
-              </div>
-              
-              <textarea class="w-full min-h-[80px]" placeholder="Description of assessment method, requirements, and grading criteria..."></textarea>
-            </div>
-          </div>
-          
-          <button class="flex items-center mt-3 bg-blue-700 px-3 py-1 rounded-lg text-sm">
-            <span class="mr-1">+</span> Add Assessment
-          </button>
-        </div>
-        
-        <div class="flex justify-between mt-8">
-          <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600" onclick="prevStep(3)">Previous: Content Structure</button>
-          <button class="px-4 py-2 bg-green-600 hover:bg-green-700" onclick="showAiGeneration()">Generate with AI</button>
-        </div>
-      </div>
-      
-      <!-- AI Curriculum Generation (Initially Hidden) -->
-      <div id="ai-generation" class="hidden">
-        <div class="bg-blue-900 bg-opacity-20 p-6 rounded-xl mb-6">
-          <h3 class="text-lg font-medium mb-2 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            AI-Powered Curriculum Generation
-          </h3>
-          <p class="mb-4">Based on your inputs, we'll use our Anthropic Claude integration to generate a complete language learning curriculum structure, including modules, vocabulary lists, conversation examples, and assessment methods.</p>
-          
-          <div class="mb-4">
-            <label for="ai-customization">Additional Instructions (Optional)</label>
-            <textarea id="ai-customization" class="w-full min-h-[80px]" placeholder="Provide any specific instructions for the AI, such as cultural aspects to focus on, particular grammar points to include, or specialized vocabulary for certain contexts..."></textarea>
-          </div>
-          
-          <div class="mb-4">
-            <label class="flex items-center space-x-2">
-              <input type="checkbox" checked>
-              <span>Generate neurodivergent-friendly learning activities</span>
-            </label>
-          </div>
-          
-          <div class="flex justify-end">
-            <button class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-lg flex items-center" onclick="generateAiCurriculum()">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-              </svg>
-              Generate Curriculum
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg">
+              <span>💾</span>
+              <span>Save</span>
+            </button>
+            <button class="flex items-center space-x-1 bg-blue-800 px-3 py-1 rounded-lg">
+              <span>👤</span>
+              <span>Admin</span>
             </button>
           </div>
         </div>
-        
-        <!-- AI Generated Content Preview -->
-        <div id="ai-generated-content" class="ai-generated p-6 rounded-xl mb-6 hidden">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold">Generated Curriculum: Spanish for Beginners</h3>
-            <div class="flex space-x-2">
-              <button class="text-xs px-3 py-1 rounded-lg bg-blue-700">Edit</button>
-              <button class="text-xs px-3 py-1 rounded-lg bg-green-700">Save</button>
-            </div>
-          </div>
-          
-          <div>
-            <div class="mb-6">
-              <h4 class="text-lg font-medium text-blue-400 mb-2">Course Overview</h4>
-              <p class="mb-2">This 8-week introductory Spanish course is designed for complete beginners with no prior knowledge of Spanish. The curriculum focuses on developing conversational skills for everyday situations, building essential vocabulary, and introducing basic grammar concepts in a neurodivergent-friendly format with multiple learning modalities.</p>
-              <p>The course emphasizes high-frequency vocabulary, practical phrases, and cultural contexts that motivate learners and enable early success in real communication scenarios.</p>
-            </div>
-            
-            <div class="mb-6">
-              <h4 class="text-lg font-medium text-blue-400 mb-2">Learning Outcomes</h4>
-              <ol class="list-decimal pl-5 space-y-2">
-                <li>Introduce yourself and engage in basic conversations in Spanish</li>
-                <li>Ask and answer simple questions about personal information</li>
-                <li>Order food and beverages in restaurants and cafés</li>
-                <li>Navigate transportation and ask for directions</li>
-                <li>Describe daily routines and activities</li>
-                <li>Recognize and use basic grammatical structures (present tense, gender, articles)</li>
-              </ol>
-            </div>
-            
-            <div class="mb-6">
-              <h4 class="text-lg font-medium text-blue-400 mb-2">Module Structure</h4>
-              
-              <div class="mb-4">
-                <h5 class="font-medium">Module 1: Greetings and Introduction (Week 1)</h5>
-                <ul class="list-disc pl-5 space-y-1">
-                  <li>Basic greetings and farewells</li>
-                  <li>Introducing yourself and others</li>
-                  <li>Numbers 1-20</li>
-                  <li>Asking simple questions</li>
-                </ul>
-                <div class="mt-2 pl-5">
-                  <h6 class="text-sm font-medium text-blue-300">Key Vocabulary:</h6>
-                  <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mt-1">
-                    <div>Hello</div>
-                    <div>Hola</div>
-                    <div>Good morning</div>
-                    <div>Buenos días</div>
-                    <div>Good afternoon</div>
-                    <div>Buenas tardes</div>
-                    <div>My name is...</div>
-                    <div>Me llamo...</div>
-                    <div>How are you?</div>
-                    <div>¿Cómo estás?</div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="mb-4">
-                <h5 class="font-medium">Module 2: Food and Dining (Week 2)</h5>
-                <ul class="list-disc pl-5 space-y-1">
-                  <li>Restaurant vocabulary</li>
-                  <li>Ordering food and drinks</li>
-                  <li>Expressing likes and dislikes</li>
-                  <li>Asking for the bill</li>
-                </ul>
-                <div class="mt-2 pl-5">
-                  <h6 class="text-sm font-medium text-blue-300">Key Vocabulary:</h6>
-                  <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mt-1">
-                    <div>Restaurant</div>
-                    <div>Restaurante</div>
-                    <div>Menu</div>
-                    <div>Menú</div>
-                    <div>I would like...</div>
-                    <div>Quisiera...</div>
-                    <div>The bill, please</div>
-                    <div>La cuenta, por favor</div>
-                    <div>Delicious</div>
-                    <div>Delicioso</div>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Additional modules would continue here -->
-            </div>
-            
-            <div class="mb-6">
-              <h4 class="text-lg font-medium text-blue-400 mb-2">Neurodivergent-Friendly Features</h4>
-              <ul class="list-disc pl-5 space-y-2">
-                <li><strong>Multi-sensory learning approaches:</strong> Visual flashcards, audio recordings, physical movement activities</li>
-                <li><strong>Clear structure and expectations:</strong> Consistent class format, visual schedules, and advance previews</li>
-                <li><strong>Frequent breaks and activity switching:</strong> 15-20 minute activity blocks with 3-5 minute breaks</li>
-                <li><strong>Visual supports:</strong> Color-coding for grammatical gender, visual vocabulary maps</li>
-                <li><strong>Alternative assessment options:</strong> Choice of written, oral, or project-based assessments</li>
-              </ul>
-            </div>
-            
-            <div class="mb-6">
-              <h4 class="text-lg font-medium text-blue-400 mb-2">Assessment Methods</h4>
-              <ul class="list-disc pl-5 space-y-2">
-                <li><strong>Weekly Vocabulary Quizzes (20%):</strong> 10-15 words or phrases, available in written or audio format</li>
-                <li><strong>Conversation Practice (30%):</strong> Structured role-play scenarios assessed for comprehensibility and vocabulary use</li>
-                <li><strong>Cultural Project (20%):</strong> Research and present on an aspect of Spanish-speaking culture</li>
-                <li><strong>Final Assessment (30%):</strong> Comprehensive assessment covering all modules through a choice of written exam, conversation, or creative project</li>
-              </ul>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
-    
-    <!-- Curriculum Library -->
-    <div class="mb-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-bold">Language Curriculum Library</h2>
-        <div class="flex space-x-2">
-          <select class="text-sm px-3 py-1 rounded-lg bg-blue-900">
-            <option value="all">All Languages</option>
-            <option value="spanish">Spanish</option>
-            <option value="french">French</option>
-            <option value="german">German</option>
-            <option value="italian">Italian</option>
-            <option value="japanese">Japanese</option>
-            <option value="chinese">Chinese</option>
-            <option value="russian">Russian</option>
-          </select>
-          <button class="text-sm px-3 py-1 rounded-lg bg-blue-700">Import</button>
-          <button class="text-sm px-3 py-1 rounded-lg bg-blue-700">Export</button>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+      <!-- Curriculum Creator -->
+      <div class="bg-white rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold mb-6">Create New Language Learning Curriculum</h2>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator mb-8">
+          <div class="step active">1</div>
+          <div class="step">2</div>
+          <div class="step">3</div>
+          <div class="step">4</div>
         </div>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Curriculum Card 1 -->
-        <div class="card overflow-hidden">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <img src="https://via.placeholder.com/24x16/dd0000/ffffff" alt="Spanish Flag" class="language-flag">
-                <h3 class="font-bold">Spanish for Beginners</h3>
-              </div>
-              <span class="difficulty-badge difficulty-beginner">Beginner</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center text-sm mb-3">
-              <span class="mr-3">🗣️ Conversation</span>
-              <span>📚 8 Weeks</span>
-            </div>
-            <p class="text-sm mb-4">Learn basic Spanish conversation skills for everyday situations, including greetings, dining, shopping, and more.</p>
-            <div class="flex justify-end space-x-2">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1">Clone</button>
-              <button class="text-xs px-3 py-1 bg-green-700">View</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Curriculum Card 2 -->
-        <div class="card overflow-hidden">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <img src="https://via.placeholder.com/24x16/000099/ffffff" alt="French Flag" class="language-flag">
-                <h3 class="font-bold">French for Travel</h3>
-              </div>
-              <span class="difficulty-badge difficulty-beginner">Beginner</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center text-sm mb-3">
-              <span class="mr-3">🗣️ Travel</span>
-              <span>📚 6 Weeks</span>
-            </div>
-            <p class="text-sm mb-4">Essential French for travelers, focusing on practical phrases, transportation, accommodations, and cultural norms.</p>
-            <div class="flex justify-end space-x-2">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1">Clone</button>
-              <button class="text-xs px-3 py-1 bg-green-700">View</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Curriculum Card 3 -->
-        <div class="card overflow-hidden">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <img src="https://via.placeholder.com/24x16/ff0000/ffffff" alt="Japanese Flag" class="language-flag">
-                <h3 class="font-bold">Japanese Writing Systems</h3>
-              </div>
-              <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center text-sm mb-3">
-              <span class="mr-3">✍️ Writing</span>
-              <span>📚 10 Weeks</span>
-            </div>
-            <p class="text-sm mb-4">Comprehensive course on Japanese writing systems, including Hiragana, Katakana, and basic Kanji characters.</p>
-            <div class="flex justify-end space-x-2">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1">Clone</button>
-              <button class="text-xs px-3 py-1 bg-green-700">View</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Curriculum Card 4 -->
-        <div class="card overflow-hidden">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <img src="https://via.placeholder.com/24x16/000000/ffcc00" alt="German Flag" class="language-flag">
-                <h3 class="font-bold">German Grammar Intensive</h3>
-              </div>
-              <span class="difficulty-badge difficulty-advanced">Advanced</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center text-sm mb-3">
-              <span class="mr-3">📝 Grammar</span>
-              <span>📚 12 Weeks</span>
-            </div>
-            <p class="text-sm mb-4">Advanced German grammar course covering complex sentence structures, cases, tenses, and idiomatic expressions.</p>
-            <div class="flex justify-end space-x-2">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1">Clone</button>
-              <button class="text-xs px-3 py-1 bg-green-700">View</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Curriculum Card 5 -->
-        <div class="card overflow-hidden">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <img src="https://via.placeholder.com/24x16/009900/ffffff" alt="Italian Flag" class="language-flag">
-                <h3 class="font-bold">Italian Cuisine & Culture</h3>
-              </div>
-              <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center text-sm mb-3">
-              <span class="mr-3">🍝 Cultural</span>
-              <span>📚 8 Weeks</span>
-            </div>
-            <p class="text-sm mb-4">Learn Italian through the lens of cuisine and culture, with cooking vocabulary, regional dishes, and cultural traditions.</p>
-            <div class="flex justify-end space-x-2">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1">Clone</button>
-              <button class="text-xs px-3 py-1 bg-green-700">View</button>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Curriculum Card 6 -->
-        <div class="card overflow-hidden">
-          <div class="p-4 bg-blue-900 bg-opacity-30">
-            <div class="flex justify-between items-center">
-              <div class="flex items-center">
-                <img src="https://via.placeholder.com/24x16/ff0000/ffff00" alt="Chinese Flag" class="language-flag">
-                <h3 class="font-bold">Mandarin Conversation</h3>
-              </div>
-              <span class="difficulty-badge difficulty-beginner">Beginner</span>
-            </div>
-          </div>
-          <div class="p-4">
-            <div class="flex items-center text-sm mb-3">
-              <span class="mr-3">🗣️ Conversation</span>
-              <span>📚 10 Weeks</span>
-            </div>
-            <p class="text-sm mb-4">Practical Mandarin Chinese for everyday conversations, with emphasis on pronunciation, tones, and common phrases.</p>
-            <div class="flex justify-end space-x-2">
-              <button class="text-xs px-3 py-1">Edit</button>
-              <button class="text-xs px-3 py-1">Clone</button>
-              <button class="text-xs px-3 py-1 bg-green-700">View</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Vocabulary Generator -->
-    <div class="bg-white rounded-xl p-6">
-      <h2 class="text-xl font-bold mb-4">AI Vocabulary Generator</h2>
-      <p class="mb-6">Quickly create targeted vocabulary lists for your language curriculum with AI assistance.</p>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="col-span-1 md:col-span-2">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+        <!-- Form Step 1: Basic Information -->
+        <div id="step-1" class="mb-8">
+          <h3 class="text-lg font-bold mb-4">Basic Information</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label for="vocab-language">Language</label>
-              <select id="vocab-language" class="w-full">
+              <label for="curriculum-title">Curriculum Title</label>
+              <input
+                type="text"
+                id="curriculum-title"
+                class="w-full"
+                placeholder="e.g., Spanish for Beginners: Everyday Conversations"
+              />
+            </div>
+
+            <div>
+              <label for="curriculum-type">Curriculum Type</label>
+              <select id="curriculum-type" class="w-full">
+                <option value="course">Full Course</option>
+                <option value="module">Module</option>
+                <option value="conversationPractice">Conversation Practice</option>
+                <option value="vocabularyBuilding">Vocabulary Building</option>
+                <option value="culturalImmersion">Cultural Immersion</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="target-language">Target Language</label>
+              <select id="target-language" class="w-full">
                 <option value="spanish">Spanish</option>
                 <option value="french">French</option>
                 <option value="german">German</option>
@@ -856,190 +284,999 @@
                 <option value="arabic">Arabic</option>
               </select>
             </div>
-            
+
             <div>
-              <label for="vocab-topic">Topic</label>
-              <select id="vocab-topic" class="w-full">
-                <option value="food">Food & Dining</option>
-                <option value="travel">Travel & Transportation</option>
-                <option value="shopping">Shopping</option>
-                <option value="family">Family & Relationships</option>
-                <option value="work">Work & Business</option>
-                <option value="education">Education</option>
-                <option value="health">Health & Medicine</option>
-                <option value="technology">Technology</option>
-                <option value="nature">Nature & Environment</option>
-                <option value="hobbies">Hobbies & Recreation</option>
-              </select>
-            </div>
-            
-            <div>
-              <label for="vocab-level">Proficiency Level</label>
-              <select id="vocab-level" class="w-full">
+              <label for="proficiency-level">Proficiency Level</label>
+              <select id="proficiency-level" class="w-full">
                 <option value="beginner">Beginner (A1-A2)</option>
                 <option value="intermediate">Intermediate (B1-B2)</option>
                 <option value="advanced">Advanced (C1-C2)</option>
+                <option value="mixed">Mixed Levels</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="learning-focus">Primary Learning Focus</label>
+              <select id="learning-focus" class="w-full">
+                <option value="conversation">Conversation Skills</option>
+                <option value="grammar">Grammar & Structure</option>
+                <option value="vocabulary">Vocabulary Building</option>
+                <option value="reading">Reading Comprehension</option>
+                <option value="writing">Writing Skills</option>
+                <option value="listening">Listening Comprehension</option>
+                <option value="cultural">Cultural Understanding</option>
+                <option value="comprehensive">Comprehensive (All Skills)</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="duration">Duration</label>
+              <select id="duration" class="w-full">
+                <option value="short">Short Course (1-4 weeks)</option>
+                <option value="standard">Standard Course (5-12 weeks)</option>
+                <option value="intensive">Intensive Course (2-4 weeks, daily sessions)</option>
+                <option value="semester">Full Semester (14-16 weeks)</option>
+                <option value="selfPaced">Self-Paced (No time limit)</option>
               </select>
             </div>
           </div>
-          
-          <div class="mb-4">
-            <label for="vocab-count">Number of Terms</label>
-            <input type="text" id="vocab-count" class="w-full" value="20" placeholder="Enter number of vocabulary terms to generate">
+
+          <div class="mt-6">
+            <label for="curriculum-description">Description</label>
+            <textarea
+              id="curriculum-description"
+              class="w-full min-h-[120px]"
+              placeholder="Describe the curriculum, its purpose, and target learners..."
+            ></textarea>
           </div>
-          
-          <div class="mb-4">
-            <label for="vocab-context">Additional Context (Optional)</label>
-            <textarea id="vocab-context" class="w-full min-h-[80px]" placeholder="Add any specific requirements or context for the vocabulary list..."></textarea>
+
+          <div class="flex justify-end mt-6">
+            <button class="px-4 py-2" onclick="nextStep(2)">Next: Learning Outcomes</button>
           </div>
-          
-          <div class="flex justify-end">
-            <button class="flex items-center bg-blue-700 px-4 py-2 rounded-lg">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              Generate Vocabulary
+        </div>
+
+        <!-- Form Step 2: Learning Outcomes (Initially Hidden) -->
+        <div id="step-2" class="hidden mb-8">
+          <h3 class="text-lg font-bold mb-4">Learning Outcomes</h3>
+
+          <div class="mb-6">
+            <p class="mb-4">
+              Define what students will be able to do after completing this curriculum.
+            </p>
+
+            <div id="learning-outcomes-container">
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Learning Outcome #1</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  class="w-full"
+                  placeholder="e.g., Introduce yourself and ask basic questions in Spanish using appropriate greetings"
+                />
+              </div>
+
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Learning Outcome #2</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  class="w-full"
+                  placeholder="e.g., Order food and drinks in a restaurant with proper vocabulary and etiquette"
+                />
+              </div>
+            </div>
+
+            <button class="flex items-center mt-2 bg-blue-700 px-3 py-1 rounded-lg text-sm">
+              <span class="mr-1">+</span> Add Learning Outcome
+            </button>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600" onclick="prevStep(1)">
+              Previous: Basic Information
+            </button>
+            <button class="px-4 py-2" onclick="nextStep(3)">Next: Content Structure</button>
+          </div>
+        </div>
+
+        <!-- Form Step 3: Content Structure (Initially Hidden) -->
+        <div id="step-3" class="hidden mb-8">
+          <h3 class="text-lg font-bold mb-4">Content Structure</h3>
+
+          <div class="mb-6">
+            <p class="mb-4">Organize your curriculum into modules, topics, or lessons.</p>
+
+            <div id="modules-container">
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Module #1</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input type="text" class="w-full mb-3" placeholder="Module Title" />
+                <textarea
+                  class="w-full min-h-[80px]"
+                  placeholder="Module description and key topics..."
+                ></textarea>
+
+                <div class="mt-4">
+                  <h4 class="text-sm font-medium mb-2">Lessons</h4>
+                  <div class="pl-4 border-l-2 border-blue-800">
+                    <div class="mb-2">
+                      <input type="text" class="w-full" placeholder="Lesson 1 Title" />
+                    </div>
+                    <div class="mb-2">
+                      <input type="text" class="w-full" placeholder="Lesson 2 Title" />
+                    </div>
+                    <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
+                      <span class="mr-1">+</span> Add Lesson
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <h4 class="text-sm font-medium mb-2">Key Vocabulary</h4>
+                  <div class="pl-4 border-l-2 border-blue-800">
+                    <div class="translation-row">
+                      <input type="text" placeholder="English term" />
+                      <input type="text" placeholder="Translation" />
+                    </div>
+                    <div class="translation-row">
+                      <input type="text" placeholder="English term" />
+                      <input type="text" placeholder="Translation" />
+                    </div>
+                    <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
+                      <span class="mr-1">+</span> Add Vocabulary
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Module #2</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input type="text" class="w-full mb-3" placeholder="Module Title" />
+                <textarea
+                  class="w-full min-h-[80px]"
+                  placeholder="Module description and key topics..."
+                ></textarea>
+
+                <div class="mt-4">
+                  <h4 class="text-sm font-medium mb-2">Lessons</h4>
+                  <div class="pl-4 border-l-2 border-blue-800">
+                    <div class="mb-2">
+                      <input type="text" class="w-full" placeholder="Lesson 1 Title" />
+                    </div>
+                    <div class="mb-2">
+                      <input type="text" class="w-full" placeholder="Lesson 2 Title" />
+                    </div>
+                    <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
+                      <span class="mr-1">+</span> Add Lesson
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mt-4">
+                  <h4 class="text-sm font-medium mb-2">Key Vocabulary</h4>
+                  <div class="pl-4 border-l-2 border-blue-800">
+                    <div class="translation-row">
+                      <input type="text" placeholder="English term" />
+                      <input type="text" placeholder="Translation" />
+                    </div>
+                    <div class="translation-row">
+                      <input type="text" placeholder="English term" />
+                      <input type="text" placeholder="Translation" />
+                    </div>
+                    <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
+                      <span class="mr-1">+</span> Add Vocabulary
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="flex items-center mt-4 bg-blue-700 px-3 py-1 rounded-lg text-sm">
+              <span class="mr-1">+</span> Add Module
+            </button>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600" onclick="prevStep(2)">
+              Previous: Learning Outcomes
+            </button>
+            <button class="px-4 py-2" onclick="nextStep(4)">Next: Assessment Methods</button>
+          </div>
+        </div>
+
+        <!-- Form Step 4: Assessment Methods (Initially Hidden) -->
+        <div id="step-4" class="hidden mb-8">
+          <h3 class="text-lg font-bold mb-4">Assessment Methods</h3>
+
+          <div class="mb-6">
+            <p class="mb-4">Define how students will be assessed.</p>
+
+            <div id="assessments-container">
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Assessment #1</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <label class="text-sm">Assessment Type</label>
+                    <select class="w-full">
+                      <option value="quiz">Vocabulary Quiz</option>
+                      <option value="conversation">Conversation Practice</option>
+                      <option value="role-play">Role-Play Scenario</option>
+                      <option value="writing">Writing Assignment</option>
+                      <option value="reading">Reading Comprehension</option>
+                      <option value="listening">Listening Exercise</option>
+                      <option value="presentation">Oral Presentation</option>
+                      <option value="project">Cultural Project</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="text-sm">Weight (%)</label>
+                    <input type="text" class="w-full" placeholder="e.g., 20" />
+                  </div>
+                </div>
+
+                <textarea
+                  class="w-full min-h-[80px]"
+                  placeholder="Description of assessment method, requirements, and grading criteria..."
+                ></textarea>
+              </div>
+
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Assessment #2</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <label class="text-sm">Assessment Type</label>
+                    <select class="w-full">
+                      <option value="quiz">Vocabulary Quiz</option>
+                      <option value="conversation">Conversation Practice</option>
+                      <option value="role-play">Role-Play Scenario</option>
+                      <option value="writing">Writing Assignment</option>
+                      <option value="reading">Reading Comprehension</option>
+                      <option value="listening">Listening Exercise</option>
+                      <option value="presentation">Oral Presentation</option>
+                      <option value="project">Cultural Project</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="text-sm">Weight (%)</label>
+                    <input type="text" class="w-full" placeholder="e.g., 20" />
+                  </div>
+                </div>
+
+                <textarea
+                  class="w-full min-h-[80px]"
+                  placeholder="Description of assessment method, requirements, and grading criteria..."
+                ></textarea>
+              </div>
+            </div>
+
+            <button class="flex items-center mt-3 bg-blue-700 px-3 py-1 rounded-lg text-sm">
+              <span class="mr-1">+</span> Add Assessment
+            </button>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600" onclick="prevStep(3)">
+              Previous: Content Structure
+            </button>
+            <button class="px-4 py-2 bg-green-600 hover:bg-green-700" onclick="showAiGeneration()">
+              Generate with AI
             </button>
           </div>
         </div>
-        
-        <div class="border border-blue-800 rounded-lg p-4 bg-blue-900 bg-opacity-10">
-          <h3 class="font-medium mb-3">About AI Vocabulary Generator</h3>
-          <p class="text-sm mb-3">The AI Vocabulary Generator uses Anthropic Claude to create contextually appropriate, level-specific vocabulary lists for language learning.</p>
-          
-          <div class="text-xs opacity-75">
-            <p class="mb-2">Each generated list includes:</p>
-            <ul class="list-disc pl-5 space-y-1">
-              <li>Native language term</li>
-              <li>Target language translation</li>
-              <li>Pronunciation guidance (when applicable)</li>
-              <li>Context or usage examples</li>
-              <li>Related terms or phrases</li>
-            </ul>
-            <p class="mt-2">Generated lists can be directly imported into any curriculum module or used as standalone learning resources.</p>
+
+        <!-- AI Curriculum Generation (Initially Hidden) -->
+        <div id="ai-generation" class="hidden">
+          <div class="bg-blue-900 bg-opacity-20 p-6 rounded-xl mb-6">
+            <h3 class="text-lg font-medium mb-2 flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2 text-blue-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              AI-Powered Curriculum Generation
+            </h3>
+            <p class="mb-4">
+              Based on your inputs, we'll use our Anthropic Claude integration to generate a
+              complete language learning curriculum structure, including modules, vocabulary lists,
+              conversation examples, and assessment methods.
+            </p>
+
+            <div class="mb-4">
+              <label for="ai-customization">Additional Instructions (Optional)</label>
+              <textarea
+                id="ai-customization"
+                class="w-full min-h-[80px]"
+                placeholder="Provide any specific instructions for the AI, such as cultural aspects to focus on, particular grammar points to include, or specialized vocabulary for certain contexts..."
+              ></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" checked />
+                <span>Generate neurodivergent-friendly learning activities</span>
+              </label>
+            </div>
+
+            <div class="flex justify-end">
+              <button
+                class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-lg flex items-center"
+                onclick="generateAiCurriculum()"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                  />
+                </svg>
+                Generate Curriculum
+              </button>
+            </div>
+          </div>
+
+          <!-- AI Generated Content Preview -->
+          <div id="ai-generated-content" class="ai-generated p-6 rounded-xl mb-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-bold">Generated Curriculum: Spanish for Beginners</h3>
+              <div class="flex space-x-2">
+                <button class="text-xs px-3 py-1 rounded-lg bg-blue-700">Edit</button>
+                <button class="text-xs px-3 py-1 rounded-lg bg-green-700">Save</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Course Overview</h4>
+                <p class="mb-2">
+                  This 8-week introductory Spanish course is designed for complete beginners with no
+                  prior knowledge of Spanish. The curriculum focuses on developing conversational
+                  skills for everyday situations, building essential vocabulary, and introducing
+                  basic grammar concepts in a neurodivergent-friendly format with multiple learning
+                  modalities.
+                </p>
+                <p>
+                  The course emphasizes high-frequency vocabulary, practical phrases, and cultural
+                  contexts that motivate learners and enable early success in real communication
+                  scenarios.
+                </p>
+              </div>
+
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Learning Outcomes</h4>
+                <ol class="list-decimal pl-5 space-y-2">
+                  <li>Introduce yourself and engage in basic conversations in Spanish</li>
+                  <li>Ask and answer simple questions about personal information</li>
+                  <li>Order food and beverages in restaurants and cafés</li>
+                  <li>Navigate transportation and ask for directions</li>
+                  <li>Describe daily routines and activities</li>
+                  <li>
+                    Recognize and use basic grammatical structures (present tense, gender, articles)
+                  </li>
+                </ol>
+              </div>
+
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Module Structure</h4>
+
+                <div class="mb-4">
+                  <h5 class="font-medium">Module 1: Greetings and Introduction (Week 1)</h5>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>Basic greetings and farewells</li>
+                    <li>Introducing yourself and others</li>
+                    <li>Numbers 1-20</li>
+                    <li>Asking simple questions</li>
+                  </ul>
+                  <div class="mt-2 pl-5">
+                    <h6 class="text-sm font-medium text-blue-300">Key Vocabulary:</h6>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mt-1">
+                      <div>Hello</div>
+                      <div>Hola</div>
+                      <div>Good morning</div>
+                      <div>Buenos días</div>
+                      <div>Good afternoon</div>
+                      <div>Buenas tardes</div>
+                      <div>My name is...</div>
+                      <div>Me llamo...</div>
+                      <div>How are you?</div>
+                      <div>¿Cómo estás?</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <h5 class="font-medium">Module 2: Food and Dining (Week 2)</h5>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>Restaurant vocabulary</li>
+                    <li>Ordering food and drinks</li>
+                    <li>Expressing likes and dislikes</li>
+                    <li>Asking for the bill</li>
+                  </ul>
+                  <div class="mt-2 pl-5">
+                    <h6 class="text-sm font-medium text-blue-300">Key Vocabulary:</h6>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm mt-1">
+                      <div>Restaurant</div>
+                      <div>Restaurante</div>
+                      <div>Menu</div>
+                      <div>Menú</div>
+                      <div>I would like...</div>
+                      <div>Quisiera...</div>
+                      <div>The bill, please</div>
+                      <div>La cuenta, por favor</div>
+                      <div>Delicious</div>
+                      <div>Delicioso</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Additional modules would continue here -->
+              </div>
+
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">
+                  Neurodivergent-Friendly Features
+                </h4>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li>
+                    <strong>Multi-sensory learning approaches:</strong> Visual flashcards, audio
+                    recordings, physical movement activities
+                  </li>
+                  <li>
+                    <strong>Clear structure and expectations:</strong> Consistent class format,
+                    visual schedules, and advance previews
+                  </li>
+                  <li>
+                    <strong>Frequent breaks and activity switching:</strong> 15-20 minute activity
+                    blocks with 3-5 minute breaks
+                  </li>
+                  <li>
+                    <strong>Visual supports:</strong> Color-coding for grammatical gender, visual
+                    vocabulary maps
+                  </li>
+                  <li>
+                    <strong>Alternative assessment options:</strong> Choice of written, oral, or
+                    project-based assessments
+                  </li>
+                </ul>
+              </div>
+
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Assessment Methods</h4>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li>
+                    <strong>Weekly Vocabulary Quizzes (20%):</strong> 10-15 words or phrases,
+                    available in written or audio format
+                  </li>
+                  <li>
+                    <strong>Conversation Practice (30%):</strong> Structured role-play scenarios
+                    assessed for comprehensibility and vocabulary use
+                  </li>
+                  <li>
+                    <strong>Cultural Project (20%):</strong> Research and present on an aspect of
+                    Spanish-speaking culture
+                  </li>
+                  <li>
+                    <strong>Final Assessment (30%):</strong> Comprehensive assessment covering all
+                    modules through a choice of written exam, conversation, or creative project
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </main>
 
-  <!-- Footer -->
-  <footer class="bg-gray-800 text-gray-200 p-4 mt-12">
-    <div class="container mx-auto">
-      <div class="text-center">
-        <p class="text-sm">&copy; 2025 ShotziOS Learning Platform - Language School Curriculum Creator</p>
-        <p class="text-xs text-gray-400 mt-1">
-          Version 2.5.3 • Last Updated: April 10, 2025
-        </p>
+      <!-- Curriculum Library -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Language Curriculum Library</h2>
+          <div class="flex space-x-2">
+            <select class="text-sm px-3 py-1 rounded-lg bg-blue-900">
+              <option value="all">All Languages</option>
+              <option value="spanish">Spanish</option>
+              <option value="french">French</option>
+              <option value="german">German</option>
+              <option value="italian">Italian</option>
+              <option value="japanese">Japanese</option>
+              <option value="chinese">Chinese</option>
+              <option value="russian">Russian</option>
+            </select>
+            <button class="text-sm px-3 py-1 rounded-lg bg-blue-700">Import</button>
+            <button class="text-sm px-3 py-1 rounded-lg bg-blue-700">Export</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Curriculum Card 1 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <img
+                    src="https://via.placeholder.com/24x16/dd0000/ffffff"
+                    alt="Spanish Flag"
+                    class="language-flag"
+                  />
+                  <h3 class="font-bold">Spanish for Beginners</h3>
+                </div>
+                <span class="difficulty-badge difficulty-beginner">Beginner</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">🗣️ Conversation</span>
+                <span>📚 8 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Learn basic Spanish conversation skills for everyday situations, including
+                greetings, dining, shopping, and more.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curriculum Card 2 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <img
+                    src="https://via.placeholder.com/24x16/000099/ffffff"
+                    alt="French Flag"
+                    class="language-flag"
+                  />
+                  <h3 class="font-bold">French for Travel</h3>
+                </div>
+                <span class="difficulty-badge difficulty-beginner">Beginner</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">🗣️ Travel</span>
+                <span>📚 6 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Essential French for travelers, focusing on practical phrases, transportation,
+                accommodations, and cultural norms.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curriculum Card 3 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <img
+                    src="https://via.placeholder.com/24x16/ff0000/ffffff"
+                    alt="Japanese Flag"
+                    class="language-flag"
+                  />
+                  <h3 class="font-bold">Japanese Writing Systems</h3>
+                </div>
+                <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">✍️ Writing</span>
+                <span>📚 10 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Comprehensive course on Japanese writing systems, including Hiragana, Katakana, and
+                basic Kanji characters.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curriculum Card 4 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <img
+                    src="https://via.placeholder.com/24x16/000000/ffcc00"
+                    alt="German Flag"
+                    class="language-flag"
+                  />
+                  <h3 class="font-bold">German Grammar Intensive</h3>
+                </div>
+                <span class="difficulty-badge difficulty-advanced">Advanced</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">📝 Grammar</span>
+                <span>📚 12 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Advanced German grammar course covering complex sentence structures, cases, tenses,
+                and idiomatic expressions.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curriculum Card 5 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <img
+                    src="https://via.placeholder.com/24x16/009900/ffffff"
+                    alt="Italian Flag"
+                    class="language-flag"
+                  />
+                  <h3 class="font-bold">Italian Cuisine & Culture</h3>
+                </div>
+                <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">🍝 Cultural</span>
+                <span>📚 8 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Learn Italian through the lens of cuisine and culture, with cooking vocabulary,
+                regional dishes, and cultural traditions.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curriculum Card 6 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                  <img
+                    src="https://via.placeholder.com/24x16/ff0000/ffff00"
+                    alt="Chinese Flag"
+                    class="language-flag"
+                  />
+                  <h3 class="font-bold">Mandarin Conversation</h3>
+                </div>
+                <span class="difficulty-badge difficulty-beginner">Beginner</span>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">🗣️ Conversation</span>
+                <span>📚 10 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Practical Mandarin Chinese for everyday conversations, with emphasis on
+                pronunciation, tones, and common phrases.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </footer>
 
-  <!-- Help Bubble -->
-  <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeHelpBubble('language-curriculum', 'right');
-    });
-  </script>
-  
-  <!-- Simple script for step navigation -->
-  <script>
-    function nextStep(step) {
-      // Hide all steps
-      document.getElementById('step-1').classList.add('hidden');
-      document.getElementById('step-2').classList.add('hidden');
-      document.getElementById('step-3').classList.add('hidden');
-      document.getElementById('step-4').classList.add('hidden');
-      document.getElementById('ai-generation').classList.add('hidden');
-      
-      // Show the requested step
-      document.getElementById('step-' + step).classList.remove('hidden');
-      
-      // Update step indicators
-      const steps = document.querySelectorAll('.step');
-      steps.forEach((s, index) => {
-        s.classList.remove('active', 'completed');
-        if (index + 1 < step) {
-          s.classList.add('completed');
-        } else if (index + 1 === step) {
-          s.classList.add('active');
-        }
+      <!-- Vocabulary Generator -->
+      <div class="bg-white rounded-xl p-6">
+        <h2 class="text-xl font-bold mb-4">AI Vocabulary Generator</h2>
+        <p class="mb-6">
+          Quickly create targeted vocabulary lists for your language curriculum with AI assistance.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="col-span-1 md:col-span-2">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label for="vocab-language">Language</label>
+                <select id="vocab-language" class="w-full">
+                  <option value="spanish">Spanish</option>
+                  <option value="french">French</option>
+                  <option value="german">German</option>
+                  <option value="italian">Italian</option>
+                  <option value="japanese">Japanese</option>
+                  <option value="chinese">Chinese (Mandarin)</option>
+                  <option value="russian">Russian</option>
+                  <option value="arabic">Arabic</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="vocab-topic">Topic</label>
+                <select id="vocab-topic" class="w-full">
+                  <option value="food">Food & Dining</option>
+                  <option value="travel">Travel & Transportation</option>
+                  <option value="shopping">Shopping</option>
+                  <option value="family">Family & Relationships</option>
+                  <option value="work">Work & Business</option>
+                  <option value="education">Education</option>
+                  <option value="health">Health & Medicine</option>
+                  <option value="technology">Technology</option>
+                  <option value="nature">Nature & Environment</option>
+                  <option value="hobbies">Hobbies & Recreation</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="vocab-level">Proficiency Level</label>
+                <select id="vocab-level" class="w-full">
+                  <option value="beginner">Beginner (A1-A2)</option>
+                  <option value="intermediate">Intermediate (B1-B2)</option>
+                  <option value="advanced">Advanced (C1-C2)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="vocab-count">Number of Terms</label>
+              <input
+                type="text"
+                id="vocab-count"
+                class="w-full"
+                value="20"
+                placeholder="Enter number of vocabulary terms to generate"
+              />
+            </div>
+
+            <div class="mb-4">
+              <label for="vocab-context">Additional Context (Optional)</label>
+              <textarea
+                id="vocab-context"
+                class="w-full min-h-[80px]"
+                placeholder="Add any specific requirements or context for the vocabulary list..."
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end">
+              <button class="flex items-center bg-blue-700 px-4 py-2 rounded-lg">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Generate Vocabulary
+              </button>
+            </div>
+          </div>
+
+          <div class="border border-blue-800 rounded-lg p-4 bg-blue-900 bg-opacity-10">
+            <h3 class="font-medium mb-3">About AI Vocabulary Generator</h3>
+            <p class="text-sm mb-3">
+              The AI Vocabulary Generator uses Anthropic Claude to create contextually appropriate,
+              level-specific vocabulary lists for language learning.
+            </p>
+
+            <div class="text-xs opacity-75">
+              <p class="mb-2">Each generated list includes:</p>
+              <ul class="list-disc pl-5 space-y-1">
+                <li>Native language term</li>
+                <li>Target language translation</li>
+                <li>Pronunciation guidance (when applicable)</li>
+                <li>Context or usage examples</li>
+                <li>Related terms or phrases</li>
+              </ul>
+              <p class="mt-2">
+                Generated lists can be directly imported into any curriculum module or used as
+                standalone learning resources.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-200 p-4 mt-12">
+      <div class="container mx-auto">
+        <div class="text-center">
+          <p class="text-sm">
+            &copy; 2025 ShotziOS Learning Platform - Language School Curriculum Creator
+          </p>
+          <p class="text-xs text-gray-400 mt-1">Version 2.5.3 • Last Updated: April 10, 2025</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Help Bubble -->
+    <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeHelpBubble('language-curriculum', 'right');
       });
-    }
-    
-    function prevStep(step) {
-      nextStep(step);
-    }
-    
-    function showAiGeneration() {
-      // Hide all steps
-      document.getElementById('step-1').classList.add('hidden');
-      document.getElementById('step-2').classList.add('hidden');
-      document.getElementById('step-3').classList.add('hidden');
-      document.getElementById('step-4').classList.add('hidden');
-      
-      // Show AI generation
-      document.getElementById('ai-generation').classList.remove('hidden');
-      
-      // Update step indicators
-      const steps = document.querySelectorAll('.step');
-      steps.forEach((s, index) => {
-        if (index < 3) {
-          s.classList.remove('active');
-          s.classList.add('completed');
-        } else {
-          s.classList.remove('completed');
-          s.classList.add('active');
-        }
-      });
-    }
-    
-    function generateAiCurriculum() {
-      // Show the AI-generated content
-      document.getElementById('ai-generated-content').classList.remove('hidden');
-      
-      // In a real implementation, this would make an API call to Claude
-      console.log('Generating curriculum with Anthropic Claude...');
-    }
-  </script>
-  
-  <!-- Curriculum Assessment Integration Script -->
-  <script src="/js/curriculum-assessment-integration.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Initialize curriculum assessment integration for language learning
-      if (typeof window.curriculumAssessmentIntegration !== 'undefined') {
-        window.curriculumAssessmentIntegration.initCurriculumAssessmentIntegration({
-          userId: '1', // Default user ID for testing, replace with actual user ID in production
-          curriculumType: 'language',
-          languagePreferences: {
-            targetLanguage: document.getElementById('language') ? document.getElementById('language').value : 'Spanish',
-            proficiencyLevel: document.getElementById('level') ? document.getElementById('level').value : 'Beginner'
+    </script>
+
+    <!-- Simple script for step navigation -->
+    <script>
+      function nextStep(step) {
+        // Hide all steps
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-3').classList.add('hidden');
+        document.getElementById('step-4').classList.add('hidden');
+        document.getElementById('ai-generation').classList.add('hidden');
+
+        // Show the requested step
+        document.getElementById('step-' + step).classList.remove('hidden');
+
+        // Update step indicators
+        const steps = document.querySelectorAll('.step');
+        steps.forEach((s, index) => {
+          s.classList.remove('active', 'completed');
+          if (index + 1 < step) {
+            s.classList.add('completed');
+          } else if (index + 1 === step) {
+            s.classList.add('active');
           }
         });
-        
-        // Update language preferences when inputs change
-        const languageSelect = document.getElementById('language');
-        const levelSelect = document.getElementById('level');
-        
-        if (languageSelect) {
-          languageSelect.addEventListener('change', function() {
-            window.curriculumAssessmentIntegration.updateLanguagePreferences({
-              targetLanguage: this.value
-            });
-          });
-        }
-        
-        if (levelSelect) {
-          levelSelect.addEventListener('change', function() {
-            window.curriculumAssessmentIntegration.updateLanguagePreferences({
-              proficiencyLevel: this.value
-            });
-          });
-        }
       }
-    });
-  </script>
-</body>
+
+      function prevStep(step) {
+        nextStep(step);
+      }
+
+      function showAiGeneration() {
+        // Hide all steps
+        document.getElementById('step-1').classList.add('hidden');
+        document.getElementById('step-2').classList.add('hidden');
+        document.getElementById('step-3').classList.add('hidden');
+        document.getElementById('step-4').classList.add('hidden');
+
+        // Show AI generation
+        document.getElementById('ai-generation').classList.remove('hidden');
+
+        // Update step indicators
+        const steps = document.querySelectorAll('.step');
+        steps.forEach((s, index) => {
+          if (index < 3) {
+            s.classList.remove('active');
+            s.classList.add('completed');
+          } else {
+            s.classList.remove('completed');
+            s.classList.add('active');
+          }
+        });
+      }
+
+      function generateAiCurriculum() {
+        // Show the AI-generated content
+        document.getElementById('ai-generated-content').classList.remove('hidden');
+
+        // In a real implementation, this would make an API call to Claude
+        console.log('Generating curriculum with Anthropic Claude...');
+      }
+    </script>
+
+    <!-- Curriculum Assessment Integration Script -->
+    <script src="/js/curriculum-assessment-integration.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Initialize curriculum assessment integration for language learning
+        if (typeof window.curriculumAssessmentIntegration !== 'undefined') {
+          window.curriculumAssessmentIntegration.initCurriculumAssessmentIntegration({
+            userId: '1', // Default user ID for testing, replace with actual user ID in production
+            curriculumType: 'language',
+            languagePreferences: {
+              targetLanguage: document.getElementById('language')
+                ? document.getElementById('language').value
+                : 'Spanish',
+              proficiencyLevel: document.getElementById('level')
+                ? document.getElementById('level').value
+                : 'Beginner',
+            },
+          });
+
+          // Update language preferences when inputs change
+          const languageSelect = document.getElementById('language');
+          const levelSelect = document.getElementById('level');
+
+          if (languageSelect) {
+            languageSelect.addEventListener('change', function () {
+              window.curriculumAssessmentIntegration.updateLanguagePreferences({
+                targetLanguage: this.value,
+              });
+            });
+          }
+
+          if (levelSelect) {
+            levelSelect.addEventListener('change', function () {
+              window.curriculumAssessmentIntegration.updateLanguagePreferences({
+                proficiencyLevel: this.value,
+              });
+            });
+          }
+        }
+      });
+    </script>
+  </body>
 </html>

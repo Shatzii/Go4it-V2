@@ -1,31 +1,31 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { Check, X, Percent, Gift, Star } from 'lucide-react'
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Check, X, Percent, Gift, Star } from 'lucide-react';
 
 interface CouponInputProps {
-  onCouponApplied?: (coupon: any) => void
-  planId?: string
-  amount?: number
-  className?: string
+  onCouponApplied?: (coupon: any) => void;
+  planId?: string;
+  amount?: number;
+  className?: string;
 }
 
 export function CouponInput({ onCouponApplied, planId, amount = 0, className }: CouponInputProps) {
-  const [couponCode, setCouponCode] = useState('')
-  const [isValidating, setIsValidating] = useState(false)
-  const [validationResult, setValidationResult] = useState<any>(null)
-  const [error, setError] = useState('')
+  const [couponCode, setCouponCode] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
+  const [error, setError] = useState('');
 
   const validateCoupon = async () => {
-    if (!couponCode.trim()) return
+    if (!couponCode.trim()) return;
 
-    setIsValidating(true)
-    setError('')
-    setValidationResult(null)
+    setIsValidating(true);
+    setError('');
+    setValidationResult(null);
 
     try {
       const response = await fetch('/api/coupons/validate', {
@@ -39,55 +39,55 @@ export function CouponInput({ onCouponApplied, planId, amount = 0, className }: 
           amount,
           userId: 'demo-user', // In real app, get from auth
         }),
-      })
+      });
 
-      const result = await response.json()
+      const result = await response.json();
 
       if (result.valid) {
-        setValidationResult(result.coupon)
-        onCouponApplied?.(result.coupon)
+        setValidationResult(result.coupon);
+        onCouponApplied?.(result.coupon);
       } else {
-        setError(result.error || 'Invalid coupon code')
+        setError(result.error || 'Invalid coupon code');
       }
     } catch (err) {
-      setError('Failed to validate coupon')
+      setError('Failed to validate coupon');
     } finally {
-      setIsValidating(false)
+      setIsValidating(false);
     }
-  }
+  };
 
   const removeCoupon = () => {
-    setCouponCode('')
-    setValidationResult(null)
-    setError('')
-    onCouponApplied?.(null)
-  }
+    setCouponCode('');
+    setValidationResult(null);
+    setError('');
+    onCouponApplied?.(null);
+  };
 
   const getDiscountIcon = (discountType: string) => {
     switch (discountType) {
       case 'percentage':
-        return <Percent className="w-4 h-4" />
+        return <Percent className="w-4 h-4" />;
       case 'free':
-        return <Gift className="w-4 h-4" />
+        return <Gift className="w-4 h-4" />;
       case 'fixed':
-        return <Star className="w-4 h-4" />
+        return <Star className="w-4 h-4" />;
       default:
-        return <Percent className="w-4 h-4" />
+        return <Percent className="w-4 h-4" />;
     }
-  }
+  };
 
   const formatDiscount = (discountType: string, discountValue: string) => {
     switch (discountType) {
       case 'percentage':
-        return `${discountValue}% OFF`
+        return `${discountValue}% OFF`;
       case 'free':
-        return 'FREE MONTH'
+        return 'FREE MONTH';
       case 'fixed':
-        return `$${discountValue} OFF`
+        return `$${discountValue} OFF`;
       default:
-        return `${discountValue}% OFF`
+        return `${discountValue}% OFF`;
     }
-  }
+  };
 
   return (
     <div className={className}>
@@ -149,7 +149,8 @@ export function CouponInput({ onCouponApplied, planId, amount = 0, className }: 
                     {validationResult.name}
                   </div>
                   <div className="text-sm text-green-600 dark:text-green-400">
-                    {formatDiscount(validationResult.discountType, validationResult.discountValue)} Applied
+                    {formatDiscount(validationResult.discountType, validationResult.discountValue)}{' '}
+                    Applied
                   </div>
                   {validationResult.discountAmount && (
                     <div className="text-sm text-green-600 dark:text-green-400">
@@ -171,7 +172,7 @@ export function CouponInput({ onCouponApplied, planId, amount = 0, className }: 
         </Card>
       )}
     </div>
-  )
+  );
 }
 
 // Predefined coupon showcase component
@@ -209,14 +210,17 @@ export function CouponShowcase() {
       color: 'from-green-500 to-emerald-500',
       icon: Gift,
     },
-  ]
+  ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {coupons.map((coupon) => {
-        const Icon = coupon.icon
+        const Icon = coupon.icon;
         return (
-          <Card key={coupon.code} className="relative overflow-hidden bg-slate-800 border-slate-700">
+          <Card
+            key={coupon.code}
+            className="relative overflow-hidden bg-slate-800 border-slate-700"
+          >
             <div className={`absolute inset-0 bg-gradient-to-br ${coupon.color} opacity-10`} />
             <CardContent className="p-4 relative">
               <div className="flex items-center gap-2 mb-2">
@@ -225,19 +229,13 @@ export function CouponShowcase() {
                   {coupon.code}
                 </Badge>
               </div>
-              <div className="font-bold text-lg text-white mb-1">
-                {coupon.discount}
-              </div>
-              <div className="text-sm text-slate-300 mb-2">
-                {coupon.name}
-              </div>
-              <div className="text-xs text-slate-400">
-                {coupon.description}
-              </div>
+              <div className="font-bold text-lg text-white mb-1">{coupon.discount}</div>
+              <div className="text-sm text-slate-300 mb-2">{coupon.name}</div>
+              <div className="text-xs text-slate-400">{coupon.description}</div>
             </CardContent>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

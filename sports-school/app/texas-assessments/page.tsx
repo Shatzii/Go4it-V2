@@ -1,5 +1,5 @@
-import React from 'react'
-import Link from 'next/link'
+import React from 'react';
+import Link from 'next/link';
 
 export default function TexasAssessmentsPage() {
   return (
@@ -7,12 +7,13 @@ export default function TexasAssessmentsPage() {
       <header className="relative z-10 bg-black/20 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <nav className="flex justify-between items-center">
-            <Link href="/" className="text-white font-bold text-2xl hover:text-green-300 transition-colors">
+            <Link
+              href="/"
+              className="text-white font-bold text-2xl hover:text-green-300 transition-colors"
+            >
               ← The Universal One School
             </Link>
-            <div className="text-white font-bold text-xl">
-              STAAR Testing & Assessments
-            </div>
+            <div className="text-white font-bold text-xl">STAAR Testing & Assessments</div>
           </nav>
         </div>
       </header>
@@ -28,23 +29,23 @@ export default function TexasAssessmentsPage() {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Comprehensive STAAR testing with full neurodivergent accommodations and TEA-compliant assessment protocols.
+            Comprehensive STAAR testing with full neurodivergent accommodations and TEA-compliant
+            assessment protocols.
           </p>
         </div>
       </section>
 
       <section className="py-20 px-4">
         <div className="container mx-auto">
-          <h2 className="text-4xl font-bold text-white text-center mb-16">
-            Assessment Programs
-          </h2>
-          
+          <h2 className="text-4xl font-bold text-white text-center mb-16">Assessment Programs</h2>
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/20 transition-all duration-300">
               <div className="text-4xl mb-4">📊</div>
               <h3 className="text-2xl font-bold text-white mb-2">STAAR Testing</h3>
               <p className="text-white/80 mb-4">
-                State of Texas Assessments of Academic Readiness with comprehensive accommodations for neurodivergent learners.
+                State of Texas Assessments of Academic Readiness with comprehensive accommodations
+                for neurodivergent learners.
               </p>
               <ul className="space-y-2 text-white/70">
                 <li>• Extended time accommodations</li>
@@ -58,7 +59,8 @@ export default function TexasAssessmentsPage() {
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-2xl font-bold text-white mb-2">Benchmark Assessments</h3>
               <p className="text-white/80 mb-4">
-                Regular progress monitoring aligned with Texas Essential Knowledge and Skills (TEKS) standards.
+                Regular progress monitoring aligned with Texas Essential Knowledge and Skills (TEKS)
+                standards.
               </p>
               <ul className="space-y-2 text-white/70">
                 <li>• Quarterly progress checks</li>
@@ -112,7 +114,7 @@ export default function TexasAssessmentsPage() {
                 </div>
               </div>
             </div>
-            
+
             <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6">
               <h4 className="text-xl font-bold text-white mb-4">Accommodation Options</h4>
               <div className="space-y-2 text-white/80">
@@ -128,5 +130,5 @@ export default function TexasAssessmentsPage() {
         </div>
       </section>
     </div>
-  )
+  );
 }

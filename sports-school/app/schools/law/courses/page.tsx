@@ -1,26 +1,27 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { BookOpen, Users, Clock, Star, Scale, Gavel } from 'lucide-react'
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Users, Clock, Star, Scale, Gavel } from 'lucide-react';
 
 export default function LawCoursesPage() {
-  const [selectedGrade, setSelectedGrade] = useState('all')
+  const [selectedGrade, setSelectedGrade] = useState('all');
 
   const courses = [
     {
       id: 'legal-foundations',
       title: 'Legal Foundations',
       grade: '11',
-      description: 'Introduction to legal systems, constitutional law, and fundamental legal principles.',
+      description:
+        'Introduction to legal systems, constitutional law, and fundamental legal principles.',
       teacher: 'Professor Justice',
       students: 18,
       duration: '90 min',
       difficulty: 'Advanced',
       subjects: ['Constitutional Law', 'Legal History', 'Court Systems'],
-      color: 'bg-blue-600'
+      color: 'bg-blue-600',
     },
     {
       id: 'criminal-law',
@@ -32,7 +33,7 @@ export default function LawCoursesPage() {
       duration: '85 min',
       difficulty: 'Advanced',
       subjects: ['Criminal Law', 'Procedure', 'Ethics'],
-      color: 'bg-red-600'
+      color: 'bg-red-600',
     },
     {
       id: 'civil-rights',
@@ -44,7 +45,7 @@ export default function LawCoursesPage() {
       duration: '80 min',
       difficulty: 'Expert',
       subjects: ['Civil Rights', 'Constitution', 'Advocacy'],
-      color: 'bg-green-600'
+      color: 'bg-green-600',
     },
     {
       id: 'business-law',
@@ -56,7 +57,7 @@ export default function LawCoursesPage() {
       duration: '85 min',
       difficulty: 'Expert',
       subjects: ['Corporate Law', 'Contracts', 'Business Ethics'],
-      color: 'bg-purple-600'
+      color: 'bg-purple-600',
     },
     {
       id: 'moot-court',
@@ -68,7 +69,7 @@ export default function LawCoursesPage() {
       duration: '120 min',
       difficulty: 'Expert',
       subjects: ['Advocacy', 'Research', 'Oral Argument'],
-      color: 'bg-indigo-600'
+      color: 'bg-indigo-600',
     },
     {
       id: 'legal-research',
@@ -80,7 +81,7 @@ export default function LawCoursesPage() {
       duration: '75 min',
       difficulty: 'Advanced',
       subjects: ['Research', 'Writing', 'Citation'],
-      color: 'bg-gray-600'
+      color: 'bg-gray-600',
     },
     {
       id: 'internship',
@@ -92,23 +93,24 @@ export default function LawCoursesPage() {
       duration: '240 min',
       difficulty: 'Expert',
       subjects: ['Practice', 'Ethics', 'Professional Development'],
-      color: 'bg-yellow-600'
-    }
-  ]
+      color: 'bg-yellow-600',
+    },
+  ];
 
-  const grades = ['all', '11', '12', '11-12']
+  const grades = ['all', '11', '12', '11-12'];
 
-  const filteredCourses = selectedGrade === 'all' 
-    ? courses 
-    : courses.filter(course => course.grade === selectedGrade || course.grade.includes(selectedGrade))
+  const filteredCourses =
+    selectedGrade === 'all'
+      ? courses
+      : courses.filter(
+          (course) => course.grade === selectedGrade || course.grade.includes(selectedGrade),
+        );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            ⚖️ Future Legal Professionals
-          </h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">⚖️ Future Legal Professionals</h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Comprehensive legal education preparing students for law school and legal careers
           </p>
@@ -119,7 +121,7 @@ export default function LawCoursesPage() {
           {grades.map((grade) => (
             <Button
               key={grade}
-              variant={selectedGrade === grade ? "default" : "outline"}
+              variant={selectedGrade === grade ? 'default' : 'outline'}
               onClick={() => setSelectedGrade(grade)}
               className="min-w-[80px]"
             >
@@ -145,7 +147,7 @@ export default function LawCoursesPage() {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">{course.description}</p>
-                
+
                 <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
                   <div className="flex items-center gap-1">
                     <Users className="w-4 h-4" />
@@ -182,9 +184,7 @@ export default function LawCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Scale className="w-12 h-12 text-blue-600 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                {courses.length}
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{courses.length}</h3>
               <p className="text-gray-600">Legal Courses</p>
             </CardContent>
           </Card>
@@ -200,14 +200,12 @@ export default function LawCoursesPage() {
           <Card className="text-center">
             <CardContent className="pt-6">
               <Star className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                4.9/5
-              </h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">4.9/5</h3>
               <p className="text-gray-600">Course Rating</p>
             </CardContent>
           </Card>
         </div>
       </div>
     </div>
-  )
+  );
 }
