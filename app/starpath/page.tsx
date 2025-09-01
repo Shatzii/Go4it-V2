@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Star, Lock, CheckCircle, Trophy, Target, Zap, ArrowRight, Play } from 'lucide-react';
+import { Star, Lock, CheckCircle, Trophy, Target, Zap, ArrowRight, Play, QrCode, Crown } from 'lucide-react';
 
 interface StarPathNode {
   id: string;
@@ -16,6 +16,13 @@ interface StarPathNode {
   category: 'technical' | 'physical' | 'mental' | 'tactical';
   prerequisites: string[];
   rewards: string[];
+  garSubScores?: {
+    physical: number;
+    cognitive: number;
+    psychological: number;
+  };
+  badges?: string[];
+  archetype?: string;
 }
 
 interface UserProgress {
@@ -38,6 +45,9 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     category: 'technical',
     prerequisites: [],
     rewards: ['First Touch Badge', '+10 Technical Rating'],
+    garSubScores: { physical: 87, cognitive: 92, psychological: 78 },
+    badges: ['NextUp Prospect', 'Elite Touch', 'Coachable'],
+    archetype: 'Technical Master',
   },
   {
     id: 'agility_training',
@@ -51,6 +61,9 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     category: 'physical',
     prerequisites: [],
     rewards: ['Speed Demon Badge', '+8 Athleticism Rating'],
+    garSubScores: { physical: 94, cognitive: 76, psychological: 82 },
+    badges: ['Elite Speed', 'Explosive', 'Game Ready'],
+    archetype: 'Athletic Powerhouse',
   },
   {
     id: 'game_vision',
@@ -64,6 +77,9 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     category: 'tactical',
     prerequisites: [],
     rewards: ['Visionary Badge', '+12 Game Awareness'],
+    garSubScores: { physical: 71, cognitive: 95, psychological: 89 },
+    badges: ['Field General', 'Smart Player', 'Leader'],
+    archetype: 'Tactical Commander',
   },
   {
     id: 'mental_toughness',
@@ -77,6 +93,9 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     category: 'mental',
     prerequisites: ['game_vision'],
     rewards: ['Unshakeable Badge', '+15 Consistency'],
+    garSubScores: { physical: 68, cognitive: 84, psychological: 96 },
+    badges: ['Clutch Player', 'Unbreakable', 'Mentor'],
+    archetype: 'Mental Fortress',
   },
   {
     id: 'advanced_techniques',
@@ -90,6 +109,9 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     category: 'technical',
     prerequisites: ['ball_control'],
     rewards: ['Elite Technician Badge', '+20 Technical Rating'],
+    garSubScores: { physical: 91, cognitive: 88, psychological: 85 },
+    badges: ['Elite Tech', 'Innovation', 'Game Changer'],
+    archetype: 'Technical Innovator',
   },
   {
     id: 'leadership',
@@ -103,6 +125,9 @@ const SAMPLE_STARPATH_DATA: StarPathNode[] = [
     category: 'mental',
     prerequisites: ['mental_toughness', 'game_vision'],
     rewards: ['Captain Badge', '+25 Leadership Rating'],
+    garSubScores: { physical: 75, cognitive: 93, psychological: 97 },
+    badges: ['Captain', 'Motivator', 'Team Builder'],
+    archetype: 'Natural Leader',
   },
 ];
 
@@ -126,7 +151,6 @@ export default function StarPathPage() {
     try {
       setLoading(true);
 
-      // Load skill nodes and progress data
       const [progressResponse, statsResponse] = await Promise.all([
         fetch('/api/starpath/route?userId=demo-user'),
         fetch('/api/starpath/progress?userId=demo-user'),
@@ -150,7 +174,6 @@ export default function StarPathPage() {
           );
         }
       } else {
-        // Use sample data if API fails
         setStarPathData(SAMPLE_STARPATH_DATA);
         setUserProgress({
           totalXp: 1400,
@@ -173,48 +196,11 @@ export default function StarPathPage() {
     }
   };
 
-  // Helper functions for skill data
-  const getSkillDescription = (skillName: string): string => {
-    const descriptions = {
-      'Ball Control Mastery': 'Master fundamental ball handling and control techniques',
-      'Agility & Speed': 'Develop explosive movement and directional changes',
-      'Game Vision': 'Enhance field awareness and decision-making',
-      'Mental Resilience': 'Build confidence and focus under pressure',
-      'Advanced Techniques': 'Master complex sport-specific movements',
-    };
-    return descriptions[skillName] || 'Develop advanced athletic skills';
-  };
-
-  const getSkillPrerequisites = (skillId: string): string[] => {
-    const prereqs = {
-      mental_toughness: ['game_vision'],
-      advanced_techniques: ['ball_control', 'agility_training'],
-    };
-    return prereqs[skillId] || [];
-  };
-
-  const getSkillRewards = (skillName: string, level: number): string[] => {
-    const baseRewards = {
-      'Ball Control Mastery': [
-        `First Touch Badge Level ${level}`,
-        `+${level * 2} Technical Rating`,
-      ],
-      'Agility & Speed': [`Speed Demon Badge Level ${level}`, `+${level * 2} Athleticism Rating`],
-      'Game Vision': [`Visionary Badge Level ${level}`, `+${level * 3} Game Awareness`],
-      'Mental Resilience': [`Unshakeable Badge Level ${level}`, `+${level * 3} Consistency`],
-      'Advanced Techniques': [`Master Badge Level ${level}`, `+${level * 4} Overall Rating`],
-    };
-    return (
-      baseRewards[skillName] || [`Achievement Badge Level ${level}`, `+${level * 2} Skill Points`]
-    );
-  };
-
   const startTraining = async (nodeId: string) => {
     if (loading) return;
 
     setLoading(true);
     try {
-      // Simulate training activity
       const response = await fetch('/api/starpath/train', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -223,7 +209,6 @@ export default function StarPathPage() {
 
       if (response.ok) {
         const result = await response.json();
-        // Update local state with new XP and progress
         setStarPathData((prevData) =>
           prevData.map((node) =>
             node.id === nodeId
@@ -242,10 +227,10 @@ export default function StarPathPage() {
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      technical: 'bg-primary/20 border-primary text-primary',
-      physical: 'bg-primary/20 border-primary text-primary',
-      mental: 'bg-primary/20 border-primary text-primary',
-      tactical: 'bg-primary/20 border-primary text-primary',
+      technical: 'from-cyan-500 to-blue-500',
+      physical: 'from-green-500 to-emerald-500',
+      mental: 'from-purple-500 to-pink-500',
+      tactical: 'from-orange-500 to-red-500',
     };
     return colors[category] || colors.technical;
   };
@@ -261,28 +246,43 @@ export default function StarPathPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground hero-bg">
+    <div className="min-h-screen bg-gradient-to-br from-black via-slate-900 to-black text-white relative overflow-hidden">
+      {/* Tech Grid Background */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,191,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,191,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+      </div>
+      
+      {/* Animated Circuit Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-10 left-10 w-32 h-32 border border-cyan-400 rounded-full animate-pulse"></div>
+        <div className="absolute top-32 right-20 w-24 h-24 border border-blue-400 rounded-lg animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-32 w-16 h-16 border border-cyan-300 rounded-full animate-pulse delay-2000"></div>
+      </div>
+
       {/* Header */}
-      <header className="bg-card border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <header className="relative z-10 bg-black/50 border-b border-cyan-500/30 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push('/dashboard')}
-                className="text-primary hover:text-primary/80 transition-colors"
+                className="text-cyan-400 hover:text-cyan-300 transition-colors"
+                style={{textShadow: '0 0 10px rgba(0, 191, 255, 0.8)'}}
               >
                 ← Back to Dashboard
               </button>
-              <h1 className="text-2xl font-bold text-foreground neon-text">StarPath Hub</h1>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent" style={{fontFamily: 'Orbitron, monospace'}}>
+                STARPATH SYSTEM
+              </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-right">
-                <div className="text-sm text-muted-foreground">Total XP</div>
-                <div className="text-lg font-bold text-primary">{userProgress.totalXp}</div>
+            <div className="flex items-center space-x-6">
+              <div className="text-center bg-black/30 rounded-lg px-4 py-2 border border-cyan-500/30">
+                <div className="text-xs text-cyan-300 uppercase tracking-wide">Total XP</div>
+                <div className="text-2xl font-bold text-cyan-400" style={{textShadow: '0 0 10px rgba(0, 191, 255, 0.8)'}}>{userProgress.totalXp}</div>
               </div>
-              <div className="text-right">
-                <div className="text-sm text-muted-foreground">Tier</div>
-                <div className="text-lg font-bold text-primary">{userProgress.currentTier}</div>
+              <div className="text-center bg-black/30 rounded-lg px-4 py-2 border border-blue-500/30">
+                <div className="text-xs text-blue-300 uppercase tracking-wide">Tier</div>
+                <div className="text-2xl font-bold text-blue-400" style={{textShadow: '0 0 10px rgba(59, 130, 246, 0.8)'}}>{userProgress.currentTier}</div>
               </div>
             </div>
           </div>
@@ -290,164 +290,58 @@ export default function StarPathPage() {
       </header>
 
       {/* StarPath Journey Overview */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Your Athletic Journey</h2>
-          <p className="text-muted-foreground max-w-3xl mx-auto">
-            Complete your GAR analysis to determine your StarPath level, then progress through
-            AI-generated training to unlock College Path features for NCAA eligibility and
-            recruitment.
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent mb-6" style={{fontFamily: 'Orbitron, monospace'}}>
+            ATHLETIC DEVELOPMENT SYSTEM
+          </h2>
+          <p className="text-cyan-200 max-w-4xl mx-auto text-lg leading-relaxed">
+            Complete your <span className="text-cyan-400 font-semibold" style={{textShadow: '0 0 10px rgba(0, 191, 255, 0.8)'}}>GAR analysis</span> to determine your StarPath level, then progress through
+            AI-generated training to unlock <span className="text-blue-400 font-semibold" style={{textShadow: '0 0 10px rgba(59, 130, 246, 0.8)'}}>College Path</span> features for NCAA eligibility and
+            recruitment verification.
           </p>
         </div>
 
-        {/* Three Main Pathways */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {/* Athletic Development */}
-          <div className="bg-card rounded-lg p-6 border border-border neon-border">
-            <div className="text-center mb-4">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-foreground">Athletic Development</h3>
-              <p className="text-sm text-muted-foreground">
-                AI-powered training and performance analysis
-              </p>
-            </div>
-            <div className="space-y-3">
-              <button
-                onClick={() => router.push('/gar-upload')}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Get GAR Analysis
-              </button>
-              <button
-                onClick={() => router.push('/ai-coach')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                AI Coach Training
-              </button>
-              <button
-                onClick={() => router.push('/performance-analytics')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Performance Analytics
-              </button>
-              <button
-                onClick={() => router.push('/team-sports')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Team Training
-              </button>
+        {/* Current Progress Overview - Enhanced Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          <div className="relative group">
+            <div className="absolute inset-0 bg-cyan-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm rounded-xl p-6 border border-cyan-500/50 hover:border-cyan-400 transition-all duration-300">
+              <Star className="h-10 w-10 text-cyan-400 mx-auto mb-3" style={{filter: 'drop-shadow(0 0 8px rgba(0, 191, 255, 0.8))'}} />
+              <div className="text-3xl font-bold text-cyan-400 text-center mb-1" style={{textShadow: '0 0 10px rgba(0, 191, 255, 0.8)', fontFamily: 'Orbitron, monospace'}}>{userProgress.totalXp}</div>
+              <div className="text-sm text-cyan-200 text-center uppercase tracking-wide">Total Experience</div>
             </div>
           </div>
-
-          {/* College Path */}
-          <div className="bg-card rounded-lg p-6 border border-border neon-border">
-            <div className="text-center mb-4">
-              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Trophy className="w-8 h-8 text-white" />
+          <div className="relative group">
+            <div className="absolute inset-0 bg-green-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm rounded-xl p-6 border border-green-500/50 hover:border-green-400 transition-all duration-300">
+              <CheckCircle className="h-10 w-10 text-green-400 mx-auto mb-3" style={{filter: 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.8))'}} />
+              <div className="text-3xl font-bold text-green-400 text-center mb-1" style={{textShadow: '0 0 10px rgba(34, 197, 94, 0.8)', fontFamily: 'Orbitron, monospace'}}>
+                {starPathData.filter((n) => n.currentLevel > 0).length}
               </div>
-              <h3 className="text-xl font-bold text-foreground">College Path</h3>
-              <p className="text-sm text-muted-foreground">
-                NCAA eligibility and recruitment tools
-              </p>
-            </div>
-            <div className="space-y-3">
-              <button
-                onClick={() => router.push('/academy')}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Academy Courses
-              </button>
-              <button
-                onClick={() => router.push('/ncaa-eligibility')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                NCAA Eligibility
-              </button>
-              <button
-                onClick={() => router.push('/athletic-contacts')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Coach Contacts
-              </button>
-              <button
-                onClick={() => router.push('/scholarship-tracker')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Scholarship Tracker
-              </button>
+              <div className="text-sm text-green-200 text-center uppercase tracking-wide">Skills in Progress</div>
             </div>
           </div>
-
-          {/* Progress Tracking */}
-          <div className="bg-card rounded-lg p-6 border border-border neon-border">
-            <div className="text-center mb-4">
-              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Target className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-foreground">Progress Tracking</h3>
-              <p className="text-sm text-muted-foreground">
-                Monitor your development and achievements
-              </p>
+          <div className="relative group">
+            <div className="absolute inset-0 bg-purple-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm rounded-xl p-6 border border-purple-500/50 hover:border-purple-400 transition-all duration-300">
+              <Trophy className="h-10 w-10 text-purple-400 mx-auto mb-3" style={{filter: 'drop-shadow(0 0 8px rgba(147, 51, 234, 0.8))'}} />
+              <div className="text-3xl font-bold text-purple-400 text-center mb-1" style={{textShadow: '0 0 10px rgba(147, 51, 234, 0.8)', fontFamily: 'Orbitron, monospace'}}>{userProgress.achievements}</div>
+              <div className="text-sm text-purple-200 text-center uppercase tracking-wide">Achievements Earned</div>
             </div>
-            <div className="space-y-3">
-              <button
-                onClick={() => router.push('/student-dashboard')}
-                className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Student Dashboard
-              </button>
-              <button
-                onClick={() => router.push('/rankings')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Athlete Rankings
-              </button>
-              <button
-                onClick={() => router.push('/verified-athletes')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Verified Athletes
-              </button>
-              <button
-                onClick={() => router.push('/wellness-hub')}
-                className="w-full bg-slate-600 hover:bg-slate-700 text-white px-4 py-2 rounded-lg transition-colors"
-              >
-                Wellness Hub
-              </button>
+          </div>
+          <div className="relative group">
+            <div className="absolute inset-0 bg-orange-500/20 rounded-xl blur-lg group-hover:blur-xl transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm rounded-xl p-6 border border-orange-500/50 hover:border-orange-400 transition-all duration-300">
+              <Target className="h-10 w-10 text-orange-400 mx-auto mb-3" style={{filter: 'drop-shadow(0 0 8px rgba(249, 115, 22, 0.8))'}} />
+              <div className="text-3xl font-bold text-orange-400 text-center mb-1" style={{textShadow: '0 0 10px rgba(249, 115, 22, 0.8)', fontFamily: 'Orbitron, monospace'}}>{userProgress.currentTier}</div>
+              <div className="text-sm text-orange-200 text-center uppercase tracking-wide">Current Tier</div>
             </div>
           </div>
         </div>
 
-        {/* Current Progress Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
-            <Star className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
-            <div className="text-2xl font-bold text-foreground">{userProgress.totalXp}</div>
-            <div className="text-sm text-muted-foreground">Total Experience</div>
-          </div>
-          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
-            <CheckCircle className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
-            <div className="text-2xl font-bold text-foreground">
-              {starPathData.filter((n) => n.currentLevel > 0).length}
-            </div>
-            <div className="text-sm text-muted-foreground">Skills in Progress</div>
-          </div>
-          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
-            <Trophy className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
-            <div className="text-2xl font-bold text-foreground">{userProgress.achievements}</div>
-            <div className="text-sm text-muted-foreground">Achievements Earned</div>
-          </div>
-          <div className="bg-card rounded-lg p-4 border border-border neon-border text-center">
-            <Target className="h-8 w-8 text-primary mx-auto mb-2 neon-glow" />
-            <div className="text-2xl font-bold text-foreground">{userProgress.currentTier}</div>
-            <div className="text-sm text-muted-foreground">Current Tier</div>
-          </div>
-        </div>
-
-        {/* StarPath Nodes Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* StarPath Nodes Grid - Enhanced Player Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {starPathData.map((node) => (
             <StarPathNodeCard
               key={node.id}
@@ -473,6 +367,22 @@ export default function StarPathPage() {
           />
         )}
       </div>
+
+      {/* CSS for glow effects */}
+      <style jsx>{`
+        .glow-text {
+          text-shadow: 0 0 10px currentColor;
+        }
+        
+        .neon-border {
+          box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+        }
+        
+        .tech-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 10px 40px rgba(0, 191, 255, 0.4);
+        }
+      `}</style>
     </div>
   );
 }
@@ -496,65 +406,202 @@ function StarPathNodeCard({
   const isCompleted = node.currentLevel >= node.maxLevel;
 
   return (
-    <div
-      className={`bg-slate-900 rounded-lg p-6 border transition-all hover:border-slate-600 ${
-        node.isUnlocked ? 'border-slate-800' : 'border-slate-800 opacity-60'
-      }`}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div
-          className={`px-3 py-1 rounded-full border text-xs font-medium ${getCategoryColor(node.category)}`}
-        >
-          <div className="flex items-center space-x-1">
-            {getCategoryIcon(node.category)}
-            <span className="capitalize">{node.category}</span>
+    <div className="relative group tech-card">
+      {/* Glow Effect */}
+      <div className={`absolute inset-0 bg-gradient-to-r ${getCategoryColor(node.category)}/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-500`}></div>
+      
+      {/* Main Card */}
+      <div className={`relative bg-black/80 backdrop-blur-sm rounded-2xl p-6 border-2 transition-all duration-300 ${
+        node.isUnlocked 
+          ? `border-${node.category === 'technical' ? 'cyan' : node.category === 'physical' ? 'green' : node.category === 'mental' ? 'purple' : 'orange'}-500/60 hover:border-${node.category === 'technical' ? 'cyan' : node.category === 'physical' ? 'green' : node.category === 'mental' ? 'purple' : 'orange'}-400` 
+          : 'border-slate-700/60 opacity-60'
+      }`}>
+        
+        {/* GET VERIFIED Badge */}
+        <div className="absolute top-4 left-4">
+          <div className={`rounded-full p-2 shadow-lg ${
+            node.isUnlocked 
+              ? `bg-${node.category === 'technical' ? 'cyan' : node.category === 'physical' ? 'green' : node.category === 'mental' ? 'purple' : 'orange'}-500 shadow-${node.category === 'technical' ? 'cyan' : node.category === 'physical' ? 'green' : node.category === 'mental' ? 'purple' : 'orange'}-500/50`
+              : 'bg-slate-600 shadow-slate-600/50'
+          }`}>
+            <CheckCircle className="w-4 h-4 text-white" />
           </div>
         </div>
-        {!node.isUnlocked && <Lock className="h-5 w-5 text-slate-500" />}
-        {isCompleted && <CheckCircle className="h-5 w-5 text-green-400" />}
-      </div>
 
-      {/* Content */}
-      <h3 className="text-lg font-semibold text-white mb-2">{node.name}</h3>
-      <p className="text-slate-400 text-sm mb-4">{node.description}</p>
-
-      {/* Progress */}
-      <div className="mb-4">
-        <div className="flex justify-between text-sm mb-2">
-          <span className="text-slate-300">
-            Level {node.currentLevel}/{node.maxLevel}
-          </span>
-          <span className="text-slate-300">
-            {node.totalXp}/{node.requiredXp} XP
-          </span>
+        {/* QR Code */}
+        <div className="absolute top-4 right-4">
+          <QrCode className="w-6 h-6 text-slate-400" />
         </div>
-        <div className="w-full bg-slate-700 rounded-full h-2">
-          <div
-            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${Math.min(progressPercent, 100)}%` }}
-          ></div>
-        </div>
-      </div>
 
-      {/* Actions */}
-      <div className="flex space-x-2">
-        <button
-          onClick={() => onSelect(node)}
-          className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-md text-sm transition-colors"
-        >
-          View Details
-        </button>
-        {node.isUnlocked && !isCompleted && (
-          <button
-            onClick={() => onStartTraining(node.id)}
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 text-white px-4 py-2 rounded-md text-sm transition-colors flex items-center space-x-1"
-          >
-            <Play className="h-3 w-3" />
-            <span>Train</span>
-          </button>
+        {/* Status Icon */}
+        {!node.isUnlocked && <Lock className="absolute top-16 right-4 w-5 h-5 text-slate-500" />}
+        {isCompleted && <Crown className="absolute top-16 right-4 w-5 h-5 text-yellow-400" style={{filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.8))'}} />}
+
+        {/* Category Icon */}
+        <div className={`w-16 h-16 bg-gradient-to-br ${getCategoryColor(node.category)} rounded-full flex items-center justify-center mx-auto mb-4 mt-6 shadow-xl`} style={{filter: `drop-shadow(0 0 10px rgba(${node.category === 'technical' ? '0, 191, 255' : node.category === 'physical' ? '34, 197, 94' : node.category === 'mental' ? '147, 51, 234' : '249, 115, 22'}, 0.6))`}}>
+          {getCategoryIcon(node.category)}
+        </div>
+
+        {/* Name */}
+        <h3 className="text-xl font-bold text-center mb-2 uppercase tracking-wide" style={{
+          fontFamily: 'Orbitron, monospace',
+          color: node.category === 'technical' ? '#00BFFF' : node.category === 'physical' ? '#22C55E' : node.category === 'mental' ? '#A855F7' : '#F97316',
+          textShadow: `0 0 10px ${node.category === 'technical' ? 'rgba(0, 191, 255, 0.8)' : node.category === 'physical' ? 'rgba(34, 197, 94, 0.8)' : node.category === 'mental' ? 'rgba(168, 85, 247, 0.8)' : 'rgba(249, 115, 22, 0.8)'}`
+        }}>
+          {node.name}
+        </h3>
+
+        {/* Star Rating */}
+        <div className="flex justify-center mb-4">
+          {Array.from({ length: 5 }, (_, i) => (
+            <Star
+              key={i}
+              className={`w-5 h-5 ${
+                i < node.currentLevel 
+                  ? `text-${node.category === 'technical' ? 'cyan' : node.category === 'physical' ? 'green' : node.category === 'mental' ? 'purple' : 'orange'}-400` 
+                  : 'text-slate-600'
+              }`}
+              style={{
+                filter: i < node.currentLevel 
+                  ? `drop-shadow(0 0 4px ${node.category === 'technical' ? 'rgba(0, 191, 255, 0.8)' : node.category === 'physical' ? 'rgba(34, 197, 94, 0.8)' : node.category === 'mental' ? 'rgba(168, 85, 247, 0.8)' : 'rgba(249, 115, 22, 0.8)'})`
+                  : 'none'
+              }}
+              fill={i < node.currentLevel ? 'currentColor' : 'none'}
+            />
+          ))}
+        </div>
+
+        {/* GAR Stats Panel */}
+        {node.garSubScores && (
+          <div className="bg-black/40 rounded-lg p-4 mb-4 border border-slate-700/50">
+            <div className="text-xs text-cyan-300 uppercase tracking-wide mb-3 text-center">GAR Analysis</div>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-slate-300 uppercase">Physical</span>
+                <span className="text-sm font-bold text-cyan-400">{node.garSubScores.physical}</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-1.5">
+                <div
+                  className="bg-gradient-to-r from-cyan-500 to-blue-500 h-1.5 rounded-full transition-all duration-500"
+                  style={{ width: `${node.garSubScores.physical}%`, boxShadow: '0 0 8px rgba(0, 191, 255, 0.6)' }}
+                ></div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-slate-300 uppercase">Cognitive</span>
+                <span className="text-sm font-bold text-purple-400">{node.garSubScores.cognitive}</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-1.5">
+                <div
+                  className="bg-gradient-to-r from-purple-500 to-pink-500 h-1.5 rounded-full transition-all duration-500"
+                  style={{ width: `${node.garSubScores.cognitive}%`, boxShadow: '0 0 8px rgba(147, 51, 234, 0.6)' }}
+                ></div>
+              </div>
+              
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-slate-300 uppercase">Mental</span>
+                <span className="text-sm font-bold text-green-400">{node.garSubScores.psychological}</span>
+              </div>
+              <div className="w-full bg-slate-800 rounded-full h-1.5">
+                <div
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 h-1.5 rounded-full transition-all duration-500"
+                  style={{ width: `${node.garSubScores.psychological}%`, boxShadow: '0 0 8px rgba(34, 197, 94, 0.6)' }}
+                ></div>
+              </div>
+            </div>
+          </div>
         )}
+
+        {/* Holographic Badges */}
+        {node.badges && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-1 justify-center">
+              {node.badges.map((badge, idx) => (
+                <div
+                  key={idx}
+                  className="px-2 py-1 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/40 rounded-md text-xs text-cyan-300 backdrop-blur-sm"
+                  style={{textShadow: '0 0 4px rgba(0, 191, 255, 0.6)'}}
+                >
+                  {badge}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Archetype */}
+        {node.archetype && (
+          <div className="text-center mb-4">
+            <div className="text-xs text-slate-400 uppercase tracking-wide">Archetype</div>
+            <div className={`text-sm font-bold ${
+              node.category === 'technical' ? 'text-cyan-400' : 
+              node.category === 'physical' ? 'text-green-400' : 
+              node.category === 'mental' ? 'text-purple-400' : 
+              'text-orange-400'
+            }`} style={{
+              textShadow: `0 0 6px ${
+                node.category === 'technical' ? 'rgba(0, 191, 255, 0.8)' : 
+                node.category === 'physical' ? 'rgba(34, 197, 94, 0.8)' : 
+                node.category === 'mental' ? 'rgba(168, 85, 247, 0.8)' : 
+                'rgba(249, 115, 22, 0.8)'
+              }`
+            }}>
+              {node.archetype}
+            </div>
+          </div>
+        )}
+
+        {/* Progress Bar */}
+        <div className="mb-4">
+          <div className="flex justify-between text-xs mb-2">
+            <span className="text-slate-300 uppercase tracking-wide">
+              Level {node.currentLevel}/{node.maxLevel}
+            </span>
+            <span className="text-slate-300">
+              {node.totalXp}/{node.requiredXp} XP
+            </span>
+          </div>
+          <div className="w-full bg-slate-800 rounded-full h-2">
+            <div
+              className={`bg-gradient-to-r ${getCategoryColor(node.category)} h-2 rounded-full transition-all duration-500`}
+              style={{ 
+                width: `${Math.min(progressPercent, 100)}%`, 
+                boxShadow: `0 0 10px ${node.category === 'technical' ? 'rgba(0, 191, 255, 0.6)' : node.category === 'physical' ? 'rgba(34, 197, 94, 0.6)' : node.category === 'mental' ? 'rgba(168, 85, 247, 0.6)' : 'rgba(249, 115, 22, 0.6)'}`
+              }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Position Fit */}
+        <div className="text-center mb-4">
+          <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent mb-2"></div>
+          <div className="text-sm font-bold text-cyan-400 uppercase tracking-wide" style={{textShadow: '0 0 8px rgba(0, 191, 255, 0.8)'}}>
+            Position Fit: {node.category.toUpperCase()} SPECIALIST
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex space-x-2">
+          <button
+            onClick={() => onSelect(node)}
+            className="flex-1 bg-slate-800/60 hover:bg-slate-700/80 text-cyan-200 px-3 py-2 rounded-lg text-sm transition-all duration-300 border border-slate-600/50 hover:border-cyan-500/50"
+          >
+            View Details
+          </button>
+          {node.isUnlocked && !isCompleted && (
+            <button
+              onClick={() => onStartTraining(node.id)}
+              disabled={loading}
+              className={`bg-gradient-to-r ${getCategoryColor(node.category)} hover:scale-105 disabled:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm transition-all duration-300 flex items-center space-x-1 shadow-lg`}
+              style={{
+                boxShadow: `0 0 15px ${node.category === 'technical' ? 'rgba(0, 191, 255, 0.4)' : node.category === 'physical' ? 'rgba(34, 197, 94, 0.4)' : node.category === 'mental' ? 'rgba(168, 85, 247, 0.4)' : 'rgba(249, 115, 22, 0.4)'}`
+              }}
+            >
+              <Play className="h-3 w-3" />
+              <span>Train</span>
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -579,53 +626,57 @@ function NodeDetailsModal({
   const isCompleted = node.currentLevel >= node.maxLevel;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-900 rounded-lg p-6 max-w-2xl w-full border border-slate-800">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="relative bg-black/90 backdrop-blur-md rounded-2xl p-8 max-w-2xl w-full border-2 border-cyan-500/30 shadow-2xl">
+        {/* Glow Effect */}
+        <div className={`absolute inset-0 bg-gradient-to-r ${getCategoryColor(node.category)}/10 rounded-2xl blur-xl`}></div>
+        
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
+        <div className="relative flex items-start justify-between mb-8">
           <div>
-            <div
-              className={`inline-block px-3 py-1 rounded-full border text-xs font-medium mb-3 ${getCategoryColor(node.category)}`}
-            >
-              <div className="flex items-center space-x-1">
+            <div className={`inline-block px-4 py-2 rounded-full border text-sm font-medium mb-4 bg-gradient-to-r ${getCategoryColor(node.category)}/20 border-${node.category === 'technical' ? 'cyan' : node.category === 'physical' ? 'green' : node.category === 'mental' ? 'purple' : 'orange'}-500/40`}>
+              <div className="flex items-center space-x-2">
                 {getCategoryIcon(node.category)}
-                <span className="capitalize">{node.category}</span>
+                <span className="capitalize text-white">{node.category}</span>
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-white">{node.name}</h2>
-            <p className="text-slate-400 mt-2">{node.description}</p>
+            <h2 className="text-3xl font-bold text-white uppercase tracking-wide" style={{fontFamily: 'Orbitron, monospace', textShadow: '0 0 15px rgba(255, 255, 255, 0.5)'}}>{node.name}</h2>
+            <p className="text-cyan-200 mt-3 text-lg">{node.description}</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors text-xl">
             ✕
           </button>
         </div>
 
-        {/* Progress Details */}
-        <div className="mb-6">
-          <div className="flex justify-between text-sm mb-2">
-            <span className="text-slate-300">
+        {/* Enhanced Progress Details */}
+        <div className="mb-8">
+          <div className="flex justify-between text-sm mb-3">
+            <span className="text-cyan-300 uppercase tracking-wide">
               Level {node.currentLevel}/{node.maxLevel}
             </span>
-            <span className="text-slate-300">
+            <span className="text-cyan-300">
               {node.totalXp}/{node.requiredXp} XP
             </span>
           </div>
-          <div className="w-full bg-slate-700 rounded-full h-3">
+          <div className="w-full bg-slate-800 rounded-full h-4 relative overflow-hidden">
             <div
-              className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-300"
-              style={{ width: `${Math.min(progressPercent, 100)}%` }}
+              className={`bg-gradient-to-r ${getCategoryColor(node.category)} h-4 rounded-full transition-all duration-700`}
+              style={{ 
+                width: `${Math.min(progressPercent, 100)}%`,
+                boxShadow: `0 0 15px ${node.category === 'technical' ? 'rgba(0, 191, 255, 0.8)' : node.category === 'physical' ? 'rgba(34, 197, 94, 0.8)' : node.category === 'mental' ? 'rgba(168, 85, 247, 0.8)' : 'rgba(249, 115, 22, 0.8)'}`
+              }}
             ></div>
           </div>
-          <div className="text-slate-400 text-xs mt-1">{Math.round(progressPercent)}% Complete</div>
+          <div className="text-cyan-400 text-sm mt-2 text-center font-bold">{Math.round(progressPercent)}% Complete</div>
         </div>
 
         {/* Prerequisites */}
         {node.prerequisites.length > 0 && (
-          <div className="mb-6">
-            <h4 className="text-white font-medium mb-2">Prerequisites</h4>
+          <div className="mb-8">
+            <h4 className="text-white font-bold mb-3 uppercase tracking-wide" style={{fontFamily: 'Orbitron, monospace'}}>Prerequisites</h4>
             <div className="flex flex-wrap gap-2">
               {node.prerequisites.map((prereq, index) => (
-                <span key={index} className="bg-slate-800 text-slate-300 px-2 py-1 rounded text-xs">
+                <span key={index} className="bg-slate-800/80 text-slate-300 px-3 py-1 rounded-lg text-sm border border-slate-600/50">
                   {prereq.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
                 </span>
               ))}
@@ -634,23 +685,23 @@ function NodeDetailsModal({
         )}
 
         {/* Rewards */}
-        <div className="mb-6">
-          <h4 className="text-white font-medium mb-2">Rewards</h4>
-          <div className="space-y-2">
+        <div className="mb-8">
+          <h4 className="text-white font-bold mb-3 uppercase tracking-wide" style={{fontFamily: 'Orbitron, monospace'}}>Rewards</h4>
+          <div className="space-y-3">
             {node.rewards.map((reward, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <Trophy className="h-4 w-4 text-yellow-400" />
-                <span className="text-slate-300 text-sm">{reward}</span>
+              <div key={index} className="flex items-center space-x-3">
+                <Trophy className="h-5 w-5 text-yellow-400" style={{filter: 'drop-shadow(0 0 6px rgba(251, 191, 36, 0.8))'}} />
+                <span className="text-cyan-200 font-medium">{reward}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex space-x-3">
+        <div className="flex space-x-4">
           <button
             onClick={onClose}
-            className="flex-1 bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-md transition-colors"
+            className="flex-1 bg-slate-800/60 hover:bg-slate-700/80 text-white px-6 py-3 rounded-lg transition-all duration-300 border border-slate-600/50"
           >
             Close
           </button>
@@ -661,10 +712,13 @@ function NodeDetailsModal({
                 onClose();
               }}
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-700 text-white px-6 py-2 rounded-md transition-colors flex items-center space-x-2"
+              className={`bg-gradient-to-r ${getCategoryColor(node.category)} hover:scale-105 disabled:bg-slate-700 text-white px-8 py-3 rounded-lg transition-all duration-300 flex items-center space-x-2 shadow-xl font-bold`}
+              style={{
+                boxShadow: `0 0 20px ${node.category === 'technical' ? 'rgba(0, 191, 255, 0.5)' : node.category === 'physical' ? 'rgba(34, 197, 94, 0.5)' : node.category === 'mental' ? 'rgba(168, 85, 247, 0.5)' : 'rgba(249, 115, 22, 0.5)'}`
+              }}
             >
               <Play className="h-4 w-4" />
-              <span>Start Training</span>
+              <span>START TRAINING</span>
               <ArrowRight className="h-4 w-4" />
             </button>
           )}
