@@ -1,134 +1,347 @@
-# Go4It Sports Platform
+# 🚀 Go4It OS - Enterprise Sports Platform
 
-This repository hosts the Go4It Sports platform (Next.js + TypeScript + Drizzle ORM).
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.0-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.4-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19.1.1-61dafb)](https://reactjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.1-38bdf8)](https://tailwindcss.com/)
+[![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.45.0-orange)](https://orm.drizzle.team/)
+[![Clerk Auth](https://img.shields.io/badge/Clerk_Auth-6.27.0-red)](https://clerk.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Recent Enhancements
+> **Go4It OS** is a comprehensive enterprise-grade sports analytics platform designed for neurodivergent student athletes, featuring AI-powered performance tracking, cascading accountability models, and multi-location team management.
 
-- SEO: `/sitemap.xml` and `/robots.txt` via Next.js metadata routes
-- Headers: Security and caching headers in `middleware.ts` and `next.config.js`
-- Logging: Request ID header (X-Request-Id) and minimal request logs
-- Structured logs: `lib/logger.ts` wired into auth and health routes
-- CI: Workflow builds and runs smoke tests (register, full auth flow, health+verify)
+## ✨ Features
 
-## Quick Start
+### 🏆 Core Capabilities
+- **AI-Powered Analytics**: Advanced video analysis and performance tracking
+- **Cascading Accountability**: 5-year → yearly → quarterly → monthly goal hierarchy
+- **Multi-Location Support**: Dallas, Merida, Vienna office management
+- **Real-time Performance**: Live data and analytics dashboard
+- **Mobile-First Design**: Responsive across all devices
 
-- Dev: `npm run dev` (port 5000)
-- Build: `npm run build`
-- Start: `npm start`
+### 🔧 Technical Features
+- **Enterprise Architecture**: Production-ready with comprehensive logging
+- **Type-Safe Database**: Full TypeScript integration with Drizzle ORM
+- **Advanced Caching**: Redis/fallback caching with rate limiting
+- **Security First**: Comprehensive authentication and authorization
+- **API-First Design**: RESTful APIs with OpenAPI documentation
 
-## Smoke Test Registration
+### 📊 Dashboard Features
+- **Personal Daily Digest**: Task prioritization and performance metrics
+- **Team Management**: Hierarchical team structures with role-based access
+- **Project Tracking**: Goal-oriented project management
+- **Event Calendar**: Integrated scheduling and notifications
+- **Audit Logging**: Complete activity tracking and compliance
 
-Requires server listening on BASE_URL (default http://localhost:5000).
+## 🚀 Quick Start
+
+### Prerequisites
+- **Node.js** 20.x or later
+- **npm** 10.x or later
+- **PostgreSQL** (optional - SQLite for development)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Shatzii/Go4it-V2.git
+   cd Go4it-V2
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+4. **Run automated setup**
+   ```bash
+   ./setup-go4it-os.sh
+   ```
+
+5. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+Visit [http://localhost:5000](http://localhost:5000) to see the application.
+
+## 📁 Project Structure
+
+```
+├── app/                    # Next.js 15 App Router
+│   ├── api/               # API routes
+│   ├── dashboard/         # Main dashboard pages
+│   ├── admin/            # Admin interface
+│   └── (auth)/           # Authentication pages
+├── components/            # Reusable React components
+│   ├── ui/               # Base UI components (shadcn/ui)
+│   ├── dashboard/        # Dashboard-specific components
+│   └── forms/            # Form components
+├── lib/                   # Shared utilities and configurations
+│   ├── db/               # Database connection and schema
+│   ├── auth/             # Authentication utilities
+│   ├── logger/           # Enterprise logging system
+│   ├── cache/            # Caching infrastructure
+│   └── validations/      # Zod validation schemas
+├── shared/                # Shared types and schemas
+├── public/               # Static assets
+├── migrations/           # Database migrations
+└── scripts/              # Build and deployment scripts
+```
+
+## 🛠️ Development
+
+### Available Scripts
 
 ```bash
+# Development
+npm run dev              # Start development server
+npm run build           # Build for production
+npm run start           # Start production server
+npm run lint            # Run ESLint
+npm run lint:fix        # Fix ESLint issues
+npm run type-check      # Run TypeScript type checking
+
+# Database
+npm run db:push         # Push schema changes to database
+npm run db:studio       # Open Drizzle Studio
+npm run db:generate     # Generate migrations
+
+# Testing
+npm run test            # Run tests
+npm run test:run        # Run tests once
+npm run test:coverage   # Run tests with coverage
+npm run test:go4it-os   # Run Go4It OS system tests
+
+# Setup
+npm run setup:go4it-os  # Run automated setup
+npm run setup:database  # Setup database
+```
+
+### Environment Variables
+
+Create a `.env.local` file with the following variables:
+
+```env
+# Database
+DATABASE_URL="file:./go4it-os.db"  # SQLite for development
+# DATABASE_URL="postgresql://..."  # PostgreSQL for production
+
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_test_..."
+CLERK_SECRET_KEY="sk_test_..."
+CLERK_WEBHOOK_SECRET="whsec_..."
+
+# Supabase (Optional - for audit logging)
+SUPABASE_URL="https://..."
+SUPABASE_SERVICE_ROLE_KEY="..."
+
+# Application
+NEXT_PUBLIC_APP_URL="http://localhost:5000"
+NODE_ENV="development"
+
+# Go4It OS Settings
+ENABLE_METRICS="true"
+ENABLE_AUDIT_LOGGING="false"
+CACHE_TTL="3600"
+RATE_LIMIT_WINDOW="900000"
+RATE_LIMIT_MAX_REQUESTS="100"
+```
+
+## 🧪 Testing
+
+### System Tests
+```bash
+# Run comprehensive Go4It OS tests
+npm run test:go4it-os
+
+# Expected output:
+✅ Advanced Social Media Engine operational
+✅ Enterprise Logger operational
+✅ Metrics & Monitoring operational
+✅ Caching Infrastructure operational
+✅ Rate Limiting operational
+✅ Database Schema operational
+✅ API Endpoints operational
+✅ Dashboard Components operational
+```
+
+### API Testing
+```bash
+# Test registration flow
 node scripts/test-register.js
-# or with custom URL
-BASE_URL=http://localhost:5001 node scripts/test-register.js
-```
 
-## Additional Smoke Tests
-
-- Full auth flow (register → me → logout → login → me)
-
-```bash
+# Test full authentication flow
 node scripts/test-auth-flow.js
-```
 
-- Health and email verify (verify step is skipped in prod where verifyUrl isn’t exposed):
-
-```bash
+# Test health endpoints
 node scripts/test-health-and-verify.js
 ```
 
-## Environment
+## 🚢 Deployment
 
-- NEXT_PUBLIC_APP_URL: public base URL (e.g., https://app.example.com)
-- JWT_SECRET: required for auth
-- Optional: COOKIE_DOMAIN, UPSTASH_REDIS_REST_URL/TOKEN, RESEND_API_KEY, FROM_EMAIL, RECAPTCHA_SECRET_KEY
-- Monitoring (optional): SENTRY_DSN, NEXT_PUBLIC_SENTRY_DSN, SENTRY_ORG, SENTRY_PROJECT
-
-## Deployment
-
-- Preferred: git pull on server then build/start
-- Fallback: use generated deployment packages and scripts in docs
-
-# Go4It Sports Platform
-
-Advanced AI-enhanced sports analytics platform for neurodivergent student athletes.
-
-## Quick Start
-
+### Automated Deployment
 ```bash
-npm run dev    # Start development server
-npm run build  # Build for production
-npm run start  # Start production server
+# Build for production
+npm run build
+
+# Deploy using included scripts
+./deploy.sh
 ```
 
-## Features
+### Environment Deployment Options
 
-- **AI-Powered Analytics**: Advanced video analysis and performance tracking
-- **Neurodivergent-Friendly**: Designed specifically for ADHD and other neurodivergent conditions
-- **Academic Tracking**: NCAA compliance and grade monitoring
-- **Real-time Performance**: Live data and analytics
-- **Mobile-First**: Responsive design for all devices
+#### Vercel (Recommended)
+1. Connect your GitHub repository
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main
 
-## Recent Fixes Applied
+#### Docker
+```bash
+# Build Docker image
+docker build -t go4it-os .
 
-✅ **Disabled Terser minification** to resolve build errors  
-✅ **Updated TypeScript configuration** for better compatibility  
-✅ **Created proper Next.js configuration** with SWC disabled  
-✅ **Added fallback build scripts** for reliable deployment  
-✅ **Cleaned up unused files** and optimized project structure  
-✅ **Fixed environment variable handling** in Next.js config
-
-## Project Structure
-
-```
-app/                 # Next.js app directory
-├── academics/       # Academic tracking pages
-├── admin/          # Admin dashboard
-├── api/            # API routes
-├── auth/           # Authentication pages
-├── dashboard/      # Main dashboard
-├── profile/        # User profiles
-├── teams/          # Team management
-└── ...
-
-components/         # Reusable React components
-├── ui/            # Base UI components
-├── dashboard/     # Dashboard components
-├── mobile/        # Mobile-specific components
-└── ...
-
-lib/               # Shared utilities
-├── auth.ts        # Authentication utilities
-├── db.ts          # Database connection
-├── schema.ts      # Database schema
-└── utils.ts       # General utilities
+# Run container
+docker run -p 5000:5000 go4it-os
 ```
 
-## Environment Variables
+#### Self-Hosted
+```bash
+# Create deployment package
+./create-deployment-package.sh
 
-Create a `.env.local` file with:
-
-```env
-DATABASE_URL=your_database_url
-NEXTAUTH_SECRET=your_secret_key
-NEXTAUTH_URL=http://localhost:5000
+# Deploy to server
+./deploy-to-server.sh
 ```
 
-## Deployment
+## 🔒 Security
 
-The application is optimized for deployment on platforms like Vercel, Netlify, or self-hosted servers. The build process now works reliably with all minification issues resolved.
+- **Authentication**: Clerk-based authentication with role-based access
+- **Authorization**: Comprehensive permission system
+- **Rate Limiting**: Built-in rate limiting and abuse protection
+- **Audit Logging**: Complete activity tracking (requires Supabase)
+- **Security Headers**: Comprehensive security headers configuration
 
-## Technology Stack
+## 📊 Monitoring & Analytics
 
-- **Frontend**: Next.js 14, React 18, TypeScript
-- **Styling**: Tailwind CSS with custom components
-- **Database**: PostgreSQL with Drizzle ORM
-- **Authentication**: NextAuth.js
-- **Development**: Hot reload enabled, fast refresh optimized
+### Built-in Monitoring
+- **Enterprise Logger**: Winston-based logging with multiple transports
+- **Metrics System**: Performance and usage metrics
+- **Health Checks**: Comprehensive health monitoring endpoints
+- **Error Tracking**: Sentry integration for error monitoring
 
-## Support
+### External Monitoring
+- **Sentry**: Error tracking and performance monitoring
+- **Supabase**: Audit logging and analytics (optional)
+- **Vercel Analytics**: Built-in analytics for Vercel deployments
 
-For technical support or questions about the platform, please contact the development team.
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+### Development Guidelines
+- Follow TypeScript strict mode
+- Use ESLint and Prettier for code formatting
+- Write comprehensive tests for new features
+- Update documentation for API changes
+- Follow conventional commit messages
+
+## 📝 API Documentation
+
+### REST API Endpoints
+
+#### Authentication
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/user/me` - Get current user profile
+
+#### Tasks Management
+- `GET /api/tasks` - List user tasks
+- `POST /api/tasks` - Create new task
+- `PUT /api/tasks/:id` - Update task
+- `DELETE /api/tasks/:id` - Delete task
+
+#### Goals & Projects
+- `GET /api/goals` - List goals
+- `POST /api/goals` - Create goal
+- `GET /api/projects` - List projects
+- `POST /api/projects` - Create project
+
+#### Events
+- `GET /api/events` - List events
+- `POST /api/events` - Create event
+- `PUT /api/events/:id` - Update event
+
+### Webhook Endpoints
+- `POST /api/webhooks/clerk` - Clerk authentication webhooks
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+#### Database Connection Issues
+```bash
+# Check database connection
+npm run db:studio
+
+# Reset database
+rm go4it-os.db
+npm run db:push
+```
+
+#### Build Issues
+```bash
+# Clear cache and rebuild
+npm run clean
+npm install
+npm run build
+```
+
+#### Authentication Issues
+```bash
+# Check Clerk configuration
+# Verify NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY and CLERK_SECRET_KEY
+# Ensure webhook endpoint is configured in Clerk dashboard
+```
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Next.js Team** for the amazing React framework
+- **Clerk** for authentication infrastructure
+- **Drizzle Team** for the excellent ORM
+- **shadcn/ui** for beautiful UI components
+- **Tailwind CSS** for utility-first styling
+
+## 📞 Support
+
+- **Documentation**: [Go4It OS Docs](https://docs.go4it.com)
+- **Issues**: [GitHub Issues](https://github.com/Shatzii/Go4it-V2/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Shatzii/Go4it-V2/discussions)
+- **Email**: support@go4it.com
+
+---
+
+<div align="center">
+  <p><strong>Built with ❤️ for neurodivergent student athletes</strong></p>
+  <p>
+    <a href="#features">Features</a> •
+    <a href="#quick-start">Quick Start</a> •
+    <a href="#deployment">Deployment</a> •
+    <a href="#contributing">Contributing</a> •
+    <a href="#support">Support</a>
+  </p>
+</div>
