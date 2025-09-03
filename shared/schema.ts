@@ -67,6 +67,112 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 export type UpsertUser = z.infer<typeof upsertUserSchema>;
 
+// Activity Log & Audit Trail (Upgrade #10)
+export const activityLog = pgTable('activity_log', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id),
+  action: varchar('action').notNull(), // e.g., 'task.created', 'task.status.updated'
+  entityType: varchar('entity_type').notNull(), // 'task', 'project', 'goal'
+  entityId: varchar('entity_id').notNull(),
+  oldValues: jsonb('old_values'),
+  newValues: jsonb('new_values'),
+  metadata: jsonb('metadata'), // Additional context
+  ipAddress: varchar('ip_address'),
+  userAgent: text('user_agent'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Task Dependencies (Upgrade #8)
+export const taskDependencies = pgTable('task_dependencies', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  taskId: varchar('task_id').notNull(),
+  dependsOnTaskId: varchar('depends_on_task_id').notNull(),
+  dependencyType: varchar('dependency_type').default('finish_to_start'), // 'finish_to_start', 'start_to_start', etc.
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  index('IDX_task_dependencies_task').on(table.taskId),
+  index('IDX_task_dependencies_depends_on').on(table.dependsOnTaskId),
+]);
+
+// Time Tracking (Upgrade #11)
+export const timeEntries = pgTable('time_entries', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id),
+  taskId: varchar('task_id'),
+  projectId: varchar('project_id'),
+  startTime: timestamp('start_time').notNull(),
+  endTime: timestamp('end_time'),
+  duration: integer('duration'), // in minutes
+  description: text('description'),
+  isBillable: boolean('is_billable').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  index('IDX_time_entries_user').on(table.userId),
+  index('IDX_time_entries_task').on(table.taskId),
+  index('IDX_time_entries_project').on(table.projectId),
+]);
+
+// Custom Views & Filters (Upgrade #15)
+export const savedViews = pgTable('saved_views', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id),
+  name: varchar('name').notNull(),
+  description: text('description'),
+  viewType: varchar('view_type').notNull(), // 'tasks', 'projects', 'dashboard'
+  filters: jsonb('filters').notNull(), // Filter criteria
+  sortBy: varchar('sort_by'),
+  sortOrder: varchar('sort_order').default('desc'),
+  isDefault: boolean('is_default').default(false),
+  isPublic: boolean('is_public').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Workflow Templates (Upgrade #13)
+export const workflowTemplates = pgTable('workflow_templates', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: varchar('name').notNull(),
+  description: text('description'),
+  triggerType: varchar('trigger_type').notNull(), // 'project.created', 'task.completed', etc.
+  triggerConditions: jsonb('trigger_conditions'), // Conditions that must be met
+  actions: jsonb('actions').notNull(), // Array of actions to perform
+  isActive: boolean('is_active').default(true),
+  createdBy: varchar('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Notifications (Upgrade #4)
+export const notifications = pgTable('notifications', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id),
+  type: varchar('type').notNull(), // 'email', 'sms', 'in_app', 'slack'
+  title: varchar('title').notNull(),
+  message: text('message').notNull(),
+  priority: varchar('priority').default('normal'), // 'low', 'normal', 'high', 'urgent'
+  isRead: boolean('is_read').default(false),
+  readAt: timestamp('read_at'),
+  actionUrl: varchar('action_url'), // URL to redirect to when clicked
+  metadata: jsonb('metadata'), // Additional data for the notification
+  expiresAt: timestamp('expires_at'),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  index('IDX_notifications_user').on(table.userId),
+  index('IDX_notifications_unread').on(table.userId, table.isRead),
+]);
+
 // Teams table
 export const teams = pgTable('teams', {
   id: varchar('id')
