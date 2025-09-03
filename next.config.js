@@ -52,35 +52,21 @@ const nextConfig = {
     'puppeteer',
     'sharp',
     'canvas',
+    '@prisma/client',
+    'prisma',
   ],
 
-  // Security headers
-  async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
-        ],
+  // Turbopack configuration (replaces experimental.turbo)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
       },
-      {
-        source: '/_next/:path*',
-        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
-      },
-    ];
+    },
   },
 
-  // Puppeteer configuration for build
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || 'false',
-    PUPPETEER_EXECUTABLE_PATH: process.env.PUPPETEER_EXECUTABLE_PATH,
-  },
-
+  // Experimental features for Next.js 15
   experimental: {
     optimizePackageImports: [
       '@radix-ui/react-icons',
@@ -90,15 +76,6 @@ const nextConfig = {
       '@radix-ui/react-dialog',
       '@radix-ui/react-dropdown-menu',
     ],
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
-    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
   },
 
   // Security headers
@@ -111,7 +88,7 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-          { key: 'Access-Control-Allow-Origin', value: '*' },
+          { key: 'Access-Control-Allow-Origin', value: process.env.NODE_ENV === 'production' ? process.env.ALLOWED_ORIGIN || 'https://go4it.com' : '*' },
           { key: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, DELETE, OPTIONS' },
           { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
         ],
@@ -135,9 +112,12 @@ const nextConfig = {
 
   // Enhanced webpack configuration for Next.js 15
   webpack: (config, { isServer, dev, buildId }) => {
+    // Fix: Import webpack properly
+    const webpack = require('webpack');
+
     // Add build ID to environment
     config.plugins.push(
-      new config.webpack.DefinePlugin({
+      new webpack.DefinePlugin({
         __BUILD_ID__: JSON.stringify(buildId),
       })
     );
