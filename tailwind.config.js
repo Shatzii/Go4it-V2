@@ -203,7 +203,6 @@ module.exports = {
   plugins: [
     require('tailwindcss-animate'),
     require('@tailwindcss/typography'),
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/aspect-ratio'),
+    // Note: @tailwindcss/forms and @tailwindcss/aspect-ratio temporarily removed due to dependency conflicts
   ],
 };
