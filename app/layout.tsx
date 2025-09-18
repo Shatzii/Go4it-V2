@@ -1,19 +1,22 @@
-'use client';
-
 import { Inter } from 'next/font/google';
 import './globals.css';
+import type { Metadata } from 'next';
 
 const inter = Inter({ subsets: ['latin'] });
+
+export const metadata: Metadata = {
+  title: 'Go4It Sports - Elite Athletic Development Platform',
+  description: 'Comprehensive sports analytics platform for neurodivergent student athletes',
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <head>
-        <title>Go4It Sports - Elite Athletic Development Platform</title>
-        <meta name="description" content="Comprehensive sports analytics platform for neurodivergent student athletes" />
-        <link rel="manifest" href="/manifest.json" />
-        <link rel="icon" href="/favicon.ico" />
-      </head>
+      <head></head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
         {/* Simplified nav */}
         <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
