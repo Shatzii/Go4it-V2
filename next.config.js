@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 const nextConfig = {
   output: 'standalone',
 
@@ -31,12 +35,12 @@ const nextConfig = {
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   trailingSlash: false,
 
-  // Build error handling - ignore errors for deployment
+  // Build error handling - be strict in production
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: process.env.NODE_ENV !== 'production' ? true : false,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: process.env.NODE_ENV !== 'production' ? true : false,
   },
 
   // Server-side package externalization for AI/ML packages
@@ -183,6 +187,8 @@ const nextConfig = {
     return config;
   },
 };
+
+module.exports = withBundleAnalyzer(nextConfig);
 
 // Try to apply Sentry config safely
 let exported = nextConfig;
