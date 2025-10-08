@@ -1,3 +1,15 @@
+import { NextResponse } from 'next/server';
+
+export const runtime = 'node';
+export const revalidate = 0;
+
+export async function GET() {
+  try {
+    return NextResponse.json({ status: 'ok', uptime: process.uptime() }, { status: 200 });
+  } catch (err) {
+    return NextResponse.json({ status: 'error' }, { status: 500 });
+  }
+}
 import { NextRequest, NextResponse } from 'next/server';
 import { productionConfig } from '@/lib/production-config';
 import { logger } from '@/lib/logger';
