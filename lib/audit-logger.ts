@@ -6,8 +6,8 @@ import { logger } from './logger';
 
 // Enterprise audit logger configuration
 const config = {
-  supabaseUrl: process.env.SUPABASE_URL || '',
-  supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  supabaseUrl: process.env.SUPABASE_URL!,
+  supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
   enableAuditLogging: process.env.ENABLE_AUDIT_LOGGING !== 'false',
   retentionDays: parseInt(process.env.AUDIT_RETENTION_DAYS || '2555'), // 7 years for compliance
   batchSize: parseInt(process.env.AUDIT_BATCH_SIZE || '100'),
