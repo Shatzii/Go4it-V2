@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Texas Charter School Compliance Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --texas-blue: #002868;
+        --texas-red: #bf0a30;
+        --texas-white: #ffffff;
+        --compliance-green: #16a34a;
+        --warning-orange: #ea580c;
+        --alert-red: #dc2626;
+      }
+
+      body {
+        background: linear-gradient(135deg, var(--texas-blue) 0%, #1e3a8a 100%);
+        min-height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .compliance-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, var(--texas-blue), var(--texas-red));
+        color: white;
+        padding: 2rem;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+        margin: 0 0 0.5rem;
+        font-weight: 700;
+      }
+
+      .header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin: 0;
+      }
+
+      .compliance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+      }
+
+      .compliance-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        border: 3px solid transparent;
+        transition: all 0.3s ease;
+      }
+
+      .compliance-card.complete {
+        border-color: var(--compliance-green);
+      }
+      .compliance-card.pending {
+        border-color: var(--warning-orange);
+      }
+      .compliance-card.required {
+        border-color: var(--alert-red);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .card-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #333;
+      }
+
+      .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: white;
+      }
+
+      .status-badge.complete {
+        background: var(--compliance-green);
+      }
+      .status-badge.pending {
+        background: var(--warning-orange);
+      }
+      .status-badge.required {
+        background: var(--alert-red);
+      }
+
+      .requirement-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .requirement-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .requirement-list li:last-child {
+        border-bottom: none;
+      }
+
+      .check-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: white;
+      }
+
+      .check-icon.complete {
+        background: var(--compliance-green);
+      }
+      .check-icon.pending {
+        background: var(--warning-orange);
+      }
+      .check-icon.required {
+        background: var(--alert-red);
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .action-button {
+        background: linear-gradient(135deg, var(--texas-blue), #1e3a8a);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .action-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .tea-requirements {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem;
+      }
+
+      .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="compliance-container">
+      <div class="header">
+        <h1>Texas Charter School Compliance Center</h1>
+        <p>Meeting TEA Requirements for Digital Learning</p>
+      </div>
+
+      <div class="compliance-grid">
+        <div class="compliance-card complete">
+          <div class="card-header">
+            <div class="card-title">Curriculum Standards</div>
+            <div class="status-badge complete">COMPLETE</div>
+          </div>
+          <ul class="requirement-list">
+            <li>
+              <span class="check-icon complete">✓</span>Texas Essential Knowledge & Skills (TEKS)
+              Alignment
+            </li>
+            <li><span class="check-icon complete">✓</span>Grade-level Curriculum Mapping</li>
+            <li><span class="check-icon complete">✓</span>Differentiated Learning Pathways</li>
+            <li><span class="check-icon complete">✓</span>Special Education Accommodations</li>
+          </ul>
+        </div>
+
+        <div class="compliance-card pending">
+          <div class="card-header">
+            <div class="card-title">Student Information System</div>
+            <div class="status-badge pending">IN PROGRESS</div>
+          </div>
+          <ul class="requirement-list">
+            <li><span class="check-icon complete">✓</span>Student Enrollment Portal</li>
+            <li><span class="check-icon pending">○</span>PEIMS Data Integration</li>
+            <li><span class="check-icon pending">○</span>Attendance Tracking System</li>
+            <li><span class="check-icon complete">✓</span>Progress Monitoring Tools</li>
+          </ul>
+        </div>
+
+        <div class="compliance-card required">
+          <div class="card-header">
+            <div class="card-title">Assessment & Testing</div>
+            <div class="status-badge required">REQUIRED</div>
+          </div>
+          <ul class="requirement-list">
+            <li><span class="check-icon required">!</span>STAAR Test Preparation</li>
+            <li><span class="check-icon required">!</span>Benchmark Assessment Tools</li>
+            <li><span class="check-icon pending">○</span>Formative Assessment System</li>
+            <li><span class="check-icon required">!</span>Data Analytics Dashboard</li>
+          </ul>
+        </div>
+
+        <div class="compliance-card complete">
+          <div class="card-header">
+            <div class="card-title">Accessibility Compliance</div>
+            <div class="status-badge complete">COMPLETE</div>
+          </div>
+          <ul class="requirement-list">
+            <li><span class="check-icon complete">✓</span>ADA Section 508 Compliance</li>
+            <li><span class="check-icon complete">✓</span>WCAG 2.1 AA Standards</li>
+            <li><span class="check-icon complete">✓</span>Neurodivergent Learning Support</li>
+            <li><span class="check-icon complete">✓</span>Multi-language Support</li>
+          </ul>
+        </div>
+
+        <div class="compliance-card pending">
+          <div class="card-header">
+            <div class="card-title">Teacher Certification</div>
+            <div class="status-badge pending">IN PROGRESS</div>
+          </div>
+          <ul class="requirement-list">
+            <li><span class="check-icon complete">✓</span>Texas Teacher Portal Access</li>
+            <li><span class="check-icon pending">○</span>CPE Credit Tracking</li>
+            <li><span class="check-icon pending">○</span>Professional Development Hub</li>
+            <li><span class="check-icon complete">✓</span>Lesson Plan Management</li>
+          </ul>
+        </div>
+
+        <div class="compliance-card required">
+          <div class="card-header">
+            <div class="card-title">Financial Reporting</div>
+            <div class="status-badge required">REQUIRED</div>
+          </div>
+          <ul class="requirement-list">
+            <li><span class="check-icon required">!</span>PEIMS Financial Module</li>
+            <li><span class="check-icon required">!</span>Budget Management System</li>
+            <li><span class="check-icon required">!</span>Audit Trail Documentation</li>
+            <li><span class="check-icon required">!</span>TEA Reporting Integration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tea-requirements">
+        <h2 class="section-title">
+          <span>📋</span>
+          Texas Education Agency (TEA) Requirements
+        </h2>
+
+        <div class="compliance-grid">
+          <div class="compliance-card complete">
+            <div class="card-header">
+              <div class="card-title">Digital Learning Standards</div>
+              <div class="status-badge complete">READY</div>
+            </div>
+            <ul class="requirement-list">
+              <li><span class="check-icon complete">✓</span>Minimum 180 Instructional Days</li>
+              <li><span class="check-icon complete">✓</span>Synchronous Learning Components</li>
+              <li><span class="check-icon complete">✓</span>Parent Engagement Portal</li>
+              <li><span class="check-icon complete">✓</span>Student Progress Tracking</li>
+            </ul>
+          </div>
+
+          <div class="compliance-card pending">
+            <div class="card-header">
+              <div class="card-title">Charter Authorization</div>
+              <div class="status-badge pending">SETUP NEEDED</div>
+            </div>
+            <ul class="requirement-list">
+              <li><span class="check-icon pending">○</span>Charter Application Documentation</li>
+              <li><span class="check-icon pending">○</span>Board Governance Structure</li>
+              <li><span class="check-icon pending">○</span>Performance Framework Metrics</li>
+              <li><span class="check-icon pending">○</span>Renewal Process Documentation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <a href="/texas-enrollment/" class="action-button">
+          <span>📝</span>
+          Student Enrollment
+        </a>
+        <a href="/texas-assessments/" class="action-button">
+          <span>📊</span>
+          Assessment Center
+        </a>
+        <a href="/texas-reporting/" class="action-button">
+          <span>📈</span>
+          TEA Reporting
+        </a>
+        <a href="/texas-peims/" class="action-button">
+          <span>🏛️</span>
+          PEIMS Integration
+        </a>
+        <a href="/" class="action-button">
+          <span>🏠</span>
+          Back to Platform
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShatziiOS - Admin Dashboard</title>
+    <style>
+      :root {
+        --primary: #04ffff;
+        --primary-dark: #00cccc;
+        --background: #121212;
+        --card-bg: #1e1e1e;
+        --text: #ffffff;
+        --text-muted: #b0b0b0;
+        --danger: #ff4444;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--background);
+        color: var(--text);
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin: 0;
+        color: var(--primary);
+      }
+
+      h2 {
+        font-size: 1.75rem;
+        margin: 2rem 0 1rem;
+        color: var(--primary);
+      }
+
+      h3 {
+        font-size: 1.25rem;
+        margin: 1.5rem 0 1rem;
+      }
+
+      p {
+        margin: 1rem 0;
+      }
+
+      .back-button {
+        color: var(--text-muted);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.2s ease;
+      }
+
+      .back-button:hover {
+        color: var(--primary);
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 250px 1fr;
+        gap: 2rem;
+      }
+
+      .sidebar {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .sidebar-menu li {
+        margin-bottom: 0.5rem;
+      }
+
+      .sidebar-menu a {
+        display: block;
+        padding: 0.75rem 1rem;
+        color: var(--text);
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+      }
+
+      .sidebar-menu a:hover,
+      .sidebar-menu a.active {
+        background-color: rgba(4, 255, 255, 0.1);
+        color: var(--primary);
+      }
+
+      .sidebar-menu a.active {
+        border-left: 3px solid var(--primary);
+      }
+
+      .main-content {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 1.5rem;
+      }
+
+      .card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        margin: 0;
+        color: var(--primary);
+      }
+
+      .button,
+      button {
+        background-color: var(--primary);
+        color: var(--background);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+      }
+
+      .button:hover,
+      button:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .button.secondary {
+        background-color: transparent;
+        border: 1px solid var(--primary);
+        color: var(--primary);
+      }
+
+      .button.secondary:hover {
+        background-color: rgba(4, 255, 255, 0.1);
+      }
+
+      .button.danger {
+        background-color: var(--danger);
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+
+      .stat-card {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin: 0.5rem 0;
+        color: var(--primary);
+      }
+
+      .stat-label {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // Check if admin is logged in
+      if (!sessionStorage.getItem('adminLoggedIn')) {
+        // Redirect to login page
+        window.location.href = '/admin-login';
+      }
+    </script>
+
+    <div class="container">
+      <header>
+        <div class="header-title">
+          <h1>Administrator Dashboard</h1>
+          <div style="margin-left: 15px; color: var(--primary)">
+            <span id="admin-username"></span>
+          </div>
+        </div>
+        <div>
+          <button id="logout-button" class="button secondary" style="margin-right: 15px">
+            Logout
+          </button>
+          <a href="/" class="back-button">← Back to Main Site</a>
+        </div>
+      </header>
+
+      <div class="dashboard-grid">
+        <div class="sidebar">
+          <h3>Main Menu</h3>
+          <ul class="sidebar-menu">
+            <li><a href="#" class="active">Dashboard</a></li>
+            <li><a href="/admin/cms">Content Management</a></li>
+            <li><a href="#">User Management</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">System Settings</a></li>
+            <li><a href="#">Security</a></li>
+          </ul>
+        </div>
+
+        <div class="main-content">
+          <h2>System Overview</h2>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">5</div>
+              <div class="stat-label">Schools</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">25+</div>
+              <div class="stat-label">AI Teachers</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">100+</div>
+              <div class="stat-label">Curriculum Modules</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">500+</div>
+              <div class="stat-label">Learning Resources</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Content Management System</h3>
+              <a href="/admin/cms" class="button">Go to CMS</a>
+            </div>
+            <p>
+              Manage all educational content across the ShatziiOS platform. Add, edit or remove
+              schools, AI teachers, learning resources, and curriculum modules.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Recent System Activity</h3>
+              <button class="button secondary">View All Logs</button>
+            </div>
+            <ul>
+              <li>Content update: Added new resources for Elementary School - 2 hours ago</li>
+              <li>New AI Teacher added: Language Arts Specialist - 5 hours ago</li>
+              <li>System: Security scan completed - 12 hours ago</li>
+              <li>Content update: Updated Law School curriculum - 1 day ago</li>
+              <li>New module: Added "Spanish for Beginners" to Language School - 2 days ago</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap">
+              <a href="/admin/cms" class="button">Manage Content</a>
+              <button class="button secondary">Run System Diagnostic</button>
+              <button class="button secondary">Update AI Models</button>
+              <button class="button secondary">View Reports</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>ShatziiOS Administrator Dashboard • Version 4.5.2 • &copy; 2025</p>
+      </div>
+    </div>
+
+    <script>
+      // Display admin username
+      const adminUsername = sessionStorage.getItem('adminUsername');
+      if (adminUsername) {
+        document.getElementById('admin-username').textContent = 'Logged in as: ' + adminUsername;
+      }
+
+      // Logout functionality
+      document.getElementById('logout-button').addEventListener('click', function () {
+        // Clear admin session
+        sessionStorage.removeItem('adminLoggedIn');
+        sessionStorage.removeItem('adminUsername');
+
+        // Redirect to login page
+        window.location.href = '/admin-login';
+      });
+    </script>
+  </body>
+</html>

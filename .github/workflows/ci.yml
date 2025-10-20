@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check and lint (non-blocking)
+        run: |
+          npm run -s lint || true
+
+      - name: Build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+          NODE_OPTIONS: --max_old_space_size=4096
+        run: npm run build --if-present
+
+      - name: Start server
+        env:
+          NODE_ENV: production
+        run: |
+          nohup npm start >/dev/null 2>&1 &
+
+      - name: Wait for health
+        env:
+          BASE_URL: http://localhost:5000
+        run: |
+          for i in {1..60}; do
+            if curl -fsS "$BASE_URL/api/health" >/dev/null; then echo "Server healthy"; exit 0; fi
+            sleep 2
+          done
+          echo "Server did not become healthy in time" && exit 1
+
+      - name: Smoke test registration API
+        env:
+          BASE_URL: http://localhost:5000
+          JWT_SECRET: testsecret
+        run: |
+          node scripts/test-register.js || (echo "Registration test failed" && exit 1)
+
+      - name: Smoke test auth flow (register -> me -> logout -> login -> me)
+        env:
+          BASE_URL: http://localhost:5000
+          JWT_SECRET: testsecret
+        run: |
+          node scripts/test-auth-flow.js || (echo "Auth flow test failed" && exit 1)
+
+      - name: Smoke test health and verify endpoint
+        env:
+          BASE_URL: http://localhost:5000
+          JWT_SECRET: testsecret
+          CI: 'true'
+        run: |
+          node scripts/test-health-and-verify.js || (echo "Health/Verify test failed" && exit 1)
+
+      - name: Accessibility scan (pa11y)
+        if: always()
+        run: |
+          npx pa11y http://localhost:5000 || true

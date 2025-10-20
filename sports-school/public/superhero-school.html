@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neurodivergent Superhero School - ShatziiOS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="assets/js/helpBubble.js"></script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #ffffff !important;
+      }
+      p {
+        color: #e0e0e0 !important;
+      }
+      a {
+        color: #0070f3;
+      }
+      .text-gray-600,
+      .text-gray-800,
+      .text-gray-500,
+      .text-gray-700 {
+        color: #e0e0e0 !important;
+      }
+      .bg-white {
+        background-color: #121212 !important;
+      }
+      .bg-gray-50,
+      .bg-gray-100 {
+        background-color: #181818 !important;
+      }
+      .border-gray-300 {
+        border-color: #333333 !important;
+      }
+      .subject-card,
+      .power-card {
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+        background-color: #121212 !important;
+        border: 1px solid #0070f3 !important;
+      }
+      .subject-card:hover,
+      .power-card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 112, 243, 0.4),
+          0 10px 10px -5px rgba(0, 112, 243, 0.3);
+      }
+      .header-gradient {
+        background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
+      }
+      .content-section {
+        max-width: 1200px;
+      }
+      button,
+      .button {
+        background-color: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+      }
+      button:hover,
+      .button:hover {
+        background-color: #0060d0 !important;
+      }
+      footer {
+        background-color: #121212 !important;
+        border-top: 1px solid #333333;
+      }
+      /* Custom color adjustments for superhero school */
+      .text-blue-600,
+      .text-blue-700,
+      .text-blue-800 {
+        color: #0070f3 !important;
+      }
+      .bg-blue-100,
+      .bg-indigo-100,
+      .bg-purple-100,
+      .bg-green-100 {
+        background-color: #162038 !important;
+      }
+      .bg-blue-500,
+      .bg-blue-600,
+      .bg-blue-700 {
+        background-color: #0070f3 !important;
+      }
+      .text-indigo-600,
+      .text-green-600,
+      .text-purple-600 {
+        color: #0070f3 !important;
+      }
+      .bg-gradient-to-r {
+        background: linear-gradient(135deg, #162038 0%, #152238 100%) !important;
+        border-color: #0070f3 !important;
+      }
+      .bg-blue-800 {
+        background-color: #000000 !important;
+      }
+      .text-blue-100 {
+        color: #ffffff !important;
+      }
+      .shadow {
+        box-shadow:
+          0 4px 6px rgba(0, 112, 243, 0.1),
+          0 2px 4px rgba(0, 112, 243, 0.06);
+      }
+      .hover\:bg-gray-50:hover {
+        background-color: #1a1a1a !important;
+      }
+      /* Progress bar colors */
+      .bg-gray-200 {
+        background-color: #333333 !important;
+      }
+      /* Neurodivergent-friendly spacing */
+      .neurodivergent-spacing {
+        letter-spacing: 0.03em;
+        line-height: 1.7;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg">
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center">
+          <a href="index.html" class="text-white hover:bg-blue-600 px-4 py-2 rounded mr-4">
+            &larr; Back
+          </a>
+          <div>
+            <h1 class="text-3xl font-bold flex items-center">
+              <span class="mr-2">🦸</span> Neurodivergent Superhero School
+            </h1>
+            <p class="mt-1 text-blue-100">Where your unique abilities become your superpowers</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+      <!-- Welcome Banner -->
+      <section class="content-section mx-auto mb-8">
+        <div
+          class="bg-gradient-to-r from-blue-50 to-indigo-100 p-6 rounded-lg border border-blue-200"
+        >
+          <div class="flex flex-col md:flex-row justify-between items-center">
+            <div>
+              <h2 class="text-2xl font-bold text-blue-800">Welcome, Superhero!</h2>
+              <p class="mt-2 text-blue-700">
+                Your learning adventure continues. Explore your subjects and develop your unique
+                superpowers!
+              </p>
+            </div>
+            <button
+              class="mt-4 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium"
+            >
+              Continue Learning
+            </button>
+          </div>
+
+          <!-- Dashboard Links -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+            <a
+              href="superhero-school/budget"
+              class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all"
+            >
+              <span class="text-xl">💰</span>
+              <span class="ml-2 text-white">Budget Management</span>
+            </a>
+            <a
+              href="#"
+              class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all"
+            >
+              <span class="text-xl">👥</span>
+              <span class="ml-2 text-white">Staff Dashboard</span>
+            </a>
+            <a
+              href="#"
+              class="bg-blue-900 bg-opacity-70 p-3 rounded-lg text-center hover:bg-opacity-90 transition-all"
+            >
+              <span class="text-xl">📚</span>
+              <span class="ml-2 text-white">Curriculum Management</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Superpowers Section -->
+      <section class="content-section mx-auto mb-10">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-gray-800">Your Superpowers</h2>
+          <a
+            href="#"
+            class="text-sm px-4 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50"
+            >View All Powers</a
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Power 1 -->
+          <div class="power-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-blue-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                </div>
+                <div class="flex">
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-gray-300">★</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Hyper Focus</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Ability to deeply concentrate on areas of interest
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Train Power</a
+              >
+            </div>
+          </div>
+
+          <!-- Power 2 -->
+          <div class="power-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-blue-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                    />
+                  </svg>
+                </div>
+                <div class="flex">
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-gray-300">★</span>
+                  <span class="text-lg text-gray-300">★</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Pattern Vision</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Exceptional ability to recognize patterns and connections
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Train Power</a
+              >
+            </div>
+          </div>
+
+          <!-- Power 3 -->
+          <div class="power-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-blue-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                </div>
+                <div class="flex">
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Creative Thinking</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Unique and innovative approaches to problem-solving
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Train Power</a
+              >
+            </div>
+          </div>
+
+          <!-- Power 4 -->
+          <div class="power-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-blue-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                </div>
+                <div class="flex">
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-yellow-400">★</span>
+                  <span class="text-lg text-gray-300">★</span>
+                </div>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Detail Mastery</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Extraordinary attention to detail and precision
+              </p>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Train Power</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Subjects Section -->
+      <section class="content-section mx-auto mb-10">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-xl font-bold text-gray-800">My Learning Missions</h2>
+          <a
+            href="#"
+            class="text-sm px-4 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50"
+            >View All Subjects</a
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Subject 1 -->
+          <div class="subject-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-blue-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-blue-600"> 72% Complete </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Mathematics</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Visual and interactive approach to math concepts
+              </p>
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full mt-4">
+                <div class="h-full bg-blue-600 rounded-full" style="width: 72%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Mission</a
+              >
+            </div>
+          </div>
+
+          <!-- Subject 2 -->
+          <div class="subject-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-green-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-green-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-green-600"> 58% Complete </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Science</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Hands-on experiments and scientific exploration
+              </p>
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full mt-4">
+                <div class="h-full bg-green-600 rounded-full" style="width: 58%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Mission</a
+              >
+            </div>
+          </div>
+
+          <!-- Subject 3 -->
+          <div class="subject-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-amber-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-amber-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-amber-600"> 45% Complete </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">History</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Time travel through historical events and figures
+              </p>
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full mt-4">
+                <div class="h-full bg-amber-600 rounded-full" style="width: 45%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Mission</a
+              >
+            </div>
+          </div>
+
+          <!-- Subject 4 -->
+          <div class="subject-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-purple-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-purple-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-purple-600"> 63% Complete </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">English & Literature</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Engaging stories and creative writing adventures
+              </p>
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full mt-4">
+                <div class="h-full bg-purple-600 rounded-full" style="width: 63%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Mission</a
+              >
+            </div>
+          </div>
+
+          <!-- Subject 5 -->
+          <div class="subject-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-cyan-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-cyan-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-cyan-600"> 51% Complete </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Geography</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Interactive exploration of our world and cultures
+              </p>
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full mt-4">
+                <div class="h-full bg-cyan-600 rounded-full" style="width: 51%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Mission</a
+              >
+            </div>
+          </div>
+
+          <!-- Subject 6 -->
+          <div class="subject-card bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4 pb-3">
+              <div class="flex items-center justify-between">
+                <div class="p-2 rounded-full bg-pink-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-pink-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                </div>
+                <span class="text-sm font-medium text-pink-600"> 67% Complete </span>
+              </div>
+              <h3 class="text-lg font-medium mt-2">Social Skills</h3>
+            </div>
+            <div class="px-4 pb-3">
+              <p class="text-sm text-gray-600 min-h-[50px]">
+                Building friendship and communication superpowers
+              </p>
+              <!-- Progress bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full mt-4">
+                <div class="h-full bg-pink-600 rounded-full" style="width: 67%"></div>
+              </div>
+            </div>
+            <div class="p-4 pt-0">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >Start Mission</a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Achievements & Resources -->
+      <section class="content-section mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4">
+              <h3 class="font-medium text-lg flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                  />
+                </svg>
+                Recent Achievements
+              </h3>
+            </div>
+            <div class="px-4 pb-4">
+              <ul class="space-y-3">
+                <li class="flex items-center space-x-2 pb-2 border-b border-gray-200">
+                  <span class="text-yellow-500 text-lg">🏆</span>
+                  <span>Math Problem Solver - Level 3</span>
+                </li>
+                <li class="flex items-center space-x-2 pb-2 border-b border-gray-200">
+                  <span class="text-yellow-500 text-lg">🏆</span>
+                  <span>Science Explorer - 10 Experiments</span>
+                </li>
+                <li class="flex items-center space-x-2">
+                  <span class="text-yellow-500 text-lg">🏆</span>
+                  <span>Reading Champion - 5 Books</span>
+                </li>
+              </ul>
+            </div>
+            <div class="px-4 pb-4">
+              <a
+                href="#"
+                class="block text-center w-full px-4 py-2 border border-gray-300 rounded hover:bg-gray-50"
+                >View All Achievements</a
+              >
+            </div>
+          </div>
+
+          <div class="md:col-span-2 bg-white rounded-lg shadow overflow-hidden">
+            <div class="p-4">
+              <h3 class="font-medium text-lg flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2 text-blue-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Superhero Resources
+              </h3>
+            </div>
+            <div class="px-4 pb-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="p-4 border rounded-md bg-blue-50 border-blue-200">
+                  <h3 class="font-medium mb-2 text-blue-700">Learning Tools</h3>
+                  <p class="text-sm text-gray-600">
+                    Special tools and accommodations designed for your learning style
+                  </p>
+                  <a href="#" class="inline-block mt-2 text-blue-600 hover:underline"
+                    >Explore Tools</a
+                  >
+                </div>
+
+                <div class="p-4 border rounded-md bg-purple-50 border-purple-200">
+                  <h3 class="font-medium mb-2 text-purple-700">Sensory Break Room</h3>
+                  <p class="text-sm text-gray-600">
+                    A calm virtual space to decompress and regulate
+                  </p>
+                  <a href="#" class="inline-block mt-2 text-purple-600 hover:underline"
+                    >Enter Room</a
+                  >
+                </div>
+
+                <div class="p-4 border rounded-md bg-green-50 border-green-200">
+                  <h3 class="font-medium mb-2 text-green-700">Special Interests Library</h3>
+                  <p class="text-sm text-gray-600">Deep dive into topics that fascinate you</p>
+                  <a href="#" class="inline-block mt-2 text-green-600 hover:underline"
+                    >Explore Library</a
+                  >
+                </div>
+
+                <div class="p-4 border rounded-md bg-amber-50 border-amber-200">
+                  <h3 class="font-medium mb-2 text-amber-700">Superhero Community</h3>
+                  <p class="text-sm text-gray-600">
+                    Connect with other students in a safe, supportive environment
+                  </p>
+                  <a href="#" class="inline-block mt-2 text-amber-600 hover:underline"
+                    >Join Community</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-800 text-blue-100 p-6 mt-12">
+      <div class="container mx-auto">
+        <div class="text-center">
+          <p>&copy; 2025 Neurodivergent Superhero School</p>
+          <p class="text-sm mt-1">Part of the ShotziOS Learning Platform</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

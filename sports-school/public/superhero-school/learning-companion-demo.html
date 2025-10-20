@@ -1,0 +1,660 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShotziOS - Learning Companion Demo</title>
+    <link rel="stylesheet" href="/css/neurodivergent-theme.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <style>
+      .demo-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .control-panel {
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+      }
+
+      .controls-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .control-group {
+        margin-bottom: 20px;
+      }
+
+      .control-group h3 {
+        margin-top: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        color: var(--accent-color);
+      }
+
+      .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .button-group button {
+        background-color: rgba(30, 144, 255, 0.2);
+        border: 1px solid rgba(30, 144, 255, 0.5);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .button-group button:hover {
+        background-color: rgba(30, 144, 255, 0.4);
+      }
+
+      .button-group button.active {
+        background-color: rgba(30, 144, 255, 0.7);
+      }
+
+      .message-input {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .message-input input {
+        flex: 1;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background-color: rgba(0, 0, 0, 0.3);
+        color: white;
+      }
+
+      .message-input button {
+        background-color: var(--accent-color);
+        border: none;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .examples {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+      }
+
+      .examples h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+      }
+
+      .examples ul {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .examples li {
+        padding: 8px;
+        margin-bottom: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .examples li:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .debug-log {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+        padding: 10px;
+        margin-top: 20px;
+        max-height: 200px;
+        overflow-y: auto;
+        font-family: monospace;
+        font-size: 14px;
+      }
+
+      .debug-log p {
+        margin: 5px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 5px;
+      }
+
+      .debug-timestamp {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 12px;
+        margin-right: 8px;
+      }
+
+      .feature-showcase {
+        margin-top: 40px;
+        background-color: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 20px;
+      }
+
+      .feature-item {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+      }
+
+      .feature-title {
+        font-weight: bold;
+        color: var(--accent-color);
+        margin-bottom: 10px;
+      }
+
+      #companion-container {
+        /* Positioning is handled by the LearningCompanion class */
+      }
+    </style>
+  </head>
+  <body class="neurodivergent-theme">
+    <header class="dashboard-header">
+      <div class="logo">
+        <a href="/superhero-school">
+          <span class="logo-icon">🦸‍♀️</span>
+          <span class="logo-text">ShotziOS</span>
+        </a>
+      </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="/superhero-school">Home</a></li>
+          <li><a href="/superhero-school/student-dashboard.html">Student Dashboard</a></li>
+          <li>
+            <a href="/superhero-school/dyslexia-curriculum-generator.html">Curriculum Generator</a>
+          </li>
+          <li><a href="/superhero-school/dyslexia-curriculum-upload.html">Upload Curriculum</a></li>
+          <li>
+            <a href="/superhero-school/learning-companion-demo.html" class="active"
+              >Learning Companion</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="demo-container">
+      <h1>AI Learning Companion Demo</h1>
+      <p>
+        This demo showcases our AI-powered learning companion characters designed to support
+        neurodivergent learners with engaging, expressive, and empathetic guidance.
+      </p>
+
+      <div class="control-panel">
+        <h2>Companion Controls</h2>
+        <div class="controls-grid">
+          <div class="control-group">
+            <h3>Character Type</h3>
+            <div class="button-group character-type-btns">
+              <button class="active" data-type="encouraging">Stella (Encouraging)</button>
+              <button data-type="enthusiastic">Max (Enthusiastic)</button>
+              <button data-type="calm">Nova (Calm)</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <h3>Animation Speed</h3>
+            <div class="button-group animation-speed-btns">
+              <button data-speed="slow">Slow</button>
+              <button class="active" data-speed="normal">Normal</button>
+              <button data-speed="fast">Fast</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <h3>Mood</h3>
+            <div class="button-group mood-btns">
+              <button class="active" data-mood="neutral">Neutral</button>
+              <button data-mood="happy">Happy</button>
+              <button data-mood="thinking">Thinking</button>
+              <button data-mood="excited">Excited</button>
+              <button data-mood="supportive">Supportive</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <h3>Custom Message</h3>
+            <div class="message-input">
+              <input
+                type="text"
+                id="custom-message"
+                placeholder="Type a message for the companion to say..."
+              />
+              <button id="send-message-btn">Send</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <h3>AI Features</h3>
+            <div class="button-group ai-feature-btns">
+              <button id="get-strategies-btn" class="btn">Get Learning Strategies</button>
+              <button id="get-challenge-response-btn" class="btn">Help With Challenge</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="examples">
+          <h3>Try These Examples:</h3>
+          <ul id="example-phrases">
+            <li data-phrase="I'm confused about this math problem. Can you help me?">
+              I'm confused about this math problem. Can you help me?
+            </li>
+            <li data-phrase="I just completed the reading assignment!">
+              I just completed the reading assignment!
+            </li>
+            <li data-phrase="This is really difficult for me to understand.">
+              This is really difficult for me to understand.
+            </li>
+            <li data-phrase="Can you give me some encouragement?">
+              Can you give me some encouragement?
+            </li>
+            <li data-phrase="Great job on helping me understand fractions!">
+              Great job on helping me understand fractions!
+            </li>
+          </ul>
+        </div>
+
+        <div class="debug-log" id="debug-log">
+          <p><span class="debug-timestamp">00:00:00</span> Learning companion initialized</p>
+        </div>
+      </div>
+
+      <div class="feature-showcase">
+        <h2>Key Features</h2>
+
+        <div class="feature-item">
+          <div class="feature-title">Personalized Character Selection</div>
+          <p>
+            Choose from three different companion personalities to match your learning style and
+            preferences:
+          </p>
+          <ul>
+            <li>
+              <strong>Stella (Encouraging):</strong> Offers gentle encouragement and positive
+              reinforcement
+            </li>
+            <li>
+              <strong>Max (Enthusiastic):</strong> Brings high energy and excitement to learning
+              tasks
+            </li>
+            <li>
+              <strong>Nova (Calm):</strong> Provides calm, patient guidance for students who prefer
+              a more measured approach
+            </li>
+          </ul>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-title">Expressive Animations</div>
+          <p>
+            Dynamic animations reflect the companion's emotions and responses, creating a more
+            engaging and authentic learning experience. Animations are carefully designed to be
+            helpful without being distracting.
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-title">Contextual Awareness</div>
+          <p>
+            The companion responds intelligently to the learning context, offering relevant help for
+            different subjects, activities, and challenges. It can recognize when a student might be
+            struggling and offer appropriate support.
+          </p>
+        </div>
+
+        <div class="feature-item">
+          <div class="feature-title">Neurodivergent-Friendly Design</div>
+          <p>
+            Designed specifically for neurodivergent learners with customizable interaction styles,
+            animation speeds, and communication approaches that respect different processing needs.
+          </p>
+        </div>
+      </div>
+    </main>
+
+    <footer class="dashboard-footer">
+      <div class="footer-content">
+        <p>&copy; 2025 ShotziOS Learning Platform</p>
+      </div>
+    </footer>
+
+    <!-- Container for the learning companion -->
+    <div id="companion-container"></div>
+
+    <!-- Scripts -->
+    <script src="/js/learning-companion.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Initialize the learning companion
+        const companion = new LearningCompanion({
+          container: document.getElementById('companion-container'),
+          type: 'encouraging',
+          animationSpeed: 'normal',
+        });
+
+        // Debug log function
+        function logDebug(message) {
+          const debugLog = document.getElementById('debug-log');
+          const now = new Date();
+          const timeString = now.toTimeString().split(' ')[0];
+          const logEntry = document.createElement('p');
+          logEntry.innerHTML = `<span class="debug-timestamp">${timeString}</span> ${message}`;
+          debugLog.appendChild(logEntry);
+          debugLog.scrollTop = debugLog.scrollHeight;
+        }
+
+        // Character type buttons
+        const characterTypeBtns = document.querySelectorAll('.character-type-btns button');
+        characterTypeBtns.forEach((btn) => {
+          btn.addEventListener('click', function () {
+            characterTypeBtns.forEach((b) => b.classList.remove('active'));
+            this.classList.add('active');
+            const type = this.dataset.type;
+            companion.setCharacterType(type);
+            logDebug(`Character changed to: ${type}`);
+          });
+        });
+
+        // Animation speed buttons
+        const animationSpeedBtns = document.querySelectorAll('.animation-speed-btns button');
+        animationSpeedBtns.forEach((btn) => {
+          btn.addEventListener('click', function () {
+            animationSpeedBtns.forEach((b) => b.classList.remove('active'));
+            this.classList.add('active');
+            const speed = this.dataset.speed;
+            companion.animationSpeed = speed;
+
+            // Recreate the companion with new speed
+            companion.container.innerHTML = '';
+            companion.initialize();
+
+            logDebug(`Animation speed changed to: ${speed}`);
+          });
+        });
+
+        // Mood buttons
+        const moodBtns = document.querySelectorAll('.mood-btns button');
+        moodBtns.forEach((btn) => {
+          btn.addEventListener('click', function () {
+            moodBtns.forEach((b) => b.classList.remove('active'));
+            this.classList.add('active');
+            const mood = this.dataset.mood;
+            companion.setMood(mood);
+            logDebug(`Mood changed to: ${mood}`);
+          });
+        });
+
+        // Custom message
+        const customMessageInput = document.getElementById('custom-message');
+        const sendMessageBtn = document.getElementById('send-message-btn');
+
+        sendMessageBtn.addEventListener('click', function () {
+          const message = customMessageInput.value.trim();
+          if (message) {
+            // Use API for custom messages too
+            getAICompanionResponse(message, companion.type, companion.currentMood)
+              .then((response) => {
+                if (response && response.responseText) {
+                  companion.speak(response.responseText, response.suggestedMood);
+                  logDebug(`AI response sent for custom message: "${message}"`);
+                } else {
+                  // Fallback to simple response if API call fails
+                  companion.speak(`I received your message: "${message}"`, 'neutral');
+                  logDebug(`Local response used for custom message: "${message}"`);
+                }
+              })
+              .catch((error) => {
+                console.error('Error getting AI response for custom message:', error);
+                companion.speak(`I received your message: "${message}"`, 'neutral');
+                logDebug(`Error getting AI response, using local response for: "${message}"`);
+              });
+
+            customMessageInput.value = '';
+          }
+        });
+
+        customMessageInput.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            sendMessageBtn.click();
+          }
+        });
+
+        // Example phrases
+        const examplePhrases = document.getElementById('example-phrases');
+        examplePhrases.addEventListener('click', function (e) {
+          if (e.target.tagName === 'LI') {
+            const phrase = e.target.dataset.phrase;
+            customMessageInput.value = phrase;
+
+            // Get AI response from the API if available, otherwise use local response
+            getAICompanionResponse(phrase, companion.type, companion.currentMood)
+              .then((response) => {
+                if (response && response.responseText) {
+                  companion.speak(response.responseText, response.suggestedMood);
+                  logDebug(`AI response received for: "${phrase}"`);
+                } else {
+                  // Fallback to local response if API call fails
+                  companion.reactTo(phrase);
+                  logDebug(`Local response used for: "${phrase}"`);
+                }
+              })
+              .catch((error) => {
+                console.error('Error getting AI response:', error);
+                companion.reactTo(phrase);
+                logDebug(`Error getting AI response, using local response for: "${phrase}"`);
+              });
+          }
+        });
+
+        /**
+         * Get AI-powered companion response from the API
+         */
+        async function getAICompanionResponse(
+          userInput,
+          characterType = 'encouraging',
+          mood = 'neutral',
+        ) {
+          try {
+            const response = await fetch('/api/learning-companion/response', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                characterType,
+                userInput,
+                mood,
+                studentName: 'Sam',
+                context: {
+                  currentPage: 'learning-companion-demo',
+                  subject: 'Demo',
+                },
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.response;
+          } catch (error) {
+            console.error('API response error:', error);
+            return null;
+          }
+        }
+
+        /**
+         * Get learning strategies from the API
+         */
+        async function getLearningStrategies() {
+          try {
+            logDebug('Requesting personalized learning strategies...');
+
+            const response = await fetch('/api/learning-companion/strategies', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                studentProfile: {
+                  name: 'Sam',
+                  gradeLevel: '8th Grade',
+                  strengths: ['Visual thinking', 'Creativity', 'Pattern recognition'],
+                  challenges: ['Reading comprehension', 'Focus', 'Organization'],
+                  interests: ['Science', 'Art', 'Technology'],
+                  learningStyle: 'visual',
+                },
+              }),
+            });
+
+            if (!response.ok) {
+              throw new Error(`API request failed with status ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.strategies && data.strategies.length > 0) {
+              // Display strategies
+              const message = `Here are some personalized learning strategies for you:\n\n${data.strategies.map((s, i) => `${i + 1}. ${s}`).join('\n')}`;
+              companion.speak(message, 'supportive');
+              logDebug('Strategies received and displayed');
+            } else {
+              throw new Error('No strategies received from API');
+            }
+          } catch (error) {
+            console.error('Error getting learning strategies:', error);
+            logDebug('Failed to get learning strategies');
+            companion.speak(
+              "I'm having trouble retrieving your personalized learning strategies right now. Let's try again later.",
+              'thinking',
+            );
+          }
+        }
+
+        // AI Feature Buttons
+        const getStrategiesBtn = document.getElementById('get-strategies-btn');
+        const getChallengeResponseBtn = document.getElementById('get-challenge-response-btn');
+
+        // Get Learning Strategies button
+        getStrategiesBtn.addEventListener('click', function () {
+          logDebug('Requesting learning strategies...');
+          companion.setMood('thinking');
+          companion.speak('Let me think about some personalized learning strategies for you...');
+
+          // Call the API to get learning strategies
+          getLearningStrategies();
+        });
+
+        // Get Challenge Response button
+        getChallengeResponseBtn.addEventListener('click', function () {
+          // Show a mini-form to enter challenge details
+          const currentMessage = customMessageInput.value;
+          customMessageInput.value = '';
+          customMessageInput.placeholder = 'Describe your learning challenge...';
+
+          // Change the send button temporarily
+          const originalButtonText = sendMessageBtn.textContent;
+          sendMessageBtn.textContent = 'Get Help';
+
+          // Remember the original event handler
+          const originalClickHandler = sendMessageBtn.onclick;
+
+          // Set new event handler for help with challenge
+          sendMessageBtn.onclick = async function () {
+            const challenge = customMessageInput.value.trim();
+            if (challenge) {
+              logDebug(`Requesting help with challenge: "${challenge}"`);
+              companion.setMood('thinking');
+              companion.speak('Let me think about how to help you with this challenge...');
+
+              try {
+                const response = await fetch('/api/learning-companion/adaptive-response', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    challenge,
+                    subject: 'General',
+                    characterType: companion.type,
+                  }),
+                });
+
+                if (!response.ok) {
+                  throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.success && data.response) {
+                  companion.speak(data.response, 'supportive');
+                  logDebug('Challenge response received');
+                } else {
+                  throw new Error('No response received from API');
+                }
+              } catch (error) {
+                console.error('Error getting challenge response:', error);
+                logDebug('Failed to get challenge response');
+                companion.speak(
+                  "I'm here to help! Breaking down your challenge into smaller steps often helps. Let's tackle one piece at a time.",
+                  'supportive',
+                );
+              }
+
+              // Reset input and button
+              customMessageInput.placeholder = 'Type a message for the companion to say...';
+              customMessageInput.value = currentMessage;
+              sendMessageBtn.textContent = originalButtonText;
+              sendMessageBtn.onclick = originalClickHandler;
+            }
+          };
+
+          // Also handle cancel (if user clicks elsewhere)
+          setTimeout(() => {
+            document.addEventListener('click', function resetChallengeForm(e) {
+              if (e.target !== customMessageInput && e.target !== sendMessageBtn) {
+                customMessageInput.placeholder = 'Type a message for the companion to say...';
+                customMessageInput.value = currentMessage;
+                sendMessageBtn.textContent = originalButtonText;
+                sendMessageBtn.onclick = originalClickHandler;
+                document.removeEventListener('click', resetChallengeForm);
+              }
+            });
+          }, 100);
+
+          // Focus the input
+          customMessageInput.focus();
+        });
+
+        // Schedule some demo encouragements
+        setTimeout(() => {
+          logDebug('Scheduled encouragement triggered');
+          companion.speak(
+            'Remember to take breaks when you need them. Learning is a marathon, not a sprint!',
+            'supportive',
+          );
+        }, 60000); // 1 minute
+
+        // Log initialization
+        logDebug('Learning companion demo fully initialized');
+      });
+    </script>
+  </body>
+</html>

@@ -1,659 +1,1063 @@
-import React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
+'use client';
 
-export default function HomePage() {
+import { useEffect } from 'react';
+
+export default function Page() {
+  useEffect(() => {
+    // Create animated particles
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      if (!particlesContainer) return;
+      const particleCount = 50;
+
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+
+        // Random size between 2px and 6px
+        const size = Math.random() * 4 + 2;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+
+        // Random position
+        particle.style.left = `${Math.random() * 100}vw`;
+        particle.style.top = `${Math.random() * 100}vh`;
+
+        // Random animation delay and duration
+        const delay = Math.random() * 15;
+        const duration = Math.random() * 10 + 15;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+
+        particlesContainer.appendChild(particle);
+      }
+    }
+
+    // Navbar scroll effect
+    function handleNavbarScroll() {
+      const navbar = document.getElementById('navbar');
+      if (navbar) {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      }
+    }
+
+    // Animate metric bars on scroll
+    function animateMetrics() {
+      const metrics = document.querySelectorAll('.metric__fill');
+
+      metrics.forEach(metric => {
+        const rect = metric.getBoundingClientRect();
+        const isVisible = (rect.top <= window.innerHeight && rect.bottom >= 0);
+
+        if (isVisible && !metric.classList.contains('animated')) {
+          metric.classList.add('animated');
+          // The animation is handled by CSS with the transition property
+        }
+      });
+    }
+
+    // Initialize everything when DOM is loaded
+    createParticles();
+    window.addEventListener('scroll', handleNavbarScroll);
+    window.addEventListener('scroll', animateMetrics);
+
+    // Trigger initial check
+    handleNavbarScroll();
+    animateMetrics();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleNavbarScroll);
+      window.removeEventListener('scroll', animateMetrics);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
-      {/* Header */}
-      <header className="relative z-10 bg-black/20 backdrop-blur-sm mt-12">
-        <div className="container mx-auto px-4 py-6">
-          <nav className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <img 
-                src="/logo-main.jpeg" 
-                alt="Universal One School Logo" 
-                className="w-12 h-12 object-contain"
-              />
-              <div className="text-white font-bold text-2xl">
-                The Universal One School
+    <>
+      <style jsx>{`
+        /* =========================================================
+           ENHANCED NEON/HUD THEME - Dynamic & Interactive
+           ========================================================= */
+        :root {
+            /* Enhanced Color System */
+            --bg-0: #05070A;
+            --bg-1: #0B0F1A;
+            --bg-2: #0D1220;
+            --panel: #0E1424;
+            --line: #1A2030;
+            --text: #F5F7FA;
+            --muted: #AAB2C3;
+
+            --brand: #00D4FF;
+            --brand2: #36E4FF;
+            --accent: #27E36A;
+            --danger: #FF4D6D;
+            --warning: #FFC857;
+            --purple: #A78BFA;
+
+            /* Enhanced FX tokens */
+            --radius-sm: 12px;
+            --radius: 16px;
+            --radius-lg: 22px;
+
+            --shadow-neon: 0 0 0 1px rgba(0,212,255,.22) inset,
+                           0 0 28px rgba(0,212,255,.25);
+            --glow-text: 0 0 12px rgba(0,212,255,.45);
+            --ring-focus: 0 0 0 3px rgba(255,238,88,0.8);
+            --container: 1200px;
+
+            /* Animation tokens */
+            --transition-fast: 0.3s ease;
+            --transition-medium: 0.5s ease;
+            --transition-slow: 0.8s ease;
+
+            /* Type scale */
+            --font-ui: 'Orbitron', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
+            --font-display: "Bebas Neue", "Anton", var(--font-ui);
+            --h1: clamp(2.5rem, 8vw, 4.5rem);
+            --h2: clamp(1.8rem, 5vw, 3rem);
+            --h3: clamp(1.3rem, 3vw, 1.8rem);
+        }
+
+        /* ---------- Base Reset & Global Styles ---------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, var(--bg-0), var(--bg-2));
+            color: var(--text);
+            font: 16px/1.6 var(--font-ui);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* ---------- Enhanced HUD Background ---------- */
+        .hud-bg {
+            position: relative;
+            isolation: isolate;
+            min-height: 100vh;
+            background:
+                radial-gradient(1400px 400px at 20% 0%, rgba(0,212,255,.10), transparent 70%),
+                linear-gradient(180deg, rgba(0,0,0,.25), transparent 15%, rgba(0,0,0,.5) 80%),
+                linear-gradient(135deg, var(--bg-0), var(--bg-2));
+        }
+
+        .hud-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            opacity: .25;
+            background:
+                repeating-linear-gradient(
+                    to right, transparent 0 119px, rgba(26,32,48,.45) 119px 120px),
+                repeating-linear-gradient(
+                    to bottom, transparent 0 119px, rgba(26,32,48,.45) 119px 120px);
+        }
+
+        /* Animated particles background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--brand);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.3;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+
+        /* ---------- Enhanced Navigation ---------- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(5, 7, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+            transition: var(--transition-medium);
+        }
+
+        .navbar.scrolled {
+            padding: 0.8rem 2rem;
+            background: rgba(5, 7, 10, 0.95);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            color: var(--brand);
+            text-shadow: var(--glow-text);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: var(--transition-fast);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--brand);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--brand);
+            transition: var(--transition-fast);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* ---------- Enhanced Hero Section ---------- */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 2rem;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 2;
+            animation: fadeUp 1s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kicker {
+            font: 900 .82rem/1 var(--font-ui);
+            color: var(--brand2);
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        h1, .h1 {
+            font: 900 var(--h1)/1.05 var(--font-display);
+            letter-spacing: 1px;
+            text-shadow: var(--glow-text);
+            margin: .25rem 0 .5rem;
+        }
+
+        h2, .h2 {
+            font: 800 var(--h2)/1.15 var(--font-display);
+            margin: .15rem 0 .35rem;
+            color: #fff;
+        }
+
+        h3, .h3 {
+            font: 700 var(--h3)/1.2 var(--font-ui);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--brand);
+            text-shadow: var(--glow-text);
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ---------- Enhanced Buttons ---------- */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: 1rem 1.8rem;
+            font-weight: 900;
+            cursor: pointer;
+            border-radius: 14px;
+            border: 0;
+            text-decoration: none;
+            position: relative;
+            transition: var(--transition-fast);
+            font-family: var(--font-ui);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .btn--neon {
+            color: #061a22;
+            background: var(--accent);
+            box-shadow: 0 8px 24px rgba(39,227,106,.35);
+        }
+
+        .btn--neon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(39,227,106,.5);
+        }
+
+        .btn--ghost {
+            color: var(--text);
+            background: transparent;
+            border: 1px solid var(--line);
+        }
+
+        .btn--ghost:hover {
+            border-color: var(--brand);
+            color: var(--brand);
+        }
+
+        .btn--blue {
+            color: #021018;
+            background: linear-gradient(180deg, rgba(54,228,255,.25), rgba(0,212,255,.05)),
+                        linear-gradient(90deg, var(--brand), var(--brand2));
+            box-shadow: 0 0 24px rgba(0,212,255,.35);
+        }
+
+        .btn--blue:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 32px rgba(0,212,255,.5);
+        }
+
+        .btn--blue:focus-visible {
+            box-shadow: var(--ring-focus), 0 0 24px rgba(0,212,255,.35);
+        }
+
+        /* ---------- Enhanced Cards & Panels ---------- */
+        .panel, .card {
+            background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0) 40%),
+                        radial-gradient(700px 200px at 18% 0%, rgba(0,212,255,.08), transparent 70%),
+                        var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-neon);
+            transition: var(--transition-medium);
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 0 1px rgba(0,212,255,.3) inset,
+                        0 0 40px rgba(0,212,255,.4);
+        }
+
+        .card--soft {
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .card--outline {
+            background: transparent;
+        }
+
+        /* ---------- Enhanced Metrics ---------- */
+        .metric {
+            background: #0B1222;
+            border: 1px solid #162033;
+            border-radius: 12px;
+            padding: .8rem 1rem;
+            margin: 1rem 0;
+        }
+
+        .metric__label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            margin-bottom: .5rem;
+        }
+
+        .metric__bar {
+            height: 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #0e1628;
+            box-shadow: inset 0 0 0 1px rgba(0,212,255,.2);
+        }
+
+        .metric__fill {
+            height: 100%;
+            width: var(--value, 60%);
+            background: linear-gradient(90deg, var(--brand), var(--brand2));
+            box-shadow: 0 0 16px rgba(0,212,255,.55);
+            transition: width 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+        }
+
+        .metric__fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-20px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* ---------- Enhanced Pills & Badges ---------- */
+        .pill {
+            display: inline-block;
+            padding: .4rem .8rem;
+            border-radius: 999px;
+            background: rgba(0,212,255,.10);
+            color: var(--brand2);
+            border: 1px solid rgba(0,212,255,.30);
+            font-weight: 800;
+            font-size: .82rem;
+            margin: 0.2rem;
+        }
+
+        .badge {
+            display: inline-flex;
+            gap: .38rem;
+            align-items: center;
+            padding: .4rem .8rem;
+            background: rgba(0,212,255,.08);
+            border: 1px solid rgba(0,212,255,.25);
+            border-radius: 999px;
+            font-weight: 800;
+        }
+
+        .badge i {
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            background: var(--brand);
+            box-shadow: 0 0 12px var(--brand2);
+        }
+
+        .stat-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+            padding: .6rem 1rem;
+            border-radius: 12px;
+            background: transparent;
+            border: 1px solid rgba(0,212,255,.35);
+            box-shadow: 0 0 18px rgba(0,212,255,.15) inset;
+            font-weight: 900;
+            letter-spacing: .5px;
+            margin: 0.2rem;
+        }
+
+        /* ---------- Section Styling ---------- */
+        .section {
+            padding: 5rem 2rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title .kicker {
+            margin-bottom: 0.5rem;
+        }
+
+        /* ---------- Grid Layouts ---------- */
+        .container {
+            max-width: var(--container);
+            margin: 0 auto;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+
+        .grid-4 {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .grid-4 {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* ---------- Features Section ---------- */
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--brand);
+            margin-bottom: 1rem;
+            text-shadow: var(--glow-text);
+        }
+
+        /* ---------- Testimonials ---------- */
+        .testimonial {
+            position: relative;
+            padding: 1.5rem;
+        }
+
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: 4rem;
+            color: var(--brand);
+            opacity: 0.3;
+            font-family: serif;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--brand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-0);
+            font-weight: bold;
+        }
+
+        /* ---------- CTA Section ---------- */
+        .cta-section {
+            text-align: center;
+            padding: 6rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(0,212,255,0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* ---------- Footer ---------- */
+        .footer {
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--line);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: 2fr 1fr 1fr 1fr;
+            }
+        }
+
+        .footer-logo {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .footer-heading {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--brand);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--muted);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .footer-links a:hover {
+            color: var(--brand);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0,212,255,.1);
+            color: var(--brand);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .social-links a:hover {
+            background: var(--brand);
+            color: var(--bg-0);
+            transform: translateY(-3px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* ---------- Animations ---------- */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* ---------- Utilities ---------- */
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .mt-1 { margin-top: .5rem; } .mt-2 { margin-top: 1rem; } .mt-3 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: .5rem; } .mb-2 { margin-bottom: 1rem; } .mb-3 { margin-bottom: 2rem; }
+        .text-neon { color: var(--brand); text-shadow: var(--glow-text); }
+        .muted { color: var(--muted); }
+
+        /* ---------- Motion Preferences ---------- */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+      `}</style>
+
+      <div className="hud-bg">
+        {/* Animated Background Particles */}
+        <div className="particles" id="particles"></div>
+
+        {/* Navigation */}
+        <nav className="navbar" id="navbar">
+          <a href="#" className="logo">
+            <i className="fas fa-bolt logo-icon"></i>
+            GO4IT<span className="text-neon">COMBINE</span>
+          </a>
+
+          <ul className="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#programs">Programs</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="#register">Register</a></li>
+          </ul>
+
+          <div className="nav-cta">
+            <a href="/login" className="btn btn--ghost">Login</a>
+            <a href="/combine-registration" className="btn btn--blue">Sign Up</a>
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <section className="hero" id="home">
+          <div className="hero-content">
+            <span className="kicker">International Combine 2025</span>
+            <h1 className="hero-title">UNLEASH YOUR <span className="text-neon">POTENTIAL</span></h1>
+            <p className="hero-subtitle">Film. Metrics. AI Coach. Ages 12–18 — Soccer • Basketball • Flag Football</p>
+
+            <div className="hero-stats">
+              <div className="stat">
+                <span className="stat-value">89%</span>
+                <span className="stat-label">GAR Score Avg</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">2.4K</span>
+                <span className="stat-label">Athletes</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">98%</span>
+                <span className="stat-label">Satisfaction</span>
               </div>
             </div>
-            <div className="hidden md:flex space-x-6">
-              <Link href="#schools" className="text-white hover:text-blue-300 transition-colors">
-                Schools
-              </Link>
-              <Link href="/marketplace" className="text-white hover:text-blue-300 transition-colors">
-                Marketplace
-              </Link>
-              <Link href="/marketing" className="text-white hover:text-purple-300 transition-colors">
-                AI Recruiting
-              </Link>
-              <Link href="/creator-dashboard" className="text-white hover:text-pink-300 transition-colors">
-                Creator Hub
-              </Link>
-              <Link href="/go4it-academy" className="text-white hover:text-yellow-300 transition-colors">
-                Go4it Sports Academy
-              </Link>
 
+            <div className="hero-actions">
+              <a href="/combine-registration" className="btn btn--blue pulse">
+                <i className="fas fa-rocket"></i> Register Now
+              </a>
+              <a href="#features" className="btn btn--ghost">
+                <i className="fas fa-play-circle"></i> Watch Demo
+              </a>
             </div>
-          </nav>
-        </div>
-      </header>
+          </div>
+        </section>
 
-      {/* Hero Section */}
-      <section className="relative py-32 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-blue-900/20"></div>
-        <div className="container mx-auto text-center relative z-10">
-          <div className="mb-8">
-            <span className="inline-block bg-gradient-to-r from-blue-400 to-purple-400 text-white px-6 py-2 rounded-full text-sm font-semibold mb-4">
-              🌟 1,999+ Students • 5 AI Agents • Global Network
-            </span>
+        {/* Features Section */}
+        <section className="section" id="features">
+          <div className="container">
+            <div className="section-title">
+              <span className="kicker">Why Choose GO4IT</span>
+              <h2>Next-Level <span className="text-neon">Athlete Development</span></h2>
+            </div>
+
+            <div className="grid grid-3">
+              <div className="card">
+                <div className="feature-icon">
+                  <i className="fas fa-chart-line"></i>
+                </div>
+                <h3>Advanced Analytics</h3>
+                <p className="muted">Real-time performance tracking with our proprietary GAR scoring system.</p>
+                <div className="metric mt-2">
+                  <div className="metric__label"><span>Data Accuracy</span><span>95%</span></div>
+                  <div className="metric__bar"><div className="metric__fill" style={{ '--value': '95%' }}></div></div>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="feature-icon">
+                  <i className="fas fa-robot"></i>
+                </div>
+                <h3>AI Coaching</h3>
+                <p className="muted">Personalized training programs powered by machine learning algorithms.</p>
+                <div className="metric mt-2">
+                  <div className="metric__label"><span>Improvement Rate</span><span>87%</span></div>
+                  <div className="metric__bar"><div className="metric__fill" style={{ '--value': '87%' }}></div></div>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="feature-icon">
+                  <i className="fas fa-video"></i>
+                </div>
+                <h3>Film Analysis</h3>
+                <p className="muted">Break down every play with our advanced video analysis tools.</p>
+                <div className="metric mt-2">
+                  <div className="metric__label"><span>Processing Speed</span><span>2.3s</span></div>
+                  <div className="metric__bar"><div className="metric__fill" style={{ '--value': '100%' }}></div></div>
+                </div>
+              </div>
+            </div>
           </div>
-          
-          <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
-            The Future of
-            <br />
-            <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Education is Here
-            </span>
-          </h1>
-          
-          <p className="text-2xl md:text-3xl text-white/90 mb-6 max-w-4xl mx-auto font-light">
-            Where AI meets human potential. Where neurodiversity is celebrated. 
-            Where every student finds their path to excellence.
-          </p>
-          
-          <p className="text-lg text-white/70 mb-12 max-w-2xl mx-auto">
-            From K-6 superheroes to Olympic athletes, from future lawyers to global linguists — 
-            discover the school designed specifically for your unique learning style.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <Link 
-              href="#discover-schools" 
-              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-10 py-5 rounded-full font-bold text-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 group"
-            >
-              <span className="flex items-center gap-3">
-                Discover Your School
-                <svg className="w-6 h-6 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </Link>
-            
-            <Link 
-              href="/demo" 
-              className="border-2 border-white/30 text-white px-10 py-5 rounded-full font-bold text-xl hover:bg-white/10 transition-all duration-300 transform hover:-translate-y-1"
-            >
-              Try AI Demo
-            </Link>
+        </section>
+
+        {/* Programs Section */}
+        <section className="section" id="programs">
+          <div className="container">
+            <div className="section-title">
+              <span className="kicker">Our Programs</span>
+              <h2>Sport-Specific <span className="text-neon">Training</span></h2>
+            </div>
+
+            <div className="grid grid-3">
+              <div className="card card--soft center">
+                <div className="feature-icon">
+                  <i className="fas fa-futbol"></i>
+                </div>
+                <h3>Soccer</h3>
+                <p className="muted">Technical skills, tactical awareness, and physical conditioning.</p>
+                <div className="mt-2">
+                  <span className="pill">Denver</span>
+                  <span className="pill">Vienna</span>
+                  <span className="pill">Online</span>
+                </div>
+                <a href="/academy" className="btn btn--ghost mt-2">Learn More</a>
+              </div>
+
+              <div className="card card--soft center">
+                <div className="feature-icon">
+                  <i className="fas fa-basketball-ball"></i>
+                </div>
+                <h3>Basketball</h3>
+                <p className="muted">Shooting, ball handling, and basketball IQ development.</p>
+                <div className="mt-2">
+                  <span className="pill">Denver</span>
+                  <span className="pill">Online</span>
+                </div>
+                <a href="/starpath" className="btn btn--ghost mt-2">Learn More</a>
+              </div>
+
+              <div className="card card--soft center">
+                <div className="feature-icon">
+                  <i className="fas fa-football-ball"></i>
+                </div>
+                <h3>Flag Football</h3>
+                <p className="muted">Speed, agility, and strategic gameplay development.</p>
+                <div className="mt-2">
+                  <span className="pill">Denver</span>
+                  <span className="pill">Vienna</span>
+                </div>
+                <a href="/flag-football-academy" className="btn btn--ghost mt-2">Learn More</a>
+              </div>
+            </div>
           </div>
-          
-          <div className="mt-16 text-center">
-            <p className="text-white/60 text-sm mb-4">Trusted by students worldwide</p>
-            <div className="flex justify-center gap-8 text-white/80">
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="section" id="testimonials">
+          <div className="container">
+            <div className="section-title">
+              <span className="kicker">Success Stories</span>
+              <h2>Athlete <span className="text-neon">Testimonials</span></h2>
+            </div>
+
+            <div className="grid grid-2">
+              <div className="card">
+                <div className="testimonial">
+                  <p className="muted">"The GO4IT Combine completely transformed my approach to training. The data-driven insights helped me identify weaknesses I didn't even know I had. My GAR score improved by 22 points in just 3 months!"</p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">JE</div>
+                    <div>
+                      <h4>Jayden Ellis</h4>
+                      <p className="muted">WR, Colorado State Commit</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="testimonial">
+                  <p className="muted">"As a soccer player, the film analysis tools were game-changing. Being able to break down every touch and movement helped me refine my technique in ways I never thought possible. Highly recommend!"</p>
+                  <div className="testimonial-author">
+                    <div className="author-avatar">SM</div>
+                    <div>
+                      <h4>Sophia Martinez</h4>
+                      <p className="muted">Forward, U17 National Team</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="cta-section" id="register">
+          <div className="container">
+            <span className="kicker">Limited Spots Available</span>
+            <h2>Ready to <span className="text-neon">Elevate Your Game</span>?</h2>
+            <p className="hero-subtitle">Join thousands of athletes who have transformed their performance with GO4IT Combine.</p>
+
+            <div className="mt-3">
+              <a href="/combine-registration" className="btn btn--neon pulse">
+                <i className="fas fa-bolt"></i> Register Now
+              </a>
+            </div>
+
+            <div className="mt-3">
+              <span className="stat-chip">NEXTUP PROSPECT</span>
+              <span className="stat-chip">ELITE SPEED</span>
+              <span className="stat-chip">AI COACHING</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="footer">
+          <div className="container">
+            <div className="footer-content">
               <div>
-                <div className="text-2xl font-bold">1,999+</div>
-                <div className="text-sm">Active Students</div>
+                <a href="#" className="footer-logo">
+                  <i className="fas fa-bolt logo-icon"></i>
+                  GO4IT<span className="text-neon">COMBINE</span>
+                </a>
+                <p className="muted">Transforming athlete development through technology, data, and expert coaching.</p>
+                <div className="social-links">
+                  <a href="#"><i className="fab fa-twitter"></i></a>
+                  <a href="#"><i className="fab fa-instagram"></i></a>
+                  <a href="#"><i className="fab fa-youtube"></i></a>
+                  <a href="#"><i className="fab fa-tiktok"></i></a>
+                </div>
               </div>
+
               <div>
-                <div className="text-2xl font-bold">5</div>
-                <div className="text-sm">AI Teachers</div>
+                <h4 className="footer-heading">Programs</h4>
+                <ul className="footer-links">
+                  <li><a href="#">Soccer</a></li>
+                  <li><a href="#">Basketball</a></li>
+                  <li><a href="#">Flag Football</a></li>
+                  <li><a href="#">All Programs</a></li>
+                </ul>
               </div>
+
               <div>
-                <div className="text-2xl font-bold">3</div>
-                <div className="text-sm">Global Campuses</div>
+                <h4 className="footer-heading">Company</h4>
+                <ul className="footer-links">
+                  <li><a href="#">About Us</a></li>
+                  <li><a href="#">Careers</a></li>
+                  <li><a href="#">Press</a></li>
+                  <li><a href="#">Contact</a></li>
+                </ul>
               </div>
+
               <div>
-                <div className="text-2xl font-bold">95%</div>
-                <div className="text-sm">Success Rate</div>
+                <h4 className="footer-heading">Resources</h4>
+                <ul className="footer-links">
+                  <li><a href="#">Blog</a></li>
+                  <li><a href="#">Help Center</a></li>
+                  <li><a href="#">Privacy Policy</a></li>
+                  <li><a href="#">Terms of Service</a></li>
+                </ul>
               </div>
+            </div>
+
+            <div className="copyright">
+              &copy; 2025 GO4IT Combine. All rights reserved.
             </div>
           </div>
-        </div>
-        
-        {/* Floating particles animation */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-400 rounded-full opacity-60 animate-pulse"></div>
-          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-purple-400 rounded-full opacity-80 animate-bounce"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-3 h-3 bg-cyan-400 rounded-full opacity-40 animate-ping"></div>
-        </div>
-      </section>
-
-      {/* Your Educational Journey Starts Here */}
-      <section id="discover-schools" className="py-32 px-4 bg-gradient-to-b from-slate-900 to-black">
-        <div className="container mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-7xl font-bold text-white mb-8">
-              Your Educational
-              <br />
-              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-                Journey Awaits
-              </span>
-            </h2>
-            <p className="text-2xl text-white/80 max-w-3xl mx-auto">
-              Every great story begins with choosing the right path. 
-              Discover which of our specialized schools will unlock your potential.
-            </p>
-          </div>
-
-          {/* Learning Path Visualization */}
-          <div className="relative max-w-7xl mx-auto">
-            {/* Journey Timeline */}
-            <div className="hidden lg:block absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-cyan-400 via-purple-400 to-pink-400 opacity-30"></div>
-            
-            {/* School Journey Cards */}
-            <div className="space-y-32">
-              
-              {/* Universal One Academy - K-6 */}
-              <div className="relative">
-                <div className="lg:flex lg:items-center lg:gap-16">
-                  <div className="lg:w-1/2 mb-12 lg:mb-0">
-                    <div className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm rounded-3xl p-8 border border-blue-400/30 hover:border-blue-400/60 transition-all duration-500 group hover:scale-105">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden">
-                          <img 
-                            src="/logo-main.jpeg" 
-                            alt="Universal One Academy Logo" 
-                            className="w-14 h-14 object-contain"
-                          />
-                        </div>
-                        <div>
-                          <h3 className="text-3xl font-bold text-white">Universal One Academy</h3>
-                          <p className="text-blue-300 text-lg">Ages 5-11 • Primary Education</p>
-                        </div>
-                      </div>
-                      
-                      <p className="text-white/90 text-lg mb-6 leading-relaxed">
-                        Where young minds discover their academic potential! Personalized learning designed 
-                        specifically for neurodivergent children with ADHD, autism, and dyslexia support.
-                      </p>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-blue-500/20 rounded-lg p-3">
-                          <div className="text-blue-300 font-semibold">✨ AI Teacher</div>
-                          <div className="text-white">Dean Wonder</div>
-                        </div>
-                        <div className="bg-purple-500/20 rounded-lg p-3">
-                          <div className="text-purple-300 font-semibold">🎯 Focus</div>
-                          <div className="text-white">ADHD & Autism Support</div>
-                        </div>
-                      </div>
-                      
-                      <Link 
-                        href="/schools/primary-school"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full font-bold hover:shadow-xl transition-all duration-300 group-hover:scale-105"
-                      >
-                        Begin Learning Journey
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
-                  
-                  <div className="lg:w-1/2">
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                      <div className="relative bg-black/50 rounded-3xl p-8 border border-blue-400/30">
-                        <h4 className="text-2xl font-bold text-white mb-4">Student Success Story</h4>
-                        <blockquote className="text-white/90 italic text-lg mb-4">
-                          "Marcus went from struggling with focus to becoming a confident learner. 
-                          The personalized approach and AI support helped him embrace his ADHD as a strength!"
-                        </blockquote>
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center text-white font-bold">
-                            M
-                          </div>
-                          <div>
-                            <div className="text-white font-semibold">Marcus, Age 8</div>
-                            <div className="text-blue-300">Universal One Academy Graduate</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* S.T.A.G.E Prep School - 7-12 */}
-              <div className="relative">
-                <div className="lg:flex lg:items-center lg:gap-16 lg:flex-row-reverse">
-                  <div className="lg:w-1/2 mb-12 lg:mb-0">
-                    <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur-sm rounded-3xl p-8 border border-purple-400/30 hover:border-purple-400/60 transition-all duration-500 group hover:scale-105">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-3xl">
-                          🎭
-                        </div>
-                        <div>
-                          <h3 className="text-3xl font-bold text-white">S.T.A.G.E Prep School</h3>
-                          <p className="text-purple-300 text-lg">Ages 12-18 • Secondary Education</p>
-                        </div>
-                      </div>
-                      
-                      <p className="text-white/90 text-lg mb-6 leading-relaxed">
-                        Master the art of performance and academics. Theater-focused education with 
-                        executive function support, college prep, and professional development.
-                      </p>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-purple-500/20 rounded-lg p-3">
-                          <div className="text-purple-300 font-semibold">🎪 AI Teacher</div>
-                          <div className="text-white">Dean Sterling</div>
-                        </div>
-                        <div className="bg-pink-500/20 rounded-lg p-3">
-                          <div className="text-pink-300 font-semibold">🎯 Focus</div>
-                          <div className="text-white">Theater & College Prep</div>
-                        </div>
-                      </div>
-                      
-                      <Link 
-                        href="/schools/secondary-school"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-full font-bold hover:shadow-xl transition-all duration-300 group-hover:scale-105"
-                      >
-                        Take the Stage
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
-                  
-                  <div className="lg:w-1/2">
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                      <div className="relative bg-black/50 rounded-3xl p-8 border border-purple-400/30">
-                        <h4 className="text-2xl font-bold text-white mb-4">Achievement Spotlight</h4>
-                        <blockquote className="text-white/90 italic text-lg mb-4">
-                          "Sofia discovered her passion for theater direction and got accepted to 
-                          Yale Drama School. The executive function support was life-changing!"
-                        </blockquote>
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                            S
-                          </div>
-                          <div>
-                            <div className="text-white font-semibold">Sofia, Age 17</div>
-                            <div className="text-purple-300">Yale Drama School Accepted</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Go4it Sports Academy */}
-              <div className="relative">
-                <div className="lg:flex lg:items-center lg:gap-16">
-                  <div className="lg:w-1/2 mb-12 lg:mb-0">
-                    <div className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 backdrop-blur-sm rounded-3xl p-8 border border-blue-400/30 hover:border-blue-400/60 transition-all duration-500 group hover:scale-105">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden">
-                          <img 
-                            src="/go4it-logo.jpg" 
-                            alt="Go4it Academy Logo" 
-                            className="w-14 h-14 object-contain"
-                          />
-                        </div>
-                        <div>
-                          <h3 className="text-3xl font-bold text-white">Go4it Sports Academy</h3>
-                          <p className="text-blue-300 text-lg">Ages 14-18 • Elite Athletics</p>
-                        </div>
-                      </div>
-                      
-                      <p className="text-white/90 text-lg mb-6 leading-relaxed">
-                        Train like a champion at our $95M Vienna campus. Elite athletic education 
-                        with Division I recruitment, residential programs, and academic excellence.
-                      </p>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-blue-500/20 rounded-lg p-3">
-                          <div className="text-blue-300 font-semibold">🥇 AI Coach</div>
-                          <div className="text-white">Coach Elite</div>
-                        </div>
-                        <div className="bg-cyan-500/20 rounded-lg p-3">
-                          <div className="text-cyan-300 font-semibold">🏟️ Campus</div>
-                          <div className="text-white">Vienna, Austria</div>
-                        </div>
-                      </div>
-                      
-                      <Link 
-                        href="/go4it-academy"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-full font-bold hover:shadow-xl transition-all duration-300 group-hover:scale-105"
-                      >
-                        Train with Champions
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
-                  
-                  <div className="lg:w-1/2">
-                    <div className="relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                      <div className="relative bg-black/50 rounded-3xl p-8 border border-blue-400/30">
-                        <h4 className="text-2xl font-bold text-white mb-4">Champion's Story</h4>
-                        <blockquote className="text-white/90 italic text-lg mb-4">
-                          "Alex combined elite soccer training with AP academics and earned a 
-                          full scholarship to Stanford. The balance of athletics and education is unmatched!"
-                        </blockquote>
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full flex items-center justify-center text-white font-bold">
-                            A
-                          </div>
-                          <div>
-                            <div className="text-white font-semibold">Alex, Age 18</div>
-                            <div className="text-blue-300">Stanford Full Scholarship</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Law School and Language Academy */}
-              <div className="relative">
-                <div className="lg:flex lg:items-center lg:gap-16 lg:flex-row-reverse">
-                  <div className="lg:w-1/2 mb-12 lg:mb-0">
-                    <div className="bg-gradient-to-br from-yellow-600/20 to-amber-600/20 backdrop-blur-sm rounded-3xl p-8 border border-yellow-400/30 hover:border-yellow-400/60 transition-all duration-500 group hover:scale-105">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-amber-500 rounded-full flex items-center justify-center text-3xl">
-                          ⚖️
-                        </div>
-                        <div>
-                          <h3 className="text-3xl font-bold text-white">Future Legal Professionals</h3>
-                          <p className="text-yellow-300 text-lg">Ages 18+ • Legal Education</p>
-                        </div>
-                      </div>
-                      
-                      <p className="text-white/90 text-lg mb-6 leading-relaxed">
-                        Master the law with Professor Barrett AI. Bar exam preparation, case studies, 
-                        legal writing, and real-world courtroom simulations.
-                      </p>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-yellow-500/20 rounded-lg p-3">
-                          <div className="text-yellow-300 font-semibold">⚖️ AI Professor</div>
-                          <div className="text-white">Professor Barrett</div>
-                        </div>
-                        <div className="bg-amber-500/20 rounded-lg p-3">
-                          <div className="text-amber-300 font-semibold">🎯 Focus</div>
-                          <div className="text-white">Bar Exam Prep</div>
-                        </div>
-                      </div>
-                      
-                      <Link 
-                        href="/schools/law-school"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-500 to-amber-500 text-white px-6 py-3 rounded-full font-bold hover:shadow-xl transition-all duration-300 group-hover:scale-105"
-                      >
-                        Practice Law
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
-                  
-                  <div className="lg:w-1/2">
-                    <div className="bg-gradient-to-br from-emerald-600/20 to-green-600/20 backdrop-blur-sm rounded-3xl p-8 border border-emerald-400/30 hover:border-emerald-400/60 transition-all duration-500 group hover:scale-105">
-                      <div className="flex items-center gap-4 mb-6">
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden">
-                          <img 
-                            src="/liota-logo.jfif" 
-                            alt="LIOTA Logo" 
-                            className="w-14 h-14 object-contain"
-                          />
-                        </div>
-                        <div>
-                          <h3 className="text-3xl font-bold text-white">LIOTA Global Language</h3>
-                          <p className="text-emerald-300 text-lg">All Ages • Cultural Immersion</p>
-                        </div>
-                      </div>
-                      
-                      <p className="text-white/90 text-lg mb-6 leading-relaxed">
-                        Learn languages through cultural celebration with Professor Lingua. 
-                        Real-time translation, conversation practice, and global community.
-                      </p>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-emerald-500/20 rounded-lg p-3">
-                          <div className="text-emerald-300 font-semibold">🌐 AI Teacher</div>
-                          <div className="text-white">Professor Lingua</div>
-                        </div>
-                        <div className="bg-green-500/20 rounded-lg p-3">
-                          <div className="text-green-300 font-semibold">🎯 Focus</div>
-                          <div className="text-white">Cultural Immersion</div>
-                        </div>
-                      </div>
-                      
-                      <Link 
-                        href="/global-language"
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white px-6 py-3 rounded-full font-bold hover:shadow-xl transition-all duration-300 group-hover:scale-105"
-                      >
-                        Explore Languages
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Why Choose Universal One School */}
-      <section className="py-32 px-4 bg-gradient-to-b from-black to-slate-900">
-        <div className="container mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-7xl font-bold text-white mb-8">
-              Why Choose
-              <br />
-              <span className="bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-                Universal One?
-              </span>
-            </h2>
-            <p className="text-2xl text-white/80 max-w-3xl mx-auto">
-              We're not just different — we're designed for you.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
-            {/* AI-Powered Personalization */}
-            <div className="group">
-              <div className="bg-gradient-to-br from-blue-600/10 to-purple-600/10 backdrop-blur-sm rounded-3xl p-8 border border-blue-400/20 group-hover:border-blue-400/50 transition-all duration-500 group-hover:scale-105">
-                <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
-                  🤖
-                </div>
-                <h3 className="text-3xl font-bold text-white mb-4">AI-Powered Learning</h3>
-                <p className="text-white/80 text-lg leading-relaxed">
-                  Every student gets a dedicated AI teacher that adapts in real-time to their learning style, 
-                  pace, and challenges. It's like having a personal tutor available 24/7.
-                </p>
-              </div>
-            </div>
-
-            {/* Neurodivergent Excellence */}
-            <div className="group">
-              <div className="bg-gradient-to-br from-emerald-600/10 to-cyan-600/10 backdrop-blur-sm rounded-3xl p-8 border border-emerald-400/20 group-hover:border-emerald-400/50 transition-all duration-500 group-hover:scale-105">
-                <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
-                  🧠
-                </div>
-                <h3 className="text-3xl font-bold text-white mb-4">Neurodivergent Excellence</h3>
-                <p className="text-white/80 text-lg leading-relaxed">
-                  Purpose-built for ADHD, autism, dyslexia, and other learning differences. 
-                  We don't just accommodate — we celebrate neurodiversity as a superpower.
-                </p>
-              </div>
-            </div>
-
-            {/* Global Community */}
-            <div className="group">
-              <div className="bg-gradient-to-br from-orange-600/10 to-pink-600/10 backdrop-blur-sm rounded-3xl p-8 border border-orange-400/20 group-hover:border-orange-400/50 transition-all duration-500 group-hover:scale-105">
-                <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:scale-110 transition-transform">
-                  🌍
-                </div>
-                <h3 className="text-3xl font-bold text-white mb-4">Global Network</h3>
-                <p className="text-white/80 text-lg leading-relaxed">
-                  Connect with students worldwide. From Dallas to Vienna to global partnerships, 
-                  you're part of an international community of learners and achievers.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-32 px-4 bg-gradient-to-br from-purple-900 via-blue-900 to-cyan-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/30"></div>
-        <div className="container mx-auto text-center relative z-10">
-          <h2 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
-            Ready to Begin Your
-            <br />
-            <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Transformation?
-            </span>
-          </h2>
-          
-          <p className="text-2xl text-white/90 mb-12 max-w-3xl mx-auto">
-            Join 1,999+ students who've discovered their potential through personalized AI education.
-          </p>
-          
-          <div className="flex flex-col lg:flex-row gap-8 justify-center items-center">
-            <Link 
-              href="/enrollment-portal"
-              className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 text-white px-12 py-6 rounded-full font-bold text-2xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:scale-105 group"
-            >
-              <span className="flex items-center gap-4">
-                Start Your Journey Today
-                <svg className="w-8 h-8 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </span>
-            </Link>
-            
-            <div className="text-center">
-              <div className="text-white/60 text-sm mb-2">Or schedule a consultation</div>
-              <Link 
-                href="/demo"
-                className="text-cyan-400 hover:text-cyan-300 font-semibold text-lg underline decoration-2 underline-offset-4"
-              >
-                Talk to our AI counselors
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">5</div>
-              <div className="text-white/70">Specialized Schools</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">95%</div>
-              <div className="text-white/70">Success Rate</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">24/7</div>
-              <div className="text-white/70">AI Support</div>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-white mb-2">Global</div>
-              <div className="text-white/70">Community</div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-500"></div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-black text-white py-16 px-4">
-        <div className="container mx-auto">
-          <div className="grid lg:grid-cols-4 gap-12 mb-12">
-            <div>
-              <h3 className="text-2xl font-bold mb-6">Universal One School</h3>
-              <p className="text-white/70 leading-relaxed">
-                Revolutionizing education through AI-powered personalized learning, 
-                neurodivergent support, and global accessibility.
-              </p>
-            </div>
-            
-            <div>
-              <h4 className="text-xl font-semibold mb-6">Our Schools</h4>
-              <div className="space-y-3">
-                <Link href="/schools/primary-school" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  SuperHero School (K-6)
-                </Link>
-                <Link href="/schools/secondary-school" className="block text-white/70 hover:text-purple-400 transition-colors">
-                  S.T.A.G.E Prep (7-12)
-                </Link>
-                <Link href="/go4it-academy" className="block text-white/70 hover:text-orange-400 transition-colors">
-                  Go4it Sports Academy
-                </Link>
-                <Link href="/schools/law-school" className="block text-white/70 hover:text-yellow-400 transition-colors">
-                  Law School
-                </Link>
-                <Link href="/global-language" className="block text-white/70 hover:text-emerald-400 transition-colors">
-                  LIOTA Language
-                </Link>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="text-xl font-semibold mb-6">Resources</h4>
-              <div className="space-y-3">
-                <Link href="/virtual-classroom" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  Virtual Classroom
-                </Link>
-                <Link href="/ai-tutor" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  AI Tutoring
-                </Link>
-                <Link href="/campus-3d-model" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  Vienna Campus Tour
-                </Link>
-                <Link href="/texas-charter-compliance" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  Texas Charter Info
-                </Link>
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="text-xl font-semibold mb-6">Get Started</h4>
-              <div className="space-y-3">
-                <Link href="/enrollment-portal" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  Enroll Now
-                </Link>
-                <Link href="/demo" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  Try AI Demo
-                </Link>
-                <Link href="/student-management" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  Student Portal
-                </Link>
-                <Link href="/dashboard" className="block text-white/70 hover:text-cyan-400 transition-colors">
-                  Learning Dashboard
-                </Link>
-              </div>
-            </div>
-          </div>
-          
-          <div className="border-t border-white/20 pt-8 text-center text-white/60">
-            <p>&copy; 2025 Universal One School. Transforming education through AI and inclusion.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
-  )
+        </footer>
+      </div>
+    </>
+  );
 }

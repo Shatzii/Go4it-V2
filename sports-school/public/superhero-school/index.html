@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neurodivergent Superhero School | ShotziOS</title>
+    <style>
+      /* Base styles optimized for neurodivergent users */
+      :root {
+        --bg-color: #0f0f1a;
+        --text-color: #e6e6ff;
+        --accent-color: #3498db;
+        --accent-dark: #2980b9;
+        --accent-light: #5dade2;
+        --card-bg: #1a1a2e;
+        --nav-bg: #141428;
+        --success-color: #27ae60;
+        --warning-color: #e67e22;
+        --danger-color: #e74c3c;
+        --header-height: 64px;
+        --border-radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Open Dyslexic', 'Comic Sans MS', Arial, sans-serif;
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        letter-spacing: 0.025em;
+        word-spacing: 0.1em;
+        padding-bottom: 60px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header styles */
+      header {
+        background-color: var(--nav-bg);
+        height: var(--header-height);
+        border-bottom: 2px solid var(--accent-color);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 100%;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--accent-color);
+      }
+
+      .logo img {
+        height: 40px;
+        margin-right: 10px;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--accent-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+      }
+
+      /* Navigation */
+      nav {
+        background-color: var(--nav-bg);
+        padding: 10px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        list-style: none;
+        overflow-x: auto;
+        padding: 0 20px;
+      }
+
+      .nav-links li a {
+        color: var(--text-color);
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+        white-space: nowrap;
+        font-weight: 500;
+      }
+
+      .nav-links li a:hover,
+      .nav-links li a.active {
+        background-color: var(--accent-color);
+        color: white;
+      }
+
+      /* Main content area */
+      main {
+        padding: 20px 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: var(--accent-color);
+        margin-bottom: 15px;
+        margin-top: 30px;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+      }
+
+      h3 {
+        font-size: 1.4rem;
+      }
+
+      p {
+        margin-bottom: 15px;
+      }
+
+      /* Hero section */
+      .hero {
+        text-align: center;
+        padding: 60px 0;
+        background-color: rgba(52, 152, 219, 0.1);
+        border-radius: var(--border-radius);
+        margin-bottom: 40px;
+      }
+
+      .hero h1 {
+        border-bottom: none;
+        margin-bottom: 20px;
+        font-size: 2.8rem;
+      }
+
+      .hero p {
+        max-width: 800px;
+        margin: 0 auto 30px;
+        font-size: 1.1rem;
+      }
+
+      /* Button styles */
+      .btn {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 12px 24px;
+        border-radius: var(--border-radius);
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        margin: 5px;
+      }
+
+      .btn:hover {
+        background-color: var(--accent-dark);
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-large {
+        font-size: 1.1rem;
+        padding: 14px 28px;
+      }
+
+      .btn-outlined {
+        background-color: transparent;
+        border: 2px solid var(--accent-color);
+        color: var(--accent-color);
+      }
+
+      .btn-outlined:hover {
+        background-color: var(--accent-color);
+        color: white;
+      }
+
+      /* Feature cards */
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin: 40px 0;
+      }
+
+      .feature-card {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border-top: 4px solid var(--accent-color);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .feature-card-header {
+        padding: 20px;
+        background-color: rgba(52, 152, 219, 0.1);
+        text-align: center;
+      }
+
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+      }
+
+      .feature-title {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: var(--accent-color);
+      }
+
+      .feature-card-content {
+        padding: 20px;
+      }
+
+      .feature-description {
+        margin-bottom: 20px;
+      }
+
+      .feature-actions {
+        display: flex;
+        justify-content: center;
+      }
+
+      /* Call to action section */
+      .cta-section {
+        background-color: var(--card-bg);
+        border-radius: var(--border-radius);
+        padding: 40px;
+        text-align: center;
+        margin: 60px 0;
+      }
+
+      .cta-title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .cta-text {
+        max-width: 700px;
+        margin: 0 auto 30px;
+      }
+
+      /* Footer styles */
+      footer {
+        background-color: var(--nav-bg);
+        padding: 40px 0;
+        margin-top: 60px;
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 30px;
+      }
+
+      .footer-section {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .footer-title {
+        font-size: 1.2rem;
+        color: var(--accent-color);
+        margin-bottom: 15px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding-bottom: 10px;
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 10px;
+      }
+
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: all 0.3s ease;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent-color);
+      }
+
+      .copyright {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-content {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="header-content">
+          <div class="logo">
+            <img src="/logo.png" alt="ShotziOS Logo" />
+            <span>Neurodivergent Superhero School</span>
+          </div>
+          <div class="avatar">A</div>
+        </div>
+      </div>
+    </header>
+
+    <nav>
+      <div class="container">
+        <ul class="nav-links">
+          <li><a href="/" class="active">Home</a></li>
+          <li><a href="/superhero-school">Superhero School</a></li>
+          <li><a href="/superhero-school/student-dashboard.html">Student Dashboard</a></li>
+          <li><a href="/LawyerMakers">Law School</a></li>
+          <li><a href="/language-school">Language School</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="container">
+        <h1>Welcome to Neurodivergent Superhero School</h1>
+        <p>
+          Empowering neurodivergent learners to discover and develop their unique superpowers
+          through specialized education, adaptive technologies, and personalized support.
+        </p>
+        <a href="/superhero-school/student-dashboard.html" class="btn btn-large"
+          >Student Dashboard</a
+        >
+        <a href="#features" class="btn btn-large btn-outlined">Explore Features</a>
+      </div>
+    </div>
+
+    <main class="container">
+      <h2 id="features">Specialized Learning Features</h2>
+      <p>
+        Our neurodivergent-focused educational platform offers a comprehensive suite of tools and
+        resources designed specifically for students with dyslexia and other neurodivergent
+        profiles.
+      </p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">📚</div>
+            <div class="feature-title">Dyslexia Super-Learning</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              Specialized curriculum and visual learning tools designed specifically for dyslexic
+              students from kindergarten through college level.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/dyslexia-learning" class="btn">Access Learning Module</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">🧠</div>
+            <div class="feature-title">AI Adaptive Learning</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              Personalized learning pathways powered by Perplexity AI that adapt to your unique
+              learning style, pace, and preferences.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/adaptive-learning" class="btn">Start Adaptive Learning</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">📝</div>
+            <div class="feature-title">Dyslexia Curriculum Generator</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              AI-powered tool that creates custom learning materials optimized for dyslexic students
+              in any subject and grade level.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/dyslexia-curriculum-generator" class="btn"
+                >Generate Custom Curriculum</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">🧩</div>
+            <div class="feature-title">Personalized Learning Tools</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              Advanced personalization options for creating curriculum that adapts to different
+              learning styles, reading levels, and student strengths.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/dyslexia-personalized-curriculum.html" class="btn"
+                >Create Personalized Curriculum</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">🧮</div>
+            <div class="feature-title">GPA Calculator</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              Specialized calculator designed for neurodivergent students using block scheduling and
+              alternative assessment methods.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/gpa-calculator" class="btn">Calculate GPA</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">💊</div>
+            <div class="feature-title">Medication Tracker</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              Track medication effects on academic performance with analytics and insights to
+              optimize learning conditions.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/medication-tracker" class="btn">Track Medications</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">📊</div>
+            <div class="feature-title">Medication Timeline</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              Interactive visualization of the relationship between medication timing and academic
+              performance over time.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/medication-timeline" class="btn">View Timeline</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">🔒</div>
+            <div class="feature-title">Medical Vault</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              HIPAA-compliant secure storage for sensitive medical information and records related
+              to learning accommodations.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/medical-vault" class="btn">Access Medical Vault</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card-header">
+            <div class="feature-icon">⭐</div>
+            <div class="feature-title">Student Dashboard</div>
+          </div>
+          <div class="feature-card-content">
+            <div class="feature-description">
+              Comprehensive dashboard that brings together all learning tools, tracks progress, and
+              provides personalized assistance.
+            </div>
+            <div class="feature-actions">
+              <a href="/superhero-school/student-dashboard.html" class="btn">Go to Dashboard</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <h2 class="cta-title">Unlock Your Learning Potential</h2>
+        <p class="cta-text">
+          Our specialized platform is designed to help neurodivergent students harness their unique
+          cognitive strengths and develop strategies to overcome challenges.
+        </p>
+        <a href="/superhero-school/student-dashboard.html" class="btn btn-large"
+          >Access Student Dashboard</a
+        >
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Schools</h3>
+            <ul class="footer-links">
+              <li><a href="/law-school">Shatzii School of Law</a></li>
+              <li><a href="/superhero-school">Neurodivergent Superhero School</a></li>
+              <li><a href="/language-school">Language Learning School</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3 class="footer-title">Learning Tools</h3>
+            <ul class="footer-links">
+              <li><a href="/superhero-school/dyslexia-learning">Dyslexia Super-Learning</a></li>
+              <li><a href="/superhero-school/adaptive-learning">AI Adaptive Learning</a></li>
+              <li>
+                <a href="/superhero-school/dyslexia-curriculum-generator">Curriculum Generator</a>
+              </li>
+              <li><a href="/superhero-school/gpa-calculator">GPA Calculator</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3 class="footer-title">Health Features</h3>
+            <ul class="footer-links">
+              <li><a href="/superhero-school/medication-tracker">Medication Tracker</a></li>
+              <li><a href="/superhero-school/medication-timeline">Medication Timeline</a></li>
+              <li><a href="/superhero-school/medical-vault">Medical Vault</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3 class="footer-title">Platform</h3>
+            <ul class="footer-links">
+              <li><a href="/">Main Platform</a></li>
+              <li><a href="/dashboard">Admin Dashboard</a></li>
+              <li><a href="/security">Security Center</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="copyright">&copy; 2025 ShotziOS Educational Platform. All rights reserved.</div>
+      </div>
+    </footer>
+  </body>
+</html>
