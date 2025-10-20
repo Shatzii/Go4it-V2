@@ -1,4 +1,4 @@
-// News and Journalism Page for Go4it Sports
+﻿// News and Journalism Page for Go4it Sports
 // Features discovered athletes, generated articles, and recruitment news
 
 import { Metadata } from 'next';
