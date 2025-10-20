@@ -22,11 +22,17 @@ export default function AdminLogin() {
     setError('');
 
     // Verify admin credentials
-    if (email === 'admin@go4itsports.org' && password === 'ZoPulaHoSki47$$') {
+    if (email === 'admin@go4itsports.com' && password === 'G04IT@dm1n2025!Secure#') {
       // Set admin context and redirect
       localStorage.setItem('adminAccess', 'true');
+      localStorage.setItem('adminToken', 'go4it-admin-secure-token-2025');
+
+      // Set secure cookie for server-side authentication
+      document.cookie = 'adminToken=go4it-admin-secure-token-2025; path=/; max-age=86400; secure; samesite=strict';
+      document.cookie = 'adminAccess=true; path=/; max-age=86400; secure; samesite=strict';
+
       // In a real system, you would set proper authentication tokens
-      window.location.href = '/admin?admin=true';
+      window.location.href = '/admin/dashboard?admin=true';
     } else {
       setError('Invalid admin credentials. Please check your email and password.');
       setLoading(false);
@@ -56,7 +62,7 @@ export default function AdminLogin() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@go4itsports.org"
+                  placeholder="admin@go4itsports.com"
                   className="bg-slate-700 border-slate-600 text-white"
                   required
                 />

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { env } from '@/lib/env';
 
-export const runtime = 'node';
+export const runtime = 'nodejs';
 export const revalidate = 0;
 
 export async function GET() {

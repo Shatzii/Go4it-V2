@@ -13,7 +13,12 @@ export const users = pgTable('users', {
   location: varchar('location', { length: 100 }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => ({
+  emailIdx: index('users_email_idx').on(table.email),
+  roleIdx: index('users_role_idx').on(table.role),
+  locationIdx: index('users_location_idx').on(table.location),
+  createdAtIdx: index('users_created_at_idx').on(table.createdAt),
+}));
 
 // Goals (The Hierarchy)
 export const goals = pgTable('goals', {
