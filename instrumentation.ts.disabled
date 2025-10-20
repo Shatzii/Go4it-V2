@@ -1,8 +1,23 @@
-// Minimal instrumentation to avoid SSR issues
+import * as Sentry from '@sentry/nextjs';
+
 export async function register() {
-  // Only run in browser environment
-  if (typeof window !== 'undefined') {
-    // Browser-only initialization
-    console.log('Client-side instrumentation initialized');
+  if (process.env.NEXT_RUNTIME === 'nodejs') {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1,
+      debug: process.env.NODE_ENV === 'development',
+      environment: process.env.NODE_ENV,
+    });
+  }
+
+  if (process.env.NEXT_RUNTIME === 'edge') {
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1,
+      debug: process.env.NODE_ENV === 'development',
+      environment: process.env.NODE_ENV,
+    });
   }
 }
+
+export const onRequestError = Sentry.captureRequestError;

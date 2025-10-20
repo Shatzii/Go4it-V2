@@ -61,7 +61,7 @@ export class EnterpriseRateLimiter {
         });
 
         this.redis.on('connect', () => {
-          console.log('Redis rate limiter connected successfully');
+          // console.log('Redis rate limiter connected successfully');
         });
 
         this.redis.on('error', (error) => {
@@ -82,7 +82,7 @@ export class EnterpriseRateLimiter {
       }, config.cleanupInterval);
 
       this.isInitialized = true;
-      console.log('Enterprise Rate Limiter initialized successfully');
+      // console.log('Enterprise Rate Limiter initialized successfully');
 
     } catch (error) {
       console.error('Failed to initialize Enterprise Rate Limiter:', error);
@@ -447,7 +447,7 @@ export class EnterpriseRateLimiter {
         .delete()
         .lt('window_end', new Date(now).toISOString())
         .then(() => {
-          console.log('Cleaned up expired rate limit entries from database');
+          // console.log('Cleaned up expired rate limit entries from database');
         })
         .catch((error: any) => {
           console.error('Failed to cleanup expired rate limit entries:', error);
@@ -465,7 +465,7 @@ export class EnterpriseRateLimiter {
       await this.redis.quit();
     }
 
-    console.log('Enterprise Rate Limiter shut down gracefully');
+    // console.log('Enterprise Rate Limiter shut down gracefully');
   }
 }
 

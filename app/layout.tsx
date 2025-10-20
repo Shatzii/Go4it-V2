@@ -1,12 +1,13 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import type { Metadata } from 'next';
+import Navigation from './components/Navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Go4It Sports - Elite Athletic Development Platform',
-  description: 'Comprehensive sports analytics platform for neurodivergent student athletes',
+  title: 'GO4IT Combine | Neon HUD Experience',
+  description: 'International Combine 2025 - Film. Metrics. AI Coach. Ages 12–18 — Soccer • Basketball • Flag Football',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
@@ -16,26 +17,12 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
-      <head></head>
+      <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+      </head>
       <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
-        {/* Simplified nav */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between h-16">
-              <a
-                href="/"
-                className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
-              >
-                Go4It Sports
-              </a>
-              <div className="hidden md:flex items-center gap-6">
-                <a href="/dashboard" className="text-slate-300 hover:text-white transition-colors">Dashboard</a>
-                <a href="/recruiting-hub" className="text-slate-300 hover:text-white transition-colors">Recruiting</a>
-                <a href="/academy" className="text-slate-300 hover:text-white transition-colors">Academy</a>
-              </div>
-            </div>
-          </div>
-        </nav>
+        <Navigation />
         
         {/* Main Content */}
         <div className="pt-16">{children}</div>

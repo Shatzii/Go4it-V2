@@ -70,18 +70,6 @@ const nextConfig = {
     },
   },
 
-  // Experimental features for Next.js 15
-  experimental: {
-    optimizePackageImports: [
-      '@radix-ui/react-icons',
-      'lucide-react',
-      'framer-motion',
-      '@radix-ui/react-avatar',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-    ],
-  },
-
   // Security headers
   async headers() {
     return [
@@ -116,15 +104,15 @@ const nextConfig = {
 
   // Enhanced webpack configuration for Next.js 15
   webpack: (config, { isServer, dev, buildId }) => {
-    // Fix: Import webpack properly
-    const webpack = require('webpack');
-
     // Add build ID to environment
-    config.plugins.push(
-      new webpack.DefinePlugin({
-        __BUILD_ID__: JSON.stringify(buildId),
-      })
-    );
+    if (!isServer) {
+      config.plugins = config.plugins || [];
+      config.plugins.push(
+        new (require('webpack')).DefinePlugin({
+          __BUILD_ID__: JSON.stringify(buildId),
+        })
+      );
+    }
 
     if (isServer) {
       // Completely exclude browser-only AI packages from server builds
