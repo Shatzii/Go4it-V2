@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard - Secondary School | Universal One School</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+
+      .dashboard-header {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .student-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 3.5rem;
+        color: white;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .sidebar-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+      }
+
+      .dashboard-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .dashboard-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+
+      .course-card {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+      }
+
+      .course-card:hover {
+        background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+        transform: translateY(-3px);
+      }
+
+      .learning-profile {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+      }
+
+      .profile-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .profile-option {
+        padding: 1.5rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .profile-option.selected {
+        border-color: #667eea;
+        background: #f0f8ff;
+      }
+
+      .progress-ring {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: conic-gradient(#667eea 0deg, #667eea 252deg, #e1e5e9 252deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        position: relative;
+      }
+
+      .progress-ring::before {
+        content: '';
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: white;
+        position: absolute;
+      }
+
+      .progress-text {
+        position: relative;
+        z-index: 1;
+        font-weight: bold;
+        color: #667eea;
+      }
+
+      .assignment-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e1e5e9;
+        transition: background 0.3s ease;
+      }
+
+      .assignment-item:hover {
+        background: #f8f9fa;
+      }
+
+      .assignment-item:last-child {
+        border-bottom: none;
+      }
+
+      .priority-high {
+        border-left: 4px solid #ff6b6b;
+      }
+      .priority-medium {
+        border-left: 4px solid #feca57;
+      }
+      .priority-low {
+        border-left: 4px solid #00b894;
+      }
+
+      .adaptation-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .adaptation-badge {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .chat-interface {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .chat-messages {
+        height: 250px;
+        overflow-y: auto;
+        border: 1px solid #e1e5e9;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background: #f8f9fa;
+      }
+
+      .message {
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        max-width: 85%;
+      }
+
+      .mentor-message {
+        background: white;
+        border: 1px solid #667eea;
+        margin-right: auto;
+      }
+
+      .student-message {
+        background: #667eea;
+        color: white;
+        margin-left: auto;
+      }
+
+      .study-tools {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .tool-button {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: transform 0.3s ease;
+        text-align: center;
+      }
+
+      .tool-button:hover {
+        transform: translateY(-2px);
+      }
+
+      .back-nav {
+        display: inline-block;
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 2rem;
+      }
+
+      .back-nav:hover {
+        color: #ffd700;
+      }
+
+      .goal-tracker {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+      }
+
+      .goal-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .goal-progress {
+        width: 100px;
+        height: 6px;
+        background: #e1e5e9;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .goal-fill {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        transition: width 0.3s ease;
+      }
+
+      @media (max-width: 768px) {
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <a href="/schools/secondary-school/" class="back-nav">
+        <i class="fas fa-arrow-left"></i> Back to Secondary School
+      </a>
+
+      <div class="dashboard-header">
+        <div class="student-avatar">
+          <i class="fas fa-user-graduate"></i>
+        </div>
+        <h1>Welcome to Your Learning Journey</h1>
+        <p style="font-size: 1.1rem; color: #666">
+          Ready to explore, create, and achieve your goals?
+        </p>
+      </div>
+
+      <div class="learning-profile">
+        <h3><i class="fas fa-brain"></i> Your Learning Profile</h3>
+        <p>Select your learning style to personalize your experience:</p>
+        <div class="profile-selector">
+          <div class="profile-option" data-profile="dyslexia">
+            <i
+              class="fas fa-eye"
+              style="font-size: 1.5rem; color: #ff6b6b; margin-bottom: 0.5rem"
+            ></i>
+            <h4>Visual Learner</h4>
+            <p>Learn through visual aids and structured layouts</p>
+          </div>
+          <div class="profile-option selected" data-profile="adhd">
+            <i
+              class="fas fa-bolt"
+              style="font-size: 1.5rem; color: #feca57; margin-bottom: 0.5rem"
+            ></i>
+            <h4>Active Learner</h4>
+            <p>Thrive with interactive and varied activities</p>
+          </div>
+          <div class="profile-option" data-profile="autism">
+            <i
+              class="fas fa-puzzle-piece"
+              style="font-size: 1.5rem; color: #74b9ff; margin-bottom: 0.5rem"
+            ></i>
+            <h4>Structured Learner</h4>
+            <p>Excel with organized and predictable methods</p>
+          </div>
+          <div class="profile-option" data-profile="neurotypical">
+            <i
+              class="fas fa-graduation-cap"
+              style="font-size: 1.5rem; color: #00b894; margin-bottom: 0.5rem"
+            ></i>
+            <h4>Flexible Learner</h4>
+            <p>Adapt to various learning approaches</p>
+          </div>
+        </div>
+        <div class="adaptation-badges" id="adaptationBadges">
+          <span class="adaptation-badge">Interactive Projects</span>
+          <span class="adaptation-badge">Flexible Deadlines</span>
+          <span class="adaptation-badge">Choice-Based Learning</span>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="main-content">
+          <div class="dashboard-card">
+            <h3><i class="fas fa-book-open"></i> Current Courses</h3>
+            <div class="course-grid">
+              <div class="course-card">
+                <h4>Creative Writing Workshop</h4>
+                <p>Developing storytelling skills through various genres</p>
+                <div style="margin-top: 1rem">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem">
+                    <span>Progress</span>
+                    <span>75%</span>
+                  </div>
+                  <div
+                    style="background: #e1e5e9; height: 6px; border-radius: 3px; overflow: hidden"
+                  >
+                    <div
+                      style="
+                        background: #667eea;
+                        height: 100%;
+                        width: 75%;
+                        transition: width 0.3s ease;
+                      "
+                    ></div>
+                  </div>
+                </div>
+                <button
+                  class="tool-button"
+                  style="margin-top: 1rem; width: 100%"
+                  onclick="openCourse('writing')"
+                >
+                  Continue Writing
+                </button>
+              </div>
+
+              <div class="course-card">
+                <h4>Digital Media Literacy</h4>
+                <p>Analyzing and creating digital content critically</p>
+                <div style="margin-top: 1rem">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem">
+                    <span>Progress</span>
+                    <span>60%</span>
+                  </div>
+                  <div
+                    style="background: #e1e5e9; height: 6px; border-radius: 3px; overflow: hidden"
+                  >
+                    <div
+                      style="
+                        background: #feca57;
+                        height: 100%;
+                        width: 60%;
+                        transition: width 0.3s ease;
+                      "
+                    ></div>
+                  </div>
+                </div>
+                <button
+                  class="tool-button"
+                  style="margin-top: 1rem; width: 100%"
+                  onclick="openCourse('media')"
+                >
+                  Analyze Media
+                </button>
+              </div>
+
+              <div class="course-card">
+                <h4>Environmental Science</h4>
+                <p>Real-world environmental research and solutions</p>
+                <div style="margin-top: 1rem">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem">
+                    <span>Progress</span>
+                    <span>45%</span>
+                  </div>
+                  <div
+                    style="background: #e1e5e9; height: 6px; border-radius: 3px; overflow: hidden"
+                  >
+                    <div
+                      style="
+                        background: #00b894;
+                        height: 100%;
+                        width: 45%;
+                        transition: width 0.3s ease;
+                      "
+                    ></div>
+                  </div>
+                </div>
+                <button
+                  class="tool-button"
+                  style="margin-top: 1rem; width: 100%"
+                  onclick="openCourse('science')"
+                >
+                  Research Project
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <h3><i class="fas fa-tasks"></i> Upcoming Assignments</h3>
+            <div class="assignment-item priority-high">
+              <div
+                style="
+                  width: 40px;
+                  height: 40px;
+                  background: #ff6b6b;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                  margin-right: 1rem;
+                "
+              >
+                <i class="fas fa-pen"></i>
+              </div>
+              <div style="flex: 1">
+                <strong>Creative Writing Essay</strong>
+                <p style="margin: 0; color: #666; font-size: 0.9rem">
+                  Due Tomorrow • English Literature
+                </p>
+              </div>
+              <div class="adaptation-badge">Draft Support</div>
+            </div>
+            <div class="assignment-item priority-medium">
+              <div
+                style="
+                  width: 40px;
+                  height: 40px;
+                  background: #feca57;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                  margin-right: 1rem;
+                "
+              >
+                <i class="fas fa-chart-bar"></i>
+              </div>
+              <div style="flex: 1">
+                <strong>Environmental Data Analysis</strong>
+                <p style="margin: 0; color: #666; font-size: 0.9rem">
+                  Due Friday • Science Project
+                </p>
+              </div>
+              <div class="adaptation-badge">Visual Tools</div>
+            </div>
+            <div class="assignment-item priority-low">
+              <div
+                style="
+                  width: 40px;
+                  height: 40px;
+                  background: #00b894;
+                  border-radius: 50%;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                  margin-right: 1rem;
+                "
+              >
+                <i class="fas fa-video"></i>
+              </div>
+              <div style="flex: 1">
+                <strong>Media Critique Presentation</strong>
+                <p style="margin: 0; color: #666; font-size: 0.9rem">
+                  Due Next Week • Digital Media
+                </p>
+              </div>
+              <div class="adaptation-badge">Flexible Format</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-content">
+          <div class="dashboard-card">
+            <h3><i class="fas fa-chart-line"></i> Academic Progress</h3>
+            <div style="text-align: center">
+              <div class="progress-ring">
+                <div class="progress-text">82%</div>
+              </div>
+              <p style="margin-bottom: 1rem">Overall GPA: 3.7</p>
+            </div>
+
+            <div class="goal-tracker">
+              <h4>Semester Goals</h4>
+              <div class="goal-item">
+                <span>English A-</span>
+                <div class="goal-progress">
+                  <div class="goal-fill" style="width: 85%"></div>
+                </div>
+              </div>
+              <div class="goal-item">
+                <span>Science B+</span>
+                <div class="goal-progress">
+                  <div class="goal-fill" style="width: 70%"></div>
+                </div>
+              </div>
+              <div class="goal-item">
+                <span>College Prep</span>
+                <div class="goal-progress">
+                  <div class="goal-fill" style="width: 60%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <h3><i class="fas fa-tools"></i> Study Tools</h3>
+            <div class="study-tools">
+              <button class="tool-button" onclick="openTool('notes')">
+                <i class="fas fa-sticky-note"></i>
+                <div>Smart Notes</div>
+              </button>
+              <button class="tool-button" onclick="openTool('timer')">
+                <i class="fas fa-clock"></i>
+                <div>Focus Timer</div>
+              </button>
+              <button class="tool-button" onclick="openTool('calendar')">
+                <i class="fas fa-calendar"></i>
+                <div>Planner</div>
+              </button>
+              <button class="tool-button" onclick="openTool('research')">
+                <i class="fas fa-search"></i>
+                <div>Research Hub</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="dashboard-card">
+            <h3><i class="fas fa-trophy"></i> Achievements</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem">
+              <div class="adaptation-badge" style="background: #ffd700; color: #333">
+                <i class="fas fa-medal"></i> Creative Writer
+              </div>
+              <div class="adaptation-badge" style="background: #ff6b6b; color: white">
+                <i class="fas fa-star"></i> Research Expert
+              </div>
+              <div class="adaptation-badge" style="background: #00b894; color: white">
+                <i class="fas fa-graduation-cap"></i> Honor Roll
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-interface">
+        <h3><i class="fas fa-user-tie"></i> Chat with Dr. Mentor</h3>
+        <div class="chat-messages" id="chatMessages">
+          <div class="message mentor-message">
+            <strong>Dr. Mentor:</strong> Good afternoon! I see you're making excellent progress on
+            your writing assignment. How can I help you today?
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem">
+          <input
+            type="text"
+            id="chatInput"
+            placeholder="Ask Dr. Mentor for guidance..."
+            style="flex: 1; padding: 0.75rem; border: 1px solid #e1e5e9; border-radius: 8px"
+          />
+          <button
+            onclick="sendMessage()"
+            style="
+              padding: 0.75rem 1.5rem;
+              background: #667eea;
+              color: white;
+              border: none;
+              border-radius: 8px;
+              cursor: pointer;
+            "
+          >
+            <i class="fas fa-paper-plane"></i> Send
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentProfile = 'adhd';
+
+      // Profile selection
+      document.querySelectorAll('.profile-option').forEach((option) => {
+        option.addEventListener('click', function () {
+          document
+            .querySelectorAll('.profile-option')
+            .forEach((opt) => opt.classList.remove('selected'));
+          this.classList.add('selected');
+          currentProfile = this.dataset.profile;
+          updateAdaptations();
+        });
+      });
+
+      function updateAdaptations() {
+        const adaptations = {
+          dyslexia: ['Visual Templates', 'Extended Time', 'Alternative Formats'],
+          adhd: ['Interactive Projects', 'Flexible Deadlines', 'Choice-Based Learning'],
+          autism: ['Structured Guidelines', 'Clear Expectations', 'Predictable Routines'],
+          neurotypical: ['Balanced Methods', 'Varied Approaches', 'Standard Pacing'],
+        };
+
+        const badges = document.getElementById('adaptationBadges');
+        badges.innerHTML = adaptations[currentProfile]
+          .map((adaptation) => `<span class="adaptation-badge">${adaptation}</span>`)
+          .join('');
+      }
+
+      async function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (!message) return;
+
+        addChatMessage(message, 'student');
+        input.value = '';
+
+        try {
+          const response = await fetch('/api/instructor/secondary/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              message: message,
+              studentProfile: {
+                learningDifferences: currentProfile !== 'neurotypical' ? [currentProfile] : [],
+              },
+              currentSubject: 'General Academic Support',
+            }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            addChatMessage(data.message, 'mentor');
+          } else {
+            addChatMessage(
+              "I'm here to support your academic journey. What would you like to work on?",
+              'mentor',
+            );
+          }
+        } catch (error) {
+          addChatMessage(
+            "I'm here to support your academic journey. What would you like to work on?",
+            'mentor',
+          );
+        }
+      }
+
+      function addChatMessage(text, sender) {
+        const messagesContainer = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.innerHTML =
+          sender === 'mentor'
+            ? `<strong>Dr. Mentor:</strong> ${text}`
+            : `<strong>You:</strong> ${text}`;
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+
+      function openCourse(courseType) {
+        const messages = {
+          writing:
+            'Opening Creative Writing Workshop with personalized writing templates and peer collaboration tools.',
+          media:
+            'Launching Digital Media Literacy with interactive analysis tools and multimedia creation options.',
+          science:
+            'Starting Environmental Science project with data visualization and research methodology support.',
+        };
+        alert(messages[courseType] || 'Opening course with adaptive learning tools.');
+      }
+
+      function openTool(toolType) {
+        const messages = {
+          notes:
+            'Opening Smart Notes with voice-to-text, organization templates, and study guides.',
+          timer: 'Starting Focus Timer with ADHD-friendly intervals and break reminders.',
+          calendar: 'Opening Academic Planner with deadline management and goal tracking.',
+          research: 'Launching Research Hub with citation tools and source verification.',
+        };
+        alert(messages[toolType] || 'Opening study tool with personalized features.');
+      }
+
+      // Handle enter key in chat
+      document.getElementById('chatInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
+
+      // Initialize adaptations
+      updateAdaptations();
+    </script>
+  </body>
+</html>

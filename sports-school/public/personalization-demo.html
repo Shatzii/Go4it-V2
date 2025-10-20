@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShatziiOS - Personalization Pipeline Demo</title>
+    <style>
+      :root {
+        --primary: #2563eb;
+        --primary-hover: #1d4ed8;
+        --secondary: #64748b;
+        --background: #f8fafc;
+        --card-bg: #ffffff;
+        --border: #e2e8f0;
+        --text: #1e293b;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+      }
+
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        background-color: var(--background);
+        color: var(--text);
+        margin: 0;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      h1 {
+        color: var(--primary);
+        margin-bottom: 0.5rem;
+      }
+
+      h2 {
+        color: var(--primary);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      h3 {
+        color: var(--secondary);
+        margin-top: 1.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+      }
+
+      .step {
+        flex: 1;
+        text-align: center;
+        padding: 1rem;
+        position: relative;
+      }
+
+      .step::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: -10px;
+        width: 20px;
+        height: 2px;
+        background-color: var(--border);
+      }
+
+      .step:last-child::after {
+        display: none;
+      }
+
+      .step-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        background-color: var(--primary);
+        color: white;
+        border-radius: 50%;
+        margin-bottom: 0.5rem;
+      }
+
+      .step.active .step-number {
+        background-color: var(--success);
+      }
+
+      .step-title {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      .assessment-form {
+        margin-bottom: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+      }
+
+      input[type='range'] {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      .value-display {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 0.5rem;
+      }
+
+      .range-value {
+        font-weight: bold;
+        text-align: center;
+        margin-top: 0.5rem;
+      }
+
+      button {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 4px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      button:hover {
+        background-color: var(--primary-hover);
+      }
+
+      button:disabled {
+        background-color: var(--secondary);
+        cursor: not-allowed;
+      }
+
+      .buttons {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .result-area {
+        margin-top: 2rem;
+        min-height: 200px;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .profile-card {
+        background-color: #f0f9ff;
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .profile-section {
+        margin-bottom: 1rem;
+      }
+
+      .profile-section h4 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: var(--primary);
+      }
+
+      .profile-section ul {
+        margin: 0;
+        padding-left: 1.5rem;
+      }
+
+      .content-card {
+        background-color: #f0fdf4;
+        border-left: 4px solid var(--success);
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .content-section {
+        margin-bottom: 1rem;
+      }
+
+      .content-section h4 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        color: var(--success);
+      }
+
+      pre {
+        background-color: #f8fafc;
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 0.9rem;
+      }
+
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100px;
+      }
+
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-radius: 50%;
+        border-top: 4px solid var(--primary);
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+      }
+
+      .alert-success {
+        background-color: #d1fae5;
+        color: #065f46;
+      }
+
+      .alert-error {
+        background-color: #fee2e2;
+        color: #b91c1c;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>ShatziiOS Personalization Pipeline Demo</h1>
+        <p>Experience the complete journey from assessment to personalized curriculum</p>
+      </header>
+
+      <div class="steps">
+        <div class="step active" id="step-1">
+          <div class="step-number">1</div>
+          <div class="step-title">Learning Style Assessment</div>
+          <div class="step-description">Evaluate your learning preferences</div>
+        </div>
+        <div class="step" id="step-2">
+          <div class="step-number">2</div>
+          <div class="step-title">Neurotype Assessment</div>
+          <div class="step-description">Identify adaptation needs</div>
+        </div>
+        <div class="step" id="step-3">
+          <div class="step-number">3</div>
+          <div class="step-title">Learning Profile</div>
+          <div class="step-description">View your personalized profile</div>
+        </div>
+        <div class="step" id="step-4">
+          <div class="step-number">4</div>
+          <div class="step-title">Content Generation</div>
+          <div class="step-description">Create adaptive curriculum</div>
+        </div>
+      </div>
+
+      <!-- Learning Style Assessment Form -->
+      <div class="card" id="learning-style-form">
+        <h2>Learning Style Assessment</h2>
+        <p>Move the sliders to indicate your learning preferences (1-10):</p>
+
+        <div class="assessment-form">
+          <div class="form-group">
+            <label for="visual-score">Visual Learning (learning through seeing)</label>
+            <input type="range" id="visual-score" min="1" max="10" value="5" />
+            <div class="range-value" id="visual-value">5</div>
+            <div class="value-display">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="auditory-score">Auditory Learning (learning through hearing)</label>
+            <input type="range" id="auditory-score" min="1" max="10" value="5" />
+            <div class="range-value" id="auditory-value">5</div>
+            <div class="value-display">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="kinesthetic-score">Kinesthetic Learning (learning through doing)</label>
+            <input type="range" id="kinesthetic-score" min="1" max="10" value="5" />
+            <div class="range-value" id="kinesthetic-value">5</div>
+            <div class="value-display">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="reading-writing-score">Reading/Writing Learning</label>
+            <input type="range" id="reading-writing-score" min="1" max="10" value="5" />
+            <div class="range-value" id="reading-writing-value">5</div>
+            <div class="value-display">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <div></div>
+            <button id="learning-style-submit">Continue to Neurotype Assessment</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Neurotype Assessment Form -->
+      <div class="card hidden" id="neurotype-form">
+        <h2>Neurotype Assessment</h2>
+        <p>Move the sliders to indicate the prevalence of these characteristics (1-10):</p>
+
+        <div class="assessment-form">
+          <div class="form-group">
+            <label for="dyslexia-score">Dyslexia-Related Indicators</label>
+            <input type="range" id="dyslexia-score" min="1" max="10" value="3" />
+            <div class="range-value" id="dyslexia-value">3</div>
+            <div class="value-display">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="adhd-score">ADHD-Related Indicators</label>
+            <input type="range" id="adhd-score" min="1" max="10" value="3" />
+            <div class="range-value" id="adhd-value">3</div>
+            <div class="value-display">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="autism-score">Autism Spectrum Indicators</label>
+            <input type="range" id="autism-score" min="1" max="10" value="3" />
+            <div class="range-value" id="autism-value">3</div>
+            <div class="value-display">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button id="neurotype-back">Back to Learning Style</button>
+            <button id="neurotype-submit">Generate Learning Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learning Profile Display -->
+      <div class="card hidden" id="profile-display">
+        <h2>Your Learning Profile</h2>
+        <p>Based on your assessments, we've generated a personalized learning profile:</p>
+
+        <div id="profile-result" class="result-area">
+          <div class="loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button id="profile-back">Back to Assessments</button>
+          <button id="generate-content">Generate Personalized Content</button>
+        </div>
+      </div>
+
+      <!-- Content Generation Display -->
+      <div class="card hidden" id="content-display">
+        <h2>Your Personalized Curriculum Content</h2>
+        <p>This content has been specifically adapted to your learning profile:</p>
+
+        <div class="form-group">
+          <label for="subject-select">Subject:</label>
+          <select id="subject-select">
+            <option value="math">Mathematics</option>
+            <option value="science">Science</option>
+            <option value="english">English/Language Arts</option>
+            <option value="history">History/Social Studies</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="grade-select">Grade Level:</label>
+          <select id="grade-select">
+            <option value="3">Grade 3</option>
+            <option value="4">Grade 4</option>
+            <option value="5">Grade 5</option>
+            <option value="6">Grade 6</option>
+            <option value="7">Grade 7</option>
+            <option value="8">Grade 8</option>
+            <option value="9">Grade 9</option>
+            <option value="10">Grade 10</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="topic-input">Topic:</label>
+          <input
+            type="text"
+            id="topic-input"
+            placeholder="e.g., Fractions, Photosynthesis, Poetry"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="tier-select">Subscription Tier:</label>
+          <select id="tier-select">
+            <option value="basic">Basic ($49/month)</option>
+            <option value="standard" selected>Standard ($129/month)</option>
+            <option value="premium">Premium ($199/month)</option>
+          </select>
+        </div>
+
+        <div class="buttons" style="margin-bottom: 20px">
+          <button id="content-back">Back to Profile</button>
+          <button id="content-submit">Generate Content</button>
+        </div>
+
+        <div id="content-result" class="result-area">
+          <!-- Content will be inserted here -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Elements
+        const steps = {
+          1: document.getElementById('step-1'),
+          2: document.getElementById('step-2'),
+          3: document.getElementById('step-3'),
+          4: document.getElementById('step-4'),
+        };
+
+        const forms = {
+          learningStyle: document.getElementById('learning-style-form'),
+          neurotype: document.getElementById('neurotype-form'),
+          profile: document.getElementById('profile-display'),
+          content: document.getElementById('content-display'),
+        };
+
+        const buttons = {
+          learningStyleSubmit: document.getElementById('learning-style-submit'),
+          neurotypeBack: document.getElementById('neurotype-back'),
+          neurotypeSubmit: document.getElementById('neurotype-submit'),
+          profileBack: document.getElementById('profile-back'),
+          generateContent: document.getElementById('generate-content'),
+          contentBack: document.getElementById('content-back'),
+          contentSubmit: document.getElementById('content-submit'),
+        };
+
+        // Range inputs
+        const ranges = {
+          visual: document.getElementById('visual-score'),
+          auditory: document.getElementById('auditory-score'),
+          kinesthetic: document.getElementById('kinesthetic-score'),
+          readingWriting: document.getElementById('reading-writing-score'),
+          dyslexia: document.getElementById('dyslexia-score'),
+          adhd: document.getElementById('adhd-score'),
+          autism: document.getElementById('autism-score'),
+        };
+
+        // Range value displays
+        const values = {
+          visual: document.getElementById('visual-value'),
+          auditory: document.getElementById('auditory-value'),
+          kinesthetic: document.getElementById('kinesthetic-value'),
+          readingWriting: document.getElementById('reading-writing-value'),
+          dyslexia: document.getElementById('dyslexia-value'),
+          adhd: document.getElementById('adhd-value'),
+          autism: document.getElementById('autism-value'),
+        };
+
+        // Result areas
+        const profileResult = document.getElementById('profile-result');
+        const contentResult = document.getElementById('content-result');
+
+        // Form fields for content generation
+        const subjectSelect = document.getElementById('subject-select');
+        const gradeSelect = document.getElementById('grade-select');
+        const topicInput = document.getElementById('topic-input');
+        const tierSelect = document.getElementById('tier-select');
+
+        // Demo user ID (in a real app, this would be the logged-in user's ID)
+        const userId = 123;
+
+        // State
+        let learningProfile = null;
+        let contentRules = null;
+
+        // Update range value displays
+        for (const [key, range] of Object.entries(ranges)) {
+          range.addEventListener('input', function () {
+            values[key].textContent = this.value;
+          });
+        }
+
+        // Button event listeners
+        buttons.learningStyleSubmit.addEventListener('click', function () {
+          // Switch to neurotype assessment
+          setActiveStep(2);
+          forms.learningStyle.classList.add('hidden');
+          forms.neurotype.classList.remove('hidden');
+        });
+
+        buttons.neurotypeBack.addEventListener('click', function () {
+          // Go back to learning style assessment
+          setActiveStep(1);
+          forms.neurotype.classList.add('hidden');
+          forms.learningStyle.classList.remove('hidden');
+        });
+
+        buttons.neurotypeSubmit.addEventListener('click', function () {
+          // Submit assessments and generate profile
+          submitAssessments();
+        });
+
+        buttons.profileBack.addEventListener('click', function () {
+          // Go back to neurotype assessment
+          setActiveStep(2);
+          forms.profile.classList.add('hidden');
+          forms.neurotype.classList.remove('hidden');
+        });
+
+        buttons.generateContent.addEventListener('click', function () {
+          // Switch to content generation
+          setActiveStep(4);
+          forms.profile.classList.add('hidden');
+          forms.content.classList.remove('hidden');
+        });
+
+        buttons.contentBack.addEventListener('click', function () {
+          // Go back to profile display
+          setActiveStep(3);
+          forms.content.classList.add('hidden');
+          forms.profile.classList.remove('hidden');
+        });
+
+        buttons.contentSubmit.addEventListener('click', function () {
+          // Generate personalized content
+          generateContent();
+        });
+
+        // Set active step
+        function setActiveStep(stepNumber) {
+          for (const [num, step] of Object.entries(steps)) {
+            if (parseInt(num) === stepNumber) {
+              step.classList.add('active');
+            } else if (parseInt(num) < stepNumber) {
+              step.classList.add('active');
+            } else {
+              step.classList.remove('active');
+            }
+          }
+        }
+
+        // Submit assessments and generate profile
+        async function submitAssessments() {
+          // Show loading spinner
+          profileResult.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+          // Switch to profile display
+          setActiveStep(3);
+          forms.neurotype.classList.add('hidden');
+          forms.profile.classList.remove('hidden');
+
+          try {
+            // Submit learning style assessment
+            const learningStyleData = {
+              userId,
+              assessmentData: {
+                visualScore: parseInt(ranges.visual.value),
+                auditoryScore: parseInt(ranges.auditory.value),
+                kinestheticScore: parseInt(ranges.kinesthetic.value),
+                readingWritingScore: parseInt(ranges.readingWriting.value),
+                assessmentDate: new Date(),
+              },
+            };
+
+            await fetch('/api/personalization/assessment/learning-style', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(learningStyleData),
+            });
+
+            // Submit neurotype assessment
+            const neurotypeData = {
+              userId,
+              assessmentData: {
+                dyslexiaIndicators: parseInt(ranges.dyslexia.value),
+                adhdIndicators: parseInt(ranges.adhd.value),
+                autismSpectrumIndicators: parseInt(ranges.autism.value),
+                assessmentDate: new Date(),
+              },
+            };
+
+            await fetch('/api/personalization/assessment/neurotype', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(neurotypeData),
+            });
+
+            // Get learning profile
+            const profileResponse = await fetch(`/api/personalization/profile/${userId}`);
+            const profileData = await profileResponse.json();
+
+            if (profileData.error) {
+              throw new Error(profileData.error);
+            }
+
+            learningProfile = profileData.profile;
+
+            // Display profile
+            displayProfile(learningProfile);
+          } catch (error) {
+            profileResult.innerHTML = `
+                        <div class="alert alert-error">
+                            <strong>Error:</strong> ${error.message || 'Failed to generate learning profile'}
+                        </div>
+                    `;
+            console.error('Error submitting assessments:', error);
+          }
+        }
+
+        // Display learning profile
+        function displayProfile(profile) {
+          // Format adaptations as a list
+          const adaptationsList = Object.entries(profile.adaptations)
+            .filter(([_, adaptation]) => adaptation.required)
+            .map(([category, adaptation]) => {
+              const specificsList = adaptation.specifics
+                .map((specific) => `<li>${specific}</li>`)
+                .join('');
+
+              return `
+                            <div class="profile-section">
+                                <h4>${formatCategory(category)}</h4>
+                                <ul>${specificsList}</ul>
+                            </div>
+                        `;
+            })
+            .join('');
+
+          // Determine primary and secondary learning style
+          const primaryStyle = formatLearningStyle(profile.primaryStyle);
+          const secondaryStyle = profile.secondaryStyle
+            ? formatLearningStyle(profile.secondaryStyle)
+            : 'None';
+
+          // Format neurotype
+          const neurotype = formatNeurotype(profile.neurotype);
+
+          // Format adaptation level
+          const adaptationLevel = formatAdaptationLevel(profile.adaptationLevel);
+
+          // Build content preferences display
+          const preferences = Object.entries(profile.contentPreferences)
+            .map(([key, value]) => `<li>${formatPreference(key)}: ${value}/10</li>`)
+            .join('');
+
+          // Build profile HTML
+          profileResult.innerHTML = `
+                    <div class="profile-card">
+                        <div class="profile-section">
+                            <h4>Learning Style</h4>
+                            <p><strong>Primary:</strong> ${primaryStyle}</p>
+                            <p><strong>Secondary:</strong> ${secondaryStyle}</p>
+                        </div>
+                        
+                        <div class="profile-section">
+                            <h4>Neurotype</h4>
+                            <p>${neurotype}</p>
+                            <p><strong>Adaptation Level:</strong> ${adaptationLevel}</p>
+                        </div>
+                        
+                        <div class="profile-section">
+                            <h4>Content Preferences</h4>
+                            <ul>${preferences}</ul>
+                        </div>
+                        
+                        <div class="profile-section">
+                            <h4>Recommended Adaptations</h4>
+                            ${adaptationsList}
+                        </div>
+                    </div>
+                `;
+        }
+
+        // Generate personalized content
+        async function generateContent() {
+          // Validate form
+          if (!topicInput.value.trim()) {
+            contentResult.innerHTML = `
+                        <div class="alert alert-error">
+                            <strong>Error:</strong> Please enter a topic
+                        </div>
+                    `;
+            return;
+          }
+
+          // Show loading spinner
+          contentResult.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+          try {
+            // Get content rules
+            const contentRulesResponse = await fetch('/api/personalization/content-rules', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                userId,
+                contentType: 'lesson',
+                subject: subjectSelect.value,
+                gradeLevel: gradeSelect.value,
+                tier: tierSelect.value,
+              }),
+            });
+
+            const contentRulesData = await contentRulesResponse.json();
+
+            if (contentRulesData.error) {
+              throw new Error(contentRulesData.error);
+            }
+
+            contentRules = contentRulesData.contentRules;
+
+            // Generate content
+            const generateResponse = await fetch('/api/personalization/generate-content', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                userId,
+                subject: subjectSelect.value,
+                gradeLevel: gradeSelect.value,
+                contentType: 'lesson',
+                topic: topicInput.value,
+                learningObjectives: [
+                  `Understand core concepts of ${topicInput.value}`,
+                  `Apply knowledge of ${topicInput.value} to solve problems`,
+                  `Develop critical thinking skills related to ${topicInput.value}`,
+                ],
+                tier: tierSelect.value,
+              }),
+            });
+
+            const generateData = await generateResponse.json();
+
+            if (generateData.error) {
+              throw new Error(generateData.error);
+            }
+
+            const content = generateData.content;
+
+            // Display content
+            displayContent(content);
+          } catch (error) {
+            contentResult.innerHTML = `
+                        <div class="alert alert-error">
+                            <strong>Error:</strong> ${error.message || 'Failed to generate content'}
+                        </div>
+                    `;
+            console.error('Error generating content:', error);
+          }
+        }
+
+        // Display generated content
+        function displayContent(content) {
+          // Format sections
+          const sectionsHtml = content.sections
+            .map((section) => {
+              return `
+                            <div class="content-section">
+                                <h4>${section.title}</h4>
+                                <div>${section.content}</div>
+                            </div>
+                        `;
+            })
+            .join('');
+
+          // Format adaptations
+          const adaptationsHtml = content.adaptations
+            .map((adaptation) => `<li>${adaptation}</li>`)
+            .join('');
+
+          // Build content HTML
+          contentResult.innerHTML = `
+                    <div class="content-card">
+                        <h3>${content.title}</h3>
+                        
+                        <div class="content-section">
+                            <p><strong>Subject:</strong> ${content.subject}</p>
+                            <p><strong>Grade Level:</strong> ${content.gradeLevel}</p>
+                            <p><strong>Content Type:</strong> ${content.contentType}</p>
+                        </div>
+                        
+                        ${sectionsHtml}
+                        
+                        <div class="content-section">
+                            <h4>Applied Adaptations</h4>
+                            <ul>${adaptationsHtml}</ul>
+                        </div>
+                    </div>
+                `;
+        }
+
+        // Helper functions to format data
+        function formatLearningStyle(style) {
+          const styles = {
+            visual: 'Visual (learns through seeing)',
+            auditory: 'Auditory (learns through hearing)',
+            kinesthetic: 'Kinesthetic (learns through doing)',
+            reading_writing: 'Reading/Writing (learns through text)',
+          };
+
+          return styles[style] || style;
+        }
+
+        function formatNeurotype(neurotype) {
+          const neurotypes = {
+            neurotypical: 'Neurotypical',
+            dyslexia: 'Dyslexia',
+            adhd: 'ADHD',
+            autism_spectrum: 'Autism Spectrum',
+          };
+
+          return neurotypes[neurotype] || neurotype;
+        }
+
+        function formatAdaptationLevel(level) {
+          const levels = {
+            minimal: 'Minimal',
+            moderate: 'Moderate',
+            significant: 'Significant',
+          };
+
+          return levels[level] || level;
+        }
+
+        function formatCategory(category) {
+          const categories = {
+            text_presentation: 'Text Presentation',
+            content_organization: 'Content Organization',
+            sensory_considerations: 'Sensory Considerations',
+            focus_supports: 'Focus Supports',
+            processing_time: 'Processing Time',
+            interactive_elements: 'Interactive Elements',
+            combined_recommendations: 'Combined Recommendations',
+          };
+
+          return categories[category] || category.replace(/_/g, ' ');
+        }
+
+        function formatPreference(preference) {
+          const preferences = {
+            visualElements: 'Visual Elements',
+            audioElements: 'Audio Elements',
+            textElements: 'Text Elements',
+            interactiveElements: 'Interactive Elements',
+          };
+
+          return preferences[preference] || preference.replace(/([A-Z])/g, ' $1');
+        }
+      });
+    </script>
+  </body>
+</html>

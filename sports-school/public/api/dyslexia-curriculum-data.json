@@ -1,0 +1,987 @@
+{
+  "curriculum": {
+    "elementary": {
+      "title": "Elementary School Curriculum (Grades K-5)",
+      "description": "Building strong foundations through multi-sensory approaches tailored for dyslexic learners.",
+      "modules": [
+        {
+          "id": "literacy-heroes",
+          "title": "Literacy Heroes",
+          "description": "Master reading with our multisensory approach. Visual, auditory, and tactile methods make learning letters, sounds, and words fun and effective.",
+          "progress": 35,
+          "gradeSpecific": {
+            "k": {
+              "title": "Kindergarten Literacy Heroes",
+              "description": "Discover the alphabet through play, song, and movement. Build pre-reading skills with picture-based activities and sound games.",
+              "topics": [
+                "Letter Recognition through Multi-Sensory Play",
+                "Phonological Awareness Games",
+                "Picture-Word Association",
+                "Storytelling and Oral Language",
+                "Fine Motor Skills for Writing Readiness"
+              ],
+              "activities": [
+                "Letter Treasure Hunt",
+                "Sound Sorting Boxes",
+                "Picture Story Creation",
+                "Alphabet Movement Games",
+                "Sensory Tracing Tables"
+              ]
+            },
+            "1": {
+              "title": "Grade 1 Literacy Heroes",
+              "description": "Build foundational reading skills with Orton-Gillingham inspired multi-sensory techniques. Learn letter-sound relationships through sight, sound, and touch.",
+              "topics": [
+                "Phonics Foundations with Multi-Sensory Approach",
+                "Sight Word Mastery through Pattern Recognition",
+                "Decodable Texts with Visual Supports",
+                "Handwriting with Tactile Reinforcement",
+                "Early Reading Comprehension Strategies"
+              ],
+              "activities": [
+                "Sand Tray Letter Formation",
+                "Tap-and-Say Phonics Practice",
+                "Sight Word Memory Games",
+                "Build-a-Word Magnetic Letters",
+                "Picture Sequencing Stories"
+              ]
+            },
+            "2": {
+              "title": "Grade 2 Literacy Heroes",
+              "description": "Strengthen decoding skills and build reading fluency with specialized techniques that leverage dyslexic learning strengths.",
+              "topics": [
+                "Advanced Phonics with Pattern Recognition",
+                "Syllable Types and Division Rules",
+                "Fluency Building with Tracked Reading",
+                "Spelling Strategies for Common Patterns",
+                "Vocabulary Development through Visual Connections"
+              ],
+              "activities": [
+                "Syllable Sort and Chop",
+                "Decodable Reader Theater",
+                "Word Family Pattern Houses",
+                "Color-Coded Spelling Practice",
+                "Visual Vocabulary Maps"
+              ]
+            },
+            "3": {
+              "title": "Grade 3 Literacy Heroes",
+              "description": "Develop reading independence and comprehension skills using dyslexia-friendly strategies and assistive technologies.",
+              "topics": [
+                "Morphology Basics (Prefixes and Suffixes)",
+                "Reading Comprehension Visualization Techniques",
+                "Assistive Technology Introduction",
+                "Fluency Building through Reader's Theater",
+                "Structured Writing Process"
+              ],
+              "activities": [
+                "Root Word Detective",
+                "Story Mapping with Visual Organizers",
+                "Text-to-Speech Reading Tools",
+                "Partner Reading Protocols",
+                "Paragraph Builder Templates"
+              ]
+            },
+            "4": {
+              "title": "Grade 4 Literacy Heroes",
+              "description": "Master more complex reading materials with advanced comprehension strategies and continued work on decoding efficiency.",
+              "topics": [
+                "Advanced Morphology and Word Origins",
+                "Reading in Content Areas with Support",
+                "Note-Taking with Visual Organizers",
+                "Spelling Generalizations and Exceptions",
+                "Expression in Writing with Assistive Tools"
+              ],
+              "activities": [
+                "Word Building Challenges",
+                "Text Feature Scavenger Hunts",
+                "Graphic Organizer Note System",
+                "Personal Spelling Strategy Journal",
+                "Speech-to-Text Writing Projects"
+              ]
+            },
+            "5": {
+              "title": "Grade 5 Literacy Heroes",
+              "description": "Build independence with reading and writing across subjects, using advanced support strategies and metacognitive approaches.",
+              "topics": [
+                "Greek and Latin Roots for Vocabulary Growth",
+                "Research Skills with Assistive Technology",
+                "Literature Analysis Through Multiple Modalities",
+                "Self-Monitoring Reading Strategies",
+                "Expressive Writing with Organization Tools"
+              ],
+              "activities": [
+                "Etymology Exploration Projects",
+                "Guided Research with Digital Tools",
+                "Multi-Sensory Literature Response",
+                "Reading Strategy Toolbox",
+                "Structured Essay Templates"
+              ]
+            }
+          }
+        },
+        {
+          "id": "number-navigators",
+          "title": "Number Navigators",
+          "description": "Build math confidence through visual models, hands-on activities, and real-world problem solving tailored for dyslexic learners.",
+          "progress": 60,
+          "gradeSpecific": {
+            "k": {
+              "title": "Kindergarten Number Navigators",
+              "description": "Explore numbers through concrete objects, visual patterns, and movement to build a strong mathematical foundation.",
+              "topics": [
+                "Number Sense with Manipulatives",
+                "Counting and Cardinality",
+                "Shape Recognition and Properties",
+                "Simple Patterns and Sorting",
+                "Measurement through Comparison"
+              ],
+              "activities": [
+                "Counting Collections",
+                "Number Dance and Movement",
+                "Tactile Shape Exploration",
+                "Pattern Block Designs",
+                "Measurement Scavenger Hunt"
+              ]
+            },
+            "1": {
+              "title": "Grade 1 Number Navigators",
+              "description": "Develop addition and subtraction concepts through visual models and concrete experiences that reinforce number relationships.",
+              "topics": [
+                "Addition and Subtraction with Visual Models",
+                "Place Value with Base-10 Blocks",
+                "Story Problems with Visual Representation",
+                "Number Patterns and Relationships",
+                "Mental Math Strategies"
+              ],
+              "activities": [
+                "Number Bond Manipulatives",
+                "Place Value Village",
+                "Story Problem Drawing Board",
+                "Pattern Block Challenges",
+                "Math Fact Games"
+              ]
+            },
+            "2": {
+              "title": "Grade 2 Number Navigators",
+              "description": "Extend addition and subtraction understanding with visual supports while introducing foundational multiplication concepts.",
+              "topics": [
+                "Two-Digit Operations with Visual Supports",
+                "Introduction to Multiplication as Repeated Addition",
+                "Money and Time with Real-World Applications",
+                "Measurement with Standard Units",
+                "Data Collection and Visual Graphs"
+              ],
+              "activities": [
+                "Visual Place Value Mat Operations",
+                "Multiplication Pattern Arrays",
+                "Time and Money Games",
+                "Measurement Olympics",
+                "Personal Data Collection Projects"
+              ]
+            },
+            "3": {
+              "title": "Grade 3 Number Navigators",
+              "description": "Master multiplication and division concepts through visual models, pattern recognition, and real-world problem solving.",
+              "topics": [
+                "Multiplication Strategies Beyond Memorization",
+                "Division Concepts with Visual Models",
+                "Fractions as Parts of a Whole",
+                "Area and Perimeter Visualization",
+                "Problem Solving Frameworks"
+              ],
+              "activities": [
+                "Multiplication Strategy Cards",
+                "Division with Manipulatives",
+                "Fraction Exploration Kit",
+                "Area and Perimeter City Design",
+                "Visual Math Word Problem System"
+              ]
+            },
+            "4": {
+              "title": "Grade 4 Number Navigators",
+              "description": "Develop fraction understanding and multi-digit operations with specialized techniques that leverage visual-spatial strengths.",
+              "topics": [
+                "Fraction Operations with Visual Models",
+                "Multi-Digit Multiplication Strategies",
+                "Long Division with Supports",
+                "Decimals and Their Relationship to Fractions",
+                "Geometry and Spatial Reasoning"
+              ],
+              "activities": [
+                "Fraction Bars and Circles Kit",
+                "Grid Method for Multiplication",
+                "Step-by-Step Division Guide",
+                "Decimal Modeling Tools",
+                "Geometric Construction Projects"
+              ]
+            },
+            "5": {
+              "title": "Grade 5 Number Navigators",
+              "description": "Apply mathematical concepts to complex problems using visual supports, technology tools, and pattern recognition.",
+              "topics": [
+                "Fraction and Decimal Operations",
+                "Introduction to Algebraic Thinking",
+                "Volume and Measurement Concepts",
+                "Coordinate Graphing",
+                "Data Analysis and Interpretation"
+              ],
+              "activities": [
+                "Fraction Operation Models",
+                "Visual Algebra Puzzles",
+                "3D Volume Construction",
+                "Coordinate Plane Games",
+                "Data Visualization Projects"
+              ]
+            }
+          }
+        },
+        {
+          "id": "story-creators",
+          "title": "Story Creators",
+          "description": "Express yourself through storytelling, art, and multimedia creation. Develop writing skills without the barriers of traditional methods.",
+          "progress": 25,
+          "gradeSpecific": {
+            "k": {
+              "title": "Kindergarten Story Creators",
+              "description": "Begin storytelling through pictures, oral language, and dramatic play, building the foundation for future writing.",
+              "topics": [
+                "Picture Storytelling",
+                "Oral Language Development",
+                "Story Structure through Play",
+                "Character Creation",
+                "Emotion Expression in Stories"
+              ],
+              "activities": [
+                "Story Cube Creations",
+                "Picture Sequence Cards",
+                "Puppet Story Theater",
+                "Character Dress-Up Center",
+                "Emotion Story Stones"
+              ]
+            },
+            "1": {
+              "title": "Grade 1 Story Creators",
+              "description": "Develop story ideas through drawing, dictation, and simple writing with assistive tools and templates.",
+              "topics": [
+                "Drawing and Labeling Stories",
+                "Dictation to Text",
+                "Beginning, Middle, End Framework",
+                "Character Development with Visuals",
+                "Sentence Building with Templates"
+              ],
+              "activities": [
+                "Comic Strip Creator",
+                "Voice Recording Stories",
+                "Three-Part Story Board",
+                "Character Trait Wheels",
+                "Sentence Builder Cards"
+              ]
+            },
+            "2": {
+              "title": "Grade 2 Story Creators",
+              "description": "Expand storytelling abilities with digital tools, graphic organizers, and multi-modal expression options.",
+              "topics": [
+                "Digital Storytelling Basics",
+                "Story Planning with Graphic Organizers",
+                "Simple Paragraph Formation",
+                "Setting Development with Sensory Details",
+                "Dialogue Introduction"
+              ],
+              "activities": [
+                "Digital Story Apps",
+                "Story Mountain Planner",
+                "Paragraph Assembly Kit",
+                "Setting Sensory Stations",
+                "Speech Bubble Comics"
+              ]
+            },
+            "3": {
+              "title": "Grade 3 Story Creators",
+              "description": "Master narrative elements with specialized supports for organization, word choice, and editing with assistive technology.",
+              "topics": [
+                "Narrative Writing Framework",
+                "Word Choice with Visual Thesaurus",
+                "Editing Strategies with Supports",
+                "Multi-Paragraph Organization",
+                "Figurative Language Introduction"
+              ],
+              "activities": [
+                "Story Element Cards",
+                "Word Bank Creator",
+                "Editing Checklist with Tools",
+                "Paragraph Sorting Frames",
+                "Simile and Metaphor Gallery"
+              ]
+            },
+            "4": {
+              "title": "Grade 4 Story Creators",
+              "description": "Develop more complex narratives using assistive technology, collaborative methods, and multi-modal expression.",
+              "topics": [
+                "Advanced Narrative Elements",
+                "Digital Writing Tools",
+                "Revision Techniques with Support",
+                "Point of View Exploration",
+                "Publishing in Multiple Formats"
+              ],
+              "activities": [
+                "Story Arc Designer",
+                "Speech-to-Text Practice",
+                "Peer Revision Partners",
+                "POV Character Journals",
+                "Digital Book Creator"
+              ]
+            },
+            "5": {
+              "title": "Grade 5 Story Creators",
+              "description": "Create sophisticated narratives with assistive technology, detailed planning tools, and options for various expression forms.",
+              "topics": [
+                "Genre-Specific Narrative Techniques",
+                "Advanced Digital Writing Platforms",
+                "Story Structure Variations",
+                "Stylistic Choices in Writing",
+                "Multimedia Story Projects"
+              ],
+              "activities": [
+                "Genre Feature Analysis",
+                "Digital Writing Portfolio",
+                "Story Structure Architect",
+                "Author Style Study",
+                "Transmedia Storytelling Project"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "middle": {
+      "title": "Middle School Curriculum (Grades 6-8)",
+      "description": "Building academic independence and content mastery through specialized learning strategies.",
+      "modules": [
+        {
+          "id": "literature-laboratory",
+          "title": "Literature Laboratory",
+          "description": "Explore great books through audiobooks, graphic novels, and interactive discussions. Develop comprehension strategies tailored to your strengths.",
+          "progress": 0,
+          "gradeSpecific": {
+            "6": {
+              "title": "Grade 6 Literature Laboratory",
+              "description": "Engage with literature through multiple modalities, building comprehension strategies that leverage dyslexic strengths.",
+              "topics": [
+                "Accessing Texts Through Multiple Formats",
+                "Character Analysis through Visual Mapping",
+                "Plot Structure Visualization",
+                "Theme Identification Strategies",
+                "Vocabulary Development in Context"
+              ],
+              "activities": [
+                "Audiobook/Text Synced Reading",
+                "Character Relationship Maps",
+                "Story Mountain Interactive Tool",
+                "Theme Color-Coding System",
+                "Visual Vocabulary Journals"
+              ]
+            },
+            "7": {
+              "title": "Grade 7 Literature Laboratory",
+              "description": "Analyze more complex literary elements using multi-sensory techniques and assistive technology supports.",
+              "topics": [
+                "Literary Element Analysis Tools",
+                "Making Inferences with Visual Supports",
+                "Author's Craft Examination",
+                "Text-to-Self Connection Strategies",
+                "Collaborative Literature Discussions"
+              ],
+              "activities": [
+                "Literary Element Decoder Cards",
+                "Inference Evidence Organizer",
+                "Author's Technique Spotter",
+                "Personal Connection Maps",
+                "Literature Circle Roles"
+              ]
+            },
+            "8": {
+              "title": "Grade 8 Literature Laboratory",
+              "description": "Master literary analysis and critical thinking through specialized frameworks and technology-enhanced reading strategies.",
+              "topics": [
+                "Critical Reading Approaches",
+                "Comparative Analysis Frameworks",
+                "Argumentation and Evidence Evaluation",
+                "Historical and Cultural Context Connections",
+                "Independent Reading Strategies"
+              ],
+              "activities": [
+                "Critical Lens Reading Tools",
+                "Text Comparison Matrix",
+                "Evidence Evaluation Framework",
+                "Context Connection Timeline",
+                "Independent Reading Toolkit"
+              ]
+            }
+          }
+        },
+        {
+          "id": "science-explorers",
+          "title": "Science Explorers",
+          "description": "Discover scientific concepts through experiments, visual demonstrations, and hands-on projects. Perfect for visual and kinesthetic learners.",
+          "progress": 0,
+          "gradeSpecific": {
+            "6": {
+              "title": "Grade 6 Science Explorers",
+              "description": "Explore life and earth sciences through visual models, hands-on experiments, and multi-sensory learning experiences.",
+              "topics": [
+                "Cell Structure and Function Visualization",
+                "Earth Systems with 3D Models",
+                "Weather Patterns through Data Visualization",
+                "Ecosystem Interactions with Visual Mapping",
+                "Scientific Method with Structured Framework"
+              ],
+              "activities": [
+                "Cell Model Construction",
+                "Earth Layer Interactive Display",
+                "Weather Tracking Station",
+                "Food Web Manipulatives",
+                "Experiment Design Cards"
+              ]
+            },
+            "7": {
+              "title": "Grade 7 Science Explorers",
+              "description": "Investigate physical sciences and human body systems using visual models, simulations, and hands-on exploration.",
+              "topics": [
+                "Force and Motion Demonstrations",
+                "Matter States with Visual Models",
+                "Energy Transformations through Hands-on Activities",
+                "Human Body Systems Visualization",
+                "Laboratory Skills with Supports"
+              ],
+              "activities": [
+                "Force and Motion Lab Stations",
+                "Matter State Transformation Models",
+                "Energy Transfer Kits",
+                "Body System Interactive Models",
+                "Lab Procedure Visual Guides"
+              ]
+            },
+            "8": {
+              "title": "Grade 8 Science Explorers",
+              "description": "Examine chemistry, physics, and environmental science concepts through visual learning, hands-on activities, and digital simulations.",
+              "topics": [
+                "Chemical Reactions with Visual Models",
+                "Wave Properties through Demonstrations",
+                "Genetics and Heredity Visualization",
+                "Evolution and Adaptation Concept Mapping",
+                "Environmental Impact Analysis"
+              ],
+              "activities": [
+                "Chemical Reaction Demonstration Kit",
+                "Wave Properties Simulation",
+                "Genetic Trait Modeling Tools",
+                "Evolution Evidence Portfolio",
+                "Environmental Impact Visualization"
+              ]
+            }
+          }
+        },
+        {
+          "id": "history-detectives",
+          "title": "History Detectives",
+          "description": "Experience history through visual timelines, interactive maps, and dramatic storytelling. Connect events and concepts visually.",
+          "progress": 0,
+          "gradeSpecific": {
+            "6": {
+              "title": "Grade 6 History Detectives",
+              "description": "Explore ancient civilizations through visual timelines, artifact analysis, and immersive historical experiences.",
+              "topics": [
+                "Ancient Civilization Timeline Visualization",
+                "Geographic Influence on Civilizations",
+                "Artifact Analysis Techniques",
+                "Cultural Comparison Frameworks",
+                "Historical Narrative through Multiple Media"
+              ],
+              "activities": [
+                "Interactive Timeline Creator",
+                "Geographic Features Mapping",
+                "Artifact Investigation Kit",
+                "Culture Comparison Matrix",
+                "Historical Scene Recreation"
+              ]
+            },
+            "7": {
+              "title": "Grade 7 History Detectives",
+              "description": "Investigate world history through visual mapping, primary source analysis with supports, and multimedia project creation.",
+              "topics": [
+                "World History Connections Mapping",
+                "Primary Source Analysis with Scaffolds",
+                "Historical Cause and Effect Visualization",
+                "Cultural Development Patterns",
+                "Historical Perspectives Exploration"
+              ],
+              "activities": [
+                "Global Connection Web",
+                "Primary Source Decoder",
+                "Cause-Effect Chain Creator",
+                "Cultural Pattern Recognition Tool",
+                "Historical Perspective Role Cards"
+              ]
+            },
+            "8": {
+              "title": "Grade 8 History Detectives",
+              "description": "Analyze American history through visual frameworks, debate preparation supports, and multimedia historical research.",
+              "topics": [
+                "U.S. History Timeline Visualization",
+                "Constitutional Principles Framework",
+                "Historical Debate Preparation",
+                "Civic Engagement Analysis",
+                "Historical Research with Supports"
+              ],
+              "activities": [
+                "U.S. History Visual Timeline",
+                "Constitution Principles Decoder",
+                "Structured Debate Preparation Cards",
+                "Civic Action Analysis Tool",
+                "Multi-Modal Research Guide"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "high": {
+      "title": "High School Curriculum (Grades 9-12)",
+      "description": "Preparing for college and career success with advanced learning strategies and assistive technologies.",
+      "modules": [
+        {
+          "id": "writing-workshop",
+          "title": "Writing Workshop",
+          "description": "Master essay writing, research papers, and creative expression using assistive technology and organizational strategies designed for dyslexic thinkers.",
+          "progress": 0,
+          "gradeSpecific": {
+            "9": {
+              "title": "Grade 9 Writing Workshop",
+              "description": "Develop structured approaches to academic writing with technology supports and organizational frameworks.",
+              "topics": [
+                "Essay Structure Frameworks",
+                "Thesis Development with Visual Mapping",
+                "Evidence Selection and Integration Strategies",
+                "Revision Process with Assistive Technology",
+                "Grammar and Mechanics with Supports"
+              ],
+              "activities": [
+                "Essay Blueprint Creator",
+                "Thesis Builder Tool",
+                "Evidence Evaluation Matrix",
+                "Technology-Assisted Revision Guide",
+                "Grammar Strategy Cards"
+              ]
+            },
+            "10": {
+              "title": "Grade 10 Writing Workshop",
+              "description": "Master various essay forms and research techniques using specialized supports and digital tools.",
+              "topics": [
+                "Argumentative Writing Framework",
+                "Research Process Management",
+                "Source Evaluation and Citation",
+                "Digital Writing Platforms",
+                "Self-Advocacy in Writing Feedback"
+              ],
+              "activities": [
+                "Argument Structure Templates",
+                "Research Project Management System",
+                "Source Credibility Evaluator",
+                "Digital Writing Tool Training",
+                "Feedback Request Script Builder"
+              ]
+            },
+            "11": {
+              "title": "Grade 11 Writing Workshop",
+              "description": "Develop advanced analytical writing skills and research capabilities with specialized tools and frameworks.",
+              "topics": [
+                "Literary Analysis Writing",
+                "Advanced Research Methodology",
+                "Rhetorical Analysis Frameworks",
+                "Voice and Style Development",
+                "College Essay Preparation"
+              ],
+              "activities": [
+                "Literary Analysis Scaffolding System",
+                "Research Question Development Tool",
+                "Rhetorical Strategy Identifier",
+                "Style Analysis and Practice Guide",
+                "College Essay Planning Framework"
+              ]
+            },
+            "12": {
+              "title": "Grade 12 Writing Workshop",
+              "description": "Prepare for college-level writing with advanced organizational strategies, self-editing techniques, and digital portfolio development.",
+              "topics": [
+                "College-Level Writing Expectations",
+                "Advanced Self-Editing Strategies",
+                "Writing Portfolio Development",
+                "Discipline-Specific Writing Formats",
+                "Long-Term Writing Project Management"
+              ],
+              "activities": [
+                "College Writing Transition Guide",
+                "Self-Editing Checklist System",
+                "Digital Portfolio Creator",
+                "Field-Specific Format Templates",
+                "Project Timeline Management Tool"
+              ]
+            }
+          }
+        },
+        {
+          "id": "advanced-mathematics",
+          "title": "Advanced Mathematics",
+          "description": "Conquer algebra, geometry, and calculus through visual modeling, contextual learning, and real-world applications that highlight mathematical patterns.",
+          "progress": 0,
+          "gradeSpecific": {
+            "9": {
+              "title": "Grade 9 Advanced Mathematics",
+              "description": "Master algebraic concepts through visual modeling, pattern recognition, and real-world applications with dyslexia-friendly approaches.",
+              "topics": [
+                "Algebraic Expression Visualization",
+                "Linear Equation Pattern Recognition",
+                "Function Concept Modeling",
+                "Data Analysis with Visual Representations",
+                "Problem-Solving Frameworks"
+              ],
+              "activities": [
+                "Algebra Tile Modeling Kit",
+                "Linear Pattern Recognition Tool",
+                "Function Machine Visualizer",
+                "Visual Data Analysis System",
+                "Math Problem-Solving Cards"
+              ]
+            },
+            "10": {
+              "title": "Grade 10 Advanced Mathematics",
+              "description": "Develop geometric understanding through visual-spatial approaches, hands-on construction, and real-world applications.",
+              "topics": [
+                "Geometric Concept Visualization",
+                "Proof Frameworks with Visual Supports",
+                "Coordinate Geometry Mapping",
+                "Transformation Visualization",
+                "Measurement Problem Strategies"
+              ],
+              "activities": [
+                "Interactive Geometry Software",
+                "Visual Proof Builder",
+                "Coordinate Plane Mapping System",
+                "Transformation Animation Tool",
+                "Real-World Measurement Projects"
+              ]
+            },
+            "11": {
+              "title": "Grade 11 Advanced Mathematics",
+              "description": "Master advanced algebra and trigonometry concepts with visual modeling, pattern recognition, and contextual applications.",
+              "topics": [
+                "Polynomial Function Visualization",
+                "Trigonometric Concept Modeling",
+                "Sequence and Series Pattern Recognition",
+                "Statistical Analysis with Visual Tools",
+                "Real-World Application Projects"
+              ],
+              "activities": [
+                "Polynomial Function Visualizer",
+                "Trigonometry Circle Model",
+                "Pattern Recognition Lab",
+                "Visual Statistics Toolkit",
+                "Application-Based Project Guide"
+              ]
+            },
+            "12": {
+              "title": "Grade 12 Advanced Mathematics",
+              "description": "Explore pre-calculus and calculus concepts through visual approaches, contextual learning, and technology-enhanced understanding.",
+              "topics": [
+                "Limit Concept Visualization",
+                "Derivative Concept Modeling",
+                "Integral Applications with Visual Representation",
+                "Function Analysis through Multiple Representations",
+                "Mathematical Modeling Projects"
+              ],
+              "activities": [
+                "Limit Visualization Tool",
+                "Derivative Concept Builder",
+                "Visual Integration Applications",
+                "Multi-Representational Analysis System",
+                "Real-World Modeling Project Guide"
+              ]
+            }
+          }
+        },
+        {
+          "id": "test-preparation",
+          "title": "Test Preparation",
+          "description": "Build confidence and strategies for standardized tests. Learn accommodations, time management, and question-answering techniques specifically for dyslexic students.",
+          "progress": 0,
+          "gradeSpecific": {
+            "9": {
+              "title": "Grade 9 Test Preparation",
+              "description": "Develop foundational test-taking strategies with a focus on understanding accommodations and building confidence.",
+              "topics": [
+                "Test Accommodation Understanding",
+                "Reading Strategy Development",
+                "Managing Test Anxiety",
+                "Question Format Familiarity",
+                "Study Skill Foundations"
+              ],
+              "activities": [
+                "Accommodation Planning Guide",
+                "Strategic Reading Practice",
+                "Anxiety Management Toolkit",
+                "Question Format Explorer",
+                "Study Strategy Assessment"
+              ]
+            },
+            "10": {
+              "title": "Grade 10 Test Preparation",
+              "description": "Master PSAT and content-specific test strategies with specialized approaches for dyslexic test-takers.",
+              "topics": [
+                "PSAT Format and Strategy",
+                "Subject Test Approach Techniques",
+                "Multiple Choice Strategy Development",
+                "Time Management Techniques",
+                "Content Organization Strategies"
+              ],
+              "activities": [
+                "PSAT Strategy Guide",
+                "Subject-Specific Approach Cards",
+                "Multiple Choice Decoder",
+                "Time Management Simulator",
+                "Content Organization Tools"
+              ]
+            },
+            "11": {
+              "title": "Grade 11 Test Preparation",
+              "description": "Prepare for SAT/ACT testing with specialized strategies, practice routines, and accommodation utilization techniques.",
+              "topics": [
+                "SAT/ACT Format Mastery",
+                "Reading Section Strategies",
+                "Math Section Approaches",
+                "Writing/English Section Techniques",
+                "Essay Writing Frameworks"
+              ],
+              "activities": [
+                "Test Format Navigation Guide",
+                "Reading Strategy Toolkit",
+                "Math Problem Approach System",
+                "Grammar Strategy Cards",
+                "Essay Template Builder"
+              ]
+            },
+            "12": {
+              "title": "Grade 12 Test Preparation",
+              "description": "Focus on advanced test preparation for college entrance, AP exams, and transition to college-level assessments.",
+              "topics": [
+                "AP Exam Preparation",
+                "Final SAT/ACT Refinement",
+                "College Placement Test Strategies",
+                "Extended Response Techniques",
+                "Self-Advocacy for College Testing"
+              ],
+              "activities": [
+                "AP Exam Strategy Guide",
+                "SAT/ACT Fine-Tuning System",
+                "Placement Test Preparation",
+                "Extended Response Framework",
+                "College Accommodation Guide"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "college": {
+      "title": "College Curriculum",
+      "description": "Succeeding in higher education with specialized learning strategies, technology mastery, and self-advocacy skills.",
+      "modules": [
+        {
+          "id": "academic-success-strategies",
+          "title": "Academic Success Strategies",
+          "description": "Master note-taking, research, time management, and organizational strategies optimized for dyslexic college students across any major.",
+          "progress": 0,
+          "level": "All college levels"
+        },
+        {
+          "id": "career-preparation",
+          "title": "Career Preparation",
+          "description": "Develop workplace strategies, understand accommodations, and leverage your dyslexic thinking advantages in professional environments.",
+          "progress": 0,
+          "level": "All college levels"
+        },
+        {
+          "id": "technology-solutions",
+          "title": "Technology Solutions",
+          "description": "Master assistive technologies, productivity apps, and digital tools that can transform the academic experience for dyslexic college students.",
+          "progress": 0,
+          "level": "All college levels"
+        }
+      ]
+    }
+  },
+  "activities": {
+    "multi-sensory": [
+      {
+        "id": "letter-detective",
+        "title": "Letter Detective",
+        "description": "Hunt for letter patterns in an interactive 3D world. Touch, hear, and see letters to build stronger memory connections.",
+        "gradeRange": "K-3",
+        "benefits": [
+          "Strengthens letter recognition",
+          "Builds phonemic awareness",
+          "Enhances visual-auditory connections",
+          "Improves sequential processing",
+          "Makes learning letters engaging and fun"
+        ]
+      },
+      {
+        "id": "word-builder-workshop",
+        "title": "Word Builder Workshop",
+        "description": "Construct words through tactile blocks, sound mapping, and visual cues. Perfect for mastering phonics and spelling.",
+        "gradeRange": "1-6",
+        "benefits": [
+          "Reinforces spelling patterns",
+          "Develops phonics knowledge",
+          "Provides multi-sensory learning experience",
+          "Builds confidence with difficult words",
+          "Supports independent word mastery"
+        ]
+      },
+      {
+        "id": "story-mapping-adventure",
+        "title": "Story Mapping Adventure",
+        "description": "Organize stories visually through interactive mind maps. See connections between characters, plot points, and themes.",
+        "gradeRange": "3-12",
+        "benefits": [
+          "Enhances reading comprehension",
+          "Develops organizational thinking",
+          "Supports writing preparation",
+          "Visualizes abstract story elements",
+          "Strengthens analytical thinking"
+        ]
+      },
+      {
+        "id": "math-visualization-studio",
+        "title": "Math Visualization Studio",
+        "description": "See mathematical concepts come to life through 3D models, color-coding, and pattern recognition activities.",
+        "gradeRange": "K-12",
+        "benefits": [
+          "Transforms abstract concepts into visual models",
+          "Leverages spatial reasoning strengths",
+          "Builds pattern recognition skills",
+          "Reduces math anxiety",
+          "Creates deeper conceptual understanding"
+        ]
+      },
+      {
+        "id": "audio-reading-companion",
+        "title": "Audio Reading Companion",
+        "description": "Read along with synchronized audio-visual text highlighting. Adjust reading speed, voice, and visual tracking aids.",
+        "gradeRange": "1-College",
+        "benefits": [
+          "Improves reading fluency",
+          "Reduces reading fatigue",
+          "Builds vocabulary through context",
+          "Increases reading independence",
+          "Enhances comprehension of complex texts"
+        ]
+      },
+      {
+        "id": "concept-visualization",
+        "title": "Concept Visualization",
+        "description": "Transform abstract concepts into visual models. Create mind maps, diagrams, and visual notes for any subject.",
+        "gradeRange": "4-College",
+        "benefits": [
+          "Converts linear information to visual formats",
+          "Leverages visual-spatial thinking strengths",
+          "Improves information retention",
+          "Identifies connections between concepts",
+          "Supports studying and review"
+        ]
+      }
+    ]
+  },
+  "tools": {
+    "specialized": [
+      {
+        "id": "text-to-speech-reader",
+        "title": "Text-to-Speech Reader",
+        "description": "Have any text read aloud with customizable voices, reading speed, and synchronized highlighting.",
+        "gradeRange": "K-College",
+        "features": [
+          "Adjustable reading speed",
+          "Multiple voice options",
+          "Text highlighting synchronization",
+          "Import from multiple file formats",
+          "Screen reading capability"
+        ]
+      },
+      {
+        "id": "reading-ruler",
+        "title": "Reading Ruler",
+        "description": "Focus on one line of text at a time with an adjustable highlighting bar that reduces visual stress and tracking issues.",
+        "gradeRange": "K-College",
+        "features": [
+          "Adjustable width and height",
+          "Color tint options",
+          "Tracking guide",
+          "Reduces visual crowding",
+          "Works with all digital text"
+        ]
+      },
+      {
+        "id": "speech-to-text-writer",
+        "title": "Speech-to-Text Writer",
+        "description": "Dictate your thoughts, essays, and answers. The AI assistant helps organize content and format documents.",
+        "gradeRange": "2-College",
+        "features": [
+          "High-accuracy dictation",
+          "Format suggestions",
+          "Organization assistance",
+          "Specialized command vocabulary",
+          "Works across applications"
+        ]
+      },
+      {
+        "id": "visual-dictionary",
+        "title": "Visual Dictionary",
+        "description": "Look up words with picture associations, pronunciation guides, and contextual examples for stronger memory encoding.",
+        "gradeRange": "K-College",
+        "features": [
+          "Visual word associations",
+          "Pronunciation guides",
+          "Example sentences",
+          "Etymology information",
+          "Related word networks"
+        ]
+      },
+      {
+        "id": "mind-mapping-studio",
+        "title": "Mind Mapping Studio",
+        "description": "Organize ideas visually with color-coded connections, images, and audio notes. Perfect for planning essays and projects.",
+        "gradeRange": "3-College",
+        "features": [
+          "Customizable node structures",
+          "Color-coding system",
+          "Image integration",
+          "Audio note capability",
+          "Export to multiple formats"
+        ]
+      },
+      {
+        "id": "formula-visualizer",
+        "title": "Formula Visualizer",
+        "description": "See mathematical and scientific formulas broken down into visual components with step-by-step animations.",
+        "gradeRange": "6-College",
+        "features": [
+          "Step-by-step formula breakdown",
+          "Animated problem solving",
+          "Visual representations of variables",
+          "Formula relationship mapping",
+          "Customizable pace of explanation"
+        ]
+      }
+    ]
+  }
+}

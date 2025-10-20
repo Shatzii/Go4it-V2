@@ -1,0 +1,579 @@
+{
+  "timestamp": "2025-07-31T15:58:45.501Z",
+  "summary": {
+    "scannedFiles": 682,
+    "totalIssues": 71,
+    "criticalIssues": 69,
+    "highIssues": 2
+  },
+  "issues": [
+    {
+      "file": "app/api/license-control/route.ts",
+      "line": 33,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2025-EMMA-9X7K'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/api/license-control/route.ts",
+      "line": 53,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'ANN-2024-MARC-4H8L'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/api/license-control/route.ts",
+      "line": 78,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2025-EMMA-9X7K'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/api/license-control/route.ts",
+      "line": 98,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'ANN-2024-MARC-4H8L'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/api/license-control/route.ts",
+      "line": 118,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'LIF-2024-SARA-2M9N'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/api/license-control/route.ts",
+      "line": 146,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2024-DAVI-3K7P'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/license-control/page.tsx",
+      "line": 94,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2025-EMMA-9X7K'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/license-control/page.tsx",
+      "line": 114,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'ANN-2024-MARC-4H8L'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/license-control/page.tsx",
+      "line": 134,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'LIF-2024-SARA-2M9N'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "app/license-control/page.tsx",
+      "line": 162,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2024-DAVI-3K7P'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "components/analytics/learning-analytics.tsx",
+      "line": 421,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key=\"improvement\"",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "components/providers/theme-provider.tsx",
+      "line": 31,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'vite-ui-theme'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "next.config.js",
+      "line": 69,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "key: 'Access-Control-Allow-Origin'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "next.config.js",
+      "line": 73,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "key: 'Access-Control-Allow-Methods'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "next.config.js",
+      "line": 77,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "key: 'Access-Control-Allow-Headers'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 321,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-admin'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 323,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-compliance'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 325,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-student'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 327,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-staff'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 329,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-curriculum'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 331,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 333,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school-budget'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 335,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school-staff'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 337,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school-curriculum'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 339,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 341,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'language-school-curriculum'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 343,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'language-school-staff'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/assets/js/helpBubble.js",
+      "line": 345,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'language-school'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "public/js/parent-mode.js",
+      "line": 13,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "KEY = 'shatzii_parent_mode_seen'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 15,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password: 'SpacePharaoh_Master_2025!'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 23,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password: 'HeroAdmin_2025!'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 31,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password: 'StageAdmin_2025!'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 39,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password: 'LawAdmin_2025!'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 47,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password: 'LinguaAdmin_2025!'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 55,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2025-EMMA-9X7K'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 63,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'ANN-2024-MARC-4H8L'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 71,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2025-EMMA-9X7K'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 79,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'ANN-2024-MARC-4H8L'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 87,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'LIF-2024-SARA-2M9N'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 95,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2024-DAVI-3K7P'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 103,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2025-EMMA-9X7K'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 111,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'ANN-2024-MARC-4H8L'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 119,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'LIF-2024-SARA-2M9N'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 127,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key: 'SEM-2024-DAVI-3K7P'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 143,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'vite-ui-theme'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 151,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "key: 'Access-Control-Allow-Origin'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 159,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "key: 'Access-Control-Allow-Methods'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 167,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "key: 'Access-Control-Allow-Headers'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 175,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-admin'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 183,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-compliance'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 191,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-student'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 199,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-staff'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 207,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school-curriculum'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 215,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'law-school'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 223,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school-budget'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 231,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school-staff'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 239,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school-curriculum'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 247,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'superhero-school'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 255,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'language-school-curriculum'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 263,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'language-school-staff'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 271,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "Key = 'language-school'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 279,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "KEY = 'shatzii_parent_mode_seen'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 287,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password = '********'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 295,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password: 'admin123'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 303,
+      "pattern": "Hardcoded Passwords",
+      "severity": "CRITICAL",
+      "match": "password: 'student123'",
+      "recommendation": "Replace with environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 311,
+      "pattern": "Database URLs with Credentials",
+      "severity": "HIGH",
+      "match": "postgresql://postgres:password@",
+      "recommendation": "Use DATABASE_URL environment variable"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 319,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "API_KEY: 'your_anthropic_api_key_here'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "security-scan-report.json",
+      "line": 327,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "API_KEY: 'your_openai_api_key_here'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "server/startup/security-init.ts",
+      "line": 109,
+      "pattern": "Database URLs with Credentials",
+      "severity": "HIGH",
+      "match": "postgresql://postgres:SECURE_PASSWORD@",
+      "recommendation": "Use DATABASE_URL environment variable"
+    },
+    {
+      "file": "server/startup/security-init.ts",
+      "line": 114,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "API_KEY: 'PROVIDE_YOUR_ANTHROPIC_API_KEY'",
+      "recommendation": "Replace with process.env.API_KEY"
+    },
+    {
+      "file": "server/startup/security-init.ts",
+      "line": 115,
+      "pattern": "Hardcoded API Keys",
+      "severity": "CRITICAL",
+      "match": "API_KEY: 'PROVIDE_YOUR_OPENAI_API_KEY'",
+      "recommendation": "Replace with process.env.API_KEY"
+    }
+  ]
+}

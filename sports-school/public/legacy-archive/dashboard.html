@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShatziiOS - Dashboard</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f6fa;
+        color: #333;
+      }
+
+      .header {
+        background-color: #5f75ed;
+        color: white;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo {
+        height: 40px;
+        margin-right: 1rem;
+      }
+
+      .user-menu {
+        display: flex;
+        align-items: center;
+      }
+
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #eceff1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+        font-weight: bold;
+        color: #5f75ed;
+      }
+
+      .username {
+        margin-right: 1rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+      }
+
+      .dashboard-title {
+        margin-bottom: 2rem;
+        color: #2c3e50;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background-color: #e3f2fd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .card-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+      }
+
+      .card-content {
+        color: #7f8c8d;
+        line-height: 1.6;
+      }
+
+      .card-footer {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eceff1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .card-link {
+        color: #5f75ed;
+        text-decoration: none;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+      }
+
+      .card-link:hover {
+        text-decoration: underline;
+      }
+
+      .sidebar {
+        width: 250px;
+        background-color: white;
+        height: calc(100vh - 72px);
+        position: fixed;
+        left: 0;
+        top: 72px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem 0;
+      }
+
+      .sidebar-nav {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .sidebar-nav-item {
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        align-items: center;
+        color: #2c3e50;
+        text-decoration: none;
+        transition: background-color 0.2s;
+      }
+
+      .sidebar-nav-item:hover,
+      .sidebar-nav-item.active {
+        background-color: #eceff1;
+        color: #5f75ed;
+      }
+
+      .sidebar-icon {
+        margin-right: 0.75rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 2rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        text-align: center;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #5f75ed;
+        margin: 0.5rem 0;
+      }
+
+      .stat-label {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+      }
+
+      .accessibility-fab {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background-color: #5f75ed;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        font-size: 1.5rem;
+        border: none;
+      }
+
+      .accessibility-menu {
+        position: fixed;
+        bottom: 5rem;
+        right: 2rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 1rem;
+        display: none;
+      }
+
+      .accessibility-menu.active {
+        display: block;
+      }
+
+      .accessibility-menu-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+      }
+
+      .accessibility-menu-item:hover {
+        background-color: #eceff1;
+      }
+
+      .accessibility-icon {
+        margin-right: 0.75rem;
+        width: 24px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo-container">
+        <img
+          src="/assets/logo.svg"
+          alt="ShatziiOS Logo"
+          class="logo"
+          onerror="this.src='https://via.placeholder.com/120x40?text=ShatziiOS'"
+        />
+        <h1>ShatziiOS Dashboard</h1>
+      </div>
+
+      <div class="user-menu">
+        <div class="avatar">A</div>
+        <span class="username">Admin</span>
+        <button
+          id="logout-btn"
+          style="background: none; border: none; cursor: pointer; color: white"
+        >
+          Logout
+        </button>
+      </div>
+    </header>
+
+    <div class="sidebar">
+      <nav>
+        <ul class="sidebar-nav">
+          <li>
+            <a href="#" class="sidebar-nav-item active"
+              ><span class="sidebar-icon">🏠</span> Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="#" class="sidebar-nav-item"
+              ><span class="sidebar-icon">🦸</span> Superhero School</a
+            >
+          </li>
+          <li>
+            <a href="#" class="sidebar-nav-item"><span class="sidebar-icon">⚖️</span> Law School</a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-nav-item"
+              ><span class="sidebar-icon">🗣️</span> Language School</a
+            >
+          </li>
+          <li>
+            <a href="#" class="sidebar-nav-item"
+              ><span class="sidebar-icon">👨‍👩‍👧‍👦</span> Parent Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="#" class="sidebar-nav-item"
+              ><span class="sidebar-icon">👨‍💼</span> CEO Dashboard</a
+            >
+          </li>
+          <li>
+            <a href="#" class="sidebar-nav-item"><span class="sidebar-icon">🔒</span> Security</a>
+          </li>
+          <li>
+            <a href="#" class="sidebar-nav-item"><span class="sidebar-icon">⚙️</span> Settings</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <main class="main-content">
+      <h2 class="dashboard-title">Welcome to ShatziiOS Learning Platform</h2>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Learning Schools</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">12</div>
+          <div class="stat-label">AI Teachers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">24</div>
+          <div class="stat-label">Active Courses</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">85%</div>
+          <div class="stat-label">Student Engagement</div>
+        </div>
+      </div>
+
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🦸</div>
+            <h3 class="card-title">Neurodivergent Superhero School</h3>
+          </div>
+          <div class="card-content">
+            <p>
+              Specialized education for neurodivergent learners using superhero themes and gamified
+              learning.
+            </p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">Enter School →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">⚖️</div>
+            <h3 class="card-title">Shatzii School of Law</h3>
+          </div>
+          <div class="card-content">
+            <p>
+              Legal education with UAE Bar Exam preparation and specialized law courses for all
+              levels.
+            </p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">Enter School →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🗣️</div>
+            <h3 class="card-title">Language Learning School</h3>
+          </div>
+          <div class="card-content">
+            <p>
+              Learn English, Spanish, and German with our AI-powered language professors and
+              interactive lessons.
+            </p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">Enter School →</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">👨‍👩‍👧‍👦</div>
+            <h3 class="card-title">Parent Dashboard</h3>
+          </div>
+          <div class="card-content">
+            <p>
+              Monitor your child's progress, create curriculum plans, and track learning
+              achievements.
+            </p>
+          </div>
+          <div class="card-footer">
+            <a href="#" class="card-link">Access Dashboard →</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <button class="accessibility-fab" id="accessibility-fab" aria-label="Accessibility Options">
+      ♿
+    </button>
+
+    <div class="accessibility-menu" id="accessibility-menu">
+      <div class="accessibility-menu-item" id="voice-guidance">
+        <span class="accessibility-icon">🔊</span>
+        <span>Voice Guidance</span>
+      </div>
+      <div class="accessibility-menu-item" id="high-contrast">
+        <span class="accessibility-icon">👁️</span>
+        <span>High Contrast</span>
+      </div>
+      <div class="accessibility-menu-item" id="larger-text">
+        <span class="accessibility-icon">A+</span>
+        <span>Larger Text</span>
+      </div>
+      <div class="accessibility-menu-item" id="keyboard-shortcuts">
+        <span class="accessibility-icon">⌨️</span>
+        <span>Keyboard Shortcuts</span>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Check if user is logged in (simple check for demo)
+        if (!localStorage.getItem('isLoggedIn')) {
+          // Redirect to login
+          window.location.href = '/test-login.html';
+        }
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function () {
+          localStorage.removeItem('isLoggedIn');
+          window.location.href = '/test-login.html';
+        });
+
+        // Accessibility menu toggle
+        const accessibilityFab = document.getElementById('accessibility-fab');
+        const accessibilityMenu = document.getElementById('accessibility-menu');
+
+        accessibilityFab.addEventListener('click', function () {
+          accessibilityMenu.classList.toggle('active');
+        });
+
+        // Voice guidance
+        document.getElementById('voice-guidance').addEventListener('click', function () {
+          speak(
+            'Voice guidance activated. You are on the ShatziiOS Dashboard. Use the sidebar to navigate between different schools. Press Alt+H for more information at any time.',
+          );
+        });
+
+        // High contrast
+        document.getElementById('high-contrast').addEventListener('click', function () {
+          document.body.classList.toggle('high-contrast');
+          if (document.body.classList.contains('high-contrast')) {
+            document.body.style.backgroundColor = '#000';
+            document.body.style.color = '#fff';
+          } else {
+            document.body.style.backgroundColor = '';
+            document.body.style.color = '';
+          }
+          speak('High contrast mode toggled');
+        });
+
+        // Larger text
+        document.getElementById('larger-text').addEventListener('click', function () {
+          document.body.classList.toggle('large-text');
+          document.documentElement.style.fontSize = document.body.classList.contains('large-text')
+            ? '120%'
+            : '100%';
+          speak('Larger text mode toggled');
+        });
+
+        // Keyboard shortcuts
+        document.getElementById('keyboard-shortcuts').addEventListener('click', function () {
+          speak(
+            'Keyboard shortcuts: Press Alt+H to hear the page description. Press Tab to navigate between elements. Press Enter to activate a selected item.',
+          );
+        });
+
+        // Alt+H shortcut for page description
+        document.addEventListener('keydown', function (e) {
+          if (e.altKey && e.key === 'h') {
+            speak(
+              'You are on the ShatziiOS Dashboard. This page provides access to all learning schools including the Neurodivergent Superhero School, Shatzii School of Law, and Language Learning School. Use the sidebar on the left to navigate between different sections.',
+            );
+          }
+        });
+
+        // Simple speech synthesis function
+        function speak(text) {
+          if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
+          }
+        }
+
+        // Set login status for demo
+        localStorage.setItem('isLoggedIn', 'true');
+      });
+    </script>
+  </body>
+</html>

@@ -1,371 +1,781 @@
-import React from 'react'
-import Link from 'next/link'
+// Advanced Social Media & Athlete Discovery Dashboard
+// Administrative interface for managing automated systems
 
-export default function AdminDashboard() {
+import { Metadata } from 'next';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
+import PersonalDailyDigest from '../../dashboard/components/PersonalDailyDigest';
+import {
+  BarChart3,
+  TrendingUp,
+  Users,
+  Share2,
+  Calendar,
+  Clock,
+  Play,
+  Pause,
+  Settings,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  RefreshCw,
+  Download,
+  Upload,
+  Zap,
+  Target,
+  Eye,
+  ThumbsUp,
+  MessageCircle,
+  Instagram,
+  Facebook,
+  Youtube,
+  Twitter
+} from 'lucide-react';
+
+// Mock dashboard data - in production, this would come from your database
+const dashboardData = {
+  systemStatus: {
+    socialMediaEngine: { status: 'active', uptime: '99.9%', lastUpdate: '2025-01-15T10:30:00Z' },
+    athleteDiscovery: { status: 'active', uptime: '98.5%', lastUpdate: '2025-01-15T10:25:00Z' },
+    journalismEngine: { status: 'active', uptime: '97.8%', lastUpdate: '2025-01-15T10:20:00Z' },
+    contentScheduler: { status: 'active', uptime: '99.2%', lastUpdate: '2025-01-15T10:15:00Z' }
+  },
+  performance: {
+    totalPosts: 1247,
+    engagementRate: 8.5,
+    reachGrowth: 15.2,
+    newAthletes: 89,
+    articlesGenerated: 234,
+    qualityScore: 92
+  },
+  recentActivity: [
+    {
+      id: '1',
+      type: 'post',
+      platform: 'Instagram',
+      athlete: 'Cooper Flagg',
+      content: 'New highlight video posted',
+      timestamp: '2025-01-15T10:30:00Z',
+      status: 'success',
+      engagement: { likes: 1247, shares: 89, comments: 34 }
+    },
+    {
+      id: '2',
+      type: 'discovery',
+      athlete: 'Ace Bailey',
+      content: 'New athlete discovered with 96 quality score',
+      timestamp: '2025-01-15T10:25:00Z',
+      status: 'success'
+    },
+    {
+      id: '3',
+      type: 'article',
+      athlete: 'Dylan Harper',
+      content: 'AI-generated article published',
+      timestamp: '2025-01-15T10:20:00Z',
+      status: 'success',
+      engagement: { likes: 892, shares: 67, comments: 28 }
+    },
+    {
+      id: '4',
+      type: 'post',
+      platform: 'TikTok',
+      athlete: 'Cooper Flagg',
+      content: 'Recruitment update posted',
+      timestamp: '2025-01-15T10:15:00Z',
+      status: 'success',
+      engagement: { likes: 2156, shares: 145, comments: 67 }
+    }
+  ],
+  scheduledPosts: [
+    {
+      id: '1',
+      athlete: 'Cooper Flagg',
+      platform: 'Facebook',
+      content: 'Duke commitment announcement',
+      scheduledTime: '2025-01-15T14:00:00Z',
+      status: 'scheduled'
+    },
+    {
+      id: '2',
+      athlete: 'Ace Bailey',
+      platform: 'Instagram',
+      content: 'Season highlights reel',
+      scheduledTime: '2025-01-15T16:30:00Z',
+      status: 'scheduled'
+    },
+    {
+      id: '3',
+      athlete: 'Dylan Harper',
+      platform: 'TikTok',
+      content: 'Skills showcase video',
+      scheduledTime: '2025-01-15T18:00:00Z',
+      status: 'scheduled'
+    }
+  ],
+  platformStats: {
+    instagram: {
+      followers: 45600,
+      engagement: 8.2,
+      postsToday: 3,
+      growth: 12.5
+    },
+    facebook: {
+      followers: 32100,
+      engagement: 6.8,
+      postsToday: 2,
+      growth: 8.9
+    },
+    tiktok: {
+      followers: 89200,
+      engagement: 15.3,
+      postsToday: 5,
+      growth: 25.7
+    },
+    twitter: {
+      followers: 15400,
+      engagement: 4.5,
+      postsToday: 1,
+      growth: 5.2
+    }
+  },
+  alerts: [
+    {
+      id: '1',
+      type: 'warning',
+      message: 'Instagram API rate limit approaching (85% used)',
+      timestamp: '2025-01-15T10:00:00Z'
+    },
+    {
+      id: '2',
+      type: 'info',
+      message: 'New athlete discovery source added: MaxPreps API',
+      timestamp: '2025-01-15T09:30:00Z'
+    },
+    {
+      id: '3',
+      type: 'success',
+      message: 'Content quality score improved by 3.2% this week',
+      timestamp: '2025-01-15T08:45:00Z'
+    }
+  ]
+};
+
+export const metadata: Metadata = {
+  title: 'Advanced Social Media Dashboard - Go4it Sports',
+  description: 'Administrative dashboard for managing automated social media posting, athlete discovery, and content generation systems.',
+};
+
+export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <Link href="/" className="text-indigo-600 font-semibold text-lg hover:text-indigo-500">
-              ← The Universal One School
-            </Link>
-            <h1 className="text-2xl font-bold text-gray-900">Administrative Dashboard</h1>
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Advanced Social Media Dashboard</h1>
+              <p className="text-gray-600 mt-1">Monitor and control your automated athlete discovery and content systems</p>
+            </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Admin Portal</span>
-              <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">A</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <span className="text-2xl">👥</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total Students</p>
-                <p className="text-2xl font-bold text-gray-900">1,247</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <span className="text-2xl">👩‍🏫</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Faculty & Staff</p>
-                <p className="text-2xl font-bold text-gray-900">89</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="p-2 bg-yellow-100 rounded-lg">
-                <span className="text-2xl">📊</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Attendance Rate</p>
-                <p className="text-2xl font-bold text-gray-900">94.2%</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-lg shadow-sm border">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <span className="text-2xl">🎯</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Active IEPs</p>
-                <p className="text-2xl font-bold text-gray-900">342</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Development Tools Section */}
-        <div className="mb-8">
-          <div className="bg-white rounded-lg shadow-sm border">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Development Tools</h2>
-              <p className="text-sm text-gray-600 mt-1">Advanced development and content creation tools</p>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Link href="/admin/ide" className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-all duration-300">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-blue-100 rounded-lg mr-3">
-                      <span className="text-xl">💻</span>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">Integrated Development Environment</h3>
-                      <p className="text-sm text-gray-600">Full-featured IDE with Monaco Editor</p>
-                      <div className="mt-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          v3.1.0
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-                
-                <Link href="/ai-content-creator" className="p-4 border border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 transition-all duration-300">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-green-100 rounded-lg mr-3">
-                      <span className="text-xl">🎨</span>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">AI Content Creator</h3>
-                      <p className="text-sm text-gray-600">AI-powered content generation tool</p>
-                      <div className="mt-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          AI Powered
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-                
-                <Link href="/marketplace" className="p-4 border border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-all duration-300">
-                  <div className="flex items-center">
-                    <div className="p-2 bg-purple-100 rounded-lg mr-3">
-                      <span className="text-xl">🛒</span>
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">Course Marketplace</h3>
-                      <p className="text-sm text-gray-600">Manage marketplace content</p>
-                      <div className="mt-2">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                          Revenue Share
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Student Information System */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm border">
-              <div className="p-6 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Student Information System</h2>
-              </div>
-              <div className="p-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <Link href="/admin/students" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">📚</span>
-                      <div>
-                        <h3 className="font-medium text-gray-900">Student Records</h3>
-                        <p className="text-sm text-gray-500">Manage enrollment, demographics, and academic records</p>
-                      </div>
-                    </div>
-                  </Link>
-                  
-                  <Link href="/admin/enrollment" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">✏️</span>
-                      <div>
-                        <h3 className="font-medium text-gray-900">Enrollment Management</h3>
-                        <p className="text-sm text-gray-500">Process new enrollments and transfers</p>
-                      </div>
-                    </div>
-                  </Link>
-                  
-                  <Link href="/admin/attendance" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">📅</span>
-                      <div>
-                        <h3 className="font-medium text-gray-900">Attendance Tracking</h3>
-                        <p className="text-sm text-gray-500">Monitor daily attendance and absences</p>
-                      </div>
-                    </div>
-                  </Link>
-                  
-                  <Link href="/admin/gradebook" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-2xl">📊</span>
-                      <div>
-                        <h3 className="font-medium text-gray-900">Gradebook System</h3>
-                        <p className="text-sm text-gray-500">View grades and academic progress</p>
-                      </div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow-sm border">
-              <div className="p-6 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <Link href="/admin/announcements/new" className="block w-full text-left p-3 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors">
-                  📢 Send School Announcement
-                </Link>
-                <Link href="/admin/visitors/check-in" className="block w-full text-left p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
-                  🏃‍♂️ Visitor Check-in
-                </Link>
-                <Link href="/admin/emergency" className="block w-full text-left p-3 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors">
-                  🚨 Emergency Protocols
-                </Link>
-                <Link href="/admin/reports/generate" className="block w-full text-left p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
-                  📋 Generate Reports
-                </Link>
-              </div>
-            </div>
-
-            {/* Recent Alerts */}
-            <div className="bg-white rounded-lg shadow-sm border">
-              <div className="p-6 border-b">
-                <h2 className="text-lg font-semibold text-gray-900">Recent Alerts</h2>
-              </div>
-              <div className="p-6 space-y-3">
-                <div className="p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r">
-                  <p className="text-sm text-yellow-700">3 IEP reviews due this week</p>
-                </div>
-                <div className="p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r">
-                  <p className="text-sm text-blue-700">New enrollment pending approval</p>
-                </div>
-                <div className="p-3 bg-green-50 border-l-4 border-green-400 rounded-r">
-                  <p className="text-sm text-green-700">Monthly reports ready for review</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Academic Management */}
-        <div className="mt-8 bg-white rounded-lg shadow-sm border">
-          <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">Academic Management</h2>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Link href="/admin/curriculum" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="text-center">
-                  <span className="text-4xl mb-4 block">📖</span>
-                  <h3 className="font-semibold text-gray-900 mb-2">Curriculum Management</h3>
-                  <p className="text-sm text-gray-500">Manage courses, standards alignment, and neurodivergent adaptations</p>
-                </div>
-              </Link>
-              
-              <Link href="/admin/assessments" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="text-center">
-                  <span className="text-4xl mb-4 block">📝</span>
-                  <h3 className="font-semibold text-gray-900 mb-2">Assessment Center</h3>
-                  <p className="text-sm text-gray-500">Create and manage assessments, including STAAR preparation</p>
-                </div>
-              </Link>
-              
-              <Link href="/admin/iep" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="text-center">
-                  <span className="text-4xl mb-4 block">🎯</span>
-                  <h3 className="font-semibold text-gray-900 mb-2">Special Education</h3>
-                  <p className="text-sm text-gray-500">Manage IEPs, 504 plans, and behavioral interventions</p>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Operations Management */}
-        <div className="mt-8 bg-white rounded-lg shadow-sm border">
-          <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">School Operations</h2>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Link href="/admin/staff" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
-                <span className="text-3xl block mb-2">👥</span>
-                <h3 className="font-medium text-gray-900">Staff Management</h3>
-                <p className="text-xs text-gray-500 mt-1">HR, scheduling, substitutes</p>
-              </Link>
-              
-              <Link href="/admin/health" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
-                <span className="text-3xl block mb-2">🏥</span>
-                <h3 className="font-medium text-gray-900">Health Services</h3>
-                <p className="text-xs text-gray-500 mt-1">Medical records, incidents</p>
-              </Link>
-              
-              <Link href="/admin/transportation" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
-                <span className="text-3xl block mb-2">🚌</span>
-                <h3 className="font-medium text-gray-900">Transportation</h3>
-                <p className="text-xs text-gray-500 mt-1">Routes, schedules, safety</p>
-              </Link>
-              
-              <Link href="/admin/finance" className="p-4 border rounded-lg hover:bg-gray-50 transition-colors text-center">
-                <span className="text-3xl block mb-2">💰</span>
-                <h3 className="font-medium text-gray-900">Financial Management</h3>
-                <p className="text-xs text-gray-500 mt-1">Tuition, payments, budgets</p>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Technology & Security */}
-        <div className="mt-8 bg-white rounded-lg shadow-sm border">
-          <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">Technology & Security</h2>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Link href="/admin/devices" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="text-center">
-                  <span className="text-4xl mb-4 block">💻</span>
-                  <h3 className="font-semibold text-gray-900 mb-2">Device Management</h3>
-                  <p className="text-sm text-gray-500">1:1 device tracking, assignments, and maintenance</p>
-                </div>
-              </Link>
-              
-              <Link href="/admin/visitors" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="text-center">
-                  <span className="text-4xl mb-4 block">🏛️</span>
-                  <h3 className="font-semibold text-gray-900 mb-2">Visitor Management</h3>
-                  <p className="text-sm text-gray-500">Check-in/out system and security protocols</p>
-                </div>
-              </Link>
-              
-              <Link href="/admin/communications" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="text-center">
-                  <span className="text-4xl mb-4 block">📱</span>
-                  <h3 className="font-semibold text-gray-900 mb-2">Communications Hub</h3>
-                  <p className="text-sm text-gray-500">Multi-language messaging and announcements</p>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Compliance & Reporting */}
-        <div className="mt-8 bg-white rounded-lg shadow-sm border">
-          <div className="p-6 border-b">
-            <h2 className="text-lg font-semibold text-gray-900">Compliance & Reporting</h2>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Link href="/texas-reporting" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-4">
-                  <span className="text-4xl">🏛️</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Texas Compliance Center</h3>
-                    <p className="text-sm text-gray-500">PEIMS reporting, TEA compliance, state assessments</p>
-                  </div>
-                </div>
-              </Link>
-              
-              <Link href="/admin/analytics" className="p-6 border rounded-lg hover:bg-gray-50 transition-colors">
-                <div className="flex items-center space-x-4">
-                  <span className="text-4xl">📊</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Analytics Dashboard</h3>
-                    <p className="text-sm text-gray-500">Performance metrics, predictive analytics, custom reports</p>
-                  </div>
-                </div>
-              </Link>
+              <Badge variant="secondary" className="px-3 py-1">
+                <Zap className="w-4 h-4 mr-1" />
+                All Systems Active
+              </Badge>
+              <Button>
+                <Settings className="w-4 h-4 mr-2" />
+                System Settings
+              </Button>
             </div>
           </div>
         </div>
       </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Tabs defaultValue="overview" className="space-y-8">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="social-media">Social Media</TabsTrigger>
+            <TabsTrigger value="discovery">Athlete Discovery</TabsTrigger>
+            <TabsTrigger value="content">Content Generation</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
+
+          {/* Go4It OS Personal Daily Digest */}
+          <div className="mb-8">
+            <PersonalDailyDigest />
+          </div>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
+            {/* System Status Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Object.entries(dashboardData.systemStatus).map(([system, status]) => (
+                <Card key={system}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center">
+                        {status.status === 'active' ? (
+                          <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-500 mr-2" />
+                        )}
+                        <span className="font-semibold capitalize">
+                          {system.replace(/([A-Z])/g, ' $1').trim()}
+                        </span>
+                      </div>
+                      <Badge variant={status.status === 'active' ? 'default' : 'destructive'}>
+                        {status.status}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Uptime</span>
+                        <span className="font-semibold">{status.uptime}</span>
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Last update: {new Date(status.lastUpdate).toLocaleString()}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Performance Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600">{dashboardData.performance.totalPosts}</div>
+                  <div className="text-sm text-gray-600">Total Posts</div>
+                  <div className="text-xs text-green-600 mt-1">+12% this week</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-green-600">{dashboardData.performance.engagementRate}%</div>
+                  <div className="text-sm text-gray-600">Engagement Rate</div>
+                  <div className="text-xs text-green-600 mt-1">+2.1% this week</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-purple-600">+{dashboardData.performance.reachGrowth}%</div>
+                  <div className="text-sm text-gray-600">Reach Growth</div>
+                  <div className="text-xs text-green-600 mt-1">Monthly</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-orange-600">{dashboardData.performance.newAthletes}</div>
+                  <div className="text-sm text-gray-600">New Athletes</div>
+                  <div className="text-xs text-green-600 mt-1">This month</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-red-600">{dashboardData.performance.articlesGenerated}</div>
+                  <div className="text-sm text-gray-600">Articles Generated</div>
+                  <div className="text-xs text-green-600 mt-1">This week</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-indigo-600">{dashboardData.performance.qualityScore}</div>
+                  <div className="text-sm text-gray-600">Quality Score</div>
+                  <div className="text-xs text-green-600 mt-1">+3.2% this week</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {dashboardData.recentActivity.map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3 p-3 border rounded-lg">
+                      <div className="flex-shrink-0">
+                        {activity.type === 'post' && <Share2 className="w-5 h-5 text-blue-500" />}
+                        {activity.type === 'discovery' && <Users className="w-5 h-5 text-green-500" />}
+                        {activity.type === 'article' && <BarChart3 className="w-5 h-5 text-purple-500" />}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm font-medium text-gray-900">
+                            {activity.athlete && `${activity.athlete}: `}{activity.content}
+                          </p>
+                          <Badge variant={activity.status === 'success' ? 'default' : 'secondary'}>
+                            {activity.status}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-xs text-gray-500">
+                            {new Date(activity.timestamp).toLocaleString()}
+                          </p>
+                          {activity.engagement && (
+                            <div className="flex items-center space-x-3 text-xs text-gray-500">
+                              <span className="flex items-center">
+                                <ThumbsUp className="w-3 h-3 mr-1" />
+                                {activity.engagement.likes}
+                              </span>
+                              <span className="flex items-center">
+                                <Share2 className="w-3 h-3 mr-1" />
+                                {activity.engagement.shares}
+                              </span>
+                              <span className="flex items-center">
+                                <MessageCircle className="w-3 h-3 mr-1" />
+                                {activity.engagement.comments}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Alerts */}
+            <Card>
+              <CardHeader>
+                <CardTitle>System Alerts</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {dashboardData.alerts.map((alert) => (
+                    <div key={alert.id} className="flex items-start space-x-3 p-3 border rounded-lg">
+                      <div className="flex-shrink-0">
+                        {alert.type === 'warning' && <AlertTriangle className="w-5 h-5 text-yellow-500" />}
+                        {alert.type === 'info' && <CheckCircle className="w-5 h-5 text-blue-500" />}
+                        {alert.type === 'success' && <CheckCircle className="w-5 h-5 text-green-500" />}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-900">{alert.message}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(alert.timestamp).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Social Media Tab */}
+          <TabsContent value="social-media" className="space-y-6">
+            {/* Platform Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Object.entries(dashboardData.platformStats).map(([platform, stats]) => (
+                <Card key={platform}>
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center">
+                        {platform === 'instagram' && <Instagram className="w-5 h-5 text-pink-500 mr-2" />}
+                        {platform === 'facebook' && <Facebook className="w-5 h-5 text-blue-600 mr-2" />}
+                        {platform === 'tiktok' && <Youtube className="w-5 h-5 text-black mr-2" />}
+                        {platform === 'twitter' && <Twitter className="w-5 h-5 text-blue-400 mr-2" />}
+                        <span className="font-semibold capitalize">{platform}</span>
+                      </div>
+                      <Badge variant="secondary">Active</Badge>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span>Followers</span>
+                        <span className="font-semibold">{stats.followers.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Engagement</span>
+                        <span className="font-semibold">{stats.engagement}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Posts Today</span>
+                        <span className="font-semibold">{stats.postsToday}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Growth</span>
+                        <span className="font-semibold text-green-600">+{stats.growth}%</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Scheduled Posts */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Scheduled Posts</span>
+                  <Button size="sm">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Schedule New Post
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {dashboardData.scheduledPosts.map((post) => (
+                    <div key={post.id} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                          {post.platform === 'Instagram' && <Instagram className="w-5 h-5 text-pink-500" />}
+                          {post.platform === 'Facebook' && <Facebook className="w-5 h-5 text-blue-600" />}
+                          {post.platform === 'TikTok' && <Youtube className="w-5 h-5 text-black" />}
+                        </div>
+                        <div>
+                          <div className="font-semibold">{post.athlete}</div>
+                          <div className="text-sm text-gray-600">{post.content}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="text-right">
+                          <div className="text-sm font-semibold">
+                            {new Date(post.scheduledTime).toLocaleDateString()}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {new Date(post.scheduledTime).toLocaleTimeString()}
+                          </div>
+                        </div>
+                        <Badge variant="outline">{post.status}</Badge>
+                        <Button size="sm" variant="outline">
+                          <Settings className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Auto-Posting Controls */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Auto-Posting Controls</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">Instagram Auto-Posting</div>
+                      <div className="text-sm text-gray-600">Automatically post athlete highlights and updates</div>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">Facebook Auto-Posting</div>
+                      <div className="text-sm text-gray-600">Post recruitment news and athlete profiles</div>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">TikTok Auto-Posting</div>
+                      <div className="text-sm text-gray-600">Share viral athlete content and highlights</div>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">Twitter Auto-Posting</div>
+                      <div className="text-sm text-gray-600">Share breaking news and quick updates</div>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Athlete Discovery Tab */}
+          <TabsContent value="discovery" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Discovery Sources</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span>ESPN Scraper</span>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>MaxPreps API</span>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Rivals.com</span>
+                      <Badge variant="secondary">Inactive</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>247Sports</span>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quality Thresholds</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>Minimum Quality Score</span>
+                        <span>75/100</span>
+                      </div>
+                      <Progress value={75} className="h-2" />
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>Auto-Approval Threshold</span>
+                        <span>85/100</span>
+                      </div>
+                      <Progress value={85} className="h-2" />
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>Featured Athlete Threshold</span>
+                        <span>90/100</span>
+                      </div>
+                      <Progress value={90} className="h-2" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Recent Discoveries</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <Users className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <div className="font-semibold">Cooper Flagg</div>
+                        <div className="text-sm text-gray-600">SF • Montverde Academy</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Badge className="bg-yellow-500 text-white">98</Badge>
+                      <Button size="sm">Review</Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <Users className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <div className="font-semibold">Ace Bailey</div>
+                        <div className="text-sm text-gray-600">SF • McEachern High School</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Badge className="bg-yellow-500 text-white">96</Badge>
+                      <Button size="sm">Review</Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Content Generation Tab */}
+          <TabsContent value="content" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Content Types</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span>Athlete Profiles</span>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Recruitment News</span>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Highlight Articles</span>
+                      <Badge variant="default">Active</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>Season Previews</span>
+                      <Badge variant="secondary">Inactive</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>AI Model Settings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>Creativity Level</span>
+                        <span>High</span>
+                      </div>
+                      <Progress value={80} className="h-2" />
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>Fact-Checking</span>
+                        <span>Enabled</span>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>SEO Optimization</span>
+                        <span>Enabled</span>
+                      </div>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Generated Content Queue</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-semibold">Cooper Flagg Profile Article</div>
+                      <div className="text-sm text-gray-600">AI-generated athlete profile with stats and analysis</div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="secondary">In Progress</Badge>
+                      <Button size="sm" variant="outline">
+                        <Eye className="w-4 h-4 mr-1" />
+                        Preview
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <div className="font-semibold">Recruitment Roundup</div>
+                      <div className="text-sm text-gray-600">Weekly summary of college commitments</div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Badge variant="default">Ready</Badge>
+                      <Button size="sm">
+                        <Upload className="w-4 h-4 mr-1" />
+                        Publish
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Engagement Trends</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span>Daily Average Likes</span>
+                      <span className="font-bold">1,247</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Daily Average Shares</span>
+                      <span className="font-bold">89</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Daily Average Comments</span>
+                      <span className="font-bold">34</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Engagement Rate</span>
+                      <span className="font-bold text-green-600">8.5%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Content Performance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span>Best Performing Platform</span>
+                      <span className="font-bold">TikTok</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Most Engaging Content Type</span>
+                      <span className="font-bold">Highlight Videos</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Average Article Read Time</span>
+                      <span className="font-bold">6.2 min</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>Content Quality Score</span>
+                      <span className="font-bold text-green-600">92/100</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Export Analytics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex space-x-4">
+                  <Button variant="outline">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Performance Report
+                  </Button>
+                  <Button variant="outline">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Engagement Data
+                  </Button>
+                  <Button variant="outline">
+                    <Download className="w-4 h-4 mr-2" />
+                    Export Athlete Discovery Data
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
-  )
+  );
 }

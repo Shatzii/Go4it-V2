@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShotziOS Educational Platform</title>
+
+    <!-- Accessibility Voice Guidance -->
+    <script src="/js/accessibility-voice.js"></script>
+
+    <!-- Onboarding Wizard Script -->
+    <script src="/js/onboarding-wizard.js"></script>
+
+    <style>
+      /* Reset and base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Open Dyslexic', 'Comic Sans MS', Arial, sans-serif;
+        color: #ffffff;
+        background-color: #000000;
+        line-height: 1.6;
+        letter-spacing: 0.025em;
+        word-spacing: 0.1em;
+      }
+
+      /* Header */
+      header {
+        background-color: #0a0a0a;
+        padding: 15px 0;
+        border-bottom: 3px solid #1e90ff;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 100;
+      }
+
+      .header-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo-img {
+        height: 40px;
+        width: auto;
+      }
+
+      .logo-text {
+        font-size: 24px;
+        font-weight: bold;
+        color: #1e90ff;
+      }
+
+      .nav-menu {
+        display: flex;
+        gap: 20px;
+      }
+
+      .nav-menu a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+
+      .nav-menu a:hover {
+        color: #32cd32;
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+
+      /* Main Content */
+      .main-content {
+        margin-top: 80px;
+        padding: 30px 0;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Hero Section */
+      .hero {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 50px 0;
+        background-color: #121212;
+        border-radius: 10px;
+        margin-bottom: 40px;
+        background-image: linear-gradient(45deg, rgba(30, 144, 255, 0.1), rgba(50, 205, 50, 0.05));
+      }
+
+      .hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        color: #1e90ff;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin-bottom: 30px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .btn {
+        display: inline-block;
+        background-color: #1e90ff;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 1rem;
+      }
+
+      .btn:hover {
+        background-color: #32cd32;
+        transform: translateY(-2px);
+      }
+
+      .btn-secondary {
+        background-color: transparent;
+        border: 2px solid #1e90ff;
+        color: #1e90ff;
+      }
+
+      .btn-secondary:hover {
+        background-color: rgba(30, 144, 255, 0.1);
+        color: #1e90ff;
+      }
+
+      /* Schools Section */
+      .schools-section {
+        padding: 30px 0;
+      }
+
+      .section-title {
+        font-size: 2rem;
+        color: #1e90ff;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+
+      .schools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+      }
+
+      .school-card {
+        background-color: #121212;
+        border-radius: 10px;
+        overflow: hidden;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+
+      .school-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .school-header {
+        padding: 20px;
+      }
+
+      .school-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+      }
+
+      .school-title {
+        font-size: 1.5rem;
+        color: white;
+        margin-bottom: 10px;
+      }
+
+      .school-description {
+        color: rgba(255, 255, 255, 0.7);
+        margin-bottom: 20px;
+      }
+
+      .school-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 0 20px 20px;
+      }
+
+      .btn-law {
+        background-color: rgba(155, 89, 182, 0.8);
+      }
+
+      .btn-law:hover {
+        background-color: rgba(155, 89, 182, 1);
+      }
+
+      .btn-superhero {
+        background-color: rgba(52, 152, 219, 0.8);
+      }
+
+      .btn-superhero:hover {
+        background-color: rgba(52, 152, 219, 1);
+      }
+
+      .btn-language {
+        background-color: rgba(39, 174, 96, 0.8);
+      }
+
+      .btn-language:hover {
+        background-color: rgba(39, 174, 96, 1);
+      }
+
+      /* Features Section */
+      .features-section {
+        padding: 30px 0;
+        background-color: #0a0a0a;
+        margin: 40px 0;
+        border-radius: 10px;
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+      }
+
+      .feature-card {
+        background-color: #121212;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-5px);
+      }
+
+      .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #1e90ff;
+      }
+
+      .feature-title {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+        color: white;
+      }
+
+      .feature-description {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      /* Testimonials */
+      .testimonials-section {
+        padding: 30px 0;
+      }
+
+      .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+
+      .testimonial-card {
+        background-color: #121212;
+        border-radius: 10px;
+        padding: 20px;
+        position: relative;
+      }
+
+      .testimonial-content {
+        margin-bottom: 20px;
+        font-style: italic;
+        color: rgba(255, 255, 255, 0.8);
+      }
+
+      .testimonial-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #1e90ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+      }
+
+      .author-details {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .author-name {
+        font-weight: bold;
+        color: white;
+      }
+
+      .author-role {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      /* Footer */
+      footer {
+        background-color: #0a0a0a;
+        padding: 40px 0;
+        border-top: 2px solid rgba(30, 144, 255, 0.3);
+        margin-top: 50px;
+      }
+
+      .footer-content {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 30px;
+      }
+
+      .footer-column {
+        flex: 1;
+        min-width: 250px;
+      }
+
+      .footer-title {
+        font-size: 1.2rem;
+        color: #1e90ff;
+        margin-bottom: 20px;
+      }
+
+      .footer-links {
+        list-style: none;
+      }
+
+      .footer-links li {
+        margin-bottom: 10px;
+      }
+
+      .footer-links a {
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .footer-links a:hover {
+        color: #32cd32;
+      }
+
+      .footer-bottom {
+        margin-top: 40px;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.9rem;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2rem;
+        }
+
+        .hero p {
+          font-size: 1rem;
+        }
+
+        .nav-menu {
+          display: none;
+        }
+
+        .footer-content {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-container">
+        <div class="logo">
+          <img src="/logo.png" alt="ShotziOS Logo" class="logo-img" />
+          <span class="logo-text">ShotziOS</span>
+        </div>
+        <nav class="nav-menu">
+          <a href="#schools">Our Schools</a>
+          <a href="#features">Features</a>
+          <a href="#testimonials">Testimonials</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="container">
+        <section class="hero">
+          <h1>ShotziOS Educational Platform</h1>
+          <p>
+            An advanced AI-enhanced educational platform designed for neurodivergent learners,
+            offering comprehensive support through adaptive technologies and personalized learning
+            experiences.
+          </p>
+          <div class="hero-buttons">
+            <button id="start-onboarding" class="btn">Get Started</button>
+            <a href="#schools" class="btn btn-secondary">Explore Our Schools</a>
+          </div>
+        </section>
+
+        <section id="schools" class="schools-section">
+          <h2 class="section-title">Our Specialized Schools</h2>
+          <div class="schools-grid">
+            <div class="school-card law">
+              <div class="school-header">
+                <div class="school-icon">⚖️</div>
+                <div class="school-title">Shatzii School of Law</div>
+                <div class="school-description">
+                  Legal education with UAE Bar Exam preparation, designed for aspiring legal
+                  professionals with a focus on accessible learning methods.
+                </div>
+              </div>
+              <div class="school-actions">
+                <a href="/law-school/student-dashboard.html" class="btn btn-law"
+                  >Student Dashboard</a
+                >
+                <a
+                  href="/law-school/index.html"
+                  class="btn btn-law"
+                  style="background-color: rgba(155, 89, 182, 0.7)"
+                  >School Home</a
+                >
+              </div>
+            </div>
+
+            <div class="school-card superhero">
+              <div class="school-header">
+                <div class="school-icon">🦸</div>
+                <div class="school-title">Neurodivergent Superhero School</div>
+                <div class="school-description">
+                  Specialized education for neurodivergent students with emphasis on
+                  dyslexia-specific curriculum from kindergarten through college.
+                </div>
+              </div>
+              <div class="school-actions">
+                <a href="/superhero-school/student-dashboard.html" class="btn btn-superhero"
+                  >Student Dashboard</a
+                >
+                <a
+                  href="/superhero-school/index.html"
+                  class="btn btn-superhero"
+                  style="background-color: rgba(52, 152, 219, 0.7)"
+                  >School Home</a
+                >
+              </div>
+            </div>
+
+            <div class="school-card language">
+              <div class="school-header">
+                <div class="school-icon">🗣️</div>
+                <div class="school-title">Language Learning School</div>
+                <div class="school-description">
+                  AI-powered language acquisition courses across multiple languages including
+                  Spanish, German, French, Italian, Japanese, Chinese and Russian.
+                </div>
+              </div>
+              <div class="school-actions">
+                <a href="/language-school/student-dashboard.html" class="btn btn-language"
+                  >Student Dashboard</a
+                >
+                <a
+                  href="/language-school/language-learning-ai.html"
+                  class="btn btn-language"
+                  style="background-color: rgba(39, 174, 96, 0.7)"
+                  >AI Language Learning</a
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" class="features-section">
+          <div class="container">
+            <h2 class="section-title">Special Education Features</h2>
+
+            <div class="features-grid">
+              <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">Neurodivergent-Focused Design</div>
+                <div class="feature-description">
+                  Interface and curriculum optimized for ADHD, Autism, Dyslexia, and other
+                  neurodivergent profiles.
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-icon">🎛️</div>
+                <div class="feature-title">Adaptive Technologies</div>
+                <div class="feature-description">
+                  Personalized learning experiences that adapt to individual learning styles and
+                  needs.
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-icon">🔊</div>
+                <div class="feature-title">Voice Guidance</div>
+                <div class="feature-description">
+                  Built-in accessibility voice system to assist with navigation and content
+                  comprehension.
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Progress Analytics</div>
+                <div class="feature-description">
+                  Comprehensive tracking and visualization of learning progress for students and
+                  educators.
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-icon">💊</div>
+                <div class="feature-title">Medication Tracking</div>
+                <div class="feature-description">
+                  Secure tools for monitoring medication effectiveness correlated with learning
+                  outcomes.
+                </div>
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI Learning Companions</div>
+                <div class="feature-description">
+                  Personalized AI characters that guide, encourage, and adapt to each student's
+                  needs.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="testimonials" class="testimonials-section">
+          <h2 class="section-title">What Our Users Say</h2>
+
+          <div class="testimonials-grid">
+            <div class="testimonial-card">
+              <div class="testimonial-content">
+                "The adaptive curriculum has been transformative for my son with ADHD. For the first
+                time, he's excited about learning and can focus for extended periods."
+              </div>
+              <div class="testimonial-author">
+                <div class="author-avatar">M</div>
+                <div class="author-details">
+                  <div class="author-name">Marianne K.</div>
+                  <div class="author-role">Parent of 4th-grader</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card">
+              <div class="testimonial-content">
+                "As a teacher with dyslexia, I've found the Superhero School platform incredibly
+                empowering. The tools and resources have improved my own teaching methods for
+                neurodivergent students."
+              </div>
+              <div class="testimonial-author">
+                <div class="author-avatar">T</div>
+                <div class="author-details">
+                  <div class="author-name">Thomas J.</div>
+                  <div class="author-role">Special Education Teacher</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="testimonial-card">
+              <div class="testimonial-content">
+                "The Law School's accessible approach to legal education made it possible for me to
+                pursue my dream career despite my learning differences. The bar exam preparation was
+                exceptional."
+              </div>
+              <div class="testimonial-author">
+                <div class="author-avatar">S</div>
+                <div class="author-details">
+                  <div class="author-name">Sarah M.</div>
+                  <div class="author-role">Law Graduate</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" class="contact-section">
+          <h2 class="section-title">Get In Touch</h2>
+          <div class="contact-info" style="text-align: center; max-width: 600px; margin: 0 auto">
+            <p>
+              For more information about our educational programs or to schedule a demonstration,
+              please contact us:
+            </p>
+            <p style="margin-top: 20px; font-size: 1.2rem">
+              Email:
+              <a href="mailto:info@shotzios.edu" style="color: #1e90ff; text-decoration: none"
+                >info@shotzios.edu</a
+              >
+            </p>
+            <p style="font-size: 1.2rem">Phone: (555) 123-4567</p>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-column">
+            <h3 class="footer-title">ShotziOS</h3>
+            <p style="color: rgba(255, 255, 255, 0.7); max-width: 300px">
+              An innovative educational platform designed to transform learning experiences for
+              neurodivergent students across all educational levels.
+            </p>
+          </div>
+
+          <div class="footer-column">
+            <h3 class="footer-title">Our Schools</h3>
+            <ul class="footer-links">
+              <li><a href="/law-school">Shatzii School of Law</a></li>
+              <li><a href="/superhero-school">Neurodivergent Superhero School</a></li>
+              <li><a href="/language-school">Language Learning School</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column">
+            <h3 class="footer-title">Resources</h3>
+            <ul class="footer-links">
+              <li><a href="/resources/for-educators">Educator Resources</a></li>
+              <li><a href="/resources/for-parents">Parent Resources</a></li>
+              <li><a href="/resources/for-students">Student Resources</a></li>
+              <li><a href="/research">Research Papers</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-column">
+            <h3 class="footer-title">Legal</h3>
+            <ul class="footer-links">
+              <li><a href="/privacy">Privacy Policy</a></li>
+              <li><a href="/terms">Terms of Service</a></li>
+              <li><a href="/accessibility">Accessibility Statement</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>&copy; 2025 ShotziOS Educational Platform. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Initialize the onboarding wizard
+        const wizard = new OnboardingWizard();
+
+        // Get the start button
+        const startButton = document.getElementById('start-onboarding');
+
+        // Add click event to start button
+        startButton.addEventListener('click', function () {
+          wizard.start();
+        });
+
+        // Check if this is the user's first visit
+        const isFirstVisit = !localStorage.getItem('shotziOS_visited');
+
+        // Set visited flag
+        localStorage.setItem('shotziOS_visited', 'true');
+
+        // Auto-start the wizard on first visit after a short delay
+        if (isFirstVisit) {
+          setTimeout(() => {
+            wizard.start();
+          }, 3000);
+        }
+
+        // Initialize accessibility if available
+        if (window.accessibilityVoice) {
+          // Announce welcome message
+          window.accessibilityVoice.announce(
+            'Welcome to ShotziOS Educational Platform, designed for neurodivergent learners. Press Alt+V to toggle voice guidance.',
+          );
+        }
+      });
+    </script>
+  </body>
+</html>

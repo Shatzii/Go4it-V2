@@ -1,28 +1,38 @@
-import type { Metadata } from 'next'
-import { Inter, Orbitron } from 'next/font/google'
-import './globals.css'
-import { ClientProviders } from '../components/providers/client-providers'
+import { Inter } from 'next/font/google';
+import './globals.css';
+import type { Metadata } from 'next';
+import Navigation from './components/Navigation';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const orbitron = Orbitron({ subsets: ['latin'], variable: '--font-orbitron' })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Universal One School 3.0 - Revolutionary AI Learning Platform',
-  description: 'Quantum learning, neural interfaces, autonomous AI teachers, metaverse education, and predictive life modeling',
-}
+  title: 'GO4IT Combine | Neon HUD Experience',
+  description: 'International Combine 2025 - Film. Metrics. AI Coach. Ages 12–18 — Soccer • Basketball • Flag Football',
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${orbitron.variable} font-sans antialiased`}>
-        <ClientProviders>
-          {children}
-        </ClientProviders>
+    <html lang="en" className="dark">
+      <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+      </head>
+      <body className={`${inter.className} bg-slate-950 text-white antialiased`}>
+        <Navigation />
+        
+        {/* Main Content */}
+        <div className="pt-16">{children}</div>
+        
+        {/* Footer */}
+        <footer className="w-full text-center py-6 text-slate-400 text-xs border-t border-slate-800 mt-12">
+          <a href="/privacy" className="hover:underline mx-2">Privacy Policy</a> | 
+          <a href="/terms" className="hover:underline mx-2">Terms of Service</a>
+        </footer>
       </body>
     </html>
-  )
+  );
 }
