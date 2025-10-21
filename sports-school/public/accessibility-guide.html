@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title data-i18n="accessibility_guide.title">Accessibility Guide - ShatziiOS</title>
+    <meta
+      name="description"
+      content="A comprehensive guide to ShatziiOS platform's accessibility features for neurodivergent users, including dyslexia, ADHD, and autism spectrum accommodations."
+    />
+
+    <!-- Favicon and icons -->
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <!-- Base Stylesheet -->
+    <link rel="stylesheet" href="/css/global.css" />
+
+    <style>
+      .accessibility-guide {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .accessibility-hero {
+        background-color: #f0f7ff;
+        padding: 3rem 1rem;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+        text-align: center;
+      }
+
+      .accessibility-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #2c5282;
+      }
+
+      .accessibility-hero p {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+
+      .feature-section {
+        margin-bottom: 3rem;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .feature-section h2 {
+        color: #2c5282;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-section h3 {
+        color: #4a5568;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
+
+      .feature-section ul {
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-section li {
+        margin-bottom: 0.5rem;
+      }
+
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .feature-card {
+        background-color: #f8fafc;
+        border-radius: 8px;
+        padding: 1.5rem;
+        border-left: 4px solid #4299e1;
+      }
+
+      .feature-card h4 {
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        color: #2c5282;
+      }
+
+      .feature-card h4 i {
+        margin-right: 0.5rem;
+        color: #4299e1;
+      }
+
+      .feature-card p {
+        margin-bottom: 0;
+        font-size: 0.95rem;
+      }
+
+      .keyboard-shortcuts {
+        background-color: #edf2f7;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+      }
+
+      .keyboard-shortcuts table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .keyboard-shortcuts th,
+      .keyboard-shortcuts td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .keyboard-shortcuts th {
+        font-weight: 600;
+        color: #4a5568;
+      }
+
+      .keyboard-shortcuts kbd {
+        display: inline-block;
+        padding: 0.2rem 0.4rem;
+        font-size: 0.85rem;
+        line-height: 1;
+        color: #4a5568;
+        background-color: white;
+        border: 1px solid #cbd5e0;
+        border-radius: 3px;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+      }
+
+      .feature-demo {
+        margin-top: 2rem;
+        background-color: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+
+      .feature-demo-header {
+        background-color: #edf2f7;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .feature-demo-header h4 {
+        margin: 0;
+      }
+
+      .feature-demo-controls {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .feature-demo-content {
+        padding: 1.5rem;
+      }
+
+      .demo-dyslexic-text {
+        font-family: 'Lexend', 'OpenDyslexic', 'Comic Sans MS', sans-serif;
+        line-height: 1.8;
+        letter-spacing: 0.05em;
+        word-spacing: 0.1em;
+      }
+
+      .demo-high-contrast {
+        background-color: black;
+        color: white;
+        padding: 1.5rem;
+      }
+
+      .demo-adhd-friendly {
+        max-width: 650px;
+        margin: 0 auto;
+        line-height: 1.7;
+        background-color: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .demo-autism-friendly {
+        background-color: #f0f7ff;
+        color: #2d3748;
+        line-height: 1.6;
+        padding: 1.5rem;
+      }
+
+      .demo-autism-friendly * {
+        transition: none !important;
+        animation: none !important;
+      }
+
+      /* Reading ruler demo */
+      .reading-ruler-demo {
+        position: relative;
+        background-color: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+
+      .demo-ruler {
+        height: 1.8em;
+        background-color: rgba(255, 255, 100, 0.3);
+        position: absolute;
+        left: 0;
+        width: 100%;
+        pointer-events: none;
+      }
+
+      @media (max-width: 768px) {
+        .feature-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .accessibility-hero h1 {
+          font-size: 2rem;
+        }
+
+        .accessibility-hero p {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Site Header -->
+    <div data-include="/includes/header.html"></div>
+
+    <div class="accessibility-guide">
+      <div class="accessibility-hero">
+        <h1 data-i18n="accessibility_guide.title">Neurodivergent Accessibility Features</h1>
+        <p data-i18n="accessibility_guide.subtitle">
+          Our platform is designed with accessibility at its core, offering specialized features for
+          dyslexia, ADHD, autism spectrum, and other neurodivergent learning styles.
+        </p>
+      </div>
+
+      <div class="feature-section">
+        <h2>Overview</h2>
+        <p>
+          ShatziiOS is built from the ground up to support neurodivergent learners. Our
+          accessibility features go beyond standard compliance to provide a truly inclusive learning
+          environment where every student can thrive.
+        </p>
+
+        <p>All accessibility options can be accessed through:</p>
+        <ul>
+          <li>
+            <strong>Accessibility Panel</strong> - Click the accessibility icon
+            <i class="fas fa-universal-access"></i> in the bottom right corner of any page
+          </li>
+          <li>
+            <strong>Keyboard Shortcuts</strong> - Quick access to features using keyboard
+            combinations
+          </li>
+          <li>
+            <strong>User Profile Settings</strong> - Save your preferences for consistent experience
+            across sessions
+          </li>
+        </ul>
+
+        <p>
+          Your accessibility settings are remembered across sessions and automatically applied when
+          you return to the platform.
+        </p>
+      </div>
+
+      <div class="feature-section">
+        <h2>Dyslexia-Friendly Features</h2>
+        <p>
+          Our dyslexia support is designed to make reading and writing more accessible through
+          specialized fonts, color adjustments, and spacing controls.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4><i class="fas fa-font"></i> OpenDyslexic Font</h4>
+            <p>
+              A typeface specifically designed to increase readability for readers with dyslexia,
+              with weighted bottoms to indicate direction and unique letter shapes.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-text-width"></i> Letter Spacing</h4>
+            <p>
+              Adjustable spacing between letters reduces the "crowding effect" that many dyslexic
+              readers experience, making it easier to distinguish between similar letters.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-ruler-horizontal"></i> Reading Ruler</h4>
+            <p>
+              A horizontal guide that follows your cursor to help maintain focus on the current line
+              of text and reduce getting lost in dense paragraphs.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-text-height"></i> Line Height Control</h4>
+            <p>
+              Increased space between lines reduces visual stress and helps prevent skipping lines
+              or losing place while reading longer texts.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-demo">
+          <div class="feature-demo-header">
+            <h4>Dyslexia-Friendly Text Demo</h4>
+            <div class="feature-demo-controls">
+              <button onclick="toggleDyslexicFont()">Toggle Font</button>
+            </div>
+          </div>
+          <div class="feature-demo-content">
+            <p id="dyslexic-demo" class="demo-dyslexic-text">
+              The OpenDyslexic font helps many readers by providing letters with heavier weighted
+              bottoms. This gives the letters a sense of gravity, helping to prevent them from
+              appearing to float or flip. The unique letter shapes also help prevent confusion
+              between similar-looking letters like 'b' and 'd'.
+            </p>
+          </div>
+        </div>
+
+        <h3>Reading Ruler Example</h3>
+        <div class="reading-ruler-demo">
+          <div id="demo-ruler" class="demo-ruler" style="top: 35px"></div>
+          <p>
+            The reading ruler follows your cursor as you move down the page, helping you keep track
+            of which line you're reading.
+          </p>
+          <p>
+            This feature is particularly helpful for longer passages of text where it's easy to lose
+            your place.
+          </p>
+          <p>
+            Move your mouse over this text to see how the reading ruler works. It provides a subtle
+            highlight that makes it easier to focus on just one line at a time.
+          </p>
+          <p>
+            Many dyslexic readers find this tool reduces eye strain and increases reading speed and
+            comprehension.
+          </p>
+        </div>
+      </div>
+
+      <div class="feature-section">
+        <h2>ADHD-Friendly Features</h2>
+        <p>
+          Our ADHD-focused accommodations help with focus, minimize distractions, and provide clear
+          structure to learning materials.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4><i class="fas fa-compress"></i> Focus Mode</h4>
+            <p>
+              Simplifies the interface by removing unnecessary elements and highlighting only the
+              current content, reducing visual distractions.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-mobile-alt"></i> Responsive Layout</h4>
+            <p>
+              Content is presented in digestible chunks with clear section breaks, making it easier
+              to process information and maintain focus.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-stopwatch"></i> Break Reminders</h4>
+            <p>
+              Optional timers that suggest short breaks to prevent cognitive fatigue and help
+              maintain optimal focus during longer learning sessions.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-play-circle"></i> Reduced Animations</h4>
+            <p>
+              Minimizes motion on screen to reduce distractions while preserving essential
+              interactive elements.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-demo">
+          <div class="feature-demo-header">
+            <h4>ADHD-Friendly Layout Demo</h4>
+          </div>
+          <div class="feature-demo-content">
+            <div class="demo-adhd-friendly">
+              <h4>How the ADHD-Friendly Mode Works</h4>
+              <p>This demonstration shows how content is presented in our ADHD-friendly mode:</p>
+              <ul>
+                <li>Content is presented with extra spacing to reduce visual overload</li>
+                <li>Sections have clear visual separation</li>
+                <li>Background colors reduce eye strain</li>
+                <li>Sidebar elements are de-emphasized until needed</li>
+              </ul>
+              <p>
+                These changes help users focus on the most important information without feeling
+                overwhelmed by too many elements competing for attention.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-section">
+        <h2>Autism-Friendly Features</h2>
+        <p>
+          Our autism accommodations focus on predictability, clear navigation, and sensory
+          considerations.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4><i class="fas fa-fill-drip"></i> Color Adjustment</h4>
+            <p>
+              Softer color palettes and reduced contrast options that minimize visual stress and
+              sensory overload while maintaining readability.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-ban"></i> Animation Suppression</h4>
+            <p>
+              Automatically disables animations and transitions that can be distracting or
+              overwhelming for users with sensory processing differences.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-clipboard-list"></i> Clear Structure</h4>
+            <p>
+              Consistent, predictable layout with clear headings and navigation to ensure users
+              always know where they are and what to expect.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <h4><i class="fas fa-bell-slash"></i> Notification Control</h4>
+            <p>
+              Fine-grained control over system notifications and alerts, allowing users to manage
+              potential interruptions and sensory input.
+            </p>
+          </div>
+        </div>
+
+        <div class="feature-demo">
+          <div class="feature-demo-header">
+            <h4>Autism-Friendly Mode Demo</h4>
+          </div>
+          <div class="feature-demo-content">
+            <div class="demo-autism-friendly">
+              <h4>Autism-Friendly Interface Example</h4>
+              <p>This demonstrates our autism-friendly mode with:</p>
+              <ul>
+                <li>Predictable, consistent layout</li>
+                <li>Clear visual boundaries between sections</li>
+                <li>Muted colors to reduce sensory overload</li>
+                <li>No animations or unexpected movements</li>
+                <li>Explicit, concrete language</li>
+              </ul>
+              <p>
+                The interface maintains a consistent structure throughout the platform, so
+                navigation remains familiar across different sections.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-section">
+        <h2>High Contrast Mode</h2>
+        <p>
+          Our high contrast mode provides maximum readability for users with visual processing
+          differences or low vision.
+        </p>
+
+        <div class="feature-demo">
+          <div class="feature-demo-header">
+            <h4>High Contrast Demo</h4>
+          </div>
+          <div class="feature-demo-content">
+            <div class="demo-high-contrast">
+              <h4>High Contrast Example</h4>
+              <p>The high contrast mode uses:</p>
+              <ul>
+                <li>Black background with white text for maximum contrast</li>
+                <li>Bold, clear borders around interactive elements</li>
+                <li>Enhanced focus indicators for keyboard navigation</li>
+                <li>Increased text size options</li>
+              </ul>
+              <p>
+                This mode makes content more accessible for users with contrast sensitivity or
+                certain visual processing differences.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-section">
+        <h2>Keyboard Shortcuts</h2>
+        <p>Quick access to accessibility features using keyboard shortcuts:</p>
+
+        <div class="keyboard-shortcuts">
+          <table>
+            <thead>
+              <tr>
+                <th>Shortcut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>D</kbd></td>
+                <td>Toggle Dyslexia-Friendly Mode</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>C</kbd></td>
+                <td>Toggle High Contrast Mode</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>A</kbd></td>
+                <td>Toggle ADHD-Friendly Mode</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>U</kbd></td>
+                <td>Toggle Autism-Friendly Mode</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>+</kbd></td>
+                <td>Increase Font Size</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>-</kbd></td>
+                <td>Decrease Font Size</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>R</kbd></td>
+                <td>Toggle Reading Ruler</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>M</kbd></td>
+                <td>Toggle Reduced Motion</td>
+              </tr>
+              <tr>
+                <td><kbd>Alt</kbd> + <kbd>0</kbd></td>
+                <td>Reset All Settings</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="feature-section">
+        <h2>Feedback and Continuous Improvement</h2>
+        <p>
+          We're committed to continuously improving our accessibility features based on user
+          feedback and the latest research in neurodivergent learning.
+        </p>
+
+        <p>
+          If you have suggestions for improving our accessibility features or encounter any issues,
+          please contact us at
+          <a href="mailto:accessibility@shatzii.com">accessibility@shatzii.com</a>.
+        </p>
+
+        <p>
+          Our accessibility features are developed in consultation with neurodivergent educators,
+          students, and accessibility specialists to ensure they provide meaningful support for
+          diverse learning needs.
+        </p>
+      </div>
+    </div>
+
+    <!-- Site Footer -->
+    <div data-include="/includes/footer.html"></div>
+
+    <script src="/js/include-html.js"></script>
+    <script>
+      // Demo functionality
+
+      // Toggle dyslexic font demo
+      function toggleDyslexicFont() {
+        const demo = document.getElementById('dyslexic-demo');
+        demo.classList.toggle('demo-dyslexic-text');
+      }
+
+      // Reading ruler demo
+      const rulerDemo = document.querySelector('.reading-ruler-demo');
+      const demoRuler = document.getElementById('demo-ruler');
+
+      rulerDemo.addEventListener('mousemove', function (e) {
+        const rect = rulerDemo.getBoundingClientRect();
+        const y = e.clientY - rect.top;
+        demoRuler.style.top = y - demoRuler.offsetHeight / 2 + 'px';
+      });
+
+      // Initialize the navigation system when the page loads
+      document.addEventListener('includes-loaded', function () {
+        // Fix any broken links
+        if (window.ShatziiNavigation) {
+          window.ShatziiNavigation.fixBrokenLinks();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShotziOS AI Educational Demo</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f0f4f8;
+      }
+      h1,
+      h2,
+      h3 {
+        color: #2c3e50;
+      }
+      .hero {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      .hero h1 {
+        color: white;
+        margin-bottom: 10px;
+      }
+      .hero p {
+        font-size: 18px;
+        opacity: 0.9;
+      }
+      .container {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 25px;
+      }
+      label {
+        display: block;
+        margin: 15px 0 5px;
+        font-weight: bold;
+        color: #34495e;
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 16px;
+      }
+      button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        transition: background-color 0.2s ease;
+      }
+      button:hover {
+        background-color: #2980b9;
+      }
+      .result {
+        margin-top: 25px;
+        padding: 20px;
+        border-left: 4px solid #3498db;
+        border-radius: 4px;
+        background-color: #f9f9f9;
+        white-space: pre-wrap;
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .tabs {
+        display: flex;
+        margin-bottom: 25px;
+        border-bottom: 1px solid #ddd;
+      }
+      .tab {
+        padding: 12px 24px;
+        cursor: pointer;
+        margin-right: 5px;
+        border-radius: 5px 5px 0 0;
+        transition: all 0.2s ease;
+      }
+      .tab.active {
+        background-color: #3498db;
+        color: white;
+        font-weight: bold;
+      }
+      .tab:not(.active):hover {
+        background-color: #f0f0f0;
+      }
+      .tab-content {
+        display: none;
+      }
+      .tab-content.active {
+        display: block;
+      }
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 2s linear infinite;
+        margin: 20px auto;
+        display: none;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .error {
+        background-color: #ffebee;
+        border-left: 4px solid #f44336;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 4px;
+        color: #c62828;
+      }
+      .success {
+        background-color: #e8f5e9;
+        border-left: 4px solid #4caf50;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 4px;
+        color: #2e7d32;
+      }
+      .neurodivergent-options {
+        margin-top: 10px;
+        padding: 15px;
+        background-color: #e3f2fd;
+        border-radius: 4px;
+        border-left: 4px solid #2196f3;
+      }
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+        color: #7f8c8d;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <h1>ShotziOS AI Educational Platform</h1>
+      <p>Personalized, inclusive learning experiences through AI-powered educational tools</p>
+    </div>
+
+    <div class="container">
+      <div class="tabs">
+        <div class="tab active" data-tab="content">Educational Content</div>
+        <div class="tab" data-tab="path">Learning Path</div>
+        <div class="tab" data-tab="neurodivergent">Neurodivergent Support</div>
+      </div>
+
+      <div class="tab-content active" id="content-tab">
+        <h2>Generate Educational Content</h2>
+        <form id="content-form">
+          <label for="subject">Subject:</label>
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            placeholder="e.g., Mathematics, Science, History"
+            required
+          />
+
+          <label for="grade">Grade Level:</label>
+          <select id="grade" name="grade" required>
+            <option value="">Select Grade</option>
+            <option value="Pre-K">Pre-K</option>
+            <option value="Kindergarten">Kindergarten</option>
+            <option value="1st">1st Grade</option>
+            <option value="2nd">2nd Grade</option>
+            <option value="3rd">3rd Grade</option>
+            <option value="4th">4th Grade</option>
+            <option value="5th">5th Grade</option>
+            <option value="6th">6th Grade</option>
+            <option value="7th">7th Grade</option>
+            <option value="8th">8th Grade</option>
+            <option value="9th">9th Grade</option>
+            <option value="10th">10th Grade</option>
+            <option value="11th">11th Grade</option>
+            <option value="12th">12th Grade</option>
+            <option value="College">College</option>
+          </select>
+
+          <label for="format">Content Format:</label>
+          <select id="format" name="format">
+            <option value="lesson plan">Lesson Plan</option>
+            <option value="student guide">Student Guide</option>
+            <option value="quiz with answers">Quiz with Answers</option>
+            <option value="visual concept map">Visual Concept Map</option>
+            <option value="interactive activity">Interactive Activity</option>
+          </select>
+
+          <label for="content">Content Request:</label>
+          <textarea
+            id="content"
+            name="content"
+            rows="4"
+            placeholder="e.g., Create a lesson about photosynthesis with examples and diagrams"
+            required
+          ></textarea>
+
+          <button type="submit">Generate Content</button>
+        </form>
+        <div class="loader" id="content-loader"></div>
+        <div class="result" id="content-result"></div>
+      </div>
+
+      <div class="tab-content" id="path-tab">
+        <h2>Generate Personalized Learning Path</h2>
+        <form id="path-form">
+          <label for="path-subject">Subject:</label>
+          <input
+            type="text"
+            id="path-subject"
+            name="subject"
+            placeholder="e.g., Algebra, World History, Spanish"
+            required
+          />
+
+          <label for="path-grade">Grade Level:</label>
+          <select id="path-grade" name="grade" required>
+            <option value="">Select Grade</option>
+            <option value="Pre-K">Pre-K</option>
+            <option value="Kindergarten">Kindergarten</option>
+            <option value="1st">1st Grade</option>
+            <option value="2nd">2nd Grade</option>
+            <option value="3rd">3rd Grade</option>
+            <option value="4th">4th Grade</option>
+            <option value="5th">5th Grade</option>
+            <option value="6th">6th Grade</option>
+            <option value="7th">7th Grade</option>
+            <option value="8th">8th Grade</option>
+            <option value="9th">9th Grade</option>
+            <option value="10th">10th Grade</option>
+            <option value="11th">11th Grade</option>
+            <option value="12th">12th Grade</option>
+            <option value="College">College</option>
+          </select>
+
+          <label for="preferences">Student Preferences:</label>
+          <input
+            type="text"
+            id="preferences"
+            name="studentPreferences"
+            placeholder="e.g., Visual learning, Hands-on activities, Group work"
+          />
+
+          <label for="learning-style">Learning Style:</label>
+          <select id="learning-style" name="learningStyle">
+            <option value="Visual">Visual</option>
+            <option value="Auditory">Auditory</option>
+            <option value="Kinesthetic">Kinesthetic (Hands-on)</option>
+            <option value="Reading/Writing">Reading/Writing</option>
+            <option value="Multimodal">Multimodal (Mixed)</option>
+          </select>
+
+          <label for="current-level">Current Knowledge Level:</label>
+          <select id="current-level" name="currentLevel">
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+
+          <button type="submit">Generate Learning Path</button>
+        </form>
+        <div class="loader" id="path-loader"></div>
+        <div class="result" id="path-result"></div>
+      </div>
+
+      <div class="tab-content" id="neurodivergent-tab">
+        <h2>Neurodivergent Educational Support</h2>
+        <p>Generate educational content specifically adapted for neurodivergent learning needs.</p>
+
+        <form id="neurodivergent-form">
+          <label for="nd-subject">Subject:</label>
+          <input
+            type="text"
+            id="nd-subject"
+            name="subject"
+            placeholder="e.g., Mathematics, Science, History"
+            required
+          />
+
+          <label for="nd-grade">Grade Level:</label>
+          <select id="nd-grade" name="grade" required>
+            <option value="">Select Grade</option>
+            <option value="Pre-K">Pre-K</option>
+            <option value="Kindergarten">Kindergarten</option>
+            <option value="1st">1st Grade</option>
+            <option value="2nd">2nd Grade</option>
+            <option value="3rd">3rd Grade</option>
+            <option value="4th">4th Grade</option>
+            <option value="5th">5th Grade</option>
+            <option value="6th">6th Grade</option>
+            <option value="7th">7th Grade</option>
+            <option value="8th">8th Grade</option>
+            <option value="9th">9th Grade</option>
+            <option value="10th">10th Grade</option>
+            <option value="11th">11th Grade</option>
+            <option value="12th">12th Grade</option>
+            <option value="College">College</option>
+          </select>
+
+          <label for="nd-concept">Concept or Topic:</label>
+          <input
+            type="text"
+            id="nd-concept"
+            name="concept"
+            placeholder="e.g., Fractions, Cell Biology, American Revolution"
+            required
+          />
+
+          <div class="neurodivergent-options">
+            <label for="nd-type">Neurodivergent Support Type:</label>
+            <select id="nd-type" name="neurotype">
+              <option value="ADHD">ADHD</option>
+              <option value="Autism Spectrum">Autism Spectrum</option>
+              <option value="Dyslexia">Dyslexia</option>
+              <option value="Dyscalculia">Dyscalculia</option>
+              <option value="Sensory Processing">Sensory Processing</option>
+              <option value="Executive Function">Executive Function Support</option>
+            </select>
+
+            <label for="nd-format">Content Format:</label>
+            <select id="nd-format" name="format">
+              <option value="Visual Guide">Visual Guide</option>
+              <option value="Step-by-Step Instructions">Step-by-Step Instructions</option>
+              <option value="Audio-Visual Content">Audio-Visual Content</option>
+              <option value="Interactive Exercise">Interactive Exercise</option>
+              <option value="Mind Map">Mind Map</option>
+              <option value="Sensory-Friendly Lesson">Sensory-Friendly Lesson</option>
+            </select>
+          </div>
+
+          <button type="submit">Generate Adapted Content</button>
+        </form>
+        <div class="loader" id="nd-loader"></div>
+        <div class="result" id="nd-result"></div>
+      </div>
+    </div>
+
+    <footer>
+      <p>© 2025 ShotziOS Educational Platform | Neurodivergent-friendly learning</p>
+    </footer>
+
+    <script>
+      // Tab switching functionality
+      document.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs and content
+          document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach((c) => c.classList.remove('active'));
+
+          // Add active class to clicked tab
+          tab.classList.add('active');
+
+          // Show corresponding content
+          const tabName = tab.getAttribute('data-tab');
+          document.getElementById(tabName + '-tab').classList.add('active');
+        });
+      });
+
+      // Helper function to show loader
+      function showLoader(id) {
+        document.getElementById(id).style.display = 'block';
+      }
+
+      // Helper function to hide loader
+      function hideLoader(id) {
+        document.getElementById(id).style.display = 'none';
+      }
+
+      // Helper function to display results
+      function displayResult(id, content) {
+        const resultEl = document.getElementById(id);
+        resultEl.innerHTML = content;
+        resultEl.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // Helper function to display error
+      function displayError(id, message) {
+        const resultEl = document.getElementById(id);
+        resultEl.innerHTML = `<div class="error">Error: ${message}</div>`;
+        resultEl.scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // Submit handler for educational content form
+      document.getElementById('content-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData(e.target);
+        const formObject = Object.fromEntries(formData.entries());
+
+        // Show loader
+        showLoader('content-loader');
+
+        try {
+          // Make API call
+          const response = await fetch('/api/education/generate-content', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formObject),
+          });
+
+          // Check if request was successful
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to generate content');
+          }
+
+          // Parse response
+          const data = await response.json();
+
+          // Display result
+          displayResult('content-result', `<h3>Generated Content:</h3>${data.content}`);
+        } catch (error) {
+          // Display error
+          displayError('content-result', error.message);
+        } finally {
+          // Hide loader
+          hideLoader('content-loader');
+        }
+      });
+
+      // Submit handler for learning path form
+      document.getElementById('path-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData(e.target);
+        const formObject = Object.fromEntries(formData.entries());
+
+        // Show loader
+        showLoader('path-loader');
+
+        try {
+          // Make API call
+          const response = await fetch('/api/education/learning-path', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formObject),
+          });
+
+          // Check if request was successful
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to generate learning path');
+          }
+
+          // Parse response
+          const data = await response.json();
+
+          // Display result
+          displayResult('path-result', `<h3>Personalized Learning Path:</h3>${data.learningPath}`);
+        } catch (error) {
+          // Display error
+          displayError('path-result', error.message);
+        } finally {
+          // Hide loader
+          hideLoader('path-loader');
+        }
+      });
+
+      // Submit handler for neurodivergent form
+      document.getElementById('neurodivergent-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Get form data
+        const formData = new FormData(e.target);
+        const formObject = Object.fromEntries(formData.entries());
+
+        // Format the request for the API
+        const apiPayload = {
+          subject: formObject.subject,
+          grade: formObject.grade,
+          content: `Create educational content about "${formObject.concept}" specifically adapted for students with ${formObject.neurotype}. Format as a ${formObject.format}.`,
+        };
+
+        // Show loader
+        showLoader('nd-loader');
+
+        try {
+          // Make API call
+          const response = await fetch('/api/education/generate-content', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(apiPayload),
+          });
+
+          // Check if request was successful
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to generate neurodivergent content');
+          }
+
+          // Parse response
+          const data = await response.json();
+
+          // Display result
+          displayResult(
+            'nd-result',
+            `
+          <h3>Neurodivergent-Adapted Content:</h3>
+          <p><strong>Subject:</strong> ${formObject.subject}</p>
+          <p><strong>Grade:</strong> ${formObject.grade}</p>
+          <p><strong>Adapted for:</strong> ${formObject.neurotype}</p>
+          <p><strong>Format:</strong> ${formObject.format}</p>
+          <div class="success">AI-generated content optimized for ${formObject.neurotype} learning needs:</div>
+          <div style="margin-top: 15px;">${data.content}</div>
+        `,
+          );
+        } catch (error) {
+          // Display error
+          displayError('nd-result', error.message);
+        } finally {
+          // Hide loader
+          hideLoader('nd-loader');
+        }
+      });
+    </script>
+  </body>
+</html>

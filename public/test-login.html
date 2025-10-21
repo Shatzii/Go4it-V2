@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShotziOS - Login</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #5f75ed, #9c27b0);
+            color: #333;
+        }
+        .login-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+        h1 {
+            text-align: center;
+            color: #5f75ed;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #5f75ed;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #4a5fc7;
+        }
+        .error-message {
+            color: #e53935;
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 1.5rem;
+            max-width: 150px;
+        }
+        .help-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .accessibility-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .accessibility-button {
+            background: none;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #5f75ed;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <img src="/assets/logo.svg" alt="ShotziOS Logo" class="logo" onerror="this.src='https://via.placeholder.com/150x60?text=ShotziOS'">
+        <h1>Welcome to ShotziOS</h1>
+        
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            
+            <button type="submit">Log In</button>
+            
+            <div id="error-message" class="error-message"></div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Logging in...</p>
+            </div>
+        </form>
+        
+        <div class="help-text">
+            <p>Default login: <strong>admin</strong> / <strong>password123</strong></p>
+            <p>Press Alt+H for voice guidance assistance</p>
+        </div>
+        
+        <div class="accessibility-controls">
+            <button class="accessibility-button" title="Voice Guidance" aria-label="Toggle Voice Guidance">🔊</button>
+            <button class="accessibility-button" title="High Contrast" aria-label="Toggle High Contrast">👁️</button>
+            <button class="accessibility-button" title="Larger Text" aria-label="Toggle Larger Text">A+</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const errorMessage = document.getElementById('error-message');
+            const loading = document.getElementById('loading');
+            
+            // Simulated valid credentials for testing
+            const validCredentials = {
+                'admin': 'password123',
+                'student': 'student123',
+                'teacher': 'teacher123',
+                'parent': 'parent123'
+            };
+            
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                // Show loading spinner
+                loading.style.display = 'block';
+                errorMessage.textContent = '';
+                
+                // Simulate API call with a delay
+                setTimeout(function() {
+                    // Check credentials
+                    if (validCredentials[username] && validCredentials[username] === password) {
+                        // Successful login
+                        window.location.href = '/dashboard.html';
+                    } else {
+                        // Failed login
+                        loading.style.display = 'none';
+                        errorMessage.textContent = 'Invalid username or password. Please try again.';
+                    }
+                }, 1000);
+            });
+            
+            // Basic accessibility feature - voice guidance on Alt+H
+            document.addEventListener('keydown', function(e) {
+                if (e.altKey && e.key === 'h') {
+                    speak('You are on the login page. Enter your username and password to access the system. Press Tab to navigate between fields. Default login is admin with password password123.');
+                }
+            });
+            
+            // Simple speech synthesis function
+            function speak(text) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+            
+            // Implement accessibility buttons
+            const accessibilityButtons = document.querySelectorAll('.accessibility-button');
+            
+            accessibilityButtons[0].addEventListener('click', function() {
+                speak('Voice guidance activated. You are on the login page. Enter your username and password to access the system.');
+            });
+            
+            accessibilityButtons[1].addEventListener('click', function() {
+                document.body.classList.toggle('high-contrast');
+                speak('High contrast mode toggled');
+            });
+            
+            accessibilityButtons[2].addEventListener('click', function() {
+                document.body.classList.toggle('large-text');
+                document.documentElement.style.fontSize = document.body.classList.contains('large-text') ? '120%' : '100%';
+                speak('Larger text mode toggled');
+            });
+        });
+    </script>
+</body>
+</html>

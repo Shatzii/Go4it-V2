@@ -1,0 +1,125 @@
+{
+  "school": "law",
+  "theme": "professional",
+  "programs": {
+    "foundations": {
+      "name": "Legal Foundations",
+      "courses": [
+        {
+          "id": "constitutional-law",
+          "title": "Constitutional Law Fundamentals",
+          "description": "Core principles of constitutional interpretation and application",
+          "level": "foundational",
+          "adaptations": {
+            "dyslexia": ["case law summaries", "visual constitutional maps", "audio case briefs"],
+            "adhd": ["interactive case studies", "debate formats", "varied assessment methods"],
+            "autism": [
+              "structured legal frameworks",
+              "clear precedent chains",
+              "predictable analysis methods"
+            ]
+          }
+        },
+        {
+          "id": "legal-writing",
+          "title": "Legal Writing & Research",
+          "description": "Professional legal communication and research skills",
+          "level": "foundational",
+          "adaptations": {
+            "dyslexia": ["writing templates", "citation tools", "collaborative drafting"],
+            "adhd": [
+              "breaking large briefs into sections",
+              "immediate feedback",
+              "choice in topics"
+            ],
+            "autism": ["standardized formats", "clear rubrics", "step-by-step processes"]
+          }
+        }
+      ]
+    },
+    "specializations": {
+      "name": "Legal Specializations",
+      "courses": [
+        {
+          "id": "disability-law",
+          "title": "Disability Rights & Advocacy",
+          "description": "Legal frameworks for disability rights and accommodation",
+          "level": "advanced",
+          "adaptations": {
+            "dyslexia": [
+              "lived experience integration",
+              "visual rights frameworks",
+              "advocacy practice"
+            ],
+            "adhd": ["case-based learning", "real-world applications", "mentorship programs"],
+            "autism": [
+              "systematic rights analysis",
+              "clear advocacy procedures",
+              "structured practice"
+            ]
+          }
+        },
+        {
+          "id": "education-law",
+          "title": "Education Law & Policy",
+          "description": "Legal issues in educational settings and policy development",
+          "level": "advanced",
+          "adaptations": {
+            "dyslexia": [
+              "policy analysis tools",
+              "collaborative research",
+              "multiple presentation formats"
+            ],
+            "adhd": [
+              "current event integration",
+              "varied learning formats",
+              "practical applications"
+            ],
+            "autism": [
+              "systematic policy frameworks",
+              "clear legal hierarchies",
+              "structured analysis"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "instructors": [
+    {
+      "id": "professor-justice",
+      "name": "Professor Justice",
+      "specialties": ["constitutional law", "civil rights", "legal ethics"],
+      "personality": "principled, patient, socially conscious",
+      "adaptations": {
+        "dyslexia": "Provides multiple case presentation formats, uses visual legal mapping, celebrates diverse legal thinking",
+        "adhd": "Incorporates current events, uses interactive case studies, provides flexible assessment options",
+        "autism": "Follows structured legal analysis, provides clear precedent chains, ensures predictable classroom routines"
+      }
+    },
+    {
+      "id": "attorney-advocate",
+      "name": "Attorney Advocate",
+      "specialties": ["disability law", "education law", "practical skills"],
+      "personality": "empowering, experienced, advocacy-focused",
+      "adaptations": {
+        "dyslexia": "Integrates lived experiences, provides mentorship, uses strength-based approaches",
+        "adhd": "Offers real-world practice, provides immediate applications, uses varied learning methods",
+        "autism": "Creates structured advocacy frameworks, provides clear practice protocols, ensures systematic skill building"
+      }
+    }
+  ],
+  "clinical_programs": [
+    {
+      "id": "disability-rights-clinic",
+      "name": "Disability Rights Legal Clinic",
+      "description": "Real-world legal practice serving disability rights cases",
+      "supervision": "Licensed attorneys with disability law expertise",
+      "adaptations": {
+        "dyslexia": "Client communication support, document preparation assistance, strength-based case assignments",
+        "adhd": "Flexible scheduling, varied case types, immediate feedback and supervision",
+        "autism": "Structured case management, clear client interaction protocols, systematic legal procedures"
+      }
+    }
+  ]
+}

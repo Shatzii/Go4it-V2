@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Test - ShatziiOS</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .nav-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .nav-section h3 {
+            margin-top: 0;
+            color: #fbbf24;
+        }
+        .nav-link {
+            display: block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .nav-link:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .status {
+            background: rgba(0,255,0,0.2);
+            border: 1px solid rgba(0,255,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 ShatziiOS Navigation Test</h1>
+        
+        <div class="status">
+            ✅ JavaScript Error Fixed - All Links Should Work Now
+        </div>
+
+        <div class="nav-grid">
+            <div class="nav-section">
+                <h3>🦸 Primary School (K-6)</h3>
+                <a href="/schools/primary-school/" class="nav-link">School Homepage</a>
+                <a href="/admin/primary-school/" class="nav-link">📊 Student Dashboard</a>
+                <a href="/admin/primary-school/teacher/" class="nav-link">👩‍🏫 Teacher Portal</a>
+                <a href="/admin/primary-school/parent/" class="nav-link">👨‍👩‍👧‍👦 Parent Access</a>
+            </div>
+
+            <div class="nav-section">
+                <h3>🎓 Secondary School (7-12)</h3>
+                <a href="/schools/secondary-school/" class="nav-link">School Homepage</a>
+                <a href="/admin/secondary-school/" class="nav-link">📊 Student Dashboard</a>
+                <a href="/admin/secondary-school/teacher/" class="nav-link">👩‍🏫 Teacher Portal</a>
+                <a href="/admin/secondary-school/parent/" class="nav-link">👨‍👩‍👧‍👦 Parent Access</a>
+            </div>
+
+            <div class="nav-section">
+                <h3>⚖️ Law School</h3>
+                <a href="/schools/law-school/" class="nav-link">School Homepage</a>
+                <a href="/admin/law-school/" class="nav-link">📊 Student Dashboard</a>
+                <a href="/admin/law-school/teacher/" class="nav-link">👩‍🏫 Professor Portal</a>
+                <a href="/admin/law-school/parent/" class="nav-link">👨‍👩‍👧‍👦 Family Access</a>
+            </div>
+
+            <div class="nav-section">
+                <h3>🌍 Language School</h3>
+                <a href="/schools/language-school/" class="nav-link">School Homepage</a>
+                <a href="/admin/language-school/" class="nav-link">📊 Student Dashboard</a>
+                <a href="/admin/language-school/teacher/" class="nav-link">👩‍🏫 Instructor Portal</a>
+                <a href="/admin/language-school/parent/" class="nav-link">👨‍👩‍👧‍👦 Family Access</a>
+            </div>
+        </div>
+
+        <div class="nav-section">
+            <h3>🚀 Special Features</h3>
+            <a href="/learning-path-demo" class="nav-link">🗺️ Learning Path Visualizer</a>
+            <a href="/demo/" class="nav-link">🤖 AI Tutor Demo</a>
+            <a href="/" class="nav-link">🏠 Main Landing Page</a>
+        </div>
+
+        <div class="status">
+            <strong>How to Access Student Dashboards:</strong><br>
+            1. Go to any school homepage<br>
+            2. Click the red "Student Dashboard" button in the top navigation<br>
+            3. Or use the direct links above
+        </div>
+    </div>
+</body>
+</html>

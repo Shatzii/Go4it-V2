@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShatziiOS Platform - Site Structure Documentation</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #3b82f6;
+            --accent: #60a5fa;
+            --background: #f8fafc;
+            --text: #1e293b;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--background);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            margin: 1.5rem 0 1rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+
+        .card-icon {
+            margin-right: 0.75rem;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .card p {
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .view-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .view-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .docs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ShatziiOS Platform</h1>
+            <p>Site Structure Documentation & Navigation</p>
+        </header>
+
+        <section class="card">
+            <h2>About This Documentation</h2>
+            <p>This collection of documents provides comprehensive information about the ShatziiOS platform's site map, architecture, and organization. These resources are designed to help developers understand the platform structure and ensure optimal performance.</p>
+            <p>The ShatziiOS platform features multiple specialized schools with a focus on neurodivergent learners, including K-6 Primary (Superhero Theme), 7-12 Secondary (Mature Theme), Law School, and Language Learning School.</p>
+        </section>
+
+        <h2>Documentation Resources</h2>
+        <div class="docs-grid">
+            <div class="card">
+                <h3>
+                    <div class="card-icon">🗺️</div>
+                    Interactive Site Map
+                </h3>
+                <p>A comprehensive visualization of the ShatziiOS platform structure with detailed sections for each school type, API structure, architecture diagram, and performance optimization recommendations.</p>
+                <a href="/improved-site-map.html" class="view-btn">View Site Map</a>
+            </div>
+
+            <div class="card">
+                <h3>
+                    <div class="card-icon">📚</div>
+                    API Structure
+                </h3>
+                <p>Detailed JSON documentation of all API endpoints organized by category, including authentication, assessment, school-specific functionality, AI services, and more.</p>
+                <a href="/api-structure.json" class="view-btn">View API Structure</a>
+            </div>
+
+            <div class="card">
+                <h3>
+                    <div class="card-icon">📁</div>
+                    Directory Structure
+                </h3>
+                <p>A visualization of the recommended file and directory organization for the ShatziiOS platform, with guidelines for frontend, backend, and shared code.</p>
+                <a href="/DIRECTORY-STRUCTURE.md" class="view-btn" target="_blank">View Directory Structure</a>
+            </div>
+
+            <div class="card">
+                <h3>
+                    <div class="card-icon">📋</div>
+                    Site Map README
+                </h3>
+                <p>A comprehensive overview of the ShatziiOS platform architecture, educational programs, system structure, pricing tiers, and performance optimization strategies.</p>
+                <a href="/SITE-MAP-README.md" class="view-btn" target="_blank">View Site Map README</a>
+            </div>
+
+            <div class="card">
+                <h3>
+                    <div class="card-icon">💻</div>
+                    Original Site Map
+                </h3>
+                <p>The initial site map visualization showing the platform structure, educational programs, and architecture diagram.</p>
+                <a href="/site-map.html" class="view-btn">View Original Site Map</a>
+            </div>
+
+            <div class="card">
+                <h3>
+                    <div class="card-icon">🚀</div>
+                    Performance Strategies
+                </h3>
+                <p>Detailed recommendations for optimizing platform performance, including content loading strategies, caching, API processing, and adaptive UI components.</p>
+                <a href="/improved-site-map.html#performance-optimization-recommendations" class="view-btn">View Performance Strategies</a>
+            </div>
+        </div>
+
+        <section class="card" style="margin-top: 2rem;">
+            <h2>Implementation Priority</h2>
+            <ol>
+                <li><strong>User Authentication & Role System:</strong> Implement the multi-role login system (student, parent, teacher, admin) with appropriate access controls.</li>
+                <li><strong>Landing Page Structure:</strong> Create consistent landing pages for each school with news, blogs, and community features.</li>
+                <li><strong>Assessment Integration:</strong> Ensure real-time learning profile assessment is integrated with all curriculum generators.</li>
+                <li><strong>Tiered Content Generation:</strong> Implement the three-tier pricing model with appropriate AI content generation limits.</li>
+                <li><strong>Community Features:</strong> Develop school-specific community features for family coordination and event planning.</li>
+                <li><strong>Sentinel Security Integration:</strong> Ensure the Sentinel cybersecurity program is integrated with all platform components.</li>
+                <li><strong>Performance Optimization:</strong> Apply the recommended performance optimization strategies across all platform components.</li>
+            </ol>
+        </section>
+
+        <footer>
+            <p>ShatziiOS Platform - Site Structure Documentation</p>
+            <p>Last Updated: April 26, 2025</p>
+        </footer>
+    </div>
+</body>
+</html>

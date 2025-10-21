@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="primary_school.hero.title">K-6 Primary School for Neurodivergent Learners - ShatziiOS</title>
+    <meta name="description" content="Specialized education for K-6 neurodivergent students with dyslexia, ADHD, and autism spectrum accommodations in a supportive, engaging environment.">
+    
+    <!-- Favicon and icons -->
+    <link rel="icon" href="/favicon.ico">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Base Stylesheet -->
+    <link rel="stylesheet" href="/css/global.css">
+    
+    <!-- Primary School Specific Styles -->
+    <style>
+        :root {
+            /* Primary school theme colors - superhero theme */
+            --primary-color: #4361ee;
+            --secondary-color: #e63946;
+            --accent-color: #fee440;
+            --background-color: #f8f9fa;
+            --text-color: #2b2d42;
+            --card-background: #ffffff;
+        }
+        
+        body {
+            font-family: var(--primary-font, 'Arial', sans-serif);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Hero section styles */
+        .hero {
+            background-image: linear-gradient(to right, #4361ee, #3f37c9);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('/images/primary-hero-pattern.svg');
+            background-size: cover;
+            opacity: 0.1;
+            z-index: 1;
+        }
+        
+        /* Feature cards */
+        .features {
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background-color: var(--primary-color);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        /* Curriculum section */
+        .curriculum {
+            background-color: #f1f5f9;
+            padding: 3rem 1rem;
+        }
+        
+        .curriculum-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .curriculum h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .subject-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-top: 4px solid var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .subject-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .subject-card h3 i {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .subject-card ul {
+            padding-left: 1.5rem;
+            margin-bottom: 0;
+        }
+        
+        .subject-card li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* CTA section */
+        .cta {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        
+        .primary-button {
+            background-color: white;
+            color: var(--primary-color);
+        }
+        
+        .primary-button:hover {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+        
+        .secondary-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .secondary-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 3rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .testimonials h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .testimonial-card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e2e8f0;
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .testimonial-info h4 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        
+        .testimonial-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #64748b;
+            font-style: normal;
+        }
+        
+        .quote-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 2rem;
+            color: rgba(67, 97, 238, 0.1);
+        }
+        
+        /* Accessibility features highlight section */
+        .accessibility-features {
+            background-color: #e6f7ff;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+        
+        .accessibility-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .accessibility-features h2 {
+            color: #2c5282;
+            margin-bottom: 1.5rem;
+        }
+        
+        .accessibility-features p {
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+        
+        .accessibility-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .accessibility-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        
+        .accessibility-card h3 {
+            color: #2c5282;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .accessibility-card h3 i {
+            margin-right: 0.75rem;
+            color: #4299e1;
+        }
+        
+        .accessibility-button {
+            display: inline-block;
+            background-color: #4299e1;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        
+        .accessibility-button:hover {
+            background-color: #2c5282;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .features h2, 
+            .curriculum h2, 
+            .testimonials h2, 
+            .cta h2,
+            .accessibility-features h2 {
+                font-size: 1.75rem;
+            }
+            
+            .feature-grid, 
+            .subject-grid, 
+            .testimonial-grid,
+            .accessibility-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* High contrast mode adjustments */
+        .high-contrast .hero {
+            background-image: none;
+            background-color: black;
+        }
+        
+        .high-contrast .hero-overlay {
+            display: none;
+        }
+        
+        .high-contrast .feature-card,
+        .high-contrast .subject-card,
+        .high-contrast .testimonial-card,
+        .high-contrast .accessibility-card {
+            background-color: black;
+            border: 2px solid white;
+        }
+        
+        .high-contrast .curriculum,
+        .high-contrast .accessibility-features {
+            background-color: black;
+        }
+        
+        .high-contrast .cta {
+            background-color: black;
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
+        }
+        
+        /* ADHD friendly mode adjustments */
+        .adhd-friendly .feature-grid,
+        .adhd-friendly .subject-grid,
+        .adhd-friendly .testimonial-grid,
+        .adhd-friendly .accessibility-grid {
+            gap: 1.5rem;
+        }
+        
+        .adhd-friendly .feature-card,
+        .adhd-friendly .subject-card,
+        .adhd-friendly .testimonial-card,
+        .adhd-friendly .accessibility-card {
+            transition: none;
+        }
+        
+        .adhd-friendly .feature-card:hover {
+            transform: none;
+        }
+        
+        /* Autism friendly mode adjustments */
+        .autism-friendly * {
+            animation: none !important;
+            transition: color 0.3s ease, background-color 0.3s ease !important;
+        }
+        
+        .autism-friendly .hero {
+            background: #4361ee;
+        }
+        
+        .autism-friendly .hero-overlay {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Site Header -->
+    <div data-include="/includes/header.html"></div>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <h1 data-i18n="primary_school.hero.title">K-6 Primary School for Neurodivergent Superheroes</h1>
+        <p data-i18n="primary_school.hero.subtitle">Empowering dyslexic, ADHD, and autism spectrum learners with personalized education in a supportive, engaging environment designed to help each child discover their unique superpowers.</p>
+        <div class="cta-buttons">
+            <a href="/primary/curriculum" class="cta-button primary-button" data-i18n="common.buttons.explore">Explore Curriculum</a>
+            <a href="/primary/enroll" class="cta-button secondary-button" data-i18n="common.buttons.enroll">Enroll Now</a>
+        </div>
+    </section>
+    
+    <!-- Accessibility Features Highlight -->
+    <section class="accessibility-features">
+        <div class="accessibility-container">
+            <h2 data-i18n="primary_school.accessibility_section.title">Built for Neurodivergent Minds</h2>
+            <p data-i18n="primary_school.accessibility_section.subtitle">Our platform is specifically designed to support students with dyslexia, ADHD, autism spectrum, and other learning differences through comprehensive accessibility features.</p>
+            
+            <div class="accessibility-grid">
+                <div class="accessibility-card">
+                    <h3><i class="fas fa-book-reader"></i> <span data-i18n="primary_school.accessibility_section.dyslexia_title">Dyslexia Support</span></h3>
+                    <p data-i18n="primary_school.accessibility_section.dyslexia_text">Specialized fonts, adjustable letter spacing, reading rulers, and color overlays make reading accessible and enjoyable for students with dyslexia.</p>
+                </div>
+                
+                <div class="accessibility-card">
+                    <h3><i class="fas fa-lightbulb"></i> <span data-i18n="primary_school.accessibility_section.adhd_title">ADHD Accommodation</span></h3>
+                    <p data-i18n="primary_school.accessibility_section.adhd_text">Focus mode, distraction reduction, break timers, and chunked content help students with ADHD maintain attention and manage energy effectively.</p>
+                </div>
+                
+                <div class="accessibility-card">
+                    <h3><i class="fas fa-puzzle-piece"></i> <span data-i18n="primary_school.accessibility_section.autism_title">Autism-Friendly Design</span></h3>
+                    <p data-i18n="primary_school.accessibility_section.autism_text">Consistent layouts, predictable navigation, reduced animations, and sensory-aware design create a comfortable learning environment for autistic students.</p>
+                </div>
+                
+                <div class="accessibility-card">
+                    <h3><i class="fas fa-universal-access"></i> <span data-i18n="primary_school.accessibility_section.personalized_title">Personalized Settings</span></h3>
+                    <p data-i18n="primary_school.accessibility_section.personalized_text">Each student can customize their learning interface to match their specific needs, with settings that persist across sessions and devices.</p>
+                </div>
+            </div>
+            
+            <a href="/accessibility-guide" class="accessibility-button" data-i18n="primary_school.accessibility_section.explore_button">Explore All Accessibility Features</a>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features">
+        <h2 data-i18n="primary_school.features.title">Our Approach to Neurodivergent Learning</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 data-i18n="primary_school.features.strength_title">Strength-Based Learning</h3>
+                <p data-i18n="primary_school.features.strength_text">We focus on identifying and building upon each student's unique strengths rather than remediating perceived deficits. This approach builds confidence and genuine mastery while honoring neurodivergent thinking styles.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 data-i18n="primary_school.features.class_size_title">Small Class Sizes</h3>
+                <p data-i18n="primary_school.features.class_size_text">With a maximum of 15 students per class and dedicated teaching assistants, we provide the personalized attention and support that neurodivergent learners need to thrive in a collaborative environment.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <h3 data-i18n="primary_school.features.gamified_title">Gamified Learning</h3>
+                <p data-i18n="primary_school.features.gamified_text">Our curriculum incorporates game-based learning approaches that leverage natural motivation, provide immediate feedback, and create engaging pathways for mastering academic content.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Curriculum Section -->
+    <section class="curriculum">
+        <div class="curriculum-container">
+            <h2>Superpowered Curriculum</h2>
+            <div class="subject-grid">
+                <div class="subject-card">
+                    <h3><i class="fas fa-book"></i> Language Arts</h3>
+                    <ul>
+                        <li>Multi-sensory reading instruction</li>
+                        <li>Speech-to-text writing support</li>
+                        <li>Graphic novel literature studies</li>
+                        <li>Oral storytelling workshops</li>
+                    </ul>
+                </div>
+                
+                <div class="subject-card">
+                    <h3><i class="fas fa-calculator"></i> Mathematics</h3>
+                    <ul>
+                        <li>Hands-on manipulatives</li>
+                        <li>Visual math modeling</li>
+                        <li>Real-world math applications</li>
+                        <li>Game-based number skills</li>
+                    </ul>
+                </div>
+                
+                <div class="subject-card">
+                    <h3><i class="fas fa-flask"></i> Science</h3>
+                    <ul>
+                        <li>Experiential learning labs</li>
+                        <li>Nature-based exploration</li>
+                        <li>Special interest deep dives</li>
+                        <li>Technology-enhanced experiments</li>
+                    </ul>
+                </div>
+                
+                <div class="subject-card">
+                    <h3><i class="fas fa-globe"></i> Social Studies</h3>
+                    <ul>
+                        <li>Visual timeline navigation</li>
+                        <li>Interactive map exploration</li>
+                        <li>Cultural immersion projects</li>
+                        <li>Community-based learning</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <h2>What Our Families Say</h2>
+        <div class="testimonial-grid">
+            <div class="testimonial-card">
+                <i class="fas fa-quote-right quote-icon"></i>
+                <p>After struggling in traditional school, my dyslexic son is finally excited about learning. The teachers understand his needs and have helped him discover his strengths. His reading has improved tremendously, but more importantly, his confidence has soared.</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">JM</div>
+                    <div class="testimonial-info">
+                        <h4>Jennifer M.</h4>
+                        <p>Parent of a 3rd grader</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <i class="fas fa-quote-right quote-icon"></i>
+                <p>My daughter with ADHD used to come home in tears every day. At ShatziiOS Primary, they embrace her energy and creativity instead of trying to suppress it. The flexible learning environment and understanding teachers have made all the difference.</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">RL</div>
+                    <div class="testimonial-info">
+                        <h4>Robert L.</h4>
+                        <p>Parent of a 5th grader</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <i class="fas fa-quote-right quote-icon"></i>
+                <p>Finding a school that truly understands autism has been life-changing for our family. The predictable routines, sensory accommodations, and staff who speak my son's language have helped him thrive academically and socially in ways we never thought possible.</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">AK</div>
+                    <div class="testimonial-info">
+                        <h4>Amanda K.</h4>
+                        <p>Parent of a 1st grader</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- CTA Section -->
+    <section class="cta">
+        <h2>Discover Your Child's Superpowers</h2>
+        <p>Every neurodivergent mind has unique strengths waiting to be discovered. Our specialized approach helps children build confidence, develop skills, and embrace their exceptional abilities.</p>
+        <div class="cta-buttons">
+            <a href="/primary/tour" class="cta-button primary-button">Schedule a Tour</a>
+            <a href="/primary/contact" class="cta-button secondary-button">Contact Us</a>
+        </div>
+    </section>
+    
+    <!-- Site Footer -->
+    <div data-include="/includes/footer.html"></div>
+    
+    <script>
+        // Initialize the navigation system when the page loads
+        document.addEventListener('includes-loaded', function() {
+            // Fix any broken links
+            if (window.ShatziiNavigation) {
+                window.ShatziiNavigation.fixBrokenLinks();
+            }
+        });
+    </script>
+</body>
+</html>

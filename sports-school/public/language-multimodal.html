@@ -1,0 +1,1507 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShotziOS | Multi-modal Language Learning</title>
+    <!-- Tailwind CSS via CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <!-- Custom style for neurodivergent-friendly design -->
+    <style>
+      :root {
+        --blue-primary: #1e40af;
+        --blue-light: #3b82f6;
+        --blue-dark: #1e3a8a;
+        --black-bg: #111827;
+        --white-text: #f9fafb;
+        --gray-border: #374151;
+      }
+
+      body {
+        background-color: var(--black-bg);
+        color: var(--white-text);
+        font-family: 'Arial', sans-serif;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      .blue-gradient {
+        background: linear-gradient(135deg, var(--blue-primary), var(--blue-dark));
+      }
+
+      .card {
+        background-color: #1f2937;
+        border: 1px solid var(--gray-border);
+        border-radius: 0.5rem;
+      }
+
+      .btn-blue {
+        background-color: var(--blue-primary);
+        color: var(--white-text);
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: background-color 0.2s;
+      }
+
+      .btn-blue:hover {
+        background-color: var(--blue-light);
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        border: 1px solid var(--blue-light);
+        color: var(--blue-light);
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition:
+          background-color 0.2s,
+          color 0.2s;
+      }
+
+      .btn-outline:hover {
+        background-color: var(--blue-light);
+        color: var(--white-text);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+        background-color: #374151;
+        border: 1px solid var(--gray-border);
+        color: var(--white-text);
+        margin-bottom: 1rem;
+      }
+
+      .result-panel {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid var(--blue-primary);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin: 1rem auto;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .header-nav {
+        background-color: #0f172a;
+        border-bottom: 1px solid var(--gray-border);
+        padding: 0.5rem 1rem;
+      }
+
+      .tab {
+        padding: 0.75rem 1.25rem;
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.2s;
+      }
+
+      .tab.active {
+        border-bottom: 2px solid var(--blue-light);
+        font-weight: 600;
+      }
+
+      .tab-panel {
+        display: none;
+      }
+
+      .tab-panel.active {
+        display: block;
+      }
+
+      .help-bubble {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 60px;
+        height: 60px;
+        background-color: var(--blue-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        transition:
+          transform 0.2s,
+          background-color 0.2s;
+      }
+
+      .help-bubble:hover {
+        transform: scale(1.1);
+        background-color: var(--blue-light);
+      }
+
+      .help-content {
+        position: fixed;
+        bottom: 6rem;
+        right: 2rem;
+        width: 300px;
+        background-color: #1f2937;
+        border: 1px solid var(--gray-border);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        display: none;
+        z-index: 1000;
+      }
+
+      .help-content.active {
+        display: block;
+      }
+
+      .help-close {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        cursor: pointer;
+      }
+
+      .sentinel-panel {
+        background-color: #0f172a;
+        border: 1px solid var(--blue-dark);
+        border-radius: 0.5rem;
+        padding: 1rem;
+      }
+
+      .security-status {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+
+      .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+      }
+
+      .status-green {
+        background-color: #10b981;
+      }
+
+      .status-yellow {
+        background-color: #f59e0b;
+      }
+
+      .status-red {
+        background-color: #ef4444;
+      }
+
+      .image-card {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .image-card:hover {
+        transform: scale(1.02);
+      }
+
+      .image-card img {
+        width: 100%;
+        height: auto;
+        border-radius: 0.375rem;
+      }
+
+      .image-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+
+      .image-card:hover .image-overlay {
+        opacity: 1;
+      }
+
+      .audio-player {
+        width: 100%;
+        height: 40px;
+        margin-bottom: 1rem;
+      }
+
+      .flashcard {
+        position: relative;
+        perspective: 1000px;
+        height: 200px;
+        margin-bottom: 1rem;
+      }
+
+      .flashcard-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+      }
+
+      .flashcard.flipped .flashcard-inner {
+        transform: rotateY(180deg);
+      }
+
+      .flashcard-front,
+      .flashcard-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        border-radius: 0.5rem;
+        padding: 1rem;
+      }
+
+      .flashcard-front {
+        background-color: #2d3748;
+      }
+
+      .flashcard-back {
+        background-color: #1a365d;
+        transform: rotateY(180deg);
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background-color: #374151;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+      }
+
+      .progress-value {
+        height: 100%;
+        background-color: var(--blue-primary);
+        border-radius: 4px;
+        transition: width 0.3s;
+      }
+
+      .scene-container {
+        position: relative;
+        width: 100%;
+        height: 300px;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        margin-bottom: 1rem;
+      }
+
+      .scene-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .hotspot {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        background-color: rgba(59, 130, 246, 0.8);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+        }
+      }
+
+      .hotspot-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(15, 23, 42, 0.9);
+        padding: 1rem;
+        transform: translateY(100%);
+        transition: transform 0.3s;
+      }
+
+      .hotspot-info.active {
+        transform: translateY(0);
+      }
+
+      .record-button {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .record-button.recording {
+        animation: pulse-red 1s infinite;
+      }
+
+      @keyframes pulse-red {
+        0% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+      }
+
+      .recording-timer {
+        text-align: center;
+        font-size: 1.5rem;
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Security Status Bar (Sentinel 4.5) -->
+    <div class="w-full px-4 py-2 bg-blue-900 flex justify-between items-center text-xs">
+      <div class="flex items-center">
+        <span class="mr-2">🛡️ Sentinel 4.5:</span>
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>System Secure</span>
+        </div>
+      </div>
+      <div class="flex space-x-4">
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>Firewall Active</span>
+        </div>
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>API Protection</span>
+        </div>
+        <div class="security-status">
+          <div class="status-indicator status-green"></div>
+          <span>Content Shield</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Header with Navigation -->
+    <header class="header-nav">
+      <div class="flex justify-between items-center">
+        <div class="flex items-center">
+          <img
+            src="/assets/images/shotzi-logo.png"
+            alt="ShotziOS Logo"
+            class="h-8 mr-2"
+            onerror="this.src='/assets/images/placeholder-logo.png'"
+          />
+          <h1 class="text-xl font-bold">ShotziOS Language Learning</h1>
+        </div>
+        <nav>
+          <ul class="flex space-x-4">
+            <li><a href="/" class="text-blue-300 hover:text-white">Home</a></li>
+            <li>
+              <a href="/language-school.html" class="text-blue-300 hover:text-white"
+                >Language School</a
+              >
+            </li>
+            <li>
+              <a href="/language-learning-ai.html" class="text-blue-300 hover:text-white"
+                >AI Generator</a
+              >
+            </li>
+            <li>
+              <a href="/language-multimodal.html" class="text-white font-bold"
+                >Multi-modal Learning</a
+              >
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <div class="container mt-6">
+      <div class="blue-gradient p-6 rounded-lg mb-8">
+        <h1 class="text-3xl font-bold mb-2">Multi-modal Language Learning</h1>
+        <p class="text-xl">Interactive visual and audio tools for immersive language acquisition</p>
+      </div>
+
+      <!-- Tools Navigation Tabs -->
+      <div class="mb-6">
+        <div class="flex border-b border-gray-700">
+          <div class="tab active" data-tab="interactive-scenes">Interactive Scenes</div>
+          <div class="tab" data-tab="vocabulary-flashcards">Visual Vocabulary</div>
+          <div class="tab" data-tab="pronunciation-practice">Pronunciation Practice</div>
+          <div class="tab" data-tab="visual-grammar">Visual Grammar</div>
+          <div class="tab" data-tab="cultural-exploration">Cultural Exploration</div>
+        </div>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-panel active" id="interactive-scenes-panel">
+        <div class="card p-6 mb-6">
+          <h2 class="text-2xl font-bold mb-4">Interactive Language Scenes</h2>
+          <p class="mb-6">
+            Explore interactive scenes to learn vocabulary and phrases in context. Click on the
+            hotspots to discover new words and expressions.
+          </p>
+
+          <div class="mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Spanish Restaurant Scene</h3>
+              <select id="scene-language" class="w-auto">
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Italian">Italian</option>
+              </select>
+            </div>
+
+            <div class="scene-container">
+              <img
+                src="https://placehold.co/800x400/1a365d/FFFFFF/png?text=Restaurant+Scene"
+                alt="Restaurant Scene"
+                class="scene-image"
+              />
+
+              <!-- Hotspots -->
+              <div class="hotspot" style="top: 30%; left: 20%" data-hotspot="1">1</div>
+              <div class="hotspot" style="top: 45%; left: 50%" data-hotspot="2">2</div>
+              <div class="hotspot" style="top: 60%; left: 80%" data-hotspot="3">3</div>
+              <div class="hotspot" style="top: 70%; left: 30%" data-hotspot="4">4</div>
+
+              <!-- Hotspot Information -->
+              <div class="hotspot-info" id="hotspot-info">
+                <h4 class="text-lg font-bold mb-2" id="hotspot-title">Menu</h4>
+                <div class="grid grid-cols-2 gap-4">
+                  <div>
+                    <p class="text-blue-300 font-medium" id="hotspot-word">el menú</p>
+                    <p class="text-sm text-gray-400 mb-2">Pronunciation: [el me-NOO]</p>
+                    <p id="hotspot-description">
+                      The menu listing all available dishes at the restaurant.
+                    </p>
+                  </div>
+                  <div>
+                    <p class="font-medium mb-1">Example Phrase:</p>
+                    <p class="text-blue-300" id="hotspot-phrase">¿Puedo ver el menú, por favor?</p>
+                    <p class="text-sm text-gray-400">Can I see the menu, please?</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <p class="mb-2 font-medium">Scene Dialogue:</p>
+              <div class="card p-4 bg-gray-900 text-sm">
+                <p>
+                  <span class="text-blue-300">Server:</span> ¡Bienvenidos al restaurante! ¿Tienen
+                  una reservación?
+                </p>
+                <p class="text-gray-400 text-xs mb-2">
+                  Welcome to the restaurant! Do you have a reservation?
+                </p>
+
+                <p>
+                  <span class="text-blue-300">Customer:</span> Sí, tenemos una reservación a nombre
+                  de Rodríguez.
+                </p>
+                <p class="text-gray-400 text-xs mb-2">
+                  Yes, we have a reservation under the name Rodríguez.
+                </p>
+
+                <p>
+                  <span class="text-blue-300">Server:</span> Perfecto. Por aquí, por favor. ¿Desean
+                  ver el menú?
+                </p>
+                <p class="text-gray-400 text-xs mb-2">
+                  Perfect. This way, please. Would you like to see the menu?
+                </p>
+
+                <p>
+                  <span class="text-blue-300">Customer:</span> Sí, por favor. Y agua para todos.
+                </p>
+                <p class="text-gray-400 text-xs">Yes, please. And water for everyone.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card p-4">
+              <h4 class="font-bold mb-2">Grocery Store</h4>
+              <div class="image-card mb-2">
+                <img
+                  src="https://placehold.co/400x300/1e3a8a/FFFFFF/png?text=Grocery+Store"
+                  alt="Grocery Store"
+                />
+                <div class="image-overlay">
+                  <button class="btn-blue">Explore Scene</button>
+                </div>
+              </div>
+              <p class="text-sm">Learn food vocabulary and shopping phrases</p>
+            </div>
+
+            <div class="card p-4">
+              <h4 class="font-bold mb-2">Train Station</h4>
+              <div class="image-card mb-2">
+                <img
+                  src="https://placehold.co/400x300/1e3a8a/FFFFFF/png?text=Train+Station"
+                  alt="Train Station"
+                />
+                <div class="image-overlay">
+                  <button class="btn-blue">Explore Scene</button>
+                </div>
+              </div>
+              <p class="text-sm">Travel vocabulary and ticket purchasing dialogue</p>
+            </div>
+
+            <div class="card p-4">
+              <h4 class="font-bold mb-2">Doctor's Office</h4>
+              <div class="image-card mb-2">
+                <img
+                  src="https://placehold.co/400x300/1e3a8a/FFFFFF/png?text=Doctor+Office"
+                  alt="Doctor's Office"
+                />
+                <div class="image-overlay">
+                  <button class="btn-blue">Explore Scene</button>
+                </div>
+              </div>
+              <p class="text-sm">Health vocabulary and medical consultation phrases</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="vocabulary-flashcards-panel">
+        <div class="card p-6 mb-6">
+          <h2 class="text-2xl font-bold mb-4">Visual Vocabulary Flashcards</h2>
+          <p class="mb-6">
+            Learn vocabulary with visual cues. Flip the cards to see translations, examples, and
+            pronunciation guides.
+          </p>
+
+          <div class="mb-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Daily Objects in Spanish</h3>
+              <div class="flex space-x-4">
+                <select id="flashcard-language" class="w-auto">
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                </select>
+
+                <select id="flashcard-category" class="w-auto">
+                  <option value="daily-objects">Daily Objects</option>
+                  <option value="food">Food & Dining</option>
+                  <option value="travel">Travel</option>
+                  <option value="nature">Nature</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="progress-bar mb-4">
+              <div class="progress-value" style="width: 40%"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <img
+                      src="https://placehold.co/200x120/1e3a8a/FFFFFF/png?text=Computer"
+                      alt="Computer"
+                      class="mb-4 rounded"
+                    />
+                    <h3 class="text-xl font-bold">el ordenador</h3>
+                    <p class="text-sm text-gray-400">[el or-de-na-DOR]</p>
+                  </div>
+                  <div class="flashcard-back">
+                    <h3 class="text-xl font-bold mb-2">Computer</h3>
+                    <p class="mb-2">Usage example:</p>
+                    <p class="italic mb-2">"Trabajo en mi ordenador todos los días."</p>
+                    <p class="text-sm text-gray-400">I work on my computer every day.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flashcard" onclick="this.classList.toggle('flipped')">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <img
+                      src="https://placehold.co/200x120/1e3a8a/FFFFFF/png?text=Book"
+                      alt="Book"
+                      class="mb-4 rounded"
+                    />
+                    <h3 class="text-xl font-bold">el libro</h3>
+                    <p class="text-sm text-gray-400">[el LEE-bro]</p>
+                  </div>
+                  <div class="flashcard-back">
+                    <h3 class="text-xl font-bold mb-2">Book</h3>
+                    <p class="mb-2">Usage example:</p>
+                    <p class="italic mb-2">"Estoy leyendo un libro interesante."</p>
+                    <p class="text-sm text-gray-400">I am reading an interesting book.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-between mt-6">
+              <button class="btn-outline">Previous</button>
+              <button class="btn-blue">Next</button>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-xl font-bold mb-4">Vocabulary Sets</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="card p-4">
+                <h4 class="font-bold mb-2">Kitchen Items</h4>
+                <img
+                  src="https://placehold.co/300x200/1e3a8a/FFFFFF/png?text=Kitchen+Items"
+                  alt="Kitchen Items"
+                  class="mb-2 rounded"
+                />
+                <p class="text-xs text-gray-400">15 words • Beginner</p>
+              </div>
+
+              <div class="card p-4">
+                <h4 class="font-bold mb-2">City Locations</h4>
+                <img
+                  src="https://placehold.co/300x200/1e3a8a/FFFFFF/png?text=City+Locations"
+                  alt="City Locations"
+                  class="mb-2 rounded"
+                />
+                <p class="text-xs text-gray-400">20 words • Intermediate</p>
+              </div>
+
+              <div class="card p-4">
+                <h4 class="font-bold mb-2">Animals</h4>
+                <img
+                  src="https://placehold.co/300x200/1e3a8a/FFFFFF/png?text=Animals"
+                  alt="Animals"
+                  class="mb-2 rounded"
+                />
+                <p class="text-xs text-gray-400">18 words • Beginner</p>
+              </div>
+
+              <div class="card p-4">
+                <h4 class="font-bold mb-2">Professional Terms</h4>
+                <img
+                  src="https://placehold.co/300x200/1e3a8a/FFFFFF/png?text=Professional+Terms"
+                  alt="Professional Terms"
+                  class="mb-2 rounded"
+                />
+                <p class="text-xs text-gray-400">25 words • Advanced</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="pronunciation-practice-panel">
+        <div class="card p-6 mb-6">
+          <h2 class="text-2xl font-bold mb-4">Pronunciation Practice</h2>
+          <p class="mb-6">
+            Practice your pronunciation with audio examples and recording tools. Get AI-powered
+            feedback on your accent and articulation.
+          </p>
+
+          <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Spanish Pronunciation Challenge</h3>
+              <select id="pronunciation-language" class="w-auto">
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Italian">Italian</option>
+              </select>
+            </div>
+
+            <div class="card p-4 mb-6 bg-gray-900">
+              <h4 class="font-bold mb-2">Listen to the native speaker:</h4>
+              <p class="text-lg text-blue-300 mb-2">
+                El restaurante está en la esquina de la calle principal.
+              </p>
+              <p class="text-sm text-gray-400 mb-4">
+                The restaurant is on the corner of the main street.
+              </p>
+
+              <audio controls class="audio-player mb-4">
+                <source src="your-audio-file.mp3" type="audio/mpeg" />
+                Your browser does not support the audio element.
+              </audio>
+
+              <p class="text-sm mb-2">Key sounds to focus on:</p>
+              <ul class="list-disc pl-5 text-sm mb-4">
+                <li>The rolled 'r' in "restaurante"</li>
+                <li>The 'qu' sound in "esquina" (like English 'k')</li>
+                <li>The 'll' sound in "calle" (varies by region)</li>
+              </ul>
+            </div>
+
+            <div class="card p-4 mb-6">
+              <h4 class="font-bold mb-4">Record your pronunciation:</h4>
+
+              <div class="record-button" id="record-button">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                  />
+                </svg>
+              </div>
+
+              <div class="recording-timer" id="recording-timer">00:00</div>
+
+              <div class="text-center mb-4">
+                <button class="btn-outline hidden" id="play-recording">Play Recording</button>
+              </div>
+
+              <div class="text-center">
+                <button class="btn-blue">Submit for Analysis</button>
+              </div>
+            </div>
+
+            <div class="card p-4 bg-gray-900">
+              <h4 class="font-bold mb-2">AI Pronunciation Feedback:</h4>
+              <div class="mb-4">
+                <div class="flex items-center mb-2">
+                  <span class="mr-2">Overall Accuracy:</span>
+                  <div class="flex">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-yellow-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-yellow-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-yellow-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-gray-500"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-gray-500"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                <p class="mb-4">
+                  Your pronunciation is fairly good, but there are a few areas for improvement.
+                </p>
+
+                <div class="space-y-3">
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-sm">Rolled 'r' in "restaurante"</span>
+                      <span class="text-sm text-yellow-400">Needs practice</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                      <div class="bg-yellow-500 h-2 rounded-full" style="width: 40%"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-sm">'qu' sound in "esquina"</span>
+                      <span class="text-sm text-green-400">Good</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                      <div class="bg-green-500 h-2 rounded-full" style="width: 80%"></div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div class="flex justify-between mb-1">
+                      <span class="text-sm">'ll' sound in "calle"</span>
+                      <span class="text-sm text-yellow-400">Needs practice</span>
+                    </div>
+                    <div class="w-full bg-gray-700 rounded-full h-2">
+                      <div class="bg-yellow-500 h-2 rounded-full" style="width: 50%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h5 class="font-medium mb-2">Suggestions for improvement:</h5>
+                <ul class="list-disc pl-5 text-sm">
+                  <li>Practice the rolled 'r' sound by saying "rrr" repeatedly.</li>
+                  <li>
+                    For the 'll' sound, try positioning your tongue as if you're going to say 'y' in
+                    English.
+                  </li>
+                  <li>
+                    Your intonation is good, but try to maintain a consistent rhythm throughout the
+                    sentence.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="visual-grammar-panel">
+        <div class="card p-6 mb-6">
+          <h2 class="text-2xl font-bold mb-4">Visual Grammar Learning</h2>
+          <p class="mb-6">
+            Learn grammar concepts through visual examples and interactive exercises. See how
+            grammar rules apply in real-world contexts.
+          </p>
+
+          <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Spanish Verb Tenses: Present vs. Past</h3>
+              <div class="flex space-x-4">
+                <select id="grammar-language" class="w-auto">
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                </select>
+
+                <select id="grammar-topic" class="w-auto">
+                  <option value="verb-tenses">Verb Tenses</option>
+                  <option value="articles">Articles</option>
+                  <option value="prepositions">Prepositions</option>
+                  <option value="pronouns">Pronouns</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div class="card p-4 bg-gray-900">
+                <h4 class="font-bold text-blue-300 mb-4">Present Tense (Presente)</h4>
+
+                <div class="scene-container mb-4" style="height: 150px">
+                  <img
+                    src="https://placehold.co/600x150/1e3a8a/FFFFFF/png?text=Present+Tense+Illustration"
+                    alt="Present Tense Illustration"
+                    class="scene-image"
+                  />
+                </div>
+
+                <p class="mb-4">The present tense in Spanish is used to describe:</p>
+                <ul class="list-disc pl-5 mb-4 space-y-1 text-sm">
+                  <li>Actions happening now</li>
+                  <li>Regular or habitual actions</li>
+                  <li>General truths</li>
+                  <li>Scheduled future events</li>
+                </ul>
+
+                <div class="mb-4">
+                  <p class="font-medium mb-1">Conjugation pattern for regular -ar verbs:</p>
+                  <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div>yo <span class="text-blue-300">hablo</span></div>
+                    <div>nosotros <span class="text-blue-300">hablamos</span></div>
+                    <div>tú <span class="text-blue-300">hablas</span></div>
+                    <div>vosotros <span class="text-blue-300">habláis</span></div>
+                    <div>él/ella/usted <span class="text-blue-300">habla</span></div>
+                    <div>ellos/ellas/ustedes <span class="text-blue-300">hablan</span></div>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="font-medium mb-1">Examples:</p>
+                  <ul class="space-y-1 text-sm">
+                    <li>
+                      <span class="text-blue-300">Hablo</span> español todos los días.
+                      <span class="text-gray-400">(I speak Spanish every day.)</span>
+                    </li>
+                    <li>
+                      ¿<span class="text-blue-300">Hablas</span> inglés?
+                      <span class="text-gray-400">(Do you speak English?)</span>
+                    </li>
+                    <li>
+                      Ella <span class="text-blue-300">habla</span> francés muy bien.
+                      <span class="text-gray-400">(She speaks French very well.)</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="card p-4 bg-gray-900">
+                <h4 class="font-bold text-blue-300 mb-4">Past Tense (Pretérito)</h4>
+
+                <div class="scene-container mb-4" style="height: 150px">
+                  <img
+                    src="https://placehold.co/600x150/1e3a8a/FFFFFF/png?text=Past+Tense+Illustration"
+                    alt="Past Tense Illustration"
+                    class="scene-image"
+                  />
+                </div>
+
+                <p class="mb-4">
+                  The preterite (simple past) tense in Spanish is used to describe:
+                </p>
+                <ul class="list-disc pl-5 mb-4 space-y-1 text-sm">
+                  <li>Completed actions in the past</li>
+                  <li>Actions that occurred at a specific time</li>
+                  <li>Actions with a definite beginning and end</li>
+                </ul>
+
+                <div class="mb-4">
+                  <p class="font-medium mb-1">Conjugation pattern for regular -ar verbs:</p>
+                  <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div>yo <span class="text-blue-300">hablé</span></div>
+                    <div>nosotros <span class="text-blue-300">hablamos</span></div>
+                    <div>tú <span class="text-blue-300">hablaste</span></div>
+                    <div>vosotros <span class="text-blue-300">hablasteis</span></div>
+                    <div>él/ella/usted <span class="text-blue-300">habló</span></div>
+                    <div>ellos/ellas/ustedes <span class="text-blue-300">hablaron</span></div>
+                  </div>
+                </div>
+
+                <div>
+                  <p class="font-medium mb-1">Examples:</p>
+                  <ul class="space-y-1 text-sm">
+                    <li>
+                      Ayer <span class="text-blue-300">hablé</span> con mi amigo.
+                      <span class="text-gray-400">(Yesterday I spoke with my friend.)</span>
+                    </li>
+                    <li>
+                      ¿<span class="text-blue-300">Hablaste</span> con el profesor?
+                      <span class="text-gray-400">(Did you speak with the teacher?)</span>
+                    </li>
+                    <li>
+                      Ellos <span class="text-blue-300">hablaron</span> durante horas.
+                      <span class="text-gray-400">(They spoke for hours.)</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card p-4 mb-6">
+              <h4 class="font-bold mb-4">Interactive Practice: Choose the correct form</h4>
+
+              <div class="mb-4">
+                <p class="mb-2">1. Todos los días yo _____ español con mis amigos. (Present)</p>
+                <div class="flex space-x-2">
+                  <button class="btn-outline">hablo</button>
+                  <button class="btn-outline">hablé</button>
+                  <button class="btn-outline">hablaré</button>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <p class="mb-2">
+                  2. La semana pasada yo _____ con el profesor de matemáticas. (Past)
+                </p>
+                <div class="flex space-x-2">
+                  <button class="btn-outline">hablo</button>
+                  <button class="btn-outline">hablé</button>
+                  <button class="btn-outline">hablaré</button>
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <p class="mb-2">3. ¿Tú _____ inglés? (Present)</p>
+                <div class="flex space-x-2">
+                  <button class="btn-outline">hablas</button>
+                  <button class="btn-outline">hablaste</button>
+                  <button class="btn-outline">hablarás</button>
+                </div>
+              </div>
+
+              <div>
+                <button class="btn-blue">Check Answers</button>
+              </div>
+            </div>
+
+            <div class="card p-4 bg-gray-900">
+              <h4 class="font-bold mb-4">Common Mistakes & Comparisons</h4>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h5 class="font-medium text-red-400 mb-2">Incorrect Usage</h5>
+                  <ul class="space-y-2 text-sm">
+                    <li>
+                      <p class="text-red-400">❌ Ayer yo hablo con mi madre.</p>
+                      <p class="text-gray-400">Mixing present tense with a past time indicator.</p>
+                    </li>
+                    <li>
+                      <p class="text-red-400">❌ Todos los días yo hablé español.</p>
+                      <p class="text-gray-400">Using past tense for habitual actions.</p>
+                    </li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h5 class="font-medium text-green-400 mb-2">Correct Usage</h5>
+                  <ul class="space-y-2 text-sm">
+                    <li>
+                      <p class="text-green-400">✓ Ayer yo hablé con mi madre.</p>
+                      <p class="text-gray-400">Correct past tense for a completed action.</p>
+                    </li>
+                    <li>
+                      <p class="text-green-400">✓ Todos los días yo hablo español.</p>
+                      <p class="text-gray-400">Correct present tense for habitual actions.</p>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-panel" id="cultural-exploration-panel">
+        <div class="card p-6 mb-6">
+          <h2 class="text-2xl font-bold mb-4">Cultural Exploration</h2>
+          <p class="mb-6">
+            Discover cultural aspects of language learning through immersive visual and interactive
+            content. Learn about traditions, customs, and cultural contexts.
+          </p>
+
+          <div class="mb-8">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold">Spanish Cultural Immersion: Day of the Dead</h3>
+              <select id="culture-language" class="w-auto">
+                <option value="Spanish">Spanish</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Italian">Italian</option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-1 mb-6">
+              <div class="mb-4">
+                <img
+                  src="https://placehold.co/1000x400/1e3a8a/FFFFFF/png?text=Day+of+the+Dead+Celebration"
+                  alt="Day of the Dead Celebration"
+                  class="w-full rounded-lg"
+                />
+              </div>
+
+              <div class="card p-4 bg-gray-900 mb-6">
+                <h4 class="font-bold text-blue-300 mb-2">
+                  El Día de los Muertos (Day of the Dead)
+                </h4>
+                <p class="mb-4">
+                  El Día de los Muertos is a Mexican celebration that takes place on November 1-2
+                  each year, coinciding with the Catholic observances of All Saints' Day and All
+                  Souls' Day. Unlike Halloween, it's not a scary holiday but a time to remember and
+                  honor deceased loved ones.
+                </p>
+
+                <h5 class="font-medium mb-2">Key Cultural Elements:</h5>
+                <ul class="list-disc pl-5 mb-4 space-y-1 text-sm">
+                  <li>
+                    <span class="font-medium">Ofrendas</span> (altars) - Created to welcome spirits
+                    back to the world of the living
+                  </li>
+                  <li>
+                    <span class="font-medium">Calaveras</span> (skulls) - Sugar skulls are decorated
+                    and often bear the names of the deceased
+                  </li>
+                  <li>
+                    <span class="font-medium">Cempasúchil</span> (marigold flowers) - Used to guide
+                    spirits with their vibrant color and scent
+                  </li>
+                  <li>
+                    <span class="font-medium">Pan de muerto</span> (bread of the dead) - Sweet bread
+                    made specially for this celebration
+                  </li>
+                </ul>
+
+                <div>
+                  <h5 class="font-medium mb-2">Cultural Vocabulary:</h5>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div class="border border-gray-700 p-2 rounded">
+                      <p class="font-medium text-blue-300">la ofrenda</p>
+                      <p>altar or offering for the dead</p>
+                    </div>
+                    <div class="border border-gray-700 p-2 rounded">
+                      <p class="font-medium text-blue-300">la calaverita de azúcar</p>
+                      <p>sugar skull</p>
+                    </div>
+                    <div class="border border-gray-700 p-2 rounded">
+                      <p class="font-medium text-blue-300">el altar de muertos</p>
+                      <p>altar for the dead</p>
+                    </div>
+                    <div class="border border-gray-700 p-2 rounded">
+                      <p class="font-medium text-blue-300">la flor de cempasúchil</p>
+                      <p>marigold flower</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="card p-4">
+                  <h5 class="font-medium mb-2">Vocabulary Exercise</h5>
+                  <p class="text-sm mb-4">Match the Spanish terms with their English meanings.</p>
+                  <button class="btn-blue w-full">Start Exercise</button>
+                </div>
+
+                <div class="card p-4">
+                  <h5 class="font-medium mb-2">Cultural Quiz</h5>
+                  <p class="text-sm mb-4">Test your knowledge about Day of the Dead traditions.</p>
+                  <button class="btn-blue w-full">Take Quiz</button>
+                </div>
+
+                <div class="card p-4">
+                  <h5 class="font-medium mb-2">Virtual Tour</h5>
+                  <p class="text-sm mb-4">Explore a virtual Day of the Dead celebration.</p>
+                  <button class="btn-blue w-full">Start Tour</button>
+                </div>
+              </div>
+            </div>
+
+            <h3 class="text-xl font-bold mb-4">Other Cultural Explorations</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="card p-4">
+                <h4 class="font-bold mb-2">Spanish Cuisine</h4>
+                <img
+                  src="https://placehold.co/300x200/1e3a8a/FFFFFF/png?text=Spanish+Cuisine"
+                  alt="Spanish Cuisine"
+                  class="mb-2 rounded"
+                />
+                <p class="text-sm mb-2">Explore traditional Spanish dishes and food vocabulary.</p>
+                <button class="btn-outline w-full">Explore</button>
+              </div>
+
+              <div class="card p-4">
+                <h4 class="font-bold mb-2">Festivals of Spain</h4>
+                <img
+                  src="https://placehold.co/300x200/1e3a8a/FFFFFF/png?text=Spanish+Festivals"
+                  alt="Spanish Festivals"
+                  class="mb-2 rounded"
+                />
+                <p class="text-sm mb-2">Learn about La Tomatina, Las Fallas, and more.</p>
+                <button class="btn-outline w-full">Explore</button>
+              </div>
+
+              <div class="card p-4">
+                <h4 class="font-bold mb-2">Art & Literature</h4>
+                <img
+                  src="https://placehold.co/300x200/1e3a8a/FFFFFF/png?text=Spanish+Art"
+                  alt="Spanish Art"
+                  class="mb-2 rounded"
+                />
+                <p class="text-sm mb-2">
+                  Discover famous Spanish artists, writers, and their works.
+                </p>
+                <button class="btn-outline w-full">Explore</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Security Information Panel -->
+      <div class="mt-8 sentinel-panel">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-bold">🛡️ Sentinel 4.5 Security Status</h2>
+          <span class="px-2 py-1 bg-green-800 text-white text-xs rounded-full"
+            >All Systems Operational</span
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <p class="mb-2 font-semibold">Data Protection:</p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <p class="mt-1 text-xs text-gray-400">All user data securely encrypted</p>
+          </div>
+
+          <div>
+            <p class="mb-2 font-semibold">Multimedia Security:</p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <p class="mt-1 text-xs text-gray-400">Audio and image processing secured</p>
+          </div>
+
+          <div>
+            <p class="mb-2 font-semibold">AI Content Safety:</p>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: 100%"></div>
+            </div>
+            <p class="mt-1 text-xs text-gray-400">Content filtering active</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Bubble -->
+    <div class="help-bubble" id="help-bubble">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+    </div>
+
+    <!-- Help Content -->
+    <div class="help-content" id="help-content">
+      <div class="help-close" id="help-close">✕</div>
+      <h3 class="text-lg font-bold mb-2">Multi-modal Learning Help</h3>
+      <p class="mb-4">Here's how to use our multi-modal learning features:</p>
+      <ul class="list-disc pl-5 mb-4 space-y-2">
+        <li>
+          <strong>Interactive Scenes:</strong> Click on hotspots to learn vocabulary in context.
+        </li>
+        <li>
+          <strong>Visual Flashcards:</strong> Click cards to flip them and reveal translations.
+        </li>
+        <li>
+          <strong>Pronunciation Practice:</strong> Record your voice and get AI feedback on your
+          pronunciation.
+        </li>
+        <li>
+          <strong>Visual Grammar:</strong> Learn grammar rules with visual aids and interactive
+          exercises.
+        </li>
+        <li>
+          <strong>Cultural Exploration:</strong> Discover cultural aspects of language learning
+          through immersive content.
+        </li>
+      </ul>
+      <p class="text-sm text-gray-400">
+        All content is generated using Anthropic Claude AI to ensure high-quality, accurate language
+        learning materials.
+      </p>
+    </div>
+
+    <script>
+      // Tab switching functionality
+      document.querySelectorAll('.tab').forEach((tab) => {
+        tab.addEventListener('click', () => {
+          // Remove active class from all tabs
+          document.querySelectorAll('.tab').forEach((t) => t.classList.remove('active'));
+          // Add active class to clicked tab
+          tab.classList.add('active');
+
+          // Hide all tab panels
+          document
+            .querySelectorAll('.tab-panel')
+            .forEach((panel) => panel.classList.remove('active'));
+          // Show the corresponding panel
+          const panelId = tab.getAttribute('data-tab') + '-panel';
+          document.getElementById(panelId).classList.add('active');
+        });
+      });
+
+      // Help bubble functionality
+      const helpBubble = document.getElementById('help-bubble');
+      const helpContent = document.getElementById('help-content');
+      const helpClose = document.getElementById('help-close');
+
+      helpBubble.addEventListener('click', () => {
+        helpContent.classList.toggle('active');
+      });
+
+      helpClose.addEventListener('click', () => {
+        helpContent.classList.remove('active');
+      });
+
+      // Interactive Scene Hotspots
+      const hotspots = document.querySelectorAll('.hotspot');
+      const hotspotInfo = document.getElementById('hotspot-info');
+
+      const hotspotData = {
+        1: {
+          title: 'Menu',
+          word: 'el menú',
+          description: 'The menu listing all available dishes at the restaurant.',
+          phrase: '¿Puedo ver el menú, por favor?',
+        },
+        2: {
+          title: 'Waiter',
+          word: 'el camarero / la camarera',
+          description: 'The person who takes orders and serves food in a restaurant.',
+          phrase: 'Disculpe, camarero, ¿podría traer la cuenta?',
+        },
+        3: {
+          title: 'Bill',
+          word: 'la cuenta',
+          description: 'The check or bill that shows how much you need to pay.',
+          phrase: '¿Me trae la cuenta, por favor?',
+        },
+        4: {
+          title: 'Table',
+          word: 'la mesa',
+          description: 'The surface where food is served and eaten.',
+          phrase: '¿Tiene una mesa para dos personas?',
+        },
+      };
+
+      hotspots.forEach((hotspot) => {
+        hotspot.addEventListener('click', () => {
+          const id = hotspot.getAttribute('data-hotspot');
+          const data = hotspotData[id];
+
+          // Update hotspot info
+          document.getElementById('hotspot-title').textContent = data.title;
+          document.getElementById('hotspot-word').textContent = data.word;
+          document.getElementById('hotspot-description').textContent = data.description;
+          document.getElementById('hotspot-phrase').textContent = data.phrase;
+
+          // Show info panel
+          hotspotInfo.classList.add('active');
+        });
+      });
+
+      // Recording functionality simulation
+      const recordButton = document.getElementById('record-button');
+      const recordingTimer = document.getElementById('recording-timer');
+      const playRecording = document.getElementById('play-recording');
+
+      let isRecording = false;
+      let recordingInterval;
+      let seconds = 0;
+
+      recordButton.addEventListener('click', () => {
+        if (!isRecording) {
+          // Start recording
+          isRecording = true;
+          recordButton.classList.add('recording');
+          seconds = 0;
+          updateTimer();
+
+          recordingInterval = setInterval(() => {
+            seconds++;
+            updateTimer();
+
+            // Simulate a 10-second maximum recording
+            if (seconds >= 10) {
+              stopRecording();
+            }
+          }, 1000);
+        } else {
+          // Stop recording
+          stopRecording();
+        }
+      });
+
+      function stopRecording() {
+        isRecording = false;
+        recordButton.classList.remove('recording');
+        clearInterval(recordingInterval);
+        playRecording.classList.remove('hidden');
+      }
+
+      function updateTimer() {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        recordingTimer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      playRecording.addEventListener('click', () => {
+        alert('Playing recording simulation...');
+      });
+    </script>
+  </body>
+</html>

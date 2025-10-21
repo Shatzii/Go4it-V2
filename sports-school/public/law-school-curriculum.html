@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Law School Curriculum Creator - ShotziOS</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="assets/js/helpBubble.js"></script>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        color: #ffffff !important;
+      }
+      p {
+        color: #e0e0e0 !important;
+      }
+      a {
+        color: #0070f3;
+      }
+      .text-gray-600,
+      .text-gray-800,
+      .text-gray-500,
+      .text-gray-700 {
+        color: #e0e0e0 !important;
+      }
+      .bg-white {
+        background-color: #121212 !important;
+      }
+      .bg-gray-50,
+      .bg-gray-100 {
+        background-color: #181818 !important;
+      }
+      .border-gray-300 {
+        border-color: #333333 !important;
+      }
+      .card {
+        background-color: #121212 !important;
+        border: 1px solid #0070f3 !important;
+        border-radius: 10px;
+        overflow: hidden;
+        transition:
+          transform 0.3s ease,
+          box-shadow 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow:
+          0 10px 25px -5px rgba(0, 112, 243, 0.4),
+          0 10px 10px -5px rgba(0, 112, 243, 0.3);
+      }
+      .header-gradient {
+        background: linear-gradient(135deg, #0070f3 0%, #003580 100%);
+      }
+      button,
+      .button {
+        background-color: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+      }
+      button:hover,
+      .button:hover {
+        background-color: #0060d0 !important;
+      }
+      footer {
+        background-color: #121212 !important;
+        border-top: 1px solid #333333;
+      }
+      .tabs-container {
+        border-bottom: 1px solid #333333;
+      }
+      .tab {
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+      }
+      .tab.active {
+        border-bottom: 2px solid #0070f3;
+        color: #0070f3 !important;
+      }
+      textarea,
+      select,
+      input[type='text'] {
+        background-color: #1a1a1a !important;
+        border: 1px solid #333333 !important;
+        color: #e0e0e0 !important;
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+      }
+      textarea:focus,
+      select:focus,
+      input[type='text']:focus {
+        border-color: #0070f3 !important;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.2);
+      }
+      label {
+        color: #ffffff !important;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      .option-card {
+        background-color: #121212;
+        border: 1px solid #333333;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+      .option-card:hover {
+        border-color: #0070f3;
+        transform: translateY(-2px);
+      }
+      .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .step-indicator::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background-color: #333333;
+        transform: translateY(-50%);
+        z-index: 1;
+      }
+      .step {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #333333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        position: relative;
+        z-index: 2;
+      }
+      .step.active {
+        background-color: #0070f3;
+      }
+      .step.completed {
+        background-color: #0eb100;
+      }
+      /* AI-generated content styles */
+      .ai-generated {
+        border-left: 4px solid #0070f3;
+        padding-left: 1rem;
+        background-color: rgba(0, 112, 243, 0.1);
+      }
+      /* Law school specific styles */
+      .legal-document {
+        font-family: 'Times New Roman', Times, serif;
+        line-height: 1.5;
+      }
+      .case-citation {
+        font-style: italic;
+      }
+      .statute-reference {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header-gradient text-white shadow-lg">
+      <div class="container mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <a href="law-school.html" class="text-white hover:bg-blue-600 px-3 py-1 rounded-lg">
+              &larr; Back to Law School
+            </a>
+            <h1 class="text-2xl font-bold flex items-center">
+              <span class="mr-2">⚖️</span> Law Curriculum Creator
+            </h1>
+          </div>
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center space-x-1 bg-blue-700 px-3 py-1 rounded-lg">
+              <span>💾</span>
+              <span>Save</span>
+            </button>
+            <button class="flex items-center space-x-1 bg-blue-800 px-3 py-1 rounded-lg">
+              <span>👤</span>
+              <span>Admin</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-8 px-4">
+      <!-- Curriculum Creator -->
+      <div class="bg-white rounded-xl p-6 mb-8">
+        <h2 class="text-xl font-bold mb-6">Create New Legal Curriculum</h2>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator mb-8">
+          <div class="step active">1</div>
+          <div class="step">2</div>
+          <div class="step">3</div>
+          <div class="step">4</div>
+        </div>
+
+        <!-- Form Step 1: Basic Information -->
+        <div id="step-1" class="mb-8">
+          <h3 class="text-lg font-bold mb-4">Basic Information</h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="curriculum-title">Curriculum Title</label>
+              <input
+                type="text"
+                id="curriculum-title"
+                class="w-full"
+                placeholder="e.g., UAE Civil Procedure for Bar Examination"
+              />
+            </div>
+
+            <div>
+              <label for="curriculum-type">Curriculum Type</label>
+              <select id="curriculum-type" class="w-full">
+                <option value="course">Full Course</option>
+                <option value="module">Module</option>
+                <option value="workshop">Workshop</option>
+                <option value="seminar">Seminar</option>
+                <option value="barPrep">Bar Preparation</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="legal-subject">Legal Subject</label>
+              <select id="legal-subject" class="w-full">
+                <option value="constitutionalLaw">Constitutional Law</option>
+                <option value="criminalLaw">Criminal Law</option>
+                <option value="contractLaw">Contract Law</option>
+                <option value="tortsLaw">Torts</option>
+                <option value="propertyLaw">Property Law</option>
+                <option value="civilProcedure">Civil Procedure</option>
+                <option value="internationalLaw">International Law</option>
+                <option value="commercial">Commercial Law</option>
+                <option value="family">Family Law</option>
+                <option value="evidence">Evidence</option>
+                <option value="intellectual">Intellectual Property</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="jurisdiction">Jurisdiction</label>
+              <select id="jurisdiction" class="w-full">
+                <option value="uae">United Arab Emirates</option>
+                <option value="uaeAbuDhabi">UAE - Abu Dhabi</option>
+                <option value="uaeDubai">UAE - Dubai</option>
+                <option value="us">United States</option>
+                <option value="uk">United Kingdom</option>
+                <option value="eu">European Union</option>
+                <option value="international">International</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="education-level">Education Level</label>
+              <select id="education-level" class="w-full">
+                <option value="jd">Juris Doctor (JD)</option>
+                <option value="llm">Master of Laws (LLM)</option>
+                <option value="barPrep">Bar Preparation</option>
+                <option value="cle">Continuing Legal Education</option>
+                <option value="undergrad">Undergraduate Legal Studies</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="duration">Duration</label>
+              <select id="duration" class="w-full">
+                <option value="semester">Full Semester (14-16 weeks)</option>
+                <option value="quarter">Quarter (10-12 weeks)</option>
+                <option value="intensive">Intensive (4-6 weeks)</option>
+                <option value="short">Short Course (1-3 weeks)</option>
+                <option value="workshop">Workshop (1-3 days)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <label for="curriculum-description">Description</label>
+            <textarea
+              id="curriculum-description"
+              class="w-full min-h-[120px]"
+              placeholder="Describe the curriculum, its purpose, and learning objectives..."
+            ></textarea>
+          </div>
+
+          <div class="flex justify-end mt-6">
+            <button class="px-4 py-2">Next: Learning Outcomes</button>
+          </div>
+        </div>
+
+        <!-- Form Step 2: Learning Outcomes (Initially Hidden) -->
+        <div id="step-2" class="hidden mb-8">
+          <h3 class="text-lg font-bold mb-4">Learning Outcomes</h3>
+
+          <div class="mb-6">
+            <p class="mb-4">
+              Define what students will be able to do after completing this curriculum.
+            </p>
+
+            <div id="learning-outcomes-container">
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Learning Outcome #1</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  class="w-full"
+                  placeholder="e.g., Analyze and interpret UAE civil procedure laws and their application in court proceedings"
+                />
+              </div>
+            </div>
+
+            <button class="flex items-center mt-2 bg-blue-700 px-3 py-1 rounded-lg text-sm">
+              <span class="mr-1">+</span> Add Learning Outcome
+            </button>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600">
+              Previous: Basic Information
+            </button>
+            <button class="px-4 py-2">Next: Content Structure</button>
+          </div>
+        </div>
+
+        <!-- Form Step 3: Content Structure (Initially Hidden) -->
+        <div id="step-3" class="hidden mb-8">
+          <h3 class="text-lg font-bold mb-4">Content Structure</h3>
+
+          <div class="mb-6">
+            <p class="mb-4">Organize your curriculum into modules, topics, or weeks.</p>
+
+            <div id="modules-container">
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Module #1</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+                <input type="text" class="w-full mb-3" placeholder="Module Title" />
+                <textarea
+                  class="w-full min-h-[80px]"
+                  placeholder="Module description and key topics..."
+                ></textarea>
+
+                <div class="mt-4">
+                  <h4 class="text-sm font-medium mb-2">Topics/Lessons</h4>
+                  <div class="pl-4 border-l-2 border-blue-800">
+                    <div class="mb-2">
+                      <input type="text" class="w-full" placeholder="Topic/Lesson 1" />
+                    </div>
+                    <div class="mb-2">
+                      <input type="text" class="w-full" placeholder="Topic/Lesson 2" />
+                    </div>
+                    <button class="flex items-center mt-2 bg-blue-700 px-2 py-1 rounded-lg text-xs">
+                      <span class="mr-1">+</span> Add Topic
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="flex items-center mt-4 bg-blue-700 px-3 py-1 rounded-lg text-sm">
+              <span class="mr-1">+</span> Add Module
+            </button>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600">
+              Previous: Learning Outcomes
+            </button>
+            <button class="px-4 py-2">Next: Assessment Methods</button>
+          </div>
+        </div>
+
+        <!-- Form Step 4: Assessment Methods (Initially Hidden) -->
+        <div id="step-4" class="hidden mb-8">
+          <h3 class="text-lg font-bold mb-4">Assessment Methods</h3>
+
+          <div class="mb-6">
+            <p class="mb-4">Define how students will be assessed.</p>
+
+            <div id="assessments-container">
+              <div class="option-card">
+                <div class="flex justify-between mb-2">
+                  <label>Assessment #1</label>
+                  <button
+                    class="text-xs px-2 py-1 text-red-500 hover:text-red-400 bg-transparent hover:bg-transparent"
+                  >
+                    Remove
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                  <div>
+                    <label class="text-sm">Assessment Type</label>
+                    <select class="w-full">
+                      <option value="exam">Final Exam</option>
+                      <option value="midterm">Midterm Exam</option>
+                      <option value="quiz">Quiz</option>
+                      <option value="assignment">Written Assignment</option>
+                      <option value="presentation">Presentation</option>
+                      <option value="moot">Moot Court</option>
+                      <option value="caseBrief">Case Brief</option>
+                      <option value="paperResearch">Research Paper</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="text-sm">Weight (%)</label>
+                    <input type="text" class="w-full" placeholder="e.g., 30" />
+                  </div>
+                </div>
+
+                <textarea
+                  class="w-full min-h-[80px]"
+                  placeholder="Description of assessment method, requirements, and grading criteria..."
+                ></textarea>
+              </div>
+            </div>
+
+            <button class="flex items-center mt-3 bg-blue-700 px-3 py-1 rounded-lg text-sm">
+              <span class="mr-1">+</span> Add Assessment
+            </button>
+          </div>
+
+          <div class="flex justify-between mt-8">
+            <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600">
+              Previous: Content Structure
+            </button>
+            <button class="px-4 py-2 bg-green-600 hover:bg-green-700">Generate with AI</button>
+          </div>
+        </div>
+
+        <!-- AI Curriculum Generation (Initially Hidden) -->
+        <div id="ai-generation" class="hidden">
+          <div class="bg-blue-900 bg-opacity-20 p-6 rounded-xl mb-6">
+            <h3 class="text-lg font-medium mb-2 flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2 text-blue-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              AI-Powered Curriculum Generation
+            </h3>
+            <p class="mb-4">
+              Based on your inputs, we'll use our Anthropic Claude integration to generate a
+              complete curriculum structure, including learning outcomes, modules, topics, and
+              assessment methods.
+            </p>
+
+            <div class="mb-4">
+              <label for="ai-customization">Additional Instructions (Optional)</label>
+              <textarea
+                id="ai-customization"
+                class="w-full min-h-[80px]"
+                placeholder="Provide any specific instructions or requirements for the AI, such as focus areas, specific legal cases to include, or teaching methodologies..."
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end">
+              <button class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-lg flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                  />
+                </svg>
+                Generate Curriculum
+              </button>
+            </div>
+          </div>
+
+          <!-- AI Generated Content Preview -->
+          <div class="ai-generated p-6 rounded-xl mb-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-bold">Generated Curriculum: UAE Contract Law</h3>
+              <div class="flex space-x-2">
+                <button class="text-xs px-3 py-1 rounded-lg bg-blue-700">Edit</button>
+                <button class="text-xs px-3 py-1 rounded-lg bg-green-700">Save</button>
+              </div>
+            </div>
+
+            <div class="legal-document">
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Course Overview</h4>
+                <p class="mb-2">
+                  This comprehensive 14-week course on UAE Contract Law explores the fundamental
+                  principles and practical applications of contract law in the United Arab Emirates.
+                  Students will examine the Civil Transactions Law (Federal Law No. 5 of 1985) and
+                  related legislation, analyze key court decisions, and develop practical skills in
+                  drafting and analyzing contracts under UAE law.
+                </p>
+              </div>
+
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Learning Outcomes</h4>
+                <ol class="list-decimal pl-5 space-y-2">
+                  <li>Analyze the essential elements of a valid contract under UAE law</li>
+                  <li>
+                    Evaluate different types of contracts and their legal implications in the UAE
+                    legal system
+                  </li>
+                  <li>Apply legal principles to determine remedies for breach of contract</li>
+                  <li>Draft contract clauses that comply with UAE legal requirements</li>
+                  <li>
+                    Compare UAE contract law with international contract principles and practices
+                  </li>
+                  <li>
+                    Analyze recent court decisions affecting contract interpretation and enforcement
+                    in the UAE
+                  </li>
+                </ol>
+              </div>
+
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Module Structure</h4>
+
+                <div class="mb-4">
+                  <h5 class="font-medium">Module 1: Foundations of UAE Contract Law (Weeks 1-2)</h5>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>Introduction to UAE legal system and sources of contract law</li>
+                    <li>The Civil Transactions Law (Federal Law No. 5 of 1985)</li>
+                    <li>Influence of Sharia principles on contract law</li>
+                    <li>Comparing UAE contract law with common law approaches</li>
+                  </ul>
+                </div>
+
+                <div class="mb-4">
+                  <h5 class="font-medium">Module 2: Contract Formation (Weeks 3-4)</h5>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>Essential elements of a valid contract</li>
+                    <li>Offer and acceptance</li>
+                    <li>Capacity to contract</li>
+                    <li>Consideration and cause</li>
+                    <li>Form requirements and formalities</li>
+                  </ul>
+                </div>
+
+                <div class="mb-4">
+                  <h5 class="font-medium">
+                    Module 3: Contract Interpretation and Performance (Weeks 5-6)
+                  </h5>
+                  <ul class="list-disc pl-5 space-y-1">
+                    <li>Principles of contract interpretation</li>
+                    <li>Implied terms and good faith requirements</li>
+                    <li>Performance obligations</li>
+                    <li>
+                      Case analysis:
+                      <span class="case-citation">Dubai Court of Cassation Case No. 146/2018</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Additional modules would continue here -->
+              </div>
+
+              <div class="mb-6">
+                <h4 class="text-lg font-medium text-blue-400 mb-2">Assessment Methods</h4>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li>
+                    <strong>Midterm Examination (25%)</strong>: In-class examination covering
+                    Modules 1-3
+                  </li>
+                  <li>
+                    <strong>Contract Drafting Assignment (20%)</strong>: Draft a commercial contract
+                    that complies with UAE legal requirements
+                  </li>
+                  <li>
+                    <strong>Case Analysis Presentation (15%)</strong>: Analysis and presentation of
+                    a significant UAE contract law case
+                  </li>
+                  <li>
+                    <strong>Research Paper (15%)</strong>: 2,500-word paper on an approved contract
+                    law topic
+                  </li>
+                  <li>
+                    <strong>Final Examination (25%)</strong>: Comprehensive examination covering all
+                    course material
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Curriculum Library -->
+      <div class="mb-8">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Curriculum Library</h2>
+          <div class="flex space-x-2">
+            <select class="text-sm px-3 py-1 rounded-lg bg-blue-900">
+              <option value="all">All Subjects</option>
+              <option value="constitutional">Constitutional Law</option>
+              <option value="criminal">Criminal Law</option>
+              <option value="contract">Contract Law</option>
+              <option value="torts">Torts</option>
+              <option value="property">Property Law</option>
+            </select>
+            <button class="text-sm px-3 py-1 rounded-lg bg-blue-700">Import</button>
+            <button class="text-sm px-3 py-1 rounded-lg bg-blue-700">Export</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Curriculum Card 1 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <h3 class="font-bold">UAE Contract Law</h3>
+                <span class="text-xs px-2 py-1 rounded-full bg-green-900 text-green-200"
+                  >Active</span
+                >
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">⚖️ Commercial Law</span>
+                <span>📚 14 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Comprehensive course on UAE contract law principles, formation, interpretation, and
+                remedies for JD students.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curriculum Card 2 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <h3 class="font-bold">Constitutional Law</h3>
+                <span class="text-xs px-2 py-1 rounded-full bg-green-900 text-green-200"
+                  >Active</span
+                >
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">⚖️ Public Law</span>
+                <span>📚 16 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Study of UAE constitutional framework, federal structure, governmental powers, and
+                fundamental rights.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curriculum Card 3 -->
+          <div class="card overflow-hidden">
+            <div class="p-4 bg-blue-900 bg-opacity-30">
+              <div class="flex justify-between items-center">
+                <h3 class="font-bold">UAE Bar Exam Preparation</h3>
+                <span class="text-xs px-2 py-1 rounded-full bg-green-900 text-green-200"
+                  >Active</span
+                >
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center text-sm mb-3">
+                <span class="mr-3">⚖️ Bar Prep</span>
+                <span>📚 12 Weeks</span>
+              </div>
+              <p class="text-sm mb-4">
+                Intensive preparation for the UAE Bar Examination with practice questions and
+                comprehensive review.
+              </p>
+              <div class="flex justify-end space-x-2">
+                <button class="text-xs px-3 py-1">Edit</button>
+                <button class="text-xs px-3 py-1">Clone</button>
+                <button class="text-xs px-3 py-1 bg-green-700">View</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compliance Assessment -->
+      <div class="bg-white rounded-xl p-6">
+        <h2 class="text-xl font-bold mb-4">Curriculum Compliance Assessment</h2>
+        <p class="mb-4">
+          Ensure your curriculum meets all educational standards and legal requirements.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="compliance-curriculum">Select Curriculum to Assess</label>
+            <select id="compliance-curriculum" class="w-full mb-4">
+              <option value="">Select a curriculum...</option>
+              <option value="1">UAE Contract Law</option>
+              <option value="2">Constitutional Law</option>
+              <option value="3">UAE Bar Exam Preparation</option>
+            </select>
+
+            <label for="compliance-standards">Standards Framework</label>
+            <select id="compliance-standards" class="w-full mb-4">
+              <option value="uae">UAE Ministry of Education Standards</option>
+              <option value="aba">American Bar Association Standards</option>
+              <option value="iba">International Bar Association Guidelines</option>
+              <option value="neurodivergent">Neurodivergent Accessibility Standards</option>
+            </select>
+
+            <button class="w-full py-2 mt-2">Run Compliance Check</button>
+          </div>
+
+          <div class="border border-blue-800 rounded-lg p-4 bg-blue-900 bg-opacity-10">
+            <h3 class="font-medium mb-3">Compliance Report</h3>
+            <p class="text-sm mb-3">
+              Select a curriculum and standards framework to generate a compliance assessment
+              report.
+            </p>
+
+            <div class="text-xs opacity-75">
+              The compliance assessment will check:
+              <ul class="list-disc pl-5 mt-2 space-y-1">
+                <li>Alignment with required educational standards</li>
+                <li>Coverage of essential legal topics</li>
+                <li>Appropriate assessment methodologies</li>
+                <li>Accessibility for neurodivergent students</li>
+                <li>Cultural sensitivity and inclusion</li>
+                <li>Legal accuracy and currency</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-200 p-4 mt-12">
+      <div class="container mx-auto">
+        <div class="text-center">
+          <p class="text-sm">
+            &copy; 2025 ShotziOS Learning Platform - Law School Curriculum Creator
+          </p>
+          <p class="text-xs text-gray-400 mt-1">Version 2.5.3 • Last Updated: April 10, 2025</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Help Bubble -->
+    <div id="helpBubble" class="fixed right-4 bottom-4 z-50"></div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        initializeHelpBubble('law-curriculum', 'right');
+      });
+    </script>
+
+    <!-- Simple script for step navigation demo -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Get step elements
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const step3 = document.getElementById('step-3');
+        const step4 = document.getElementById('step-4');
+        const aiGen = document.getElementById('ai-generation');
+
+        // Get step indicators
+        const stepIndicators = document.querySelectorAll('.step');
+
+        // Get next/prev buttons
+        const nextButtons = document.querySelectorAll('button');
+
+        nextButtons.forEach((button) => {
+          button.addEventListener('click', function () {
+            const buttonText = this.textContent.trim();
+
+            if (buttonText === 'Next: Learning Outcomes') {
+              step1.classList.add('hidden');
+              step2.classList.remove('hidden');
+              stepIndicators[0].classList.remove('active');
+              stepIndicators[0].classList.add('completed');
+              stepIndicators[1].classList.add('active');
+            } else if (buttonText === 'Next: Content Structure') {
+              step2.classList.add('hidden');
+              step3.classList.remove('hidden');
+              stepIndicators[1].classList.remove('active');
+              stepIndicators[1].classList.add('completed');
+              stepIndicators[2].classList.add('active');
+            } else if (buttonText === 'Next: Assessment Methods') {
+              step3.classList.add('hidden');
+              step4.classList.remove('hidden');
+              stepIndicators[2].classList.remove('active');
+              stepIndicators[2].classList.add('completed');
+              stepIndicators[3].classList.add('active');
+            } else if (buttonText === 'Previous: Basic Information') {
+              step2.classList.add('hidden');
+              step1.classList.remove('hidden');
+              stepIndicators[1].classList.remove('active');
+              stepIndicators[0].classList.remove('completed');
+              stepIndicators[0].classList.add('active');
+            } else if (buttonText === 'Previous: Learning Outcomes') {
+              step3.classList.add('hidden');
+              step2.classList.remove('hidden');
+              stepIndicators[2].classList.remove('active');
+              stepIndicators[1].classList.remove('completed');
+              stepIndicators[1].classList.add('active');
+            } else if (buttonText === 'Previous: Content Structure') {
+              step4.classList.add('hidden');
+              step3.classList.remove('hidden');
+              stepIndicators[3].classList.remove('active');
+              stepIndicators[2].classList.remove('completed');
+              stepIndicators[2].classList.add('active');
+            } else if (buttonText === 'Generate with AI') {
+              step4.classList.add('hidden');
+              aiGen.classList.remove('hidden');
+            } else if (buttonText === 'Generate Curriculum') {
+              // Show the AI-generated content example
+              document.querySelector('.ai-generated').classList.remove('hidden');
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professor Barrett AI - Interactive Legal Education | Law School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #3b82f6;
+            --accent-gold: #f59e0b;
+            --text-dark: #1f2937;
+            --light-bg: #f8fafc;
+            --white: #ffffff;
+            --success-green: #10b981;
+            --danger-red: #ef4444;
+            --purple-accent: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--light-bg);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            padding: 2rem 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .professor-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .professor-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-gold), #fbbf24);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--success-green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Interface */
+        .main-interface {
+            display: grid;
+            grid-template-columns: 350px 1fr 300px;
+            gap: 2rem;
+            padding: 2rem 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Sidebar - Tools & Features */
+        .sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .sidebar h3 {
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .tool-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--secondary-blue), var(--purple-accent));
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tool-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .tool-button.active {
+            background: linear-gradient(135deg, var(--success-green), #059669);
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            height: 700px;
+        }
+
+        .chat-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            background: #f9fafb;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .message.user .message-avatar {
+            background: var(--secondary-blue);
+        }
+
+        .message.ai .message-avatar {
+            background: var(--accent-gold);
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: var(--secondary-blue);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.ai .message-content {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 5px;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #6b7280;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
+        /* Input Area */
+        .chat-input-area {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .chat-input {
+            width: 100%;
+            min-height: 50px;
+            max-height: 120px;
+            padding: 1rem 3rem 1rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            resize: none;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--secondary-blue);
+        }
+
+        .input-actions {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-button {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 50%;
+            background: var(--light-bg);
+            color: var(--text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            background: var(--secondary-blue);
+            color: white;
+        }
+
+        .send-button {
+            background: var(--secondary-blue);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .send-button:hover {
+            background: var(--primary-blue);
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Voice Controls */
+        .voice-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .voice-button {
+            background: var(--success-green);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .voice-button:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .voice-button.recording {
+            background: var(--danger-red);
+            animation: pulse 1s infinite;
+        }
+
+        .voice-button.speaking {
+            background: var(--purple-accent);
+        }
+
+        /* File Upload Area */
+        .file-upload-area {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--secondary-blue);
+            background: #eff6ff;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: var(--secondary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .file-list {
+            margin-top: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: #f3f4f6;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .file-icon {
+            color: var(--secondary-blue);
+        }
+
+        .remove-file {
+            background: none;
+            border: none;
+            color: var(--danger-red);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        /* Assistant Panel */
+        .assistant-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .panel-section {
+            margin-bottom: 2rem;
+        }
+
+        .panel-section h4 {
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .quick-action {
+            background: var(--light-bg);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action:hover {
+            background: #e0e7ff;
+            color: var(--primary-blue);
+        }
+
+        .case-suggestion {
+            padding: 1rem;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-radius: 12px;
+            border-left: 4px solid var(--secondary-blue);
+            margin-bottom: 1rem;
+        }
+
+        .case-title {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .case-description {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-interface {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .sidebar, .assistant-panel {
+                order: 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .chat-container {
+                height: 600px;
+            }
+            
+            .input-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid var(--secondary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="professor-info">
+                    <div class="professor-avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        <h1>Professor Barrett AI</h1>
+                        <p>Advanced Legal Education Assistant</p>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>AI Active & Ready</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Interface -->
+    <div class="container">
+        <div class="main-interface">
+            <!-- Sidebar - Tools & Features -->
+            <aside class="sidebar">
+                <h3><i class="fas fa-tools"></i> AI Capabilities</h3>
+                
+                <button class="tool-button active" data-tool="chat">
+                    <i class="fas fa-comments"></i>
+                    Text Chat
+                </button>
+                
+                <button class="tool-button" data-tool="voice">
+                    <i class="fas fa-microphone"></i>
+                    Voice Interaction
+                </button>
+                
+                <button class="tool-button" data-tool="visual">
+                    <i class="fas fa-eye"></i>
+                    Visual Analysis
+                </button>
+                
+                <button class="tool-button" data-tool="files">
+                    <i class="fas fa-file-upload"></i>
+                    Document Review
+                </button>
+                
+                <button class="tool-button" data-tool="case-analysis">
+                    <i class="fas fa-gavel"></i>
+                    Case Analysis
+                </button>
+                
+                <button class="tool-button" data-tool="research">
+                    <i class="fas fa-search"></i>
+                    Legal Research
+                </button>
+
+                <!-- File Upload Area -->
+                <div class="file-upload-area">
+                    <h4><i class="fas fa-cloud-upload-alt"></i> Upload Documents</h4>
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <p><strong>Drop files here</strong> or click to browse</p>
+                        <p style="font-size: 0.9rem; color: #6b7280;">PDF, DOC, TXT files supported</p>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.txt" style="display: none;">
+                    <div class="file-list" id="fileList"></div>
+                </div>
+
+                <!-- Voice Controls -->
+                <div class="voice-controls">
+                    <button class="voice-button" id="recordButton">
+                        <i class="fas fa-microphone"></i>
+                        Record
+                    </button>
+                    <button class="voice-button" id="speakButton">
+                        <i class="fas fa-volume-up"></i>
+                        Speak
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Chat Interface -->
+            <main class="chat-container">
+                <div class="chat-header">
+                    <h2><i class="fas fa-robot"></i> Professor Barrett AI Session</h2>
+                    <p>Advanced Legal Education & Case Analysis</p>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">
+                        <div class="message-avatar">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="message-content">
+                            <p><strong>Welcome to Professor Barrett AI!</strong></p>
+                            <p>I'm here to assist you with legal education, case analysis, bar exam preparation, and comprehensive legal research. You can:</p>
+                            <ul style="margin-left: 1rem; margin-top: 0.5rem;">
+                                <li>Ask legal questions via text or voice</li>
+                                <li>Upload documents for analysis</li>
+                                <li>Request case study breakdowns</li>
+                                <li>Get bar exam preparation guidance</li>
+                                <li>Analyze legal precedents and statutes</li>
+                            </ul>
+                            <p style="margin-top: 1rem;">How can I help you with your legal studies today?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="message-avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div>
+                        Professor Barrett is thinking
+                        <div class="typing-dots">
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                            <div class="typing-dot"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <div class="input-container">
+                        <div class="input-wrapper">
+                            <textarea 
+                                class="chat-input" 
+                                id="messageInput" 
+                                placeholder="Ask Professor Barrett about legal concepts, cases, or upload documents for analysis..."
+                                rows="1"
+                            ></textarea>
+                            <div class="input-actions">
+                                <button class="action-button" id="attachButton" title="Attach File">
+                                    <i class="fas fa-paperclip"></i>
+                                </button>
+                                <button class="action-button" id="voiceInputButton" title="Voice Input">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="send-button" id="sendButton">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Assistant Panel -->
+            <aside class="assistant-panel">
+                <div class="panel-section">
+                    <h4><i class="fas fa-lightbulb"></i> Quick Actions</h4>
+                    <button class="quick-action" data-action="explain-concept">
+                        Explain Legal Concept
+                    </button>
+                    <button class="quick-action" data-action="analyze-case">
+                        Analyze Case Law
+                    </button>
+                    <button class="quick-action" data-action="bar-prep">
+                        Bar Exam Question
+                    </button>
+                    <button class="quick-action" data-action="research-topic">
+                        Research Legal Topic
+                    </button>
+                    <button class="quick-action" data-action="draft-memo">
+                        Help Draft Legal Memo
+                    </button>
+                </div>
+
+                <div class="panel-section">
+                    <h4><i class="fas fa-bookmark"></i> Featured Cases</h4>
+                    <div class="case-suggestion">
+                        <div class="case-title">Miranda v. Arizona</div>
+                        <div class="case-description">Constitutional law landmark case on criminal procedure rights</div>
+                    </div>
+                    <div class="case-suggestion">
+                        <div class="case-title">Brown v. Board of Education</div>
+                        <div class="case-description">Civil rights case that ended racial segregation in schools</div>
+                    </div>
+                    <div class="case-suggestion">
+                        <div class="case-title">Marbury v. Madison</div>
+                        <div class="case-description">Established the principle of judicial review</div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h4><i class="fas fa-graduation-cap"></i> Study Areas</h4>
+                    <button class="quick-action" data-topic="constitutional-law">
+                        Constitutional Law
+                    </button>
+                    <button class="quick-action" data-topic="criminal-law">
+                        Criminal Law
+                    </button>
+                    <button class="quick-action" data-topic="contract-law">
+                        Contract Law
+                    </button>
+                    <button class="quick-action" data-topic="tort-law">
+                        Tort Law
+                    </button>
+                    <button class="quick-action" data-topic="civil-procedure">
+                        Civil Procedure
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        // Professor Barrett AI System
+        class ProfessorBarrettAI {
+            constructor() {
+                this.isRecording = false;
+                this.isSpeaking = false;
+                this.uploadedFiles = [];
+                this.conversationHistory = [];
+                this.voiceEnabled = false;
+                this.currentAudio = null;
+                
+                this.initializeEventListeners();
+                this.initializeVoiceCapabilities();
+                this.initializeFileUpload();
+                this.adjustTextareaHeight();
+                this.checkVoiceServiceHealth();
+            }
+
+            initializeEventListeners() {
+                // Send message
+                document.getElementById('sendButton').addEventListener('click', () => this.sendMessage());
+                document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                // Auto-resize textarea
+                document.getElementById('messageInput').addEventListener('input', () => this.adjustTextareaHeight());
+
+                // Quick actions
+                document.querySelectorAll('.quick-action').forEach(button => {
+                    button.addEventListener('click', (e) => this.handleQuickAction(e.target.dataset.action || e.target.dataset.topic));
+                });
+
+                // Tool buttons
+                document.querySelectorAll('.tool-button').forEach(button => {
+                    button.addEventListener('click', (e) => this.switchTool(e.target.dataset.tool));
+                });
+
+                // Voice controls
+                document.getElementById('recordButton').addEventListener('click', () => this.toggleRecording());
+                document.getElementById('speakButton').addEventListener('click', () => this.speakLastMessage());
+                document.getElementById('voiceInputButton').addEventListener('click', () => this.startVoiceInput());
+
+                // Case suggestions
+                document.querySelectorAll('.case-suggestion').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const caseTitle = card.querySelector('.case-title').textContent;
+                        this.sendMessage(`Tell me about ${caseTitle}`);
+                    });
+                });
+            }
+
+            initializeVoiceCapabilities() {
+                // Check for Web Speech API support
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    this.recognition = new SpeechRecognition();
+                    this.recognition.continuous = false;
+                    this.recognition.interimResults = false;
+                    this.recognition.lang = 'en-US';
+
+                    this.recognition.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript;
+                        document.getElementById('messageInput').value = transcript;
+                        this.sendMessage();
+                    };
+
+                    this.recognition.onerror = (event) => {
+                        console.error('Speech recognition error:', event.error);
+                        this.showMessage('ai', 'Sorry, I had trouble understanding your voice input. Please try again.');
+                    };
+                }
+
+                // Initialize Speech Synthesis
+                if ('speechSynthesis' in window) {
+                    this.synthesis = window.speechSynthesis;
+                }
+            }
+
+            initializeFileUpload() {
+                const uploadZone = document.getElementById('uploadZone');
+                const fileInput = document.getElementById('fileInput');
+
+                // Click to upload
+                uploadZone.addEventListener('click', () => fileInput.click());
+
+                // Drag and drop
+                uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.add('dragover');
+                });
+
+                uploadZone.addEventListener('dragleave', () => {
+                    uploadZone.classList.remove('dragover');
+                });
+
+                uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.remove('dragover');
+                    this.handleFiles(e.dataTransfer.files);
+                });
+
+                // File input change
+                fileInput.addEventListener('change', (e) => {
+                    this.handleFiles(e.target.files);
+                });
+            }
+
+            handleFiles(files) {
+                for (let file of files) {
+                    if (this.isValidFileType(file)) {
+                        this.uploadedFiles.push(file);
+                        this.displayFile(file);
+                        this.processFile(file);
+                    } else {
+                        this.showMessage('ai', `Sorry, ${file.name} is not a supported file type. Please upload PDF, DOC, or TXT files.`);
+                    }
+                }
+            }
+
+            isValidFileType(file) {
+                const allowedTypes = [
+                    'application/pdf',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'text/plain'
+                ];
+                return allowedTypes.includes(file.type);
+            }
+
+            displayFile(file) {
+                const fileList = document.getElementById('fileList');
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <i class="fas fa-file-${this.getFileIcon(file.type)} file-icon"></i>
+                        <div>
+                            <div style="font-weight: 600;">${file.name}</div>
+                            <div style="font-size: 0.8rem; color: #6b7280;">${this.formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <button class="remove-file" onclick="professorBarrett.removeFile('${file.name}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+
+            getFileIcon(mimeType) {
+                if (mimeType.includes('pdf')) return 'pdf';
+                if (mimeType.includes('word')) return 'word';
+                if (mimeType.includes('text')) return 'alt';
+                return 'file';
+            }
+
+            formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            removeFile(fileName) {
+                this.uploadedFiles = this.uploadedFiles.filter(file => file.name !== fileName);
+                const fileList = document.getElementById('fileList');
+                const fileItems = fileList.querySelectorAll('.file-item');
+                fileItems.forEach(item => {
+                    if (item.textContent.includes(fileName)) {
+                        item.remove();
+                    }
+                });
+            }
+
+            async processFile(file) {
+                this.showTypingIndicator();
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('document', file);
+
+                    const response = await fetch('/api/professor-barrett/analyze-document', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.hideTypingIndicator();
+                        this.showMessage('ai', `I've successfully analyzed "${data.filename}". ${data.analysis}`);
+                        
+                        // Add to conversation history
+                        this.conversationHistory.push({
+                            user: `Uploaded document: ${data.filename}`,
+                            ai: data.analysis
+                        });
+                    } else {
+                        this.hideTypingIndicator();
+                        this.showMessage('ai', `I encountered an issue analyzing "${file.name}". Please ensure the file is a valid PDF, DOC, or TXT document and try again.`);
+                    }
+                } catch (error) {
+                    console.error('File processing error:', error);
+                    this.hideTypingIndicator();
+                    this.showMessage('ai', `I encountered a technical issue while processing "${file.name}". Please try again or contact support if the problem persists.`);
+                }
+            }
+
+            adjustTextareaHeight() {
+                const textarea = document.getElementById('messageInput');
+                textarea.style.height = 'auto';
+                textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+            }
+
+            switchTool(tool) {
+                // Update active tool button
+                document.querySelectorAll('.tool-button').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-tool="${tool}"]`).classList.add('active');
+
+                // Show relevant message based on tool
+                const toolMessages = {
+                    'chat': 'Text chat mode activated. Type your legal questions below.',
+                    'voice': 'Voice interaction mode activated. Use the microphone button to speak.',
+                    'visual': 'Visual analysis mode activated. Upload images or documents for analysis.',
+                    'files': 'Document review mode activated. Upload files for comprehensive analysis.',
+                    'case-analysis': 'Case analysis mode activated. Ask me about specific legal cases or precedents.',
+                    'research': 'Legal research mode activated. I can help you research statutes, regulations, and case law.'
+                };
+
+                if (toolMessages[tool]) {
+                    this.showMessage('ai', toolMessages[tool]);
+                }
+            }
+
+            toggleRecording() {
+                if (!this.recognition) {
+                    this.showMessage('ai', 'Voice recognition is not supported in your browser. Please use a modern browser like Chrome or Edge.');
+                    return;
+                }
+
+                const recordButton = document.getElementById('recordButton');
+                
+                if (!this.isRecording) {
+                    this.isRecording = true;
+                    recordButton.classList.add('recording');
+                    recordButton.innerHTML = '<i class="fas fa-stop"></i> Stop';
+                    this.recognition.start();
+                } else {
+                    this.isRecording = false;
+                    recordButton.classList.remove('recording');
+                    recordButton.innerHTML = '<i class="fas fa-microphone"></i> Record';
+                    this.recognition.stop();
+                }
+            }
+
+            startVoiceInput() {
+                if (this.recognition && !this.isRecording) {
+                    this.recognition.start();
+                }
+            }
+
+            speakLastMessage() {
+                if (!this.synthesis) {
+                    this.showMessage('ai', 'Text-to-speech is not supported in your browser.');
+                    return;
+                }
+
+                const speakButton = document.getElementById('speakButton');
+                
+                if (this.isSpeaking) {
+                    this.synthesis.cancel();
+                    this.isSpeaking = false;
+                    speakButton.classList.remove('speaking');
+                    speakButton.innerHTML = '<i class="fas fa-volume-up"></i> Speak';
+                    return;
+                }
+
+                const messages = document.querySelectorAll('.message.ai .message-content');
+                if (messages.length === 0) return;
+
+                const lastMessage = messages[messages.length - 1].textContent;
+                const utterance = new SpeechSynthesisUtterance(lastMessage);
+                
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                utterance.volume = 0.8;
+
+                utterance.onstart = () => {
+                    this.isSpeaking = true;
+                    speakButton.classList.add('speaking');
+                    speakButton.innerHTML = '<i class="fas fa-stop"></i> Stop';
+                };
+
+                utterance.onend = () => {
+                    this.isSpeaking = false;
+                    speakButton.classList.remove('speaking');
+                    speakButton.innerHTML = '<i class="fas fa-volume-up"></i> Speak';
+                };
+
+                // Use ElevenLabs voice if available
+                this.connectToElevenLabs(lastMessage);
+                
+                // Fallback to browser speech synthesis
+                this.synthesis.speak(utterance);
+            }
+
+            async connectToElevenLabs(text) {
+                try {
+                    const response = await fetch('/api/professor-barrett/voice-response', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            voiceSettings: {
+                                stability: 0.5,
+                                similarity_boost: 0.75,
+                                style: 0.0,
+                                use_speaker_boost: true
+                            }
+                        })
+                    });
+
+                    if (response.ok) {
+                        const voiceData = await response.json();
+                        this.playAudioResponse(voiceData.audioUrl);
+                        return voiceData;
+                    } else {
+                        console.error('Voice API error:', response.status);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error('ElevenLabs connection error:', error);
+                    return null;
+                }
+            }
+
+            playAudioResponse(audioUrl) {
+                if (this.currentAudio) {
+                    this.currentAudio.pause();
+                }
+                
+                this.currentAudio = new Audio(audioUrl);
+                this.currentAudio.onended = () => {
+                    this.isSpeaking = false;
+                    const speakButton = document.getElementById('speakButton');
+                    speakButton.classList.remove('speaking');
+                    speakButton.innerHTML = '<i class="fas fa-volume-up"></i> Speak';
+                };
+                
+                this.currentAudio.play().catch(error => {
+                    console.error('Audio playback error:', error);
+                });
+            }
+
+            handleQuickAction(action) {
+                const actionPrompts = {
+                    'explain-concept': 'Please explain a legal concept I should know about.',
+                    'analyze-case': 'Can you help me analyze a specific legal case?',
+                    'bar-prep': 'Give me a bar exam practice question.',
+                    'research-topic': 'I need help researching a legal topic.',
+                    'draft-memo': 'Can you help me draft a legal memorandum?',
+                    'constitutional-law': 'Tell me about important constitutional law principles.',
+                    'criminal-law': 'Explain key concepts in criminal law.',
+                    'contract-law': 'What should I know about contract law?',
+                    'tort-law': 'Help me understand tort law basics.',
+                    'civil-procedure': 'Explain civil procedure rules and concepts.'
+                };
+
+                if (actionPrompts[action]) {
+                    this.sendMessage(actionPrompts[action]);
+                }
+            }
+
+            async sendMessage(customMessage = null) {
+                const input = document.getElementById('messageInput');
+                const message = customMessage || input.value.trim();
+                
+                if (!message) return;
+
+                // Show user message
+                this.showMessage('user', message);
+                
+                // Clear input if not custom message
+                if (!customMessage) {
+                    input.value = '';
+                    this.adjustTextareaHeight();
+                }
+
+                // Show typing indicator
+                this.showTypingIndicator();
+
+                try {
+                    // Send message to Professor Barrett API
+                    const response = await fetch('/api/professor-barrett/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            conversationHistory: this.conversationHistory
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.hideTypingIndicator();
+                        this.showMessage('ai', data.response);
+                        
+                        // Store conversation history
+                        this.conversationHistory.push({ user: message, ai: data.response });
+                        
+                        // Auto-play voice response if voice features are enabled
+                        if (data.response && this.voiceEnabled) {
+                            this.connectToElevenLabs(data.response);
+                        }
+                    } else {
+                        this.hideTypingIndicator();
+                        this.showMessage('ai', 'I apologize, but I encountered a technical issue. Please ensure the AI service is properly configured and try again.');
+                    }
+                } catch (error) {
+                    console.error('Chat API error:', error);
+                    this.hideTypingIndicator();
+                    this.showMessage('ai', 'I apologize, but I encountered a connection issue. Please check your internet connection and try again.');
+                }
+            }
+
+            generateAIResponse(userMessage) {
+                this.hideTypingIndicator();
+                
+                // Enhanced AI responses based on context
+                let response = this.getContextualResponse(userMessage);
+                
+                this.showMessage('ai', response);
+                this.conversationHistory.push({ user: userMessage, ai: response });
+            }
+
+            getContextualResponse(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                // File analysis responses
+                if (this.uploadedFiles.length > 0 && (lowerMessage.includes('analyze') || lowerMessage.includes('review'))) {
+                    return `I've analyzed your uploaded documents. Based on the legal content, I can see several key points that require attention. The documents contain important legal precedents and statutory references that are relevant to your case. Would you like me to break down specific sections or highlight the most critical legal issues?`;
+                }
+
+                // Constitutional law responses
+                if (lowerMessage.includes('constitutional') || lowerMessage.includes('amendment')) {
+                    return `Constitutional law forms the foundation of our legal system. The Constitution establishes the framework for government powers and individual rights. Key principles include separation of powers, federalism, and the protection of fundamental rights through the Bill of Rights. Which specific constitutional concept would you like me to explain in detail?`;
+                }
+
+                // Criminal law responses
+                if (lowerMessage.includes('criminal') || lowerMessage.includes('crime')) {
+                    return `Criminal law involves the prosecution of individuals who commit acts deemed harmful to society. Key elements include mens rea (guilty mind) and actus reus (guilty act). The prosecution must prove these elements beyond a reasonable doubt. Important defenses include self-defense, insanity, and duress. What specific aspect of criminal law interests you?`;
+                }
+
+                // Contract law responses
+                if (lowerMessage.includes('contract')) {
+                    return `Contract law governs enforceable agreements between parties. Essential elements include offer, acceptance, consideration, and mutual assent. Contracts can be express or implied, and various doctrines like the Statute of Frauds govern their enforceability. Remedies for breach include damages, specific performance, and restitution. What contract law topic would you like to explore?`;
+                }
+
+                // Bar exam responses
+                if (lowerMessage.includes('bar exam') || lowerMessage.includes('bar')) {
+                    return `Here's a bar exam style question: "A homeowner hired a contractor to build a deck for $10,000. The contract specified completion by June 1st. The contractor completed the work on June 15th, and the homeowner paid the full amount. Later, the homeowner discovered the deck was built 2 feet onto the neighbor's property. What are the homeowner's legal remedies?" Consider issues of breach, substantial performance, and potential remedies. What's your analysis?`;
+                }
+
+                // Case analysis responses
+                if (lowerMessage.includes('miranda') || lowerMessage.includes('arizona')) {
+                    return `Miranda v. Arizona (1966) established that suspects must be informed of their constitutional rights before custodial interrogation. The Miranda warning includes the right to remain silent, that statements can be used against them, the right to an attorney, and that counsel will be appointed if they cannot afford one. This case balanced law enforcement needs with Fifth Amendment protections against self-incrimination.`;
+                }
+
+                // Research responses
+                if (lowerMessage.includes('research') || lowerMessage.includes('find')) {
+                    return `For effective legal research, I recommend starting with primary sources (statutes, case law, regulations) then consulting secondary sources (law reviews, treatises) for analysis. Use boolean search techniques and focus on jurisdiction-specific materials. Key databases include Westlaw, Lexis, and Google Scholar. What specific legal topic are you researching?`;
+                }
+
+                // Default response
+                return `That's an excellent legal question! As Professor Barrett, I'm here to provide comprehensive legal education and analysis. Your question touches on important legal principles that we should explore systematically. Let me break this down into key components and provide you with both theoretical foundation and practical application. Would you like me to start with the basic legal framework or dive into specific case law and precedents?`;
+            }
+
+            showMessage(sender, content) {
+                const messagesContainer = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                
+                const avatar = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-user-graduate"></i>';
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatar}</div>
+                    <div class="message-content">
+                        <p>${content}</p>
+                        <div style="font-size: 0.8rem; color: #6b7280; margin-top: 0.5rem;">
+                            ${new Date().toLocaleTimeString()}
+                        </div>
+                    </div>
+                `;
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            showTypingIndicator() {
+                document.getElementById('typingIndicator').style.display = 'flex';
+                document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+            }
+
+            hideTypingIndicator() {
+                document.getElementById('typingIndicator').style.display = 'none';
+            }
+
+            async checkVoiceServiceHealth() {
+                try {
+                    const response = await fetch('/api/professor-barrett/voice-health');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.voiceEnabled = data.voiceServiceAvailable;
+                        
+                        if (this.voiceEnabled) {
+                            console.log('ElevenLabs voice service is available');
+                        } else {
+                            console.log('Voice service unavailable, using browser fallback');
+                        }
+                    }
+                } catch (error) {
+                    console.log('Voice service check failed, using browser fallback');
+                    this.voiceEnabled = false;
+                }
+            }
+        }
+
+        // Initialize Professor Barrett AI
+        const professorBarrett = new ProfessorBarrettAI();
+
+        // Global functions for HTML onclick events
+        window.professorBarrett = professorBarrett;
+    </script>
+</body>
+</html>

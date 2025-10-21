@@ -1,0 +1,125 @@
+{
+  "school": "primary",
+  "theme": "superhero",
+  "grades": {
+    "kindergarten": {
+      "subjects": {
+        "reading": {
+          "name": "Super Reading Adventures",
+          "icon": "📚",
+          "missions": [
+            {
+              "id": "letter-hero-academy",
+              "title": "Letter Hero Academy",
+              "description": "Learn letters through superhero characters",
+              "difficulty": "beginner",
+              "adaptations": {
+                "dyslexia": ["visual letter shapes", "multi-sensory approach", "color coding"],
+                "adhd": ["short 5-minute sessions", "movement breaks", "gamification"],
+                "autism": ["consistent routine", "clear instructions", "visual schedules"]
+              }
+            },
+            {
+              "id": "phonics-power-up",
+              "title": "Phonics Power-Up",
+              "description": "Sound out words with superhero phonics",
+              "difficulty": "beginner",
+              "adaptations": {
+                "dyslexia": ["syllable breakdown", "rhythm and rhyme", "visual sound cards"],
+                "adhd": ["interactive games", "immediate feedback", "progress tracking"],
+                "autism": ["predictable patterns", "repetitive practice", "success celebrations"]
+              }
+            }
+          ]
+        },
+        "math": {
+          "name": "Number Hero Training",
+          "icon": "🔢",
+          "missions": [
+            {
+              "id": "counting-crusaders",
+              "title": "Counting Crusaders",
+              "description": "Master numbers 1-20 with superhero counting",
+              "difficulty": "beginner",
+              "adaptations": {
+                "dyslexia": [
+                  "visual number representations",
+                  "tactile counting tools",
+                  "number songs"
+                ],
+                "adhd": ["movement-based counting", "quick challenges", "reward systems"],
+                "autism": ["structured sequences", "visual counting aids", "consistent methods"]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "grade1": {
+      "subjects": {
+        "reading": {
+          "name": "Reading Rangers",
+          "icon": "📖",
+          "missions": [
+            {
+              "id": "sight-word-heroes",
+              "title": "Sight Word Heroes",
+              "description": "Memorize common words through superhero adventures",
+              "difficulty": "intermediate",
+              "adaptations": {
+                "dyslexia": ["word shape recognition", "context clues", "memory techniques"],
+                "adhd": ["interactive flashcards", "timed challenges", "variety in presentation"],
+                "autism": ["repetitive practice", "visual word banks", "structured learning"]
+              }
+            }
+          ]
+        },
+        "math": {
+          "name": "Addition Avengers",
+          "icon": "➕",
+          "missions": [
+            {
+              "id": "super-addition",
+              "title": "Super Addition Squad",
+              "description": "Learn addition through superhero team-ups",
+              "difficulty": "intermediate",
+              "adaptations": {
+                "dyslexia": [
+                  "visual math manipulatives",
+                  "step-by-step guides",
+                  "color-coded operations"
+                ],
+                "adhd": ["hands-on activities", "immediate feedback", "short problem sets"],
+                "autism": ["consistent problem formats", "clear procedures", "visual supports"]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "instructors": [
+    {
+      "id": "captain-knowledge",
+      "name": "Captain Knowledge",
+      "specialties": ["reading", "language arts"],
+      "personality": "encouraging, patient, celebrates small wins",
+      "adaptations": {
+        "dyslexia": "Uses multi-sensory teaching, breaks down complex words, provides reading support tools",
+        "adhd": "Offers frequent breaks, uses movement and games, provides immediate positive feedback",
+        "autism": "Maintains consistent routines, uses clear visual instructions, celebrates achievements"
+      }
+    },
+    {
+      "id": "math-master",
+      "name": "Math Master",
+      "specialties": ["mathematics", "problem solving"],
+      "personality": "logical, encouraging, makes math fun through stories",
+      "adaptations": {
+        "dyslexia": "Uses visual representations, color coding, step-by-step breakdowns",
+        "adhd": "Interactive problem solving, quick challenges, movement-based learning",
+        "autism": "Structured approaches, predictable methods, clear visual supports"
+      }
+    }
+  ]
+}
