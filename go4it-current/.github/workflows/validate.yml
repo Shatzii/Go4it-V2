@@ -1,0 +1,20 @@
+name: Validate Go4it GPT JSON
+on:
+  push:
+    paths: ["gpt/**", ".github/workflows/validate.yml"]
+  pull_request:
+    paths: ["gpt/**", ".github/workflows/validate.yml"]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm i -g ajv-cli linkinator
+      - name: Validate JSON against schema
+        run: ajv validate -s gpt/go4it_actions.schema.json -d gpt/go4it_actions_pro.json
+      - name: Check links in /gpt (markdown, json)
+        run: linkinator gpt --recurse --verbosity error
