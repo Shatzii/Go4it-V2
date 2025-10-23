@@ -1,0 +1,43 @@
+name: Generate Linux package-lock
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generate-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies (generate lockfile)
+        run: |
+          # If a lockfile exists, prefer npm ci to lock dependencies exactly. Otherwise generate one on Linux.
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --package-lock-only
+          fi
+
+      - name: Commit lockfile back to repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p ci-lockfiles
+          cp package-lock.json ci-lockfiles/package-lock.linux.json
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add ci-lockfiles/package-lock.linux.json || true
+          if ! git diff --quiet --staged; then
+            git commit -m "chore(ci): add Linux-generated package-lock.json"
+            git push origin HEAD:wellness-hub-updates
+          else
+            echo "No changes to package-lock.json"
+          fi
