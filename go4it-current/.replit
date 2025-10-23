@@ -1,0 +1,7 @@
+run = "bash -lc 'npm run build --if-present && PORT=${PORT:-5000} npm run start'"
+
+# Optional: use the Nix environment defined in replit.nix
+onBoot = []
+
+# hide the default run panel messages
+language = "nodejs"

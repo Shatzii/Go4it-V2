@@ -1,3 +1,40 @@
+import Link from 'next/link';
+
+export const metadata = {
+  title: 'Go4it — Landing',
+  description: 'Go4it platform — wellness, sports, and academy.'
+};
+
+export default function Page() {
+  return (
+    <main style={{fontFamily: 'Inter, system-ui, -apple-system, Roboto, sans-serif', padding: 32}}>
+      <h1 style={{fontSize: 36, marginBottom: 8}}>Welcome to Go4it</h1>
+      <p style={{fontSize: 16, color: '#555', maxWidth: 760}}>
+        This is a lightweight landing page intended for quick deployments (Replit, Docker, preview).
+        Use the links below to access the main deployment areas.
+      </p>
+
+      <nav style={{marginTop: 24, display: 'flex', gap: 12}}>
+        <Link href="/go4it-deployment" style={{padding: '8px 12px', background: '#0ea5a4', color: 'white', borderRadius: 6}}>Go4it Deployment</Link>
+        <Link href="/sports-school" style={{padding: '8px 12px', background: '#3b82f6', color: 'white', borderRadius: 6}}>Sports School</Link>
+        <Link href="/ai-automation" style={{padding: '8px 12px', background: '#7c3aed', color: 'white', borderRadius: 6}}>AI Automation</Link>
+      </nav>
+
+      <section style={{marginTop: 36}}>
+        <h2 style={{fontSize: 20}}>Quick Replit tips</h2>
+        <ul>
+          <li>Replit uses the provided <code>replit.nix</code> for packages.</li>
+          <li>Build and start are handled by the repo <code>.replit</code> run command.</li>
+          <li>If you hit native dependency errors, the Replit build will skip optional deps configured locally.</li>
+        </ul>
+      </section>
+
+      <footer style={{marginTop: 36, color: '#777'}}>
+        <small>If a page 404s, open the repo and check the relevant app folder (e.g. <code>go4it-deployment/app</code>, <code>sports-school/app</code>).</small>
+      </footer>
+    </main>
+  );
+}
 export default function Go4ItHomePage() {
   return (
     <div className="min-h-screen bg-slate-900 text-white">
