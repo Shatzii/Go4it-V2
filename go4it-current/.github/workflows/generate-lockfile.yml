@@ -2,6 +2,8 @@ name: Generate Linux package-lock
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ wellness-hub-updates ]
 
 jobs:
   generate-lockfile:
