@@ -417,7 +417,7 @@ export default function Page() {
               <li><Link href="/recruiting-hub">Recruiting Hub</Link></li>
               <li><Link href="/pricing">Pricing</Link></li>
             </ul>
-            <Link href="/apply" className="btn btn-primary">
+            <Link href="/register" className="btn btn-primary">
               Apply Now
             </Link>
           </div>
@@ -438,8 +438,8 @@ export default function Page() {
             </div>
 
             <div className="cta-buttons">
-              <Link href="/apply" className="btn btn-primary">Apply to Academy</Link>
-              <Link href="/audit" className="btn btn-outline">48-Hour Credit Audit</Link>
+              <Link href="/register" className="btn btn-primary">Apply to Academy</Link>
+              <Link href="/ncaa-eligibility" className="btn btn-outline">48-Hour Credit Audit</Link>
               <Link href="/events" className="btn btn-outline">View Events</Link>
             </div>
           </div>
@@ -496,7 +496,7 @@ export default function Page() {
                 <li>Eligibility Center action list and deadlines</li>
                 <li>Coach/parent debrief call</li>
               </ul>
-              <Link href="/audit" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Book Audit</Link>
+              <Link href="/ncaa-eligibility" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Book Audit</Link>
             </div>
 
             {/* 4. GAR Testing */}
@@ -571,7 +571,7 @@ export default function Page() {
                 <li>Showcase friendlies (when scheduled)</li>
                 <li>Film + safety protocols</li>
               </ul>
-              <Link href="/apply" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Apply (note Residencies)</Link>
+              <Link href="/register" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Apply (note Residencies)</Link>
             </div>
 
             {/* 9. Camps */}
@@ -616,7 +616,7 @@ export default function Page() {
                 <li>Age-appropriate GAR baseline</li>
                 <li>Parent NCAA orientation</li>
               </ul>
-              <Link href="/apply" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Join Foundations</Link>
+              <Link href="/register" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Join Foundations</Link>
             </div>
 
             {/* 12. Blueprint 72h */}
@@ -631,7 +631,7 @@ export default function Page() {
                 <li>First-month milestone map</li>
                 <li>Fast-track audit booking</li>
               </ul>
-              <Link href="/audit" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Start Blueprint 72h</Link>
+              <Link href="/ncaa-eligibility" className="btn btn-outline" style={{marginTop: '1rem', display: 'inline-block'}}>Start Blueprint 72h</Link>
             </div>
           </div>
         </section>
@@ -665,8 +665,8 @@ export default function Page() {
           </div>
 
           <div className="cta-buttons">
-            <Link href="/apply" className="btn btn-primary">Apply to Academy</Link>
-            <Link href="/audit" className="btn btn-outline">Book 48-Hour Audit</Link>
+            <Link href="/register" className="btn btn-primary">Apply to Academy</Link>
+            <Link href="/ncaa-eligibility" className="btn btn-outline">Book 48-Hour Audit</Link>
           </div>
         </section>
 
