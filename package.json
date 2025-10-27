@@ -57,7 +57,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
-    "drizzle-orm": "^0.44.6",
+    "drizzle-orm": "^0.44.7",
     "drizzle-zod": "^0.5.1",
     "framer-motion": "^11.5.0",
     "jsonwebtoken": "^9.0.2",
