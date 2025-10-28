@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Metadata } from "next";
 import { LeadForm } from "@/components/marketing/LeadForm";
 import { Button } from "@/components/ui/button";
 import { 
