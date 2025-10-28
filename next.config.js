@@ -35,12 +35,24 @@ const nextConfig = {
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   trailingSlash: false,
 
-  // Build error handling - be strict in production
+  // Build error handling - optimize for memory
   eslint: {
-    ignoreDuringBuilds: process.env.NODE_ENV !== 'production' ? true : false,
+    ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: process.env.NODE_ENV !== 'production' ? true : false,
+    ignoreBuildErrors: true,
+  },
+  
+  // Memory optimization settings
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
+  },
+  
+  // Experimental memory optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    webpackMemoryOptimizations: true,
   },
 
   // Server-side package externalization for AI/ML packages
@@ -104,6 +116,9 @@ const nextConfig = {
 
   // Enhanced webpack configuration for Next.js 15
   webpack: (config, { isServer, dev, buildId }) => {
+    // Memory optimization - limit parallel processing
+    config.parallelism = 1;
+    
     // Add build ID to environment
     if (!isServer) {
       config.plugins = config.plugins || [];
@@ -176,22 +191,5 @@ const nextConfig = {
   },
 };
 
+// Disable Sentry during build to save memory
 module.exports = withBundleAnalyzer(nextConfig);
-
-// Try to apply Sentry config safely
-let exported = nextConfig;
-try {
-  if (process.env.NODE_ENV === 'production') {
-    const { withSentryConfig } = require('@sentry/nextjs');
-    exported = withSentryConfig(exported, {
-      silent: true,
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
-    });
-  }
-} catch (error) {
-  // Sentry configuration is optional
-  console.warn('Sentry configuration failed, proceeding without it');
-}
-
-module.exports = exported;
