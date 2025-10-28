@@ -44,7 +44,6 @@ const nextConfig = {
   },
   
   // Memory optimization settings
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
