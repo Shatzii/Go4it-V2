@@ -1,19 +1,27 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Standalone output for optimal deployment size
   output: 'standalone',
+  
+  // Optimize build size - only include essential files
+  outputFileTracingIncludes: {
+    '/': ['./public/**/*'],
+  },
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/@swc/core-linux-x64-gnu',
+      'node_modules/@swc/core-linux-x64-musl',
+      'node_modules/@esbuild',
+      'node_modules/webpack',
+      'node_modules/@next/swc-*',
+    ],
+  },
 
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 
   // Deployment optimizations to reduce build size
   productionBrowserSourceMaps: false,
-  
-  // Aggressive size reduction for deployment
-  outputFileTracing: true,
-  outputFileTracingRoot: __dirname,
-  
-  // Reduce output size
-  swcMinify: true,
 
   images: {
     unoptimized: process.env.NODE_ENV !== 'production',

@@ -8,8 +8,8 @@ channel = "stable-24_05"
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["sh", "-c", "npm ci --include=dev --prefer-offline --no-audit && npm run build"]
-run = ["sh", "-c", "node .next/standalone/server.js"]
+build = ["sh", "-c", "npm ci --omit=dev --prefer-offline --no-audit && npm run build"]
+run = ["sh", "-c", "cd .next/standalone && node server.js"]
 ignorePorts = false
 
 [env]

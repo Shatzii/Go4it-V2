@@ -15,7 +15,19 @@ RUN npm ci --only=production
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+
+# Copy only necessary files for build (respects .dockerignore)
+COPY package.json package-lock.json* ./
+COPY next.config.js ./
+COPY tsconfig.json ./
+COPY drizzle.config.ts ./
+COPY tailwind.config.ts ./
+COPY postcss.config.mjs ./
+COPY app ./app
+COPY client ./client
+COPY server ./server
+COPY shared ./shared
+COPY public ./public
 
 # Build the application
 RUN npm run build

@@ -5,7 +5,9 @@ yarn-debug.log*
 yarn-error.log*
 
 # Build artifacts
-.next
+# .next - NEEDED for deployment, don't exclude!
+.next/cache
+.next/trace
 out
 dist
 build
