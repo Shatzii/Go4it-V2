@@ -6,14 +6,18 @@
   "scripts": {
     "dev": "next dev -p 5000",
     "build": "next build",
+    "build:production": "cross-env NODE_ENV=production next build",
     "start": "next start -p 5000",
+    "start:production": "cross-env NODE_ENV=production next start -p 5000",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "type-check": "tsc --noEmit",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
-    "clean": "rm -rf .next node_modules/.cache"
+    "clean": "rm -rf .next node_modules/.cache",
+    "deploy:check": "npm run type-check && npm run lint",
+    "postinstall": "prisma generate || true"
   },
   "engines": {
     "node": ">=20.0.0",

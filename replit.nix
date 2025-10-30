@@ -1,26 +1,37 @@
 {pkgs}: {
   deps = [
-    pkgs.ollama
-    pkgs.nano
-    pkgs.unixtools.ping
-    pkgs.htop-vim
-    pkgs.nmap
+    # Development tools
     pkgs.gh
+    pkgs.nano
+    pkgs.htop-vim
+    pkgs.jq
+    
+    # Network tools
+    pkgs.unixtools.ping
+    pkgs.nmap
+    pkgs.iproute2
+    pkgs.lsof
+    
+    # Database
+    pkgs.postgresql
     pkgs.redis
-    pkgs.openssh
+    
+    # Media processing (optimized for video analysis)
+    pkgs.ffmpeg
     pkgs.giflib
     pkgs.libjpeg
     pkgs.pango
     pkgs.cairo
+    
+    # System utilities
     pkgs.libuuid
     pkgs.rsync
     pkgs.zip
-    pkgs.iproute2
-    pkgs.lsof
-    pkgs.procps
-    pkgs.jq
-    pkgs.ffmpeg
     pkgs.unzip
-    pkgs.postgresql
+    pkgs.procps
+    pkgs.openssh
+    
+    # AI/ML - Ollama for local AI models
+    pkgs.ollama
   ];
 }
