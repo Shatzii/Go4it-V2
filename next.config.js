@@ -54,7 +54,7 @@ const nextConfig = {
     webpackMemoryOptimizations: true,
   },
 
-  // Server-side package externalization for AI/ML packages
+  // Server-side package externalization for AI/ML packages and legacy features
   serverExternalPackages: [
     '@tensorflow/tfjs',
     '@tensorflow/tfjs-node',
@@ -69,6 +69,11 @@ const nextConfig = {
     'canvas',
     '@prisma/client',
     'prisma',
+    'winston',
+    'winston-daily-rotate-file',
+    'express',
+    'node-cron',
+    'form-data',
   ],
 
   // Turbopack configuration (replaces experimental.turbo)
@@ -129,7 +134,7 @@ const nextConfig = {
     }
 
     if (isServer) {
-      // Completely exclude browser-only AI packages from server builds
+      // Completely exclude browser-only AI packages and server-only legacy packages from server builds
       config.externals = config.externals || [];
       config.externals.push({
         '@tensorflow/tfjs': 'commonjs @tensorflow/tfjs',
@@ -140,6 +145,11 @@ const nextConfig = {
         '@mediapipe/holistic': 'commonjs @mediapipe/holistic',
         '@mediapipe/pose': 'commonjs @mediapipe/pose',
         canvas: 'commonjs canvas',
+        puppeteer: 'commonjs puppeteer',
+        'winston-daily-rotate-file': 'commonjs winston-daily-rotate-file',
+        express: 'commonjs express',
+        'node-cron': 'commonjs node-cron',
+        'form-data': 'commonjs form-data',
       });
     }
 
