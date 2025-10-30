@@ -1,8 +1,4 @@
 /** @type {import('next').NextConfig} */
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
-
 const nextConfig = {
   output: 'standalone',
 
@@ -74,6 +70,10 @@ const nextConfig = {
     'express',
     'node-cron',
     'form-data',
+    '@opentelemetry/api',
+    '@opentelemetry/core',
+    '@opentelemetry/resources',
+    '@opentelemetry/instrumentation',
   ],
 
   // Turbopack configuration (replaces experimental.turbo)
@@ -119,9 +119,21 @@ const nextConfig = {
   allowedDevOrigins: ['*.replit.dev', '*.replit.app', 'localhost:5000', '127.0.0.1:5000'],
 
   // Enhanced webpack configuration for Next.js 15
-  webpack: (config, { isServer, dev, buildId }) => {
+  webpack: (config, { isServer, dev, buildId, nextRuntime }) => {
     // Memory optimization - limit parallel processing
     config.parallelism = 1;
+    
+    // Exclude OpenTelemetry from Edge runtime (middleware) to prevent eval() errors
+    if (nextRuntime === 'edge') {
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@opentelemetry/api': false,
+        '@opentelemetry/core': false,
+        '@opentelemetry/resources': false,
+        '@opentelemetry/instrumentation': false,
+      };
+    }
     
     // Add build ID to environment
     if (!isServer) {
@@ -200,5 +212,4 @@ const nextConfig = {
   },
 };
 
-// Disable Sentry during build to save memory
-module.exports = withBundleAnalyzer(nextConfig);
+module.exports = nextConfig;

@@ -3,7 +3,6 @@ import { storage } from '@/server/storage';
 import { sign } from 'jsonwebtoken';
 import { limiters } from '@/lib/rateLimiter';
 import { logger, mask } from '@/lib/logger';
-import * as Sentry from '@sentry/nextjs';
 
 export async function POST(req: NextRequest) {
   const t0 = Date.now();
@@ -59,7 +58,6 @@ export async function POST(req: NextRequest) {
       durationMs: Date.now() - t0,
     });
     try {
-      if (process.env.SENTRY_DSN) Sentry.captureException(error);
     } catch {}
     return NextResponse.json({ error: 'Failed' }, { status: 500 });
   }

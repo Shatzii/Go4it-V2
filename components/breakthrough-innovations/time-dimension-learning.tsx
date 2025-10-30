@@ -17,12 +17,8 @@ import {
   Zap,
   Brain,
   Eye,
-  Target,
   Sparkles,
-  TrendingUp,
-  Award,
   Globe,
-  Users,
   BookOpen,
   Lightbulb,
   Timer,
@@ -31,9 +27,9 @@ import {
   Infinity,
   Activity,
   Star,
-  ArrowLeft,
   ArrowRight,
-  Settings
+  Settings,
+  Trophy
 } from 'lucide-react'
 
 interface TimeEpoch {

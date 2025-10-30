@@ -1,8 +1,6 @@
-﻿// @sentry/skip
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { productionConfig } from '@/lib/production-config';
 import { logger } from '@/lib/logger';
-import * as Sentry from '@sentry/nextjs';
 
 export const runtime = 'nodejs';
 export const revalidate = 0;
@@ -75,9 +73,6 @@ export async function GET() {
     return res;
   } catch (error) {
     logger.error('health.fail', { err: (error as Error)?.message });
-    try {
-      if (process.env.SENTRY_DSN) Sentry.captureException(error);
-    } catch {}
 
     return NextResponse.json(
       {
