@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Star, Trophy, Target, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import ClientOnly from '@/components/ClientOnly';
-import { useApp } from '@/components/providers/AppProviders';
 import { AuthClient } from '@/lib/auth-client';
 
 export default function OptimizedAuthPage() {
@@ -13,7 +12,6 @@ export default function OptimizedAuthPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
-  const { setUser } = useApp();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +48,6 @@ export default function OptimizedAuthPage() {
           AuthClient.setToken(data.token);
         }
 
-        setUser(data.user);
         setSuccess(isLogin ? 'Login successful!' : 'Registration successful!');
 
         // Redirect based on user role

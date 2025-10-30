@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { storage } from '@/server/storage';
 import { logger } from '@/lib/logger';
 
-export const revalidate = 60; // cache snapshot for a minute
-
 export async function GET() {
   const t0 = Date.now();
   try {

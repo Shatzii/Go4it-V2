@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/server/routes';
+import { getUserFromRequest } from '@/lib/auth';
 import { storage } from '@/server/storage';
 
 export async function GET(request: NextRequest) {

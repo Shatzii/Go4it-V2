@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/server/routes';
+import { getUserFromRequest } from '@/lib/auth';
 import { go4itAI } from '@/lib/openai-integration';
 
 export async function POST(request: NextRequest) {
