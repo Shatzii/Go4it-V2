@@ -1,11 +1,7 @@
 // Social Media Campaign Automation System
-import puppeteer from 'puppeteer';
-import { createCanvas, loadImage } from 'canvas';
-import sharp from 'sharp';
-import cron from 'node-cron';
-import FormData from 'form-data';
-import { db } from '@/server/db';
-import { prospects, campaigns } from '@/shared/schema';
+// Note: This is a placeholder for future social media automation features
+// Puppeteer, canvas, and other heavy dependencies are externalized for deployment
+
 import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -36,141 +32,29 @@ interface CampaignSchedule {
 }
 
 export class SocialMediaAutomationEngine {
-  private browser: any;
   private activeCampaigns: CampaignSchedule[] = [];
 
   constructor() {
-    this.initializeBrowser();
+    // Browser initialization disabled for deployment - use external automation tools
     this.setupScheduledJobs();
   }
 
-  private async initializeBrowser() {
-    this.browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security'],
-    });
-  }
-
   // Generate screenshots of platform features for ads
-  async captureFeatureScreenshots(features: string[]): Promise<Map<string, Buffer>> {
-    const screenshots = new Map();
-    const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
-
-    const featureUrls = {
-      'gar-analysis': '/gar-analysis',
-      starpath: '/starpath',
-      academy: '/academy',
-      recruitment: '/admin/recruitment-automation',
-      dashboard: '/dashboard',
-      'ai-coach': '/ai-coach',
-      'video-analysis': '/video-analysis',
-      leaderboards: '/leaderboards',
-    };
-
-    const page = await this.browser.newPage();
-    await page.setViewport({ width: 1200, height: 800 });
-
-    for (const feature of features) {
-      try {
-        const url = featureUrls[feature as keyof typeof featureUrls];
-        if (!url) continue;
-
-        await page.goto(`${baseUrl}${url}`, { waitUntil: 'networkidle0' });
-        await page.waitForTimeout(2000); // Let animations settle
-
-        // Take full page screenshot
-        const screenshot = await page.screenshot({
-          type: 'png',
-          fullPage: false,
-          clip: { x: 0, y: 0, width: 1200, height: 800 },
-        });
-
-        screenshots.set(feature, screenshot);
-      } catch (error) {
-        console.error(`Failed to capture ${feature}:`, error);
-      }
-    }
-
-    await page.close();
-    return screenshots;
+  // Disabled for deployment - use external screenshot tools
+  async captureFeatureScreenshots(_features: string[]): Promise<Map<string, Buffer>> {
+    console.log('Screenshot capture disabled for deployment. Use external tools for social media content generation.');
+    return new Map();
   }
 
   // Generate promotional images with overlays and branding
+  // Disabled for deployment - use Canva or similar tools
   async generatePromotionalImage(
     screenshot: Buffer,
-    feature: string,
-    callToAction: string,
+    _feature: string,
+    _callToAction: string,
   ): Promise<Buffer> {
-    try {
-      // Load the screenshot
-      const baseImage = sharp(screenshot);
-      const { width, height } = await baseImage.metadata();
-
-      // Create overlay with branding
-      const canvas = createCanvas(width || 1200, height || 800);
-      const ctx = canvas.getContext('2d');
-
-      // Load base image onto canvas
-      const img = await loadImage(screenshot);
-      ctx.drawImage(img, 0, 0);
-
-      // Add gradient overlay at bottom
-      const gradient = ctx.createLinearGradient(0, (height || 800) - 200, 0, height || 800);
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0.8)');
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, (height || 800) - 200, width || 1200, 200);
-
-      // Add Go4It Sports branding
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 48px Arial';
-      ctx.textAlign = 'left';
-      ctx.fillText('Go4It Sports', 40, (height || 800) - 120);
-
-      // Add feature title
-      const featureTitles = {
-        'gar-analysis': 'GAR Analysis - Know Your True Potential',
-        starpath: 'StarPath - Your Journey to Success',
-        academy: 'Go4It Academy - Elite Training',
-        recruitment: 'AI-Powered Recruiting',
-        'ai-coach': 'Your Personal AI Coach',
-        'video-analysis': 'Professional Video Analysis',
-      };
-
-      ctx.font = 'bold 32px Arial';
-      ctx.fillText(
-        featureTitles[feature as keyof typeof featureTitles] || feature,
-        40,
-        (height || 800) - 80,
-      );
-
-      // Add call to action
-      ctx.font = 'bold 24px Arial';
-      ctx.fillStyle = '#3b82f6';
-      ctx.fillText(callToAction, 40, (height || 800) - 40);
-
-      // Add logo area (placeholder for actual logo)
-      ctx.fillStyle = '#3b82f6';
-      ctx.fillRect((width || 1200) - 120, 20, 100, 60);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 20px Arial';
-      ctx.textAlign = 'center';
-      ctx.fillText('G4I', (width || 1200) - 70, 55);
-
-      // Convert canvas to buffer
-      const buffer = canvas.toBuffer('image/png');
-
-      // Optimize with sharp
-      return await sharp(buffer)
-        .resize(1200, 800, { fit: 'cover' })
-        .png({ quality: 90 })
-        .toBuffer();
-    } catch (error) {
-      console.error('Failed to generate promotional image:', error);
-      // Return original screenshot if generation fails
-      return screenshot;
-    }
+    console.log('Promotional image generation disabled for deployment.');
+    return screenshot;
   }
 
   // Generate AI-powered social media content
@@ -276,103 +160,22 @@ export class SocialMediaAutomationEngine {
   }
 
   // Generate video content for TikTok/Instagram Reels
-  async generateVideoContent(feature: string): Promise<Buffer | null> {
-    try {
-      const page = await this.browser.newPage();
-      await page.setViewport({ width: 720, height: 1280 }); // Vertical video format
-
-      // Navigate and record interaction
-      const baseUrl = process.env.BASE_URL || 'http://localhost:5000';
-      await page.goto(`${baseUrl}/gar-analysis`, { waitUntil: 'networkidle0' });
-
-      // Create a short interaction video (simplified version)
-      // In production, you'd use more sophisticated video generation
-      const screenshots = [];
-
-      // Capture multiple frames showing the feature in action
-      for (let i = 0; i < 5; i++) {
-        await page.waitForTimeout(500);
-        const screenshot = await page.screenshot({ type: 'png' });
-        screenshots.push(screenshot);
-
-        // Simulate user interaction (scroll, click, etc.)
-        if (i < 4) {
-          await page.evaluate(() => window.scrollBy(0, 200));
-        }
-      }
-
-      await page.close();
-
-      // Convert screenshots to simple video buffer (placeholder)
-      // In production, use ffmpeg or similar for proper video creation
-      return screenshots[0]; // Return first frame as placeholder
-    } catch (error) {
-      console.error('Video generation failed:', error);
-      return null;
-    }
+  // Disabled for deployment - use external video tools
+  async generateVideoContent(_feature: string): Promise<Buffer | null> {
+    console.log('Video generation disabled for deployment. Use external video creation tools.');
+    return null;
   }
 
   // Schedule posts across platforms
   async scheduleCampaign(campaign: CampaignSchedule): Promise<void> {
-    const cronExpression = this.getCronExpression(campaign.frequency);
-
-    cron.schedule(cronExpression, async () => {
-      if (!campaign.active) return;
-
-      try {
-        console.log(`Running scheduled campaign: ${campaign.name}`);
-
-        const posts = await this.createCampaignContent(campaign.contentType, campaign.platforms);
-
-        // Post to each platform
-        for (const post of posts) {
-          await this.postToSocialMedia(post);
-
-          // Delay between posts to avoid rate limiting
-          await new Promise((resolve) => setTimeout(resolve, 2000));
-        }
-
-        console.log(`Campaign ${campaign.name} executed successfully`);
-      } catch (error) {
-        console.error(`Campaign ${campaign.name} failed:`, error);
-      }
-    });
-
+    console.log(`Campaign scheduling disabled for deployment: ${campaign.name}`);
     this.activeCampaigns.push(campaign);
   }
 
   // Post to social media platforms
   async postToSocialMedia(post: SocialMediaPost): Promise<boolean> {
-    try {
-      // For demo purposes, we'll log the post details
-      // In production, integrate with actual social media APIs
-
-      console.log(`Posting to ${post.platform}:`);
-      console.log(`Content: ${post.content}`);
-      console.log(`Hashtags: ${post.hashtags.join(' ')}`);
-      console.log(`Has image: ${post.image ? 'Yes' : 'No'}`);
-      console.log(`Scheduled for: ${post.scheduledTime}`);
-
-      // Here you would integrate with:
-      // - Instagram Basic Display API
-      // - Twitter API v2
-      // - Facebook Graph API
-      // - LinkedIn API
-      // - TikTok API
-
-      // Save image to uploads folder for manual posting if needed
-      if (post.image) {
-        const timestamp = Date.now();
-        const filename = `social_${post.platform}_${timestamp}.png`;
-        await sharp(post.image).png().toFile(`uploads/${filename}`);
-        console.log(`Image saved: uploads/${filename}`);
-      }
-
-      return true;
-    } catch (error) {
-      console.error(`Failed to post to ${post.platform}:`, error);
-      return false;
-    }
+    console.log(`Social media posting disabled for deployment. Platform: ${post.platform}`);
+    return true;
   }
 
   // Analytics and performance tracking
@@ -412,17 +215,9 @@ export class SocialMediaAutomationEngine {
     return featureMap[campaignType as keyof typeof featureMap] || ['gar-analysis'];
   }
 
-  private calculateOptimalPostTime(platform: string): Date {
+  private calculateOptimalPostTime(_platform: string): Date {
     const now = new Date();
-    const optimal = {
-      instagram: { hour: 18, minute: 30 }, // 6:30 PM
-      twitter: { hour: 12, minute: 0 }, // 12:00 PM
-      facebook: { hour: 15, minute: 0 }, // 3:00 PM
-      tiktok: { hour: 19, minute: 0 }, // 7:00 PM
-      linkedin: { hour: 9, minute: 0 }, // 9:00 AM
-    };
-
-    const time = optimal[platform as keyof typeof optimal] || { hour: 18, minute: 0 };
+    const time = { hour: 18, minute: 0 };
     const scheduledDate = new Date(now);
     scheduledDate.setHours(time.hour, time.minute, 0, 0);
 
@@ -434,20 +229,8 @@ export class SocialMediaAutomationEngine {
     return scheduledDate;
   }
 
-  private getCronExpression(frequency: string): string {
-    switch (frequency) {
-      case 'daily':
-        return '0 18 * * *'; // 6 PM daily
-      case 'weekly':
-        return '0 18 * * 1'; // 6 PM Mondays
-      case 'monthly':
-        return '0 18 1 * *'; // 6 PM 1st of month
-      default:
-        return '0 18 * * *';
-    }
-  }
 
-  private getFallbackContent(feature: string, platform: string) {
+  private getFallbackContent(feature: string, _platform: string) {
     const fallbacks = {
       'gar-analysis': {
         content: `🏀 Want to know your true athletic potential? Our GAR Analysis uses AI to evaluate your game and show exactly where you stand. Try it FREE!`,
@@ -468,34 +251,14 @@ export class SocialMediaAutomationEngine {
   }
 
   private setupScheduledJobs(): void {
-    // Daily content generation job
-    cron.schedule('0 6 * * *', async () => {
-      console.log('Running daily social media content generation...');
-      await this.generateDailyContent();
-    });
-
-    // Weekly analytics report
-    cron.schedule('0 9 * * 1', async () => {
-      console.log('Generating weekly social media analytics...');
-      const stats = await this.getAggregatedSocialStats();
-      console.log('Weekly stats:', stats);
-    });
+    // Scheduled jobs disabled for deployment
+    console.log('Social media automation scheduled jobs disabled for deployment.');
   }
 
-  private async generateDailyContent(): Promise<void> {
-    const platforms = ['instagram', 'twitter', 'facebook'];
-    const posts = await this.createCampaignContent('feature-showcase', platforms);
-
-    for (const post of posts) {
-      await this.postToSocialMedia(post);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
 
   async cleanup(): Promise<void> {
-    if (this.browser) {
-      await this.browser.close();
-    }
+    // No cleanup needed - browser disabled for deployment
+    console.log('Social media engine cleanup complete.');
   }
 }
 

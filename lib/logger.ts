@@ -3,7 +3,6 @@
 
 import winston from 'winston';
 import { format } from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
 
 // Enterprise logging configuration
 const config = {
@@ -21,7 +20,7 @@ const enterpriseFormat = format.combine(
   format.errors({ stack: true }),
   format.json(),
   format.printf(({ timestamp, level, message, ...meta }) => {
-    const logEntry = {
+    const logEntry: any = {
       timestamp,
       level: level.toUpperCase(),
       message,
@@ -31,18 +30,7 @@ const enterpriseFormat = format.combine(
       ...meta,
     };
 
-    // Add request context if available
-    if (meta.requestId) {
-      logEntry.requestId = meta.requestId;
-    }
-
-    if (meta.userId) {
-      logEntry.userId = meta.userId;
-    }
-
-    if (meta.sessionId) {
-      logEntry.sessionId = meta.sessionId;
-    }
+    // Context fields are added via spread operator above
 
     return JSON.stringify(logEntry, null, 0);
   })
@@ -61,24 +49,22 @@ const consoleTransport = new winston.transports.Console({
   ),
 });
 
-// File transport for production logging
-const fileTransport = new DailyRotateFile({
-  filename: 'logs/advanced-social-media-%DATE%.log',
-  datePattern: 'YYYY-MM-DD',
-  maxSize: config.maxFileSize,
-  maxFiles: config.maxFiles,
+// File transport for production logging (simplified for deployment)
+const fileTransport = new winston.transports.File({
+  filename: 'logs/application.log',
   level: config.level,
   format: enterpriseFormat,
+  maxsize: 20971520, // 20MB
+  maxFiles: 5,
 });
 
 // Error-specific file transport
-const errorFileTransport = new DailyRotateFile({
-  filename: 'logs/advanced-social-media-error-%DATE%.log',
-  datePattern: 'YYYY-MM-DD',
-  maxSize: config.maxFileSize,
-  maxFiles: config.maxFiles,
+const errorFileTransport = new winston.transports.File({
+  filename: 'logs/error.log',
   level: 'error',
   format: enterpriseFormat,
+  maxsize: 20971520, // 20MB
+  maxFiles: 5,
 });
 
 // Create the logger instance
@@ -262,7 +248,7 @@ export const enterpriseLogger = EnterpriseLogger.getInstance();
 export const logger = {
   info: (msg: string, meta?: Record<string, unknown>) => enterpriseLogger.info(msg, meta),
   warn: (msg: string, meta?: Record<string, unknown>) => enterpriseLogger.warn(msg, meta),
-  error: (msg: string, meta?: Record<string, unknown>) => enterpriseLogger.error(msg, meta),
+  error: (msg: string, meta?: Record<string, unknown>) => enterpriseLogger.error(msg, undefined, meta),
 };
 
 // Helpers
