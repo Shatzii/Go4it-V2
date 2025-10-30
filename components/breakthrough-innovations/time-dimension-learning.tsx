@@ -27,7 +27,7 @@ import {
   Lightbulb,
   Timer,
   History,
-  Future,
+  TrendingUp as Future,
   Infinity,
   Activity,
   Star,

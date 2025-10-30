@@ -883,3 +883,114 @@ export const contentTags = pgTable('content_tags', {
 
 export type ContentTag = typeof contentTags.$inferSelect;
 export type InsertContentTag = typeof contentTags.$inferInsert;
+
+// Academy-related tables for courses and enrollments
+export const courses = pgTable('courses', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  title: varchar('title').notNull(),
+  description: text('description'),
+  code: varchar('code'),
+  credits: real('credits').default(1.0),
+  gradeLevel: varchar('grade_level'),
+  department: varchar('department'),
+  prerequisites: jsonb('prerequisites'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export type Course = typeof courses.$inferSelect;
+export type InsertCourse = typeof courses.$inferInsert;
+
+export const enrollments = pgTable('enrollments', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id),
+  courseId: varchar('course_id').references(() => courses.id),
+  status: varchar('status').default('active'),
+  enrolledAt: timestamp('enrolled_at').defaultNow(),
+  completedAt: timestamp('completed_at'),
+});
+
+export type Enrollment = typeof enrollments.$inferSelect;
+export type InsertEnrollment = typeof enrollments.$inferInsert;
+
+export const assessments = pgTable('assessments', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  courseId: varchar('course_id').references(() => courses.id),
+  title: varchar('title').notNull(),
+  description: text('description'),
+  type: varchar('type').default('quiz'),
+  pointsTotal: real('points_total').notNull(),
+  dueDate: timestamp('due_date'),
+  isPublished: boolean('is_published').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export type Assessment = typeof assessments.$inferSelect;
+export type InsertAssessment = typeof assessments.$inferInsert;
+
+export const contentLibrary = pgTable('content_library', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  courseId: varchar('course_id').references(() => courses.id),
+  title: varchar('title').notNull(),
+  type: varchar('type').notNull(),
+  content: text('content'),
+  url: varchar('url'),
+  fileSize: integer('file_size'),
+  duration: integer('duration'),
+  isPublished: boolean('is_published').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export type ContentLibraryItem = typeof contentLibrary.$inferSelect;
+export type InsertContentLibraryItem = typeof contentLibrary.$inferInsert;
+
+// Curriculum-related tables
+export const curriculum = pgTable('curriculum', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  courseId: varchar('course_id').references(() => courses.id),
+  week: integer('week').notNull(),
+  topic: varchar('topic').notNull(),
+  objectives: jsonb('objectives'),
+  resources: jsonb('resources'),
+  assessments: jsonb('assessments'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export type CurriculumItem = typeof curriculum.$inferSelect;
+export type InsertCurriculumItem = typeof curriculum.$inferInsert;
+
+export const courseContent = pgTable('course_content', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  courseId: varchar('course_id').references(() => courses.id),
+  title: varchar('title').notNull(),
+  order: integer('order').default(0),
+  contentType: varchar('content_type').notNull(),
+  content: text('content'),
+  metadata: jsonb('metadata'),
+  isLocked: boolean('is_locked').default(false),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export type CourseContent = typeof courseContent.$inferSelect;
+export type InsertCourseContent = typeof courseContent.$inferInsert;
+
+// Zod validation schemas for academy
+export const insertCourseSchema = createInsertSchema(courses);
+export const insertEnrollmentSchema = createInsertSchema(enrollments);
+export const insertAssessmentSchema = createInsertSchema(assessments);
+export const insertContentLibrarySchema = createInsertSchema(contentLibrary);
+export const insertCurriculumSchema = createInsertSchema(curriculum);
+export const insertCourseContentSchema = createInsertSchema(courseContent);
