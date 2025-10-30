@@ -41,9 +41,11 @@ Or use Replit's Deploy button → Autoscale Deployment
 
 ### Package Versions:
 - Next.js: 15.5.6
-- Tailwind CSS: 3.4.1
-- PostCSS: 8.4.47
-- Autoprefixer: 10.4.20
+- Tailwind CSS: 3.4.1 **(moved to dependencies)**
+- PostCSS: 8.4.47 **(moved to dependencies)**
+- Autoprefixer: 10.4.20 **(moved to dependencies)**
+
+**Note:** PostCSS packages are now in `dependencies` (not `devDependencies`) to ensure they're installed during Replit's `npm ci` build process.
 
 ## Expected Build Output
 
