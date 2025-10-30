@@ -9,10 +9,6 @@ import { SocialMediaAccountList } from '../../components/social-media/SocialMedi
 import { StudentSafetyDashboard } from '../../components/social-media/StudentSafetyDashboard';
 import { ParentNotificationCenter } from '../../components/social-media/ParentNotificationCenter';
 
-// Force dynamic rendering to prevent static generation issues
-export const dynamic = 'force-dynamic';
-export const revalidate = false;
-
 export default function SocialMediaSafetyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-4">
