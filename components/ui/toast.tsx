@@ -2,6 +2,59 @@ import * as React from 'react';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+// Toast context for managing toasts
+interface ToastContextValue {
+  toasts: Array<{ id: string; title?: string; description?: string; variant?: 'default' | 'destructive' }>;
+  addToast: (toast: Omit<ToastContextValue['toasts'][0], 'id'>) => void;
+  removeToast: (id: string) => void;
+}
+
+const ToastContext = React.createContext<ToastContextValue | undefined>(undefined);
+
+export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+  const [toasts, setToasts] = React.useState<ToastContextValue['toasts']>([]);
+
+  const removeToast = React.useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const addToast = React.useCallback((toast: Omit<ToastContextValue['toasts'][0], 'id'>) => {
+    const id = Math.random().toString(36).substring(7);
+    setToasts((prev) => [...prev, { ...toast, id }]);
+    setTimeout(() => removeToast(id), 5000); // Auto-dismiss after 5s
+  }, [removeToast]);
+
+  return (
+    <ToastContext.Provider value={{ toasts, addToast, removeToast }}>
+      {children}
+    </ToastContext.Provider>
+  );
+};
+
+export const ToastViewport = ({ className }: { className?: string }) => {
+  const context = React.useContext(ToastContext);
+  if (!context) return null;
+
+  return (
+    <div
+      className={cn(
+        'fixed top-0 right-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]',
+        className
+      )}
+    >
+      {context.toasts.map((toast) => (
+        <Toast key={toast.id} variant={toast.variant}>
+          <div className="grid gap-1">
+            {toast.title && <ToastTitle>{toast.title}</ToastTitle>}
+            {toast.description && <ToastDescription>{toast.description}</ToastDescription>}
+          </div>
+          <ToastClose onClick={() => context.removeToast(toast.id)} />
+        </Toast>
+      ))}
+    </div>
+  );
+};
+
 export interface ToastProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'destructive';
 }
@@ -71,4 +124,12 @@ const ToastDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<H
 );
 ToastDescription.displayName = 'ToastDescription';
 
-export { Toast, ToastAction, ToastClose, ToastTitle, ToastDescription };
+export {
+  Toast,
+  ToastAction,
+  ToastClose,
+  ToastTitle,
+  ToastDescription,
+  ToastProvider,
+  ToastViewport,
+};
