@@ -1,5 +1,5 @@
 import { db } from './db';
-import { users, courses, academyEnrollments, academyGrades } from '@/shared/schema';
+import { users, courses, academyEnrollments, academySubmissions } from '@/shared/schema';
 import { eq } from 'drizzle-orm';
 import { LMS_CONFIG, type LMSCourse } from './lms-config';
 
@@ -124,13 +124,13 @@ export class LMSIntegration {
       // Update Go4It grades database
       for (const grade of grades.items || []) {
         await db
-          .insert(academyGrades)
+          .insert(academySubmissions)
           .values({
             studentId: userId,
             assignmentId: parseInt(grade.itemid),
-            pointsEarned: grade.graderaw ? parseFloat(grade.graderaw).toString() : '0',
-            letterGrade: grade.gradeformatted,
-            feedback: grade.feedback,
+            grade: grade.graderaw ? parseFloat(grade.graderaw) : 0,
+            feedback: grade.feedback || '',
+            submittedAt: new Date(),
             gradedAt: new Date(),
           })
           .onConflictDoNothing();

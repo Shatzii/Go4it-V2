@@ -70,6 +70,7 @@ const nextConfig = {
     'express',
     'node-cron',
     'form-data',
+    'canvas',
     '@opentelemetry/api',
     '@opentelemetry/core',
     '@opentelemetry/resources',
