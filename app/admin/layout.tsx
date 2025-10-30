@@ -1,30 +1,7 @@
 'use client';
 
-import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BarChart3, Users, FileText, Gift, Database, Shield, LogOut } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: 'Go4It Sports - Admin Dashboard',
-  description: 'Administrative dashboard for Go4It Sports platform management',
-};
-
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const handleLogout = () => {
-    // Clear admin authentication
-    localStorage.removeItem('adminAccess');
-    localStorage.removeItem('adminToken');
-    document.cookie = 'adminToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    document.cookie = 'adminAccess=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    window.location.href = '/admin/login';
-  };e { Metadata } from 'next';
-import Link from 'next/link';
-import { BarChart3, Users, FileText, Gift, Database, Shield, LogOut } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: 'Go4It Sports - Admin Dashboard',
-  description: 'Administrative dashboard for Go4It Sports platform management',
-};
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const handleLogout = () => {

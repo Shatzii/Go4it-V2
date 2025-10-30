@@ -2,8 +2,6 @@
 // Features discovered athletes, generated articles, and recruitment news
 
 import { Metadata } from 'next';
-import { Suspense } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -12,11 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Trophy,
   TrendingUp,
-  Users,
   Calendar,
   MapPin,
   Target,
-  Star,
   Share2,
   Bookmark,
   Clock,
@@ -510,5 +506,4 @@ export default function NewsPage() {
       </div>
     </div>
   );
-}</content>
-<parameter name="filePath">/home/runner/workspace/app/news/page.tsx
+}

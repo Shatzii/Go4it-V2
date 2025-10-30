@@ -1,5 +1,5 @@
 ﻿// @sentry/skip
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { productionConfig } from '@/lib/production-config';
 import { logger } from '@/lib/logger';
 import * as Sentry from '@sentry/nextjs';
@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/nextjs';
 export const runtime = 'nodejs';
 export const revalidate = 0;
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const started = Date.now();
   try {
     // Validate production configuration
@@ -30,11 +30,11 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV,
       version: process.env.npm_package_version || '1.0.0',
-      uptime: ${Math.floor(uptime / 3600)}h m,
+      uptime: `${Math.floor(uptime / 3600)}h ${Math.floor((uptime % 3600) / 60)}m`,
       memory: {
         used: Math.round(memoryUsage.heapUsed / 1024 / 1024),
         total: Math.round(memoryUsage.heapTotal / 1024 / 1024),
-        usage: ${memoryUsagePercent}%,
+        usage: `${memoryUsagePercent}%`,
       },
       database: dbStatus,
       features: {
