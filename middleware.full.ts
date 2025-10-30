@@ -101,7 +101,7 @@ export function middleware(request: NextRequest) {
     const csp = [
       "default-src 'self'",
       "img-src 'self' data: https:",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next dev/React hydrate may need inline/eval
+      "script-src 'self' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "font-src 'self' data:",
       "connect-src 'self' https:",
