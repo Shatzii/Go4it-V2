@@ -17,6 +17,7 @@ NODE_ENV = "production"
 NODE_OPTIONS = "--max-old-space-size=4096 --no-warnings"
 NEXT_TELEMETRY_DISABLED = "1"
 NPM_CONFIG_LOGLEVEL = "error"
+REPLIT_KEEP_PACKAGE_DEV_DEPENDENCIES = "1"
 
 [[ports]]
 localPort = 3001

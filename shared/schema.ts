@@ -987,6 +987,64 @@ export const courseContent = pgTable('course_content', {
 export type CourseContent = typeof courseContent.$inferSelect;
 export type InsertCourseContent = typeof courseContent.$inferInsert;
 
+// Friday Night Lights Event Registration
+export const fridayNightLightsRegistrations = pgTable('friday_night_lights_registrations', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  userId: varchar('user_id').references(() => users.id),
+  eventType: varchar('event_type').notNull(), // 'open-house', 'tryout', 'both'
+  
+  // Personal Information
+  firstName: varchar('first_name').notNull(),
+  lastName: varchar('last_name').notNull(),
+  email: varchar('email').notNull(),
+  phone: varchar('phone'),
+  dateOfBirth: timestamp('date_of_birth').notNull(),
+  
+  // Parent/Guardian Information
+  parentName: varchar('parent_name'),
+  parentEmail: varchar('parent_email'),
+  emergencyContact: varchar('emergency_contact'),
+  emergencyPhone: varchar('emergency_phone'),
+  
+  // Universal One Open House
+  universalOneInterest: boolean('universal_one_interest').default(false),
+  academicPrograms: text('academic_programs'), // JSON stringified array
+  needsAcademicSupport: boolean('needs_academic_support').default(false),
+  
+  // Team Tryout Information
+  primarySport: varchar('primary_sport'),
+  secondarySports: text('secondary_sports'), // JSON stringified array
+  position: varchar('position'),
+  experience: varchar('experience'),
+  previousTeams: text('previous_teams'),
+  
+  // Sports-specific tryouts
+  flagFootballTryout: boolean('flag_football_tryout').default(false),
+  basketballTryout: boolean('basketball_tryout').default(false),
+  soccerTryout: boolean('soccer_tryout').default(false),
+  
+  // Opt-ins
+  garAnalysisOptIn: boolean('gar_analysis_opt_in').default(true),
+  aiCoachingOptIn: boolean('ai_coaching_opt_in').default(true),
+  recruitmentOptIn: boolean('recruitment_opt_in').default(true),
+  
+  // Event Logistics
+  transportationNeeds: boolean('transportation_needs').default(false),
+  dietaryRestrictions: text('dietary_restrictions'),
+  specialAccommodations: text('special_accommodations'),
+  
+  // Registration Status
+  status: varchar('status').default('confirmed'), // 'pending', 'confirmed', 'cancelled'
+  registrationDate: timestamp('registration_date').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export type FridayNightLightsRegistration = typeof fridayNightLightsRegistrations.$inferSelect;
+export type InsertFridayNightLightsRegistration = typeof fridayNightLightsRegistrations.$inferInsert;
+
 // Zod validation schemas for academy
 export const insertCourseSchema = createInsertSchema(courses);
 export const insertEnrollmentSchema = createInsertSchema(enrollments);
@@ -994,3 +1052,4 @@ export const insertAssessmentSchema = createInsertSchema(assessments);
 export const insertContentLibrarySchema = createInsertSchema(contentLibrary);
 export const insertCurriculumSchema = createInsertSchema(curriculum);
 export const insertCourseContentSchema = createInsertSchema(courseContent);
+export const insertFridayNightLightsRegistrationSchema = createInsertSchema(fridayNightLightsRegistrations);
