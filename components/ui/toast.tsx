@@ -11,7 +11,7 @@ interface ToastContextValue {
 
 const ToastContext = React.createContext<ToastContextValue | undefined>(undefined);
 
-export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   const [toasts, setToasts] = React.useState<ToastContextValue['toasts']>([]);
 
   const removeToast = React.useCallback((id: string) => {
@@ -31,7 +31,7 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const ToastViewport = ({ className }: { className?: string }) => {
+const ToastViewport = ({ className }: { className?: string }) => {
   const context = React.useContext(ToastContext);
   if (!context) return null;
 
