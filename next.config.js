@@ -7,6 +7,13 @@ const nextConfig = {
 
   // Deployment optimizations to reduce build size
   productionBrowserSourceMaps: false,
+  
+  // Aggressive size reduction for deployment
+  outputFileTracing: true,
+  outputFileTracingRoot: __dirname,
+  
+  // Reduce output size
+  swcMinify: true,
 
   images: {
     unoptimized: process.env.NODE_ENV !== 'production',

@@ -99,6 +99,8 @@ Thumbs.db
 .replit
 .config
 .git
+.cache
+.local
 
 # Documentation and markdown files
 *.md
@@ -118,6 +120,18 @@ attached_assets/
 ai-models/
 migrations/
 public/uploads/
+go4it-deployment/
+go4it-latest-complete-build/
+go4it-current/
+go4it-current.tgz
+Clean-Build/
+complete-go4it-package.zip
+*.zip
+*.tgz
+*.tar.gz
+
+# Uploads directory
+uploads/
 
 # Development and temporary files
 temp/
