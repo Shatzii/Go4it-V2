@@ -2,20 +2,6 @@
 const nextConfig = {
   // Standalone output for optimal deployment size
   output: 'standalone',
-  
-  // Optimize build size - only include essential files
-  outputFileTracingIncludes: {
-    '/': ['./public/**/*'],
-  },
-  outputFileTracingExcludes: {
-    '*': [
-      'node_modules/@swc/core-linux-x64-gnu',
-      'node_modules/@swc/core-linux-x64-musl',
-      'node_modules/@esbuild',
-      'node_modules/webpack',
-      'node_modules/@next/swc-*',
-    ],
-  },
 
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
@@ -63,6 +49,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     webpackMemoryOptimizations: true,
+    isrMemoryCacheSize: 0, // Disable ISR to speed up builds
   },
 
   // Server-side package externalization for AI/ML packages and legacy features
