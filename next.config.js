@@ -3,6 +3,14 @@ const nextConfig = {
   // Standalone output for optimal deployment size
   output: 'standalone',
 
+  // Server configuration for Replit deployment
+  ...(process.env.HOSTNAME && {
+    serverRuntimeConfig: {
+      hostname: process.env.HOSTNAME,
+      port: process.env.PORT,
+    },
+  }),
+
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 
