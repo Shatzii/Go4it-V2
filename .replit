@@ -9,7 +9,7 @@ channel = "stable-24_05"
 [deployment]
 deploymentTarget = "autoscale"
 build = ["sh", "-c", "npm ci --omit=dev --prefer-offline --no-audit && npm run build"]
-run = ["sh", "-c", "node standalone-start.js"]
+run = ["sh", "-c", "npm start"]
 ignorePorts = false
 
 [env]

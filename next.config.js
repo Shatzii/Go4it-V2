@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Standalone output for optimal deployment size
-  output: 'standalone',
+  // Standard output for Replit deployment
+  // output: 'standalone', // Commented out - causes CSS issues in production
 
   // Server configuration for Replit deployment
   ...(process.env.HOSTNAME && {
