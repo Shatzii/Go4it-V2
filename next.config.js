@@ -49,7 +49,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     webpackMemoryOptimizations: true,
-    isrMemoryCacheSize: 0, // Disable ISR to speed up builds
   },
 
   // Server-side package externalization for AI/ML packages and legacy features
