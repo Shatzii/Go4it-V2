@@ -1,16 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Standard output for Replit deployment
-  // output: 'standalone', // Commented out - causes CSS issues in production
-
-  // Server configuration for Replit deployment
-  ...(process.env.HOSTNAME && {
-    serverRuntimeConfig: {
-      hostname: process.env.HOSTNAME,
-      port: process.env.PORT,
-    },
-  }),
-
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 
