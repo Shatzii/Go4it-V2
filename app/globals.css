@@ -425,8 +425,10 @@ html {
 }
 
 /* ADHD-friendly design patterns */
-.focus-ring {
-  @apply focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900;
+.focus-ring:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #3b82f6;
 }
 
 .high-contrast {
@@ -477,7 +479,18 @@ html {
 
 /* Form styles */
 .form-input {
-  @apply w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  background-color: #334155;
+  border: 1px solid #475569;
+  border-radius: 0.5rem;
+  color: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px #3b82f6;
 }
 
 .form-label {
