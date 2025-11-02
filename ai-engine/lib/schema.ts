@@ -128,6 +128,92 @@ export const userSessions = pgTable('user_sessions', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+// Recruiting contacts table (coaches, recruiters)
+export const recruitingContacts = pgTable('recruiting_contacts', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  schoolId: integer('school_id').references(() => ncaaSchools.id),
+  name: text('name').notNull(),
+  title: text('title'), // Head Coach, Assistant Coach, Recruiting Coordinator
+  email: text('email'),
+  phone: text('phone'),
+  sport: text('sport'),
+  notes: text('notes'),
+  interestLevel: text('interest_level'), // high, medium, low
+  lastContactDate: timestamp('last_contact_date'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Recruiting communications log
+export const recruitingCommunications = pgTable('recruiting_communications', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  contactId: integer('contact_id').references(() => recruitingContacts.id),
+  type: text('type').notNull(), // email, phone, text, in-person, video-call
+  subject: text('subject'),
+  content: text('content'),
+  direction: text('direction').notNull(), // inbound, outbound
+  communicationDate: timestamp('communication_date').notNull().defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Recruiting offers and interest
+export const recruitingOffers = pgTable('recruiting_offers', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  schoolId: integer('school_id')
+    .notNull()
+    .references(() => ncaaSchools.id),
+  contactId: integer('contact_id').references(() => recruitingContacts.id),
+  status: text('status').notNull().default('interested'), // interested, contacted, visited, offered, committed, declined
+  offerType: text('offer_type'), // scholarship, walk-on, preferred-walk-on
+  scholarshipAmount: decimal('scholarship_amount', { precision: 10, scale: 2 }),
+  scholarshipType: text('scholarship_type'), // full, partial, academic
+  notes: text('notes'),
+  visitDate: timestamp('visit_date'),
+  offerDate: timestamp('offer_date'),
+  commitmentDate: timestamp('commitment_date'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Recruiting timeline events
+export const recruitingTimeline = pgTable('recruiting_timeline', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  schoolId: integer('school_id').references(() => ncaaSchools.id),
+  contactId: integer('contact_id').references(() => recruitingContacts.id),
+  eventType: text('event_type').notNull(), // visit, camp, showcase, deadline, commitment, contact
+  title: text('title').notNull(),
+  description: text('description'),
+  eventDate: timestamp('event_date').notNull(),
+  location: text('location'),
+  isCompleted: boolean('is_completed').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Recruiting documents
+export const recruitingDocuments = pgTable('recruiting_documents', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id')
+    .notNull()
+    .references(() => users.id),
+  documentType: text('document_type').notNull(), // transcript, recommendation, essay, resume, video
+  fileName: text('file_name').notNull(),
+  filePath: text('file_path').notNull(),
+  fileSize: integer('file_size'),
+  mimeType: text('mime_type'),
+  uploadedAt: timestamp('uploaded_at').notNull().defaultNow(),
+});
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -161,6 +247,32 @@ export const insertHighlightReelSchema = createInsertSchema(highlightReels).omit
   processedAt: true,
 });
 
+export const insertRecruitingContactSchema = createInsertSchema(recruitingContacts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRecruitingCommunicationSchema = createInsertSchema(recruitingCommunications).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRecruitingOfferSchema = createInsertSchema(recruitingOffers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertRecruitingTimelineSchema = createInsertSchema(recruitingTimeline).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertRecruitingDocumentSchema = createInsertSchema(recruitingDocuments).omit({
+  id: true,
+  uploadedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -176,3 +288,13 @@ export type Achievement = typeof achievements.$inferSelect;
 export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
 export type NcaaSchool = typeof ncaaSchools.$inferSelect;
 export type UserSession = typeof userSessions.$inferSelect;
+export type RecruitingContact = typeof recruitingContacts.$inferSelect;
+export type InsertRecruitingContact = z.infer<typeof insertRecruitingContactSchema>;
+export type RecruitingCommunication = typeof recruitingCommunications.$inferSelect;
+export type InsertRecruitingCommunication = z.infer<typeof insertRecruitingCommunicationSchema>;
+export type RecruitingOffer = typeof recruitingOffers.$inferSelect;
+export type InsertRecruitingOffer = z.infer<typeof insertRecruitingOfferSchema>;
+export type RecruitingTimeline = typeof recruitingTimeline.$inferSelect;
+export type InsertRecruitingTimeline = z.infer<typeof insertRecruitingTimelineSchema>;
+export type RecruitingDocument = typeof recruitingDocuments.$inferSelect;
+export type InsertRecruitingDocument = z.infer<typeof insertRecruitingDocumentSchema>;
