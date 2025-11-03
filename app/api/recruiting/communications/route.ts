@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/ai-engine/lib/db';
 import { recruitingCommunications } from '@/ai-engine/lib/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,16 +17,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let query = db
-      .select()
-      .from(recruitingCommunications)
-      .where(eq(recruitingCommunications.userId, parseInt(userId)));
-
+    const conditions = [eq(recruitingCommunications.userId, parseInt(userId))];
+    
     if (contactId) {
-      query = query.where(eq(recruitingCommunications.contactId, parseInt(contactId)));
+      conditions.push(eq(recruitingCommunications.contactId, parseInt(contactId)));
     }
 
-    const communications = await query.orderBy(desc(recruitingCommunications.communicationDate));
+    const communications = await db
+      .select()
+      .from(recruitingCommunications)
+      .where(and(...conditions))
+      .orderBy(desc(recruitingCommunications.communicationDate));
 
     return NextResponse.json({
       success: true,
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
       count: communications.length,
     });
   } catch (error) {
-    console.error('Error fetching communications:', error);
+    logger.error('Error fetching communications:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch communications' },
       { status: 500 }
@@ -71,7 +73,7 @@ export async function POST(request: NextRequest) {
       communication: newCommunication,
     });
   } catch (error) {
-    console.error('Error creating communication:', error);
+    logger.error('Error creating communication:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create communication' },
       { status: 500 }
@@ -98,7 +100,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Communication deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting communication:', error);
+    logger.error('Error deleting communication:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete communication' },
       { status: 500 }

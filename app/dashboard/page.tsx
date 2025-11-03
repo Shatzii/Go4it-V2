@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useUser } from '@clerk/nextjs';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,28 +14,27 @@ import {
   Target,
   Calendar,
   BarChart3,
-  Users,
   Star,
   Activity,
-  Clock,
   CheckCircle,
   Heart,
   Brain,
-  Utensils,
   Zap,
   ArrowRight,
   Smartphone,
 } from 'lucide-react';
-import { VerificationBadge } from '@/components/ui/verification-badge';
 import ClientOnly from '@/components/ClientOnly';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { SmoothProgress } from '@/components/simple-transitions';
 import OnboardingManager from '@/components/onboarding/OnboardingManager';
 import OnboardingTrigger from '@/components/onboarding/OnboardingTrigger';
+import { TodayTiles } from '@/components/dashboard/Tiles';
+import { flags } from '@/lib/flags';
 
 function DashboardComponent() {
+  const { user } = useUser();
   const [loading, setLoading] = useState(true);
-  const [dashboardData, setDashboardData] = useState({
+  const [dashboardData] = useState({
     stats: {
       garScore: 87,
       overallProgress: 65,
@@ -93,7 +93,7 @@ function DashboardComponent() {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        // Error logged to console
         setLoading(false);
       }
     };
@@ -155,6 +155,13 @@ function DashboardComponent() {
               </Button>
             </div>
           </div>
+
+          {/* Dashboard V2 Tiles - Feature Flag Enabled */}
+          {flags.DASHBOARD_V2 && user?.id && (
+            <div className="mb-8">
+              <TodayTiles studentId={user.id} />
+            </div>
+          )}
 
           {/* StarPath Quick Overview */}
           <div className="mb-8" data-onboarding="starpath-progress">

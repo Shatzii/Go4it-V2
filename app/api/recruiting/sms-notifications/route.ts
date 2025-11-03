@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
       message: `Recruiting notification sent to ${successCount} recipients`,
     });
   } catch (error: any) {
-    console.error('Recruiting SMS notification error:', error);
+    logger.error('Recruiting SMS notification error:', error);
     return NextResponse.json(
       {
         success: false,

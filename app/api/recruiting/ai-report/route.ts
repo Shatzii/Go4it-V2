@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       reportType,
     });
   } catch (error) {
-    console.error('AI recruitment report error:', error);
+    logger.error('AI recruitment report error:', error);
     return NextResponse.json(
       {
         error: 'Failed to generate recruitment report',

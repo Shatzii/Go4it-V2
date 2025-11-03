@@ -1,5 +1,6 @@
 {pkgs}: {
   deps = [
+    pkgs.yakut
     # Development tools
     pkgs.gh
     pkgs.nano

@@ -1,0 +1,155 @@
+{
+  "name": "RSVP Intake & Confirmation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "cal-webhook",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Cal.com Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "cal-booking-webhook",
+      "id": "webhook-trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_URL}}/api/cal/webhook",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {},
+        "bodyParametersJson": "={{$json}}"
+      },
+      "name": "Process RSVP",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300],
+      "id": "process-rsvp"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.KUTT_URL}}/api/v2/links",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{$env.KUTT_API_KEY}}"
+            }
+          ]
+        },
+        "options": {},
+        "bodyParametersJson": "={\n  \"target\": \"{{$json.body.payload.metadata.joinUrl}}?utm_source=email&utm_medium=reminder&utm_campaign=parent-night&utm_content=tuesday_confirm\",\n  \"customurl\": \"pn-{{$now.format('MMdd')}}\",\n  \"domain\": \"go.go4itsports.org\"\n}"
+      },
+      "name": "Shorten Join Link",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300],
+      "id": "shorten-link"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LISTMONK_URL}}/api/tx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {},
+        "bodyParametersJson": "={\n  \"subscriber_email\": \"{{$node['Process RSVP'].json.email}}\",\n  \"template_id\": {{$env.LISTMONK_TEMPLATE_CONFIRM_ID}},\n  \"data\": {\n    \"first_name\": \"{{$node['Process RSVP'].json.firstName}}\",\n    \"event_date\": \"{{$json.body.payload.startTime}}\",\n    \"event_time\": \"7:00 PM\",\n    \"timezone\": \"{{$json.body.payload.metadata.timezone}}\",\n    \"join_link\": \"{{$node['Shorten Join Link'].json.link}}\",\n    \"ics_link\": \"{{$env.BASE_URL}}/api/ics/{{$node['Process RSVP'].json.eventId}}\"\n  }\n}"
+      },
+      "name": "Send Confirmation Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 300],
+      "id": "send-email"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LISTMONK_URL}}/api/tx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {},
+        "bodyParametersJson": "={\n  \"subscriber_email\": \"{{$node['Process RSVP'].json.email}}\",\n  \"template_id\": {{$env.LISTMONK_TEMPLATE_SMS_ID}},\n  \"data\": {\n    \"message\": \"Parent Night starts in 3 hours! Join: {{$node['Shorten Join Link'].json.link}}\"\n  },\n  \"from_email\": \"sms@go4itsports.org\"\n}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "delay",
+              "value": "={{$now.plus({days: 1, hours: 16}).toISO()}}"
+            }
+          ]
+        }
+      },
+      "name": "Schedule 3h SMS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 200],
+      "id": "sms-3h"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LISTMONK_URL}}/api/tx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {},
+        "bodyParametersJson": "={\n  \"subscriber_email\": \"{{$node['Process RSVP'].json.email}}\",\n  \"template_id\": {{$env.LISTMONK_TEMPLATE_SMS_ID}},\n  \"data\": {\n    \"message\": \"Starting soon! Link: {{$node['Shorten Join Link'].json.link}}\"\n  },\n  \"from_email\": \"sms@go4itsports.org\"\n}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "delay",
+              "value": "={{$now.plus({days: 1, hours: 18, minutes: 30}).toISO()}}"
+            }
+          ]
+        }
+      },
+      "name": "Schedule 30m SMS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 400],
+      "id": "sms-30m"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"success\": true, \"leadId\": $node['Process RSVP'].json.leadId} }}"
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 300],
+      "id": "respond"
+    }
+  ],
+  "connections": {
+    "Cal.com Webhook": {
+      "main": [[{"node": "Process RSVP", "type": "main", "index": 0}]]
+    },
+    "Process RSVP": {
+      "main": [[{"node": "Shorten Join Link", "type": "main", "index": 0}]]
+    },
+    "Shorten Join Link": {
+      "main": [[
+        {"node": "Send Confirmation Email", "type": "main", "index": 0}
+      ]]
+    },
+    "Send Confirmation Email": {
+      "main": [[
+        {"node": "Schedule 3h SMS", "type": "main", "index": 0},
+        {"node": "Schedule 30m SMS", "type": "main", "index": 0},
+        {"node": "Respond to Webhook", "type": "main", "index": 0}
+      ]]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}

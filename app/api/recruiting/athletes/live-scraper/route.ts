@@ -135,7 +135,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Authentic athlete scraping error:', error);
+    logger.error('Authentic athlete scraping error:', error);
     return NextResponse.json(
       {
         success: false,

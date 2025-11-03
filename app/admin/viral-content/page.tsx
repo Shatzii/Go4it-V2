@@ -361,15 +361,15 @@ export default function ViralContentGenerator() {
                   <div className="grid grid-cols-3 gap-2 text-center">
                     <div className="bg-gray-700/50 p-2 rounded">
                       <div className="text-white font-bold">15.3%</div>
-                      <div className="text-gray-400 text-xs">Avg Engagement</div>
+                      <div className="text-gray-100 text-xs">Avg Engagement</div>
                     </div>
                     <div className="bg-gray-700/50 p-2 rounded">
                       <div className="text-white font-bold">2.5x</div>
-                      <div className="text-gray-400 text-xs">Higher Shares</div>
+                      <div className="text-gray-100 text-xs">Higher Shares</div>
                     </div>
                     <div className="bg-gray-700/50 p-2 rounded">
                       <div className="text-white font-bold">10K+</div>
-                      <div className="text-gray-400 text-xs">Viral Potential</div>
+                      <div className="text-gray-100 text-xs">Viral Potential</div>
                     </div>
                   </div>
                 </CardContent>
@@ -489,11 +489,11 @@ export default function ViralContentGenerator() {
                           <h4 className="text-white font-medium capitalize mb-2">{platform}</h4>
                           <div className="grid grid-cols-2 gap-2 text-sm">
                             <div>
-                              <span className="text-gray-400">Best Content:</span>
+                              <span className="text-gray-100">Best Content:</span>
                               <span className="text-white ml-2">{data.bestContentType}</span>
                             </div>
                             <div>
-                              <span className="text-gray-400">Engagement:</span>
+                              <span className="text-gray-100">Engagement:</span>
                               <span className="text-green-400 ml-2">{data.avgEngagement}%</span>
                             </div>
                           </div>
@@ -514,19 +514,19 @@ export default function ViralContentGenerator() {
                       <div className="text-4xl font-bold text-green-400 mb-1">
                         {performanceData.viralHits || 8}
                       </div>
-                      <div className="text-gray-400">Posts Gone Viral</div>
+                      <div className="text-gray-100">Posts Gone Viral</div>
                     </div>
 
                     <div className="text-center">
                       <div className="text-4xl font-bold text-blue-400 mb-1">
                         {performanceData.avgEngagementRate || 13.7}%
                       </div>
-                      <div className="text-gray-400">Average Engagement Rate</div>
+                      <div className="text-gray-100">Average Engagement Rate</div>
                     </div>
 
                     <div className="text-center">
                       <div className="text-4xl font-bold text-purple-400 mb-1">2.5x</div>
-                      <div className="text-gray-400">Higher Than Industry Average</div>
+                      <div className="text-gray-100">Higher Than Industry Average</div>
                     </div>
                   </div>
                 </CardContent>

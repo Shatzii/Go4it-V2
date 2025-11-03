@@ -172,7 +172,7 @@ export async function GET(request: NextRequest) {
       lastUpdated: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Error fetching integrated dashboard data:', error);
+    logger.error('Error fetching integrated dashboard data:', error);
     return NextResponse.json(
       {
         success: false,

@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/components/ui/use-toast';
+import ContentPreview from '@/components/admin/ContentPreview';
 import { 
   Wand2, 
   Eye, 
@@ -82,16 +84,52 @@ export default function ContentCreatorPage() {
   const [selectedAdaptations, setSelectedAdaptations] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewContent, setPreviewContent] = useState<any>(null);
+  const { toast } = useToast();
 
   const handleGenerateContent = async () => {
+    if (!contentTitle) {
+      toast({
+        title: 'Missing Title',
+        description: 'Please provide a content title',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsGenerating(true);
-    // Simulate AI content generation
-    setTimeout(() => {
-      setGeneratedContent(`
-# ${contentTitle || 'AI-Generated Educational Content'}
+    
+    try {
+      const response = await fetch('/api/social-media/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'educational',
+          platform: 'instagram',
+          content: {
+            title: contentTitle,
+            description: contentDescription,
+            template: selectedTemplate,
+            adaptations: selectedAdaptations,
+            features: ['skill-tree', 'gar-analysis', 'neurodivergent-support'],
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Content generation failed');
+      }
+
+      const data = await response.json();
+      
+      // Format the generated content
+      const content = data.data;
+      const formattedContent = `
+# ${content.title || contentTitle}
 
 ## Overview
-${contentDescription || 'This is an automatically generated educational content piece designed for neurodivergent learners.'}
+${content.caption || contentDescription}
 
 ## Learning Objectives
 - Engage students with interactive elements
@@ -102,10 +140,10 @@ ${contentDescription || 'This is an automatically generated educational content 
 ## Content Structure
 
 ### Introduction
-Welcome to this innovative learning experience! This content has been specially designed with neurodivergent learners in mind.
+${content.description || 'Welcome to this innovative learning experience!'}
 
 ### Main Content
-[Interactive elements will be embedded here based on your template selection]
+${content.body || '[Content will be generated based on your selections]'}
 
 ### Activities
 1. **Interactive Quiz** - Test your knowledge
@@ -118,18 +156,87 @@ ${selectedAdaptations.map(id => {
         return adaptation ? `- **${adaptation.label}**: ${adaptation.description}` : '';
       }).filter(Boolean).join('\n')}
 
-### Assessment
-- Formative assessments throughout
-- Multiple choice and open-ended questions
-- Visual and audio feedback options
+### Hashtags
+${content.hashtags?.join(' ') || ''}
+      `.trim();
 
-### Resources
-- Additional reading materials
-- Video supplements
-- Interactive simulations
-      `);
+      setGeneratedContent(formattedContent);
+      setPreviewContent(content);
+      
+      toast({
+        title: 'Content Generated!',
+        description: 'Your educational content is ready. Click Preview to view.',
+      });
+    } catch (error) {
+      toast({
+        title: 'Generation Failed',
+        description: error instanceof Error ? error.message : 'Could not generate content',
+        variant: 'destructive',
+      });
+      setGeneratedContent('');
+      setPreviewContent(null);
+    } finally {
       setIsGenerating(false);
-    }, 3000);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!previewContent) return;
+
+    try {
+      const response = await fetch('/api/social-media/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          platform: previewContent.platform || 'instagram',
+          content: previewContent,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Publishing failed');
+
+      toast({
+        title: 'Published Successfully!',
+        description: 'Your content is now live',
+      });
+      setShowPreview(false);
+    } catch (error) {
+      toast({
+        title: 'Publishing Failed',
+        description: error instanceof Error ? error.message : 'Could not publish content',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleSchedule = async (date: Date) => {
+    if (!previewContent) return;
+
+    try {
+      const response = await fetch('/api/social-media/schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          platform: previewContent.platform || 'instagram',
+          content: previewContent,
+          scheduledFor: date.toISOString(),
+        }),
+      });
+
+      if (!response.ok) throw new Error('Scheduling failed');
+
+      toast({
+        title: 'Scheduled Successfully!',
+        description: `Content will be published on ${date.toLocaleDateString()}`,
+      });
+      setShowPreview(false);
+    } catch (error) {
+      toast({
+        title: 'Scheduling Failed',
+        description: error instanceof Error ? error.message : 'Could not schedule content',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
@@ -154,6 +261,16 @@ ${selectedAdaptations.map(id => {
                 </>
               )}
             </Button>
+            {generatedContent && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowPreview(true)}
+                disabled={!previewContent}
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                Preview
+              </Button>
+            )}
             <Button variant="outline">
               <Save className="w-4 h-4 mr-2" />
               Save
@@ -165,6 +282,36 @@ ${selectedAdaptations.map(id => {
           </div>
         </div>
       </div>
+
+      {/* ContentPreview Modal */}
+      {showPreview && previewContent && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="max-w-4xl w-full">
+            <ContentPreview
+              content={{
+                platform: 'instagram',
+                caption: previewContent.caption || contentDescription,
+                hashtags: previewContent.hashtags || [],
+                media: previewContent.media || [],
+                engagement: {
+                  estimatedReach: 5000,
+                  estimatedEngagement: 250,
+                },
+              }}
+              onClose={() => setShowPreview(false)}
+              onPublish={handlePublish}
+              onSchedule={handleSchedule}
+              onEdit={() => {
+                setShowPreview(false);
+                toast({
+                  title: 'Edit Mode',
+                  description: 'Modify your settings and regenerate',
+                });
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="flex h-screen">
         {/* Configuration Panel */}
@@ -351,7 +498,7 @@ ${selectedAdaptations.map(id => {
                       <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                         AI is Creating Your Content
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400">
+                      <p className="text-gray-500 dark:text-gray-100">
                         Generating personalized educational content with neurodivergent adaptations...
                       </p>
                     </div>
@@ -363,11 +510,11 @@ ${selectedAdaptations.map(id => {
                 ) : (
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center">
-                      <Wand2 className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+                      <Wand2 className="w-16 h-16 mx-auto text-gray-200 mb-4" />
                       <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                         Ready to Create
                       </h3>
-                      <p className="text-gray-500 dark:text-gray-400">
+                      <p className="text-gray-500 dark:text-gray-100">
                         Configure your content settings and click "Generate Content" to begin
                       </p>
                     </div>
@@ -419,8 +566,8 @@ ${selectedAdaptations.map(id => {
                     </CardHeader>
                     <CardContent>
                       <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 h-32 flex items-center justify-center">
-                        <Layout className="w-8 h-8 text-gray-400" />
-                        <span className="ml-2 text-gray-500">Content Layout</span>
+                        <Layout className="w-8 h-8 text-gray-200" />
+                        <span className="ml-2 text-gray-200">Content Layout</span>
                       </div>
                     </CardContent>
                   </Card>

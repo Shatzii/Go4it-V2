@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/parent-night/schedule",
+      "schedule": "0 9 * * 0"
+    }
+  ]
+}

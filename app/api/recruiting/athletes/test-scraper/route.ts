@@ -27,7 +27,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('Scraping test failed:', error);
+    logger.error('Scraping test failed:', error);
     return NextResponse.json(
       {
         success: false,
@@ -69,7 +69,7 @@ async function testESPNScraping() {
       contentLength: response.data.length,
     };
   } catch (error) {
-    console.error('ESPN scraping failed:', error.message);
+    logger.error('ESPN scraping failed:', error.message);
     return {
       success: false,
       error: error.message,
@@ -108,7 +108,7 @@ async function test247SportsScraping() {
       contentLength: response.data.length,
     };
   } catch (error) {
-    console.error('247Sports scraping failed:', error.message);
+    logger.error('247Sports scraping failed:', error.message);
     return {
       success: false,
       error: error.message,
@@ -150,7 +150,7 @@ async function testRSSFeedParsing() {
       items: items,
     };
   } catch (error) {
-    console.error('RSS feed parsing failed:', error.message);
+    logger.error('RSS feed parsing failed:', error.message);
     return {
       success: false,
       error: error.message,

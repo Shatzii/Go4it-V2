@@ -383,3 +383,152 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// NCAA Schools for Recruiting
+export const ncaaSchools = pgTable('ncaa_schools', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  schoolName: varchar('school_name', { length: 255 }).notNull(),
+  division: varchar('division', { length: 50 }).notNull(),
+  conference: varchar('conference', { length: 255 }),
+  state: varchar('state', { length: 2 }),
+  city: varchar('city', { length: 100 }),
+  website: text('website'),
+  coachingStaff: text('coaching_staff'),
+  programs: text('programs'),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Recruiting Contacts (CRM)
+export const recruitingContacts = pgTable('recruiting_contacts', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  schoolId: uuid('school_id').references(() => ncaaSchools.id),
+  name: varchar('name', { length: 255 }).notNull(),
+  title: varchar('title', { length: 255 }),
+  email: varchar('email', { length: 255 }),
+  phone: varchar('phone', { length: 50 }),
+  sport: varchar('sport', { length: 100 }),
+  notes: text('notes'),
+  interestLevel: varchar('interest_level', { length: 50 }),
+  lastContactDate: timestamp('last_contact_date', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Recruiting Communications Log
+export const recruitingCommunications = pgTable('recruiting_communications', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  contactId: uuid('contact_id').references(() => recruitingContacts.id),
+  type: varchar('type', { length: 50 }).notNull(),
+  subject: varchar('subject', { length: 500 }),
+  content: text('content'),
+  direction: varchar('direction', { length: 20 }).notNull(),
+  communicationDate: timestamp('communication_date', { withTimezone: true }).notNull().defaultNow(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Recruiting Offers and Interest
+export const recruitingOffers = pgTable('recruiting_offers', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  schoolId: uuid('school_id').notNull().references(() => ncaaSchools.id),
+  contactId: uuid('contact_id').references(() => recruitingContacts.id),
+  status: varchar('status', { length: 50 }).notNull().default('interested'),
+  offerType: varchar('offer_type', { length: 100 }),
+  scholarshipAmount: numeric('scholarship_amount'),
+  scholarshipType: varchar('scholarship_type', { length: 100 }),
+  notes: text('notes'),
+  visitDate: timestamp('visit_date', { withTimezone: true }),
+  offerDate: timestamp('offer_date', { withTimezone: true }),
+  commitmentDate: timestamp('commitment_date', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Recruiting Timeline Events
+export const recruitingTimeline = pgTable('recruiting_timeline', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  schoolId: uuid('school_id').references(() => ncaaSchools.id),
+  contactId: uuid('contact_id').references(() => recruitingContacts.id),
+  eventType: varchar('event_type', { length: 100 }).notNull(),
+  title: varchar('title', { length: 500 }).notNull(),
+  description: text('description'),
+  eventDate: timestamp('event_date', { withTimezone: true }).notNull(),
+  location: varchar('location', { length: 255 }),
+  isCompleted: boolean('is_completed').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// Recruiting Documents
+export const recruitingDocuments = pgTable('recruiting_documents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: uuid('user_id').notNull().references(() => users.id),
+  documentType: varchar('document_type', { length: 100 }).notNull(),
+  fileName: varchar('file_name', { length: 500 }).notNull(),
+  filePath: text('file_path').notNull(),
+  fileSize: numeric('file_size'),
+  mimeType: varchar('mime_type', { length: 100 }),
+  uploadedAt: timestamp('uploaded_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
+// AI Tutor Sessions
+export const aiTutorSessions = pgTable('ai_tutor_sessions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  sessionId: varchar('session_id', { length: 255 }).notNull().unique(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  tutorId: varchar('tutor_id', { length: 100 }).notNull(), // newton, curie, shakespeare, timeline
+  subject: varchar('subject', { length: 100 }).notNull(),
+  difficulty: varchar('difficulty', { length: 20 }).default('medium'), // easy, medium, hard
+  totalMessages: numeric('total_messages').default('0'),
+  totalTime: numeric('total_time').default('0'), // in minutes
+  startedAt: timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
+  lastActivity: timestamp('last_activity', { withTimezone: true }).notNull().defaultNow(),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
+}, (table) => ({
+  userIdx: index('ai_tutor_sessions_user_idx').on(table.userId),
+  tutorIdx: index('ai_tutor_sessions_tutor_idx').on(table.tutorId),
+  sessionIdx: index('ai_tutor_sessions_session_idx').on(table.sessionId),
+}));
+
+// AI Tutor Conversations
+export const aiTutorConversations = pgTable('ai_tutor_conversations', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  sessionId: varchar('session_id', { length: 255 }).notNull(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  tutorId: varchar('tutor_id', { length: 100 }).notNull(),
+  subject: varchar('subject', { length: 100 }).notNull(),
+  userMessage: text('user_message').notNull(),
+  aiResponse: text('ai_response').notNull(),
+  difficulty: varchar('difficulty', { length: 20 }).default('medium'),
+  followUpQuestions: text('follow_up_questions'), // JSON array
+  attachments: text('attachments'), // JSON array for images/diagrams
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => ({
+  sessionIdx: index('ai_tutor_conversations_session_idx').on(table.sessionId),
+  userIdx: index('ai_tutor_conversations_user_idx').on(table.userId),
+  createdAtIdx: index('ai_tutor_conversations_created_at_idx').on(table.createdAt),
+}));
+
+// AI Tutor Progress
+export const aiTutorProgress = pgTable('ai_tutor_progress', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  userId: varchar('user_id', { length: 255 }).notNull(),
+  subject: varchar('subject', { length: 100 }).notNull(),
+  topic: varchar('topic', { length: 255 }).notNull(),
+  masteryLevel: numeric('mastery_level').default('0'), // 0-100
+  attemptsCount: numeric('attempts_count').default('0'),
+  correctCount: numeric('correct_count').default('0'),
+  averageTimePerQuestion: numeric('average_time_per_question').default('0'), // in seconds
+  lastPracticed: timestamp('last_practiced', { withTimezone: true }).notNull().defaultNow(),
+  strengths: text('strengths'), // JSON array
+  weaknesses: text('weaknesses'), // JSON array
+  recommendations: text('recommendations'), // JSON array
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => ({
+  userSubjectIdx: index('ai_tutor_progress_user_subject_idx').on(table.userId, table.subject),
+  lastPracticedIdx: index('ai_tutor_progress_last_practiced_idx').on(table.lastPracticed),
+}));
+

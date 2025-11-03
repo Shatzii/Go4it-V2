@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Progress } from '@/components/ui/progress';
+import Image from 'next/image';
 import {
   Bot,
   User,
@@ -25,6 +26,9 @@ import {
   Zap,
   Clock,
   Award,
+  ImageIcon,
+  Upload,
+  X,
 } from 'lucide-react';
 
 interface Message {
@@ -35,6 +39,8 @@ interface Message {
   subject?: string;
   difficulty?: 'easy' | 'medium' | 'hard';
   followUp?: string[];
+  imageUrl?: string;
+  hasLatex?: boolean;
 }
 
 interface LearningProgress {
@@ -105,6 +111,9 @@ export function EnhancedAITutor() {
   const [learningProgress, setLearningProgress] = useState<LearningProgress[]>([]);
   const [sessionTime, setSessionTime] = useState(0);
   const [currentDifficulty, setCurrentDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium');
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const speechRecognition = useRef<SpeechRecognition | null>(null);
@@ -172,79 +181,159 @@ export function EnhancedAITutor() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const loadLearningProgress = () => {
-    // Simulate loading progress data
-    const mockProgress: LearningProgress[] = [
-      {
-        subject: 'Mathematics',
-        progress: 75,
-        level: 'Intermediate',
-        streakDays: 12,
-        totalHours: 45,
-        achievements: ['Problem Solver', 'Algebra Master', 'Geometry Explorer'],
-      },
-      {
-        subject: 'Science',
-        progress: 60,
-        level: 'Beginner',
-        streakDays: 8,
-        totalHours: 32,
-        achievements: ['Curious Mind', 'Lab Explorer'],
-      },
-      {
-        subject: 'English Language Arts',
-        progress: 85,
-        level: 'Advanced',
-        streakDays: 20,
-        totalHours: 67,
-        achievements: ['Word Master', 'Story Teller', 'Grammar Guru'],
-      },
-      {
-        subject: 'Social Studies',
-        progress: 45,
-        level: 'Beginner',
-        streakDays: 5,
-        totalHours: 23,
-        achievements: ['Time Traveler'],
-      },
-    ];
-    setLearningProgress(mockProgress);
+  const loadLearningProgress = async () => {
+    try {
+      const response = await fetch('/api/ai-tutor/progress?userId=demo-user'); // TODO: Get from auth
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Transform API data to component format
+        const transformedProgress: LearningProgress[] = tutorPersonalities.map(tutor => {
+          const subjectProgress = data.data.filter((p: any) => p.subject === tutor.subject);
+          const avgMastery = subjectProgress.length > 0
+            ? subjectProgress.reduce((sum: number, p: any) => sum + Number(p.masteryLevel), 0) / subjectProgress.length
+            : 0;
+          
+          const totalAttempts = subjectProgress.reduce((sum: number, p: any) => 
+            sum + Number(p.attemptsCount), 0
+          );
+
+          const totalTime = subjectProgress.reduce((sum: number, p: any) => 
+            sum + (Number(p.attemptsCount) * Number(p.averageTimePerQuestion) / 60), 0
+          );
+
+          return {
+            subject: tutor.subject,
+            progress: Math.round(avgMastery),
+            level: avgMastery >= 80 ? 'Advanced' : avgMastery >= 50 ? 'Intermediate' : 'Beginner',
+            streakDays: calculateStreakDays(subjectProgress),
+            totalHours: Math.round(totalTime / 60),
+            achievements: generateAchievements(avgMastery, totalAttempts),
+          };
+        });
+
+        setLearningProgress(transformedProgress);
+      }
+    } catch (error) {
+      // Fall back to mock data if API fails
+      const mockProgress: LearningProgress[] = [
+        {
+          subject: 'Mathematics',
+          progress: 75,
+          level: 'Intermediate',
+          streakDays: 12,
+          totalHours: 45,
+          achievements: ['Problem Solver', 'Algebra Master', 'Geometry Explorer'],
+        },
+        {
+          subject: 'Science',
+          progress: 60,
+          level: 'Beginner',
+          streakDays: 8,
+          totalHours: 32,
+          achievements: ['Curious Mind', 'Lab Explorer'],
+        },
+        {
+          subject: 'English Language Arts',
+          progress: 85,
+          level: 'Advanced',
+          streakDays: 20,
+          totalHours: 67,
+          achievements: ['Word Master', 'Story Teller', 'Grammar Guru'],
+        },
+        {
+          subject: 'Social Studies',
+          progress: 45,
+          level: 'Beginner',
+          streakDays: 5,
+          totalHours: 23,
+          achievements: ['Time Traveler'],
+        },
+      ];
+      setLearningProgress(mockProgress);
+    }
   };
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const calculateStreakDays = (subjectProgress: any[]): number => {
+    if (subjectProgress.length === 0) return 0;
+    // TODO: Implement actual streak calculation based on consecutive practice days
+    return 5;
+  };
+
+  const generateAchievements = (mastery: number, attempts: number): string[] => {
+    const achievements = [];
+    if (mastery >= 80) achievements.push('Expert Level');
+    if (mastery >= 60) achievements.push('Consistent Learner');
+    if (attempts >= 50) achievements.push('Practice Champion');
+    if (attempts >= 100) achievements.push('Dedication Master');
+    return achievements.length > 0 ? achievements : ['Getting Started'];
+  };
+
+    const handleSendMessage = async () => {
+    if (!inputMessage.trim() && !uploadedImage) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       type: 'user',
-      content: inputMessage,
+      content: inputMessage || 'Image uploaded',
       timestamp: new Date(),
       subject: selectedTutor.subject,
+      imageUrl: uploadedImage || undefined,
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInputMessage('');
+    const imageToSend = uploadedImage;
+    setUploadedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
     setIsLoading(true);
 
     try {
-      // Simulate AI response
-      const response = await generateAIResponse(userMessage.content, selectedTutor);
+      // Call real API instead of mock
+      const response = await fetch('/api/ai-tutoring', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'send_message',
+          sessionId: `session-${selectedTutor.id}-${Date.now()}`,
+          userId: 'demo-user', // TODO: Get from auth context
+          agentId: selectedTutor.id,
+          message: userMessage.content,
+          imageData: imageToSend, // Send base64 image
+          context: {
+            subject: selectedTutor.subject,
+            difficulty: currentDifficulty,
+            previousMessages: messages.slice(-5), // Last 5 messages for context
+            learningProgress: learningProgress.find(p => p.subject === selectedTutor.subject),
+            hasImage: !!imageToSend,
+          },
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to get AI response');
+
+      const data = await response.json();
 
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: response.content,
+        content: data.response || data.message || 'I apologize, I had trouble generating a response.',
         timestamp: new Date(),
         subject: selectedTutor.subject,
         difficulty: currentDifficulty,
-        followUp: response.followUp,
+        followUp: data.followUp || generateFollowUpQuestions(selectedTutor.subject),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
 
+      // Save conversation to database
+      saveConversationToDatabase(userMessage, aiMessage);
+
       // Text-to-speech for AI response
       if (speechSynthesis.current && !isSpeaking) {
-        speakText(response.content);
+        speakText(aiMessage.content);
       }
 
       // Update learning progress
@@ -254,7 +343,7 @@ export function EnhancedAITutor() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
-        content: "I'm sorry, I'm having trouble right now. Can you please try again?",
+        content: "I'm sorry, I'm having trouble connecting right now. Can you please try again?",
         timestamp: new Date(),
         subject: selectedTutor.subject,
       };
@@ -264,46 +353,51 @@ export function EnhancedAITutor() {
     }
   };
 
-  const generateAIResponse = async (message: string, tutor: AITutorPersonality) => {
-    // Simulate API call to AI service
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const responses = {
-      newton: {
-        content:
-          "Great question! Let me break this down step by step. In mathematics, it's important to understand the underlying concepts first. Would you like me to show you a visual representation or work through a similar example?",
-        followUp: [
-          'Show me a visual example',
-          'Work through a similar problem',
-          'Explain the concept differently',
-        ],
-      },
-      curie: {
-        content:
-          "That's a fascinating scientific question! Let's explore this through experimentation. Science is all about curiosity and discovery. Have you observed this phenomenon in everyday life?",
-        followUp: [
-          'Tell me more about the experiment',
-          'Show me real-world examples',
-          'Explain the science behind it',
-        ],
-      },
-      shakespeare: {
-        content:
-          "Excellent! Language is such a powerful tool for expression. Let's dive into the beauty of words and how they can paint pictures in our minds. What aspect would you like to explore further?",
-        followUp: ['Help me with writing', 'Analyze this text', 'Improve my vocabulary'],
-      },
-      timeline: {
-        content:
-          'What an interesting historical question! History is full of amazing stories and connections. Let me tell you about this fascinating period and how it connects to our world today.',
-        followUp: [
-          'Tell me more about this period',
-          'How does this connect to today?',
-          'Show me a timeline',
-        ],
-      },
+  const generateFollowUpQuestions = (subject: string): string[] => {
+    const followUpMap: Record<string, string[]> = {
+      'Mathematics': [
+        'Can you show me another example?',
+        'How would I solve a harder version?',
+        'What are common mistakes to avoid?',
+      ],
+      'Science': [
+        'Can you explain the real-world application?',
+        'Show me an experiment related to this',
+        'What other concepts connect to this?',
+      ],
+      'English Language Arts': [
+        'Can you help me practice writing?',
+        'Show me more examples in literature',
+        'How can I improve my vocabulary?',
+      ],
+      'Social Studies': [
+        'Tell me more about this time period',
+        'How does this connect to current events?',
+        'What were the lasting impacts?',
+      ],
     };
+    return followUpMap[subject] || ['Tell me more', 'Can you explain differently?', 'Show me an example'];
+  };
 
-    return responses[tutor.id as keyof typeof responses] || responses.newton;
+  const saveConversationToDatabase = async (userMsg: Message, aiMsg: Message) => {
+    try {
+      await fetch('/api/ai-tutor/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: 'demo-user', // TODO: Get from auth
+          tutorId: selectedTutor.id,
+          subject: selectedTutor.subject,
+          userMessage: userMsg,
+          aiResponse: aiMsg,
+          sessionTime,
+          difficulty: currentDifficulty,
+        }),
+      });
+    } catch (error) {
+      console.error('Failed to save conversation:', error);
+      // Don't fail the whole operation if saving fails
+    }
   };
 
   const updateLearningProgress = (subject: string) => {
@@ -349,6 +443,73 @@ export function EnhancedAITutor() {
       speechSynthesis.current.cancel();
       setIsSpeaking(false);
     }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image must be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedImage(reader.result as string);
+        setUploadingImage(false);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      alert('Failed to upload image');
+      setUploadingImage(false);
+    }
+  };
+
+  const removeUploadedImage = () => {
+    setUploadedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const renderLatexContent = (content: string) => {
+    // Simple LaTeX rendering - in production, use a library like react-katex or mathjax
+    const hasLatex = content.includes('$$') || content.includes('\\(') || content.includes('\\[');
+    
+    if (!hasLatex) {
+      return <p className="text-sm whitespace-pre-wrap">{content}</p>;
+    }
+
+    // Split content by LaTeX delimiters and render
+    const parts = content.split(/(\\$\\$[\s\S]*?\\$\\$|\\\\\\[[\s\S]*?\\\\\\]|\\\\\\([\s\S]*?\\\\\\))/g);
+    
+    return (
+      <div className="text-sm whitespace-pre-wrap">
+        {parts.map((part, index) => {
+          if (part.startsWith('$$') || part.startsWith('\\[') || part.startsWith('\\(')) {
+            // This is LaTeX - render in a styled box
+            return (
+              <div key={index} className="bg-gray-50 p-2 rounded my-2 font-mono text-xs">
+                {part}
+              </div>
+            );
+          }
+          return <span key={index}>{part}</span>;
+        })}
+      </div>
+    );
   };
 
   const getProgressColor = (progress: number) => {
@@ -459,7 +620,22 @@ export function EnhancedAITutor() {
                           {message.timestamp.toLocaleTimeString()}
                         </span>
                       </div>
-                      <p className="text-sm">{message.content}</p>
+                      
+                      {/* Image if uploaded */}
+                      {message.imageUrl && (
+                        <div className="mb-2">
+                          <Image
+                            src={message.imageUrl}
+                            alt="Uploaded content"
+                            width={300}
+                            height={200}
+                            className="rounded border"
+                          />
+                        </div>
+                      )}
+                      
+                      {/* Message content with LaTeX support */}
+                      {renderLatexContent(message.content)}
 
                       {message.followUp && (
                         <div className="mt-2 space-y-1">
@@ -479,6 +655,7 @@ export function EnhancedAITutor() {
                     </div>
                   </div>
                 ))}
+
 
                 {isLoading && (
                   <div className="flex justify-start">
@@ -505,37 +682,88 @@ export function EnhancedAITutor() {
               <div ref={messagesEndRef} />
             </ScrollArea>
 
+            {/* Image Upload Preview */}
+            {uploadedImage && (
+              <div className="relative inline-block">
+                <Image
+                  src={uploadedImage}
+                  alt="Upload preview"
+                  width={150}
+                  height={100}
+                  className="rounded border"
+                />
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="absolute -top-2 -right-2 h-6 w-6 p-0"
+                  onClick={removeUploadedImage}
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+
             {/* Input Area */}
-            <div className="flex items-center gap-2">
-              <Input
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Ask your tutor anything..."
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                className="flex-1"
-              />
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Input
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  placeholder="Ask your tutor anything... (supports LaTeX: $$x^2 + y^2 = z^2$$)"
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                  className="flex-1"
+                />
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={isListening ? stopListening : startListening}
-                disabled={!speechRecognition.current}
-              >
-                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-              </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={isSpeaking ? stopSpeaking : () => {}}
-                disabled={!speechSynthesis.current}
-              >
-                {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-              </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  title="Upload image (homework, diagram, etc.)"
+                >
+                  {uploadingImage ? (
+                    <div className="animate-spin">⟳</div>
+                  ) : (
+                    <ImageIcon className="w-4 h-4" />
+                  )}
+                </Button>
 
-              <Button onClick={handleSendMessage} disabled={isLoading || !inputMessage.trim()}>
-                <Send className="w-4 h-4" />
-              </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={isListening ? stopListening : startListening}
+                  disabled={!speechRecognition.current}
+                  title="Voice input"
+                >
+                  {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={isSpeaking ? stopSpeaking : () => {}}
+                  disabled={!speechSynthesis.current}
+                  title="Text to speech"
+                >
+                  {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </Button>
+
+                <Button 
+                  onClick={handleSendMessage} 
+                  disabled={isLoading || (!inputMessage.trim() && !uploadedImage)}
+                  title="Send message"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

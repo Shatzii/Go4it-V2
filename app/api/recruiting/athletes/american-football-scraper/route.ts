@@ -134,7 +134,7 @@ export async function POST(request: Request) {
         // Rate limiting
         await new Promise((resolve) => setTimeout(resolve, 2000));
       } catch (error) {
-        console.error(`Error scraping ${source.name}:`, error.message);
+        logger.error(`Error scraping ${source.name}:`, error.message);
         scrapingErrors.push(`${source.name}: ${error.message}`);
       }
     }
@@ -183,7 +183,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error('American football scraping failed:', error);
+    logger.error('American football scraping failed:', error);
     return NextResponse.json(
       {
         success: false,
@@ -257,7 +257,7 @@ async function scrapeAmericanFootballSource(
     console.log(`${source.name} scraping found ${athletes.length} American football athletes`);
     return athletes;
   } catch (error) {
-    console.error(`${source.name} scraping error:`, error.message);
+    logger.error(`${source.name} scraping error:`, error.message);
     // Return empty array to continue with other sources
     return [];
   }

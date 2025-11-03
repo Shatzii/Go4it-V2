@@ -66,7 +66,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Authentic scraping error:', error);
+    logger.error('Authentic scraping error:', error);
 
     return NextResponse.json(
       {

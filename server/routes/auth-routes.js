@@ -229,7 +229,7 @@ router.post('/logout', (req, res) => {
  */
 router.post('/register', authService.requireAuth(['school_admin', 'super_admin']), async (req, res) => {
   try {
-    const { email, password, firstName, lastName, role, schoolId } = req.body;
+    const { email, password, firstName, lastName, role, schoolId, enrollmentType, grade, dateOfBirth } = req.body;
 
     // Validate input
     if (!email || !password || !firstName || !lastName) {
@@ -260,6 +260,17 @@ router.post('/register', authService.requireAuth(['school_admin', 'super_admin']
       });
     }
 
+    // Validate enrollment type for students
+    const validEnrollmentTypes = ['full-time', 'part-time', 'ncaa-tracker'];
+    const studentEnrollmentType = enrollmentType || 'full-time';
+    if (role === 'student' && !validEnrollmentTypes.includes(studentEnrollmentType)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid enrollment type. Must be: full-time, part-time, or ncaa-tracker',
+        code: 'INVALID_ENROLLMENT_TYPE'
+      });
+    }
+
     // Create user
     const newUser = await createUser({
       email,
@@ -270,12 +281,36 @@ router.post('/register', authService.requireAuth(['school_admin', 'super_admin']
       schoolId: schoolId || req.user.schoolId
     });
 
+    // If user is a student, create student profile with auto-generated ID
+    let studentProfile = null;
+    if (newUser.role === 'student') {
+      const { StudentIdGenerator } = require('../utils/student-id-generator');
+      const studentId = await StudentIdGenerator.generateStudentId();
+      
+      // Create student profile in database
+      const { db } = require('../db');
+      const { students } = require('../../shared/comprehensive-schema');
+      
+      const [profile] = await db.insert(students).values({
+        userId: newUser.id,
+        studentId: studentId,
+        grade: grade || null,
+        dateOfBirth: dateOfBirth || null,
+        enrollmentType: studentEnrollmentType,
+        enrollmentDate: new Date(),
+        status: 'active'
+      }).returning();
+      
+      studentProfile = profile;
+    }
+
     // Remove password hash from response
     const { passwordHash, ...userResponse } = newUser;
 
     res.status(201).json({
       success: true,
       user: userResponse,
+      studentProfile: studentProfile,
       message: 'User created successfully.'
     });
 

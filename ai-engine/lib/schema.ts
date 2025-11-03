@@ -214,6 +214,75 @@ export const recruitingDocuments = pgTable('recruiting_documents', {
   uploadedAt: timestamp('uploaded_at').notNull().defaultNow(),
 });
 
+// Social Media Campaigns
+export const socialMediaCampaigns = pgTable('social_media_campaigns', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description'),
+  platforms: text('platforms'), // JSON array of platforms
+  features: text('features'), // JSON array of features (gar-analysis, starpath, etc)
+  contentType: text('content_type'), // image, video, carousel, mixed
+  schedule: text('schedule'), // JSON with scheduling info
+  targetAudience: text('target_audience'), // JSON with audience targeting
+  status: text('status').notNull().default('draft'), // draft, active, paused, completed
+  postsScheduled: integer('posts_scheduled').default(0),
+  postsPublished: integer('posts_published').default(0),
+  totalEngagement: integer('total_engagement').default(0),
+  engagementRate: decimal('engagement_rate', { precision: 5, scale: 2 }).default('0'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Social Media Posts
+export const socialMediaPosts = pgTable('social_media_posts', {
+  id: serial('id').primaryKey(),
+  campaignId: integer('campaign_id').references(() => socialMediaCampaigns.id),
+  platform: text('platform').notNull(), // instagram, facebook, twitter, tiktok, linkedin
+  content: text('content').notNull(),
+  media: text('media'), // JSON array of media URLs
+  hashtags: text('hashtags'), // JSON array of hashtags
+  publishedAt: timestamp('published_at'),
+  status: text('status').notNull().default('draft'), // draft, scheduled, published, failed
+  engagement: jsonb('engagement'), // likes, comments, shares, views
+  postUrl: text('post_url'),
+  errorMessage: text('error_message'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+// Social Media Schedule
+export const socialMediaSchedule = pgTable('social_media_schedule', {
+  id: serial('id').primaryKey(),
+  campaignId: integer('campaign_id').references(() => socialMediaCampaigns.id),
+  postId: integer('post_id').references(() => socialMediaPosts.id),
+  platform: text('platform').notNull(),
+  content: text('content').notNull(),
+  media: text('media'), // JSON array of media URLs
+  scheduledFor: timestamp('scheduled_for').notNull(),
+  publishedAt: timestamp('published_at'),
+  status: text('status').notNull().default('scheduled'), // scheduled, publishing, published, failed, cancelled
+  retries: integer('retries').default(0),
+  errorMessage: text('error_message'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+// Scraper Results
+export const scraperResults = pgTable('scraper_results', {
+  id: serial('id').primaryKey(),
+  source: text('source').notNull(), // production, enhanced, social-media
+  sport: text('sport'),
+  region: text('region'),
+  data: jsonb('data').notNull(), // scraped athlete/profile data
+  metadata: jsonb('metadata'), // analytics, quality metrics
+  status: text('status').notNull().default('success'), // success, partial, failed
+  totalRecords: integer('total_records').default(0),
+  successfulRecords: integer('successful_records').default(0),
+  failedRecords: integer('failed_records').default(0),
+  processingTime: integer('processing_time'), // milliseconds
+  errors: text('errors'), // JSON array of errors
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -273,6 +342,28 @@ export const insertRecruitingDocumentSchema = createInsertSchema(recruitingDocum
   uploadedAt: true,
 });
 
+export const insertSocialMediaCampaignSchema = createInsertSchema(socialMediaCampaigns).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSocialMediaPostSchema = createInsertSchema(socialMediaPosts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertSocialMediaScheduleSchema = createInsertSchema(socialMediaSchedule).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertScraperResultSchema = createInsertSchema(scraperResults).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -298,3 +389,11 @@ export type RecruitingTimeline = typeof recruitingTimeline.$inferSelect;
 export type InsertRecruitingTimeline = z.infer<typeof insertRecruitingTimelineSchema>;
 export type RecruitingDocument = typeof recruitingDocuments.$inferSelect;
 export type InsertRecruitingDocument = z.infer<typeof insertRecruitingDocumentSchema>;
+export type SocialMediaCampaign = typeof socialMediaCampaigns.$inferSelect;
+export type InsertSocialMediaCampaign = z.infer<typeof insertSocialMediaCampaignSchema>;
+export type SocialMediaPost = typeof socialMediaPosts.$inferSelect;
+export type InsertSocialMediaPost = z.infer<typeof insertSocialMediaPostSchema>;
+export type SocialMediaSchedule = typeof socialMediaSchedule.$inferSelect;
+export type InsertSocialMediaSchedule = z.infer<typeof insertSocialMediaScheduleSchema>;
+export type ScraperResult = typeof scraperResults.$inferSelect;
+export type InsertScraperResult = z.infer<typeof insertScraperResultSchema>;

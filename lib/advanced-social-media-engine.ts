@@ -1656,6 +1656,155 @@ Return JSON with EXACT structure:
 
     logger.info('Advanced Social Media Engine shut down gracefully');
   }
+
+  /**
+   * Generate content for social media posts
+   * Wrapper method for the API route
+   */
+  async generateContent(params: {
+    platform: string;
+    feature?: string;
+    athleteData?: any;
+    customPrompt?: string;
+  }): Promise<{
+    caption: string;
+    hashtags: string[];
+    media: string[];
+    platform: string;
+  }> {
+    try {
+      const { platform, feature, athleteData, customPrompt } = params;
+
+      // Use existing generatePlatformContent or create simplified version
+      const prompt = customPrompt || this.buildSimpleContentPrompt(platform, feature, athleteData);
+
+      const response = await this.openai.chat.completions.create({
+        model: config.openai.model,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a social media content expert specializing in sports recruitment.',
+          },
+          {
+            role: 'user',
+            content: prompt,
+          },
+        ],
+        temperature: 0.8,
+        max_tokens: 500,
+      });
+
+      const content = response.choices[0].message.content || '';
+      const lines = content.split('\n').filter(line => line.trim());
+      
+      const caption = lines.find(line => !line.startsWith('#')) || content;
+      const hashtags = lines
+        .filter(line => line.startsWith('#'))
+        .flatMap(line => line.split(' '))
+        .filter(tag => tag.startsWith('#'));
+
+      return {
+        caption: caption.trim(),
+        hashtags,
+        media: [],
+        platform,
+      };
+    } catch (error) {
+      logger.error('Content generation failed', { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Generate screenshot for social media post
+   */
+  async generateScreenshot(params: {
+    feature: string;
+    athleteData?: any;
+  }): Promise<string> {
+    try {
+      // Call the screenshots API
+      const response = await fetch('/api/screenshots', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(params),
+      });
+
+      if (!response.ok) {
+        throw new Error('Screenshot generation failed');
+      }
+
+      const data = await response.json();
+      return data.screenshot;
+    } catch (error) {
+      logger.error('Screenshot generation failed', { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Generate preview for content
+   */
+  async generatePreview(params: {
+    platform: string;
+    content: any;
+  }): Promise<{
+    caption: string;
+    hashtags: string[];
+    media: string[];
+    engagement: {
+      likes: number;
+      comments: number;
+      shares: number;
+    };
+  }> {
+    try {
+      const { platform, content } = params;
+
+      // Generate engagement estimates based on platform
+      const baseEngagement = {
+        instagram: { likes: 150, comments: 25, shares: 10 },
+        facebook: { likes: 80, comments: 15, shares: 20 },
+        twitter: { likes: 120, comments: 30, shares: 40 },
+        tiktok: { likes: 300, comments: 50, shares: 30 },
+      };
+
+      const engagement = baseEngagement[platform as keyof typeof baseEngagement] || 
+        { likes: 100, comments: 20, shares: 15 };
+
+      return {
+        caption: content.caption || '',
+        hashtags: content.hashtags || [],
+        media: content.media || [],
+        engagement,
+      };
+    } catch (error) {
+      logger.error('Preview generation failed', { error });
+      throw error;
+    }
+  }
+
+  /**
+   * Build simple content prompt
+   */
+  private buildSimpleContentPrompt(platform: string, feature?: string, athleteData?: any): string {
+    let prompt = `Create an engaging social media post for ${platform}`;
+    
+    if (feature) {
+      prompt += ` promoting our ${feature} feature`;
+    }
+
+    if (athleteData) {
+      prompt += ` featuring athlete: ${athleteData.name || 'Student Athlete'}`;
+    }
+
+    prompt += '\n\nInclude:\n';
+    prompt += '- A compelling caption (2-3 sentences)\n';
+    prompt += '- 5-8 relevant hashtags\n';
+    prompt += '- Call to action\n';
+
+    return prompt;
+  }
 }
 
 // Export singleton instance for enterprise use

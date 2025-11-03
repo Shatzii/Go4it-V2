@@ -17,13 +17,19 @@ import {
   LineChart,
   GraduationCap
 } from "lucide-react";
+import { HeroNew } from "@/components/site/HeroNew";
+import { Hub } from "@/components/site/Hub";
+import { flags } from "@/lib/flags";
 
 export default function LandingPage() {
   const [showLeadForm, setShowLeadForm] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      {/* Hero Section */}
+      {/* Hero Section - Feature Flag Controlled */}
+      {flags.NEW_HERO ? (
+        <HeroNew />
+      ) : (
       <section className="relative overflow-hidden px-4 pt-20 pb-32">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
         
@@ -89,6 +95,10 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
+
+      {/* Hub Section - Feature Flag Controlled */}
+      {flags.HUB_SECTION && <Hub />}
 
       {/* Gap Year Program Section */}
       <section className="px-4 py-20 bg-gradient-to-b from-slate-900 to-slate-950">
@@ -248,7 +258,7 @@ export default function LandingPage() {
               Choose Your Path
             </h2>
             <p className="text-xl text-slate-300">
-              Flexible plans for every athlete's journey
+              Flexible plans for every athlete&apos;s journey
             </p>
           </div>
 

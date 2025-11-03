@@ -201,7 +201,7 @@ export async function GET() {
     });
 
   } catch (error) {
-    console.error('Error fetching viral highlights:', error);
+    logger.error('Error fetching viral highlights:', error);
     return NextResponse.json(
       { error: 'Failed to fetch viral highlights data' },
       { status: 500 }
@@ -233,7 +233,7 @@ export async function POST(request: Request) {
     });
 
   } catch (error) {
-    console.error('Error creating viral highlight campaign:', error);
+    logger.error('Error creating viral highlight campaign:', error);
     return NextResponse.json(
       { error: 'Failed to create campaign' },
       { status: 500 }

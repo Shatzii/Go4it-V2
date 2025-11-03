@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/ai-engine/lib/db';
 import { recruitingOffers } from '@/ai-engine/lib/schema';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, and } from 'drizzle-orm';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,16 +17,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let query = db
-      .select()
-      .from(recruitingOffers)
-      .where(eq(recruitingOffers.userId, parseInt(userId)));
-
+    const conditions = [eq(recruitingOffers.userId, parseInt(userId))];
+    
     if (status) {
-      query = query.where(eq(recruitingOffers.status, status));
+      conditions.push(eq(recruitingOffers.status, status));
     }
 
-    const offers = await query.orderBy(desc(recruitingOffers.updatedAt));
+    const offers = await db
+      .select()
+      .from(recruitingOffers)
+      .where(and(...conditions))
+      .orderBy(desc(recruitingOffers.updatedAt));
 
     return NextResponse.json({
       success: true,
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
       count: offers.length,
     });
   } catch (error) {
-    console.error('Error fetching offers:', error);
+    logger.error('Error fetching offers:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch offers' },
       { status: 500 }
@@ -87,7 +89,7 @@ export async function POST(request: NextRequest) {
       offer: newOffer,
     });
   } catch (error) {
-    console.error('Error creating offer:', error);
+    logger.error('Error creating offer:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create offer' },
       { status: 500 }
@@ -126,7 +128,7 @@ export async function PUT(request: NextRequest) {
       offer: updatedOffer,
     });
   } catch (error) {
-    console.error('Error updating offer:', error);
+    logger.error('Error updating offer:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update offer' },
       { status: 500 }
@@ -153,7 +155,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Offer deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting offer:', error);
+    logger.error('Error deleting offer:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete offer' },
       { status: 500 }

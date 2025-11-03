@@ -42,6 +42,7 @@ export const students = pgTable("students", {
   dateOfBirth: date("date_of_birth"),
   grade: varchar("grade", { length: 10 }),
   school: varchar("school", { length: 50 }),
+  enrollmentType: varchar("enrollment_type", { length: 20 }).default("full-time"), // full-time, part-time, ncaa-tracker
   enrollmentDate: date("enrollment_date"),
   graduationDate: date("graduation_date"),
   status: varchar("status", { length: 20 }).default("active"), // active, inactive, graduated, transferred
@@ -194,6 +195,89 @@ export const attendance = pgTable("attendance", {
   notes: text("notes"),
   recordedBy: uuid("recorded_by").references(() => users.id),
   parentNotified: boolean("parent_notified").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Student Self-Reported Grades (for NCAA tracker and external courses)
+export const studentGrades = pgTable("student_grades", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  studentId: uuid("student_id").references(() => students.id).notNull(),
+  courseName: varchar("course_name", { length: 200 }).notNull(),
+  courseCode: varchar("course_code", { length: 50 }),
+  school: varchar("school", { length: 200 }), // school/institution name
+  semester: varchar("semester", { length: 50 }).notNull(), // Fall 2025, Spring 2026, etc.
+  academicYear: varchar("academic_year", { length: 10 }).notNull(), // 2025-2026
+  gradeLevel: varchar("grade_level", { length: 10 }), // 9th, 10th, 11th, 12th
+  letterGrade: varchar("letter_grade", { length: 5 }).notNull(), // A, A-, B+, etc.
+  numericGrade: decimal("numeric_grade", { precision: 5, scale: 2 }), // 95.5, 88.0, etc.
+  credits: decimal("credits", { precision: 4, scale: 2 }).default('1.00'), // 1.0, 0.5, etc.
+  isNcaaCore: boolean("is_ncaa_core").default(false), // NCAA core course?
+  courseType: varchar("course_type", { length: 50 }), // honors, ap, ib, regular, dual-enrollment
+  verified: boolean("verified").default(false), // verified by admin/counselor
+  verifiedBy: uuid("verified_by").references(() => users.id),
+  verifiedAt: timestamp("verified_at"),
+  transcriptUploaded: boolean("transcript_uploaded").default(false),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// Study Hall Tracking
+export const studyHall = pgTable("study_hall", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  studentId: uuid("student_id").references(() => students.id).notNull(),
+  date: date("date").notNull(),
+  minutes: integer("minutes").notNull().default(0),
+  notes: text("notes"),
+  location: varchar("location", { length: 100 }), // online, library, home, etc.
+  subject: varchar("subject", { length: 100 }), // what they studied
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// NCAA Eligibility Checklist
+export const ncaaChecklist = pgTable("ncaa_checklist", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  studentId: uuid("student_id").references(() => students.id).notNull(),
+  key: varchar("key", { length: 50 }).notNull(), // ecid, transcripts, translations, gpa, tests, amateur
+  label: varchar("label", { length: 200 }).notNull(),
+  status: varchar("status", { length: 20 }).notNull().default("todo"), // todo, in_progress, done, blocked
+  dueDate: date("due_date"),
+  completedDate: date("completed_date"),
+  notes: text("notes"),
+  verifiedBy: uuid("verified_by").references(() => users.id),
+  priority: integer("priority").default(0), // 0=low, 1=medium, 2=high
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+// GAR Test Scores
+export const garScores = pgTable("gar_scores", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  studentId: uuid("student_id").references(() => students.id).notNull(),
+  testDate: date("test_date").notNull(),
+  overallScore: integer("overall_score").notNull(), // 0-100
+  stars: integer("stars").notNull(), // 1-5
+  // Physical Components
+  speed: integer("speed"), // 0-100
+  agility: integer("agility"), // 0-100
+  power: integer("power"), // 0-100
+  endurance: integer("endurance"), // 0-100
+  // Cognitive/Learning Components
+  reactionTime: integer("reaction_time"), // milliseconds
+  decisionMaking: integer("decision_making"), // 0-100
+  spatialAwareness: integer("spatial_awareness"), // 0-100
+  // Mental Components
+  mentalToughness: integer("mental_toughness"), // 0-100
+  focus: integer("focus"), // 0-100
+  composure: integer("composure"), // 0-100
+  // Metadata
+  testLocation: varchar("test_location", { length: 100 }),
+  testType: varchar("test_type", { length: 50 }), // combine, individual, virtual
+  verified: boolean("verified").default(true),
+  verifiedBy: uuid("verified_by").references(() => users.id),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
 });

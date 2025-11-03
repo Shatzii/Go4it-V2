@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
       message: 'Recruiting report generated successfully!',
     });
   } catch (error) {
-    console.error('Recruiting report generation error:', error);
+    logger.error('Recruiting report generation error:', error);
     return NextResponse.json({ error: 'Failed to generate recruiting report' }, { status: 500 });
   }
 }

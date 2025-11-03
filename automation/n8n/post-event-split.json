@@ -1,0 +1,205 @@
+{
+  "name": "Post-Event Lead Routing",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "attendance-webhook",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Attendance Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "attendance-webhook",
+      "id": "webhook-trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.eventKind}}",
+              "operation": "equals",
+              "value2": "parent_night_info"
+            },
+            {
+              "value1": "={{$json.body.attended}}",
+              "operation": "equals",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "name": "Attended Tuesday?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "id": "if-attended-tue"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LISTMONK_URL}}/api/tx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "bodyParametersJson": "={\n  \"subscriber_email\": \"{{$json.body.email}}\",\n  \"template_id\": {{$env.LISTMONK_TEMPLATE_THURSDAY_ID}},\n  \"data\": {\n    \"first_name\": \"{{$json.body.firstName}}\",\n    \"athlete_name\": \"{{$json.body.athleteName}}\",\n    \"event_date\": \"{{$json.body.thursdayDate}}\",\n    \"timezone\": \"{{$json.body.timezone}}\",\n    \"join_link\": \"{{$json.body.thursdayJoinLink}}\",\n    \"ics_link\": \"{{$env.BASE_URL}}/api/ics/{{$json.body.thursdayEventId}}\"\n  }\n}"
+      },
+      "name": "Send Thursday Invite",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 200],
+      "id": "thursday-invite"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_URL}}/api/leads/{{$json.body.leadId}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "bodyParametersJson": "={\n  \"stage\": \"attended_tuesday\"\n}"
+      },
+      "name": "Update Stage Attended Tue",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 200],
+      "id": "update-stage-tue"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.eventKind}}",
+              "operation": "equals",
+              "value2": "parent_night_decision"
+            },
+            {
+              "value1": "={{$json.body.attended}}",
+              "operation": "equals",
+              "value2": "true"
+            }
+          ]
+        }
+      },
+      "name": "Attended Thursday?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 400],
+      "id": "if-attended-thu"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LISTMONK_URL}}/api/tx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "bodyParametersJson": "={\n  \"subscriber_email\": \"{{$json.body.email}}\",\n  \"template_id\": {{$env.LISTMONK_TEMPLATE_AUDIT_ID}},\n  \"data\": {\n    \"first_name\": \"{{$json.body.firstName}}\",\n    \"athlete_name\": \"{{$json.body.athleteName}}\",\n    \"audit_link\": \"https://go4itsports.org/audit?utm_source=email&utm_medium=conversion&utm_campaign=audit-offer&utm_content=thursday_attendee\"\n  }\n}"
+      },
+      "name": "Send Audit Offer",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 400],
+      "id": "audit-offer"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_URL}}/api/leads/{{$json.body.leadId}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "bodyParametersJson": "={\n  \"stage\": \"attended_thursday\"\n}"
+      },
+      "name": "Update Stage Attended Thu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 400],
+      "id": "update-stage-thu"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.eventKind}}",
+              "operation": "equals",
+              "value2": "parent_night_info"
+            },
+            {
+              "value1": "={{$json.body.attended}}",
+              "operation": "equals",
+              "value2": "false"
+            }
+          ]
+        }
+      },
+      "name": "No-Show Tuesday?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [650, 600],
+      "id": "if-noshow-tue"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LISTMONK_URL}}/api/tx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "bodyParametersJson": "={\n  \"subscriber_email\": \"{{$json.body.email}}\",\n  \"template_id\": {{$env.LISTMONK_TEMPLATE_CONFIRM_ID}},\n  \"data\": {\n    \"first_name\": \"{{$json.body.firstName}}\",\n    \"event_date\": \"{{$json.body.nextTuesdayDate}}\",\n    \"event_time\": \"7:00 PM\",\n    \"timezone\": \"{{$json.body.timezone}}\",\n    \"join_link\": \"{{$json.body.nextTuesdayLink}}\",\n    \"ics_link\": \"{{$env.BASE_URL}}/api/ics/{{$json.body.nextTuesdayEventId}}\"\n  }\n}"
+      },
+      "name": "Re-Invite Next Tuesday",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 600],
+      "id": "reinvite-tue"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ {\"success\": true, \"processed\": $json.body.leadId} }}"
+      },
+      "name": "Respond",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1250, 400],
+      "id": "respond"
+    }
+  ],
+  "connections": {
+    "Attendance Webhook": {
+      "main": [[
+        {"node": "Attended Tuesday?", "type": "main", "index": 0},
+        {"node": "Attended Thursday?", "type": "main", "index": 0},
+        {"node": "No-Show Tuesday?", "type": "main", "index": 0}
+      ]]
+    },
+    "Attended Tuesday?": {
+      "main": [[{"node": "Send Thursday Invite", "type": "main", "index": 0}]]
+    },
+    "Send Thursday Invite": {
+      "main": [[{"node": "Update Stage Attended Tue", "type": "main", "index": 0}]]
+    },
+    "Attended Thursday?": {
+      "main": [[{"node": "Send Audit Offer", "type": "main", "index": 0}]]
+    },
+    "Send Audit Offer": {
+      "main": [[{"node": "Update Stage Attended Thu", "type": "main", "index": 0}]]
+    },
+    "No-Show Tuesday?": {
+      "main": [[{"node": "Re-Invite Next Tuesday", "type": "main", "index": 0}]]
+    },
+    "Update Stage Attended Tue": {
+      "main": [[{"node": "Respond", "type": "main", "index": 0}]]
+    },
+    "Update Stage Attended Thu": {
+      "main": [[{"node": "Respond", "type": "main", "index": 0}]]
+    },
+    "Re-Invite Next Tuesday": {
+      "main": [[{"node": "Respond", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}

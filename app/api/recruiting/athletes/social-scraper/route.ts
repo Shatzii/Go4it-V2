@@ -250,7 +250,7 @@ export async function POST(request: Request) {
         // Rate limiting between platforms
         await new Promise((resolve) => setTimeout(resolve, 3000));
       } catch (error) {
-        console.error(`Error scraping ${platform}:`, error.message);
+        logger.error(`Error scraping ${platform}:`, error.message);
         scrapingErrors.push(`${platform}: ${error.message}`);
       }
     }
@@ -287,7 +287,7 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Social media scraping failed:', error);
+    logger.error('Social media scraping failed:', error);
     return NextResponse.json(
       {
         success: false,
@@ -428,7 +428,7 @@ async function scrapeInstagramAthletes(
     console.log(`Instagram scraping found ${profiles.length} athlete profiles`);
     return profiles;
   } catch (error) {
-    console.error('Instagram scraping error:', error.message);
+    logger.error('Instagram scraping error:', error.message);
     return [];
   }
 }
@@ -548,7 +548,7 @@ async function scrapeTikTokAthletes(
     console.log(`TikTok scraping found ${profiles.length} athlete profiles`);
     return profiles;
   } catch (error) {
-    console.error('TikTok scraping error:', error.message);
+    logger.error('TikTok scraping error:', error.message);
     return [];
   }
 }
@@ -656,7 +656,7 @@ async function scrapeYouTubeAthletes(
     console.log(`YouTube scraping found ${profiles.length} athlete profiles`);
     return profiles;
   } catch (error) {
-    console.error('YouTube scraping error:', error.message);
+    logger.error('YouTube scraping error:', error.message);
     return [];
   }
 }
@@ -753,7 +753,7 @@ async function scrapeTwitterAthletes(
     console.log(`Twitter scraping found ${profiles.length} athlete profiles`);
     return profiles;
   } catch (error) {
-    console.error('Twitter scraping error:', error.message);
+    logger.error('Twitter scraping error:', error.message);
     return [];
   }
 }

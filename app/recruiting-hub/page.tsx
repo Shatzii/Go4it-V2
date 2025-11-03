@@ -7,10 +7,14 @@ import OfferTracker from './components/OfferTracker';
 import RecruitingTimeline from './components/RecruitingTimeline';
 import CommunicationLog from './components/CommunicationLog';
 import { useRecruitingData } from './hooks/useRecruitingData';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function RecruitingHub() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [userId] = useState(1); // TODO: Get from auth context
+  const { user } = useAuth();
+  
+  // Convert string ID to number for recruiting API (or use 1 as fallback for demo)
+  const userId = user?.id ? (isNaN(parseInt(user.id)) ? 1 : parseInt(user.id)) : 1;
 
   const { offers, communications, timeline, contacts, loading, refetch } = useRecruitingData(userId);
 

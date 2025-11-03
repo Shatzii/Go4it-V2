@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Profile Picture Upload</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.2);
+        }
+
+        h1 {
+            color: #00F0FF;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .profile-preview {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #00F0FF;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+            position: relative;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+
+        .profile-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-preview .placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .upload-area {
+            margin-bottom: 20px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 15px;
+            background: linear-gradient(135deg, #00F0FF 0%, #0080FF 100%);
+            color: #000;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .file-input-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .file-info {
+            margin-top: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #00F0FF 0%, #0080FF 100%);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+        }
+
+        .btn-upload:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-delete {
+            background: rgba(255, 50, 50, 0.8);
+            color: white;
+        }
+
+        .btn-delete:hover:not(:disabled) {
+            background: rgba(255, 50, 50, 1);
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            background: rgba(50, 255, 50, 0.1);
+            border: 1px solid rgba(50, 255, 50, 0.3);
+            color: #50ff50;
+        }
+
+        .message.error {
+            background: rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            color: #ff5050;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #000;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .stats {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 240, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+        }
+
+        .stats p {
+            margin: 5px 0;
+        }
+
+        .stats strong {
+            color: #00F0FF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Profile Picture Upload</h1>
+        <p class="subtitle">Test the profile picture upload system</p>
+
+        <div class="profile-preview" id="profilePreview">
+            <div class="placeholder">👤</div>
+        </div>
+
+        <div class="upload-area">
+            <div class="file-input-wrapper">
+                <input type="file" id="fileInput" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                <label for="fileInput" class="file-input-label">
+                    📁 Choose Profile Picture
+                </label>
+            </div>
+            <div class="file-info" id="fileInfo">
+                No file selected • Max 5MB • JPG, PNG, GIF, WebP
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="btn-upload" id="uploadBtn" disabled>
+                Upload Picture
+            </button>
+            <button class="btn-delete" id="deleteBtn" disabled>
+                Delete Picture
+            </button>
+        </div>
+
+        <div id="messageArea"></div>
+
+        <div class="stats">
+            <p><strong>API Endpoints:</strong></p>
+            <p>• POST /api/profile/upload-picture</p>
+            <p>• DELETE /api/profile/delete-picture</p>
+            <p>• GET /api/profile/picture/:userId</p>
+            <p style="margin-top: 15px;"><strong>Features:</strong></p>
+            <p>✓ File validation (type & size)</p>
+            <p>✓ Unique filename generation</p>
+            <p>✓ Database integration with Drizzle ORM</p>
+            <p>✓ Automatic cleanup on errors</p>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const profilePreview = document.getElementById('profilePreview');
+        const messageArea = document.getElementById('messageArea');
+
+        let selectedFile = null;
+        let currentImageUrl = null;
+
+        // File input change handler
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            
+            if (!file) {
+                selectedFile = null;
+                uploadBtn.disabled = true;
+                fileInfo.textContent = 'No file selected • Max 5MB • JPG, PNG, GIF, WebP';
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showMessage('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.', 'error');
+                return;
+            }
+
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showMessage('File too large. Maximum size is 5MB.', 'error');
+                return;
+            }
+
+            selectedFile = file;
+            uploadBtn.disabled = false;
+            
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            fileInfo.textContent = `${file.name} (${sizeMB} MB)`;
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                profilePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Upload button handler
+        uploadBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '<span class="loader"></span> Uploading...';
+
+            try {
+                const formData = new FormData();
+                formData.append('profilePicture', selectedFile);
+                
+                if (currentImageUrl) {
+                    formData.append('oldImageUrl', currentImageUrl);
+                }
+
+                const response = await fetch('/api/profile/upload-picture', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentImageUrl = data.imageUrl;
+                    deleteBtn.disabled = false;
+                    showMessage(`✓ Profile picture uploaded successfully! (${data.filename})`, 'success');
+                } else {
+                    showMessage(`✗ Upload failed: ${data.error}`, 'error');
+                    uploadBtn.disabled = false;
+                }
+
+            } catch (error) {
+                showMessage(`✗ Upload failed: ${error.message}`, 'error');
+                uploadBtn.disabled = false;
+            } finally {
+                uploadBtn.innerHTML = 'Upload Picture';
+            }
+        });
+
+        // Delete button handler
+        deleteBtn.addEventListener('click', async () => {
+            if (!currentImageUrl) return;
+
+            if (!confirm('Are you sure you want to delete your profile picture?')) {
+                return;
+            }
+
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<span class="loader"></span> Deleting...';
+
+            try {
+                const response = await fetch('/api/profile/delete-picture', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ imageUrl: currentImageUrl })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentImageUrl = null;
+                    profilePreview.innerHTML = '<div class="placeholder">👤</div>';
+                    fileInput.value = '';
+                    uploadBtn.disabled = true;
+                    fileInfo.textContent = 'No file selected • Max 5MB • JPG, PNG, GIF, WebP';
+                    showMessage('✓ Profile picture deleted successfully!', 'success');
+                } else {
+                    showMessage(`✗ Delete failed: ${data.error}`, 'error');
+                    deleteBtn.disabled = false;
+                }
+
+            } catch (error) {
+                showMessage(`✗ Delete failed: ${error.message}`, 'error');
+                deleteBtn.disabled = false;
+            } finally {
+                deleteBtn.innerHTML = 'Delete Picture';
+            }
+        });
+
+        // Show message helper
+        function showMessage(text, type) {
+            messageArea.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => {
+                messageArea.innerHTML = '';
+            }, 5000);
+        }
+
+        // Initialize - check if user has a profile picture
+        async function init() {
+            // For testing purposes, we'll skip the actual fetch
+            // In production, this would fetch the current user's profile picture
+            console.log('Profile picture upload test page loaded');
+        }
+
+        init();
+    </script>
+</body>
+</html>

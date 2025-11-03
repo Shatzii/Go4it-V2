@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/ai-engine/lib/db';
 import { recruitingTimeline } from '@/ai-engine/lib/schema';
-import { eq, desc, asc } from 'drizzle-orm';
+import { eq, asc, and } from 'drizzle-orm';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,17 +17,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let query = db
-      .select()
-      .from(recruitingTimeline)
-      .where(eq(recruitingTimeline.userId, parseInt(userId)));
+    const conditions = [eq(recruitingTimeline.userId, parseInt(userId))];
 
     if (upcoming) {
-      const now = new Date();
-      query = query.where(eq(recruitingTimeline.isCompleted, false));
+      conditions.push(eq(recruitingTimeline.isCompleted, false));
     }
 
-    const events = await query.orderBy(asc(recruitingTimeline.eventDate));
+    const events = await db
+      .select()
+      .from(recruitingTimeline)
+      .where(and(...conditions))
+      .orderBy(asc(recruitingTimeline.eventDate));
 
     return NextResponse.json({
       success: true,
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
       count: events.length,
     });
   } catch (error) {
-    console.error('Error fetching timeline:', error);
+    logger.error('Error fetching timeline:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch timeline' },
       { status: 500 }
@@ -82,7 +83,7 @@ export async function POST(request: NextRequest) {
       event: newEvent,
     });
   } catch (error) {
-    console.error('Error creating timeline event:', error);
+    logger.error('Error creating timeline event:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create timeline event' },
       { status: 500 }
@@ -117,7 +118,7 @@ export async function PUT(request: NextRequest) {
       event: updatedEvent,
     });
   } catch (error) {
-    console.error('Error updating timeline event:', error);
+    logger.error('Error updating timeline event:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update timeline event' },
       { status: 500 }
@@ -144,7 +145,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Timeline event deleted successfully',
     });
   } catch (error) {
-    console.error('Error deleting timeline event:', error);
+    logger.error('Error deleting timeline event:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete timeline event' },
       { status: 500 }

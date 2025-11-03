@@ -228,6 +228,28 @@ export default function ScraperDashboard() {
         const athleteCount = enhancedMode ? data.data?.length : data.athletes?.length;
         const sourceCount = enhancedMode ? data.metadata?.successfulSources : data.sources?.length;
 
+        // Save scraper results to database for analytics
+        try {
+          await fetch('/api/scraper/results', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              source: enhancedMode ? 'production' : 'live-scraper',
+              athleteData: enhancedMode ? data.data : data.athletes,
+              metadata: {
+                sport: config.sports[0],
+                region: 'US',
+                athleteCount,
+                sourceCount,
+                timestamp: new Date().toISOString(),
+              },
+            }),
+          });
+        } catch (saveError) {
+          console.error('Failed to save scraper results:', saveError);
+          // Don't fail the whole operation if saving fails
+        }
+
         toast({
           title: enhancedMode ? 'Enhanced Scraping Completed' : 'US Scraping Completed',
           description: `Found ${athleteCount || 0} ${enhancedMode ? 'records' : 'athletes'} from ${sourceCount || 0} sources`,

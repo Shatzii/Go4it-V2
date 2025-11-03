@@ -36,6 +36,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 
 export default function SocialMediaDashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -55,6 +56,12 @@ export default function SocialMediaDashboard() {
   // Fetch campaign templates
   const { data: templates } = useQuery({
     queryKey: ['/api/social-media/campaigns?type=templates'],
+  });
+
+  // Fetch campaigns list
+  const { data: campaigns, isLoading: campaignsLoading } = useQuery({
+    queryKey: ['/api/social-media/campaigns'],
+    refetchInterval: 30000,
   });
 
   // Generate content
@@ -116,14 +123,135 @@ export default function SocialMediaDashboard() {
   const socialStats = stats?.data || {};
   const platformTemplates = templates?.data?.platforms || {};
 
-  const handleQuickGenerate = (type: string) => {
-    generateContent.mutate({
-      type,
-      features: selectedFeatures,
-      platforms: selectedPlatforms,
-      generateImages: true,
-      generateContent: true,
-    });
+  const handleQuickGenerate = async (type: string) => {
+    setGenerating(true);
+    
+    try {
+      if (type === 'screenshots') {
+        // Generate screenshots for all selected features
+        const features = selectedFeatures.length > 0 
+          ? selectedFeatures 
+          : ['gar-analysis', 'starpath', 'recruiting-hub'];
+        
+        for (const feature of features) {
+          await fetch('/api/screenshots', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              feature, 
+              width: 1080, 
+              height: 1920 
+            })
+          });
+        }
+        
+        toast({ 
+          title: 'Screenshots Generated!', 
+          description: `Created ${features.length} feature screenshots` 
+        });
+      } 
+      else if (type === 'promotional') {
+        // Generate promotional content for selected platforms
+        const platforms = selectedPlatforms.length > 0 
+          ? selectedPlatforms 
+          : ['instagram', 'facebook'];
+        
+        for (const platform of platforms) {
+          await generateContent.mutateAsync({
+            platform,
+            feature: selectedFeatures[0] || 'gar-analysis',
+            customPrompt: 'Create engaging promotional content',
+          });
+        }
+        
+        toast({ 
+          title: 'Promotional Content Created!', 
+          description: `Generated content for ${platforms.length} platforms` 
+        });
+      }
+      else if (type === 'complete-campaign') {
+        // Create full campaign workflow
+        const campaignResponse = await fetch('/api/social-media/campaigns', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: campaignName || `Auto Campaign ${new Date().toLocaleDateString()}`,
+            description: 'Auto-generated campaign',
+            platforms: JSON.stringify(selectedPlatforms.length > 0 ? selectedPlatforms : ['instagram', 'facebook']),
+            features: JSON.stringify(selectedFeatures.length > 0 ? selectedFeatures : ['gar-analysis', 'starpath']),
+            contentType: 'promotional',
+          })
+        });
+        
+        if (!campaignResponse.ok) throw new Error('Campaign creation failed');
+        
+        const campaign = await campaignResponse.json();
+        const platforms = selectedPlatforms.length > 0 ? selectedPlatforms : ['instagram', 'facebook'];
+        
+        // Generate and schedule content for each platform
+        for (const platform of platforms) {
+          const contentResponse = await fetch('/api/social-media/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              platform, 
+              feature: selectedFeatures[0] || 'gar-analysis'
+            })
+          });
+          
+          if (contentResponse.ok) {
+            const content = await contentResponse.json();
+            
+            // Schedule for tomorrow at 10 AM
+            const scheduledDate = new Date();
+            scheduledDate.setDate(scheduledDate.getDate() + 1);
+            scheduledDate.setHours(10, 0, 0, 0);
+            
+            await fetch('/api/social-media/schedule', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                campaignId: campaign.data.id,
+                postId: `post_${Date.now()}_${platform}`,
+                platform,
+                content: JSON.stringify({
+                  caption: content.caption,
+                  hashtags: content.hashtags,
+                  media: content.media,
+                }),
+                scheduledFor: scheduledDate.toISOString(),
+              })
+            });
+          }
+        }
+        
+        toast({ 
+          title: 'Campaign Created!', 
+          description: `Generated and scheduled content for ${platforms.length} platforms` 
+        });
+        
+        // Refresh campaign stats
+        queryClient.invalidateQueries({ queryKey: ['/api/social-media/campaigns'] });
+      }
+      else {
+        // Default: use existing generateContent mutation
+        generateContent.mutate({
+          type,
+          features: selectedFeatures,
+          platforms: selectedPlatforms,
+          generateImages: true,
+          generateContent: true,
+        });
+      }
+    } catch (error) {
+      toast({ 
+        title: 'Generation Failed', 
+        description: error instanceof Error ? error.message : 'Unknown error',
+        variant: 'destructive'
+      });
+    } finally {
+      setGenerating(false);
+    }
   };
 
   return (
@@ -337,19 +465,19 @@ export default function SocialMediaDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-pink-400 mb-1">47</div>
-                    <div className="text-gray-400">Posts Generated</div>
+                    <div className="text-gray-100">Posts Generated</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-blue-400 mb-1">15.4K</div>
-                    <div className="text-gray-400">Total Reach</div>
+                    <div className="text-gray-100">Total Reach</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-green-400 mb-1">11.9%</div>
-                    <div className="text-gray-400">Engagement Rate</div>
+                    <div className="text-gray-100">Engagement Rate</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-orange-400 mb-1">287</div>
-                    <div className="text-gray-400">Link Clicks</div>
+                    <div className="text-gray-100">Link Clicks</div>
                   </div>
                 </div>
               </CardContent>
@@ -384,7 +512,7 @@ export default function SocialMediaDashboard() {
                                 }
                               }}
                             />
-                            <Label htmlFor={feature} className="text-gray-300 capitalize">
+                            <Label htmlFor={feature} className="text-gray-100 capitalize">
                               {feature.replace('-', ' ')}
                             </Label>
                           </div>
@@ -412,7 +540,7 @@ export default function SocialMediaDashboard() {
                                 }
                               }}
                             />
-                            <Label htmlFor={platform} className="text-gray-300 capitalize">
+                            <Label htmlFor={platform} className="text-gray-100 capitalize">
                               {platform}
                             </Label>
                           </div>
@@ -506,9 +634,96 @@ export default function SocialMediaDashboard() {
 
           {/* Campaigns Tab */}
           <TabsContent value="campaigns" className="space-y-6">
+            {/* Existing Campaigns List */}
+            <Card className="bg-gray-800/50 border-purple-500/20">
+              <CardHeader>
+                <CardTitle className="text-purple-400">Active Campaigns</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {campaignsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mx-auto"></div>
+                  </div>
+                ) : campaigns?.data?.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {campaigns.data.map((campaign: any) => (
+                      <Card key={campaign.id} className="bg-gray-700/50 border-gray-600">
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <CardTitle className="text-sm text-white">{campaign.name}</CardTitle>
+                            <Badge variant={campaign.status === 'active' ? 'default' : 'secondary'}>
+                              {campaign.status}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="text-xs text-gray-100 space-y-1">
+                            <div>Type: {campaign.type}</div>
+                            <div>Posts: {campaign.postsCount || 0}</div>
+                            <div className="flex gap-1 flex-wrap">
+                              {campaign.platforms?.map((platform: string) => (
+                                <Badge key={platform} variant="outline" className="text-xs">
+                                  {platform}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex-1 text-xs"
+                              onClick={() => {
+                                toast({
+                                  title: 'Edit Campaign',
+                                  description: 'Campaign editing coming soon',
+                                });
+                              }}
+                            >
+                              Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="flex-1 text-xs"
+                              onClick={async () => {
+                                try {
+                                  await fetch(`/api/social-media/campaigns?id=${campaign.id}`, {
+                                    method: 'DELETE',
+                                  });
+                                  toast({
+                                    title: 'Campaign Deleted',
+                                    description: `${campaign.name} has been removed`,
+                                  });
+                                  queryClient.invalidateQueries({ queryKey: ['/api/social-media/campaigns'] });
+                                } catch (error) {
+                                  toast({
+                                    title: 'Delete Failed',
+                                    description: 'Could not delete campaign',
+                                    variant: 'destructive',
+                                  });
+                                }
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-100">
+                    No campaigns yet. Create your first campaign below!
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          
+            {/* Create New Campaign */}
             <Card className="bg-gray-800/50 border-yellow-500/20">
               <CardHeader>
-                <CardTitle className="text-yellow-400">Campaign Scheduler</CardTitle>
+                <CardTitle className="text-yellow-400">Create New Campaign</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -579,62 +794,7 @@ export default function SocialMediaDashboard() {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-800/50 border-orange-500/20">
-                <CardHeader>
-                  <CardTitle className="text-orange-400">Platform Performance</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {Object.entries(socialStats.followerGrowth || {}).map(([platform, growth]) => (
-                      <div key={platform} className="flex justify-between items-center">
-                        <span className="text-white capitalize">{platform}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-green-400">+{growth as number}</span>
-                          <Badge variant="outline" className="text-green-400 border-green-400">
-                            {((growth as number) / 10).toFixed(1)}%
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-gray-800/50 border-pink-500/20">
-                <CardHeader>
-                  <CardTitle className="text-pink-400">Content Performance</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between">
-                      <span className="text-white">Best Platform</span>
-                      <span className="text-pink-400">
-                        {socialStats.topPerformingPlatform || 'Instagram'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Top Content</span>
-                      <span className="text-pink-400">
-                        {socialStats.bestPerformingContent || 'GAR Analysis'}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Avg Engagement</span>
-                      <span className="text-pink-400">
-                        {socialStats.averageEngagementRate || '11.9'}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-white">Link Clicks</span>
-                      <span className="text-pink-400">
-                        {socialStats.conversionTracking?.linkClicks || '287'}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <AnalyticsDashboard />
           </TabsContent>
         </Tabs>
       </div>

@@ -1,0 +1,96 @@
+{
+  "name": "Weekly Parent Night Scheduler",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * 0"
+            }
+          ]
+        }
+      },
+      "name": "Every Sunday 9 AM UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "id": "cron-trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_URL}}/api/parent-night/schedule",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Create Events",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [450, 300],
+      "id": "create-events"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.BASE_URL}}/api/marketing/schedule",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {},
+        "bodyParametersJson": "=[\n  {\n    \"weekOf\": \"{{$now.format('yyyy-MM-dd')}}\",\n    \"channel\": \"site\",\n    \"slot\": \"hero_banner\",\n    \"publishAt\": \"{{$now.toISO()}}\",\n    \"title\": \"Join Parent Night This Tuesday\",\n    \"copy\": \"Discover how Go4it combines American academics with NCAA eligibility support and elite sports training.\",\n    \"ctaLabel\": \"RSVP Now\",\n    \"ctaHref\": \"/parent-night?utm_source=site&utm_medium=organic&utm_campaign=parent-night&utm_content=hero_banner\"\n  },\n  {\n    \"weekOf\": \"{{$now.format('yyyy-MM-dd')}}\",\n    \"channel\": \"site\",\n    \"slot\": \"events_card\",\n    \"publishAt\": \"{{$now.toISO()}}\",\n    \"title\": \"Upcoming Sessions\",\n    \"copy\": \"Tuesday 7 PM: Info & Discovery | Thursday 7 PM: Decision Night | Monday 9 AM: Onboarding\",\n    \"ctaLabel\": \"View Schedule\",\n    \"ctaHref\": \"/parent-night?utm_source=site&utm_medium=organic&utm_campaign=events&utm_content=events_card\"\n  }\n]"
+      },
+      "name": "Schedule Marketing",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [650, 300],
+      "id": "schedule-marketing"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.LISTMONK_URL}}/api/campaigns",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "options": {},
+        "bodyParametersJson": "={\n  \"name\": \"Parent Night Tue - {{$now.format('MM/dd')}}\",\n  \"subject\": \"Tomorrow: Parent Night at 7 PM\",\n  \"lists\": [{{$env.LISTMONK_LIST_ID}}],\n  \"type\": \"regular\",\n  \"content_type\": \"html\",\n  \"body\": \"{{$env.LISTMONK_TEMPLATE_TUESDAY}}\",\n  \"send_at\": \"{{$now.plus({days: 1, hours: 18}).toISO()}}\"\n}"
+      },
+      "name": "Create Email Campaign",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [850, 300],
+      "id": "create-campaign"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SLACK_WEBHOOK_URL}}",
+        "options": {},
+        "bodyParametersJson": "={\n  \"text\": \"📅 Weekly Parent Night schedule created\",\n  \"blocks\": [\n    {\n      \"type\": \"section\",\n      \"text\": {\n        \"type\": \"mrkdwn\",\n        \"text\": \"*Parent Night Events Created*\\n\\nEvents: {{$json.created}}\\nMarketing slots scheduled\\nEmail campaign queued for Monday 6 PM\"\n      }\n    }\n  ]\n}"
+      },
+      "name": "Notify Team",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1050, 300],
+      "id": "notify-team"
+    }
+  ],
+  "connections": {
+    "Every Sunday 9 AM UTC": {
+      "main": [[{"node": "Create Events", "type": "main", "index": 0}]]
+    },
+    "Create Events": {
+      "main": [[{"node": "Schedule Marketing", "type": "main", "index": 0}]]
+    },
+    "Schedule Marketing": {
+      "main": [[{"node": "Create Email Campaign", "type": "main", "index": 0}]]
+    },
+    "Create Email Campaign": {
+      "main": [[{"node": "Notify Team", "type": "main", "index": 0}]]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "versionId": "1"
+}

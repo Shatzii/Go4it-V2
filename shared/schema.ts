@@ -602,6 +602,105 @@ export const socialMediaPosts = pgTable('social_media_posts', {
 export type SocialMediaPost = typeof socialMediaPosts.$inferSelect;
 export type InsertSocialMediaPost = typeof socialMediaPosts.$inferInsert;
 
+// Social Media Campaigns table
+export const socialMediaCampaigns = pgTable('social_media_campaigns', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: varchar('name').notNull(),
+  description: text('description'),
+  platforms: jsonb('platforms'), // array of platforms
+  features: jsonb('features'), // array of features
+  contentType: varchar('content_type'), // image, video, carousel, mixed
+  schedule: jsonb('schedule'), // scheduling configuration
+  targetAudience: jsonb('target_audience'),
+  status: varchar('status').notNull().default('draft'),
+  postsScheduled: integer('posts_scheduled').default(0),
+  postsPublished: integer('posts_published').default(0),
+  totalEngagement: integer('total_engagement').default(0),
+  engagementRate: real('engagement_rate').default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export type SocialMediaCampaign = typeof socialMediaCampaigns.$inferSelect;
+export type InsertSocialMediaCampaign = typeof socialMediaCampaigns.$inferInsert;
+
+// Social Media Schedule table
+export const socialMediaSchedule = pgTable('social_media_schedule', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  campaignId: varchar('campaign_id').references(() => socialMediaCampaigns.id, {
+    onDelete: 'cascade',
+  }),
+  postId: varchar('post_id').references(() => socialMediaPosts.id),
+  platform: varchar('platform').notNull(),
+  content: text('content').notNull(),
+  media: jsonb('media'), // array of media URLs
+  scheduledFor: timestamp('scheduled_for').notNull(),
+  publishedAt: timestamp('published_at'),
+  status: varchar('status').notNull().default('scheduled'),
+  retries: integer('retries').default(0),
+  errorMessage: text('error_message'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export type SocialMediaSchedule = typeof socialMediaSchedule.$inferSelect;
+export type InsertSocialMediaSchedule = typeof socialMediaSchedule.$inferInsert;
+
+// Scraper Results table
+export const scraperResults = pgTable('scraper_results', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  source: varchar('source').notNull(), // production, enhanced, social-media
+  sport: varchar('sport'),
+  region: varchar('region'),
+  data: jsonb('data').notNull(),
+  metadata: jsonb('metadata'),
+  status: varchar('status').notNull().default('success'),
+  totalRecords: integer('total_records').default(0),
+  successfulRecords: integer('successful_records').default(0),
+  failedRecords: integer('failed_records').default(0),
+  processingTime: integer('processing_time'),
+  errors: jsonb('errors'),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+export type ScraperResult = typeof scraperResults.$inferSelect;
+export type InsertScraperResult = typeof scraperResults.$inferInsert;
+
+// Social Media Metrics table (analytics)
+export const socialMediaMetrics = pgTable('social_media_metrics', {
+  id: varchar('id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  postId: varchar('post_id').references(() => socialMediaPosts.id, {
+    onDelete: 'cascade',
+  }),
+  campaignId: varchar('campaign_id').references(() => socialMediaCampaigns.id),
+  platform: varchar('platform').notNull(),
+  impressions: integer('impressions').default(0),
+  reach: integer('reach').default(0),
+  likes: integer('likes').default(0),
+  comments: integer('comments').default(0),
+  shares: integer('shares').default(0),
+  saves: integer('saves').default(0),
+  clicks: integer('clicks').default(0),
+  videoViews: integer('video_views').default(0),
+  engagementRate: real('engagement_rate').default(0),
+  clickThroughRate: real('click_through_rate').default(0),
+  recordedAt: timestamp('recorded_at').defaultNow(),
+  createdAt: timestamp('created_at').defaultNow(),
+}, (table) => [
+  index('IDX_metrics_post').on(table.postId),
+]);
+
+export type SocialMediaMetric = typeof socialMediaMetrics.$inferSelect;
+export type InsertSocialMediaMetric = typeof socialMediaMetrics.$inferInsert;
+
 // Stripe Subscriptions table
 export const subscriptions = pgTable('subscriptions', {
   id: varchar('id')

@@ -189,7 +189,7 @@ async function scrapeCoachingStaff(
     const mockScrapedData = await simulateWebScraping(url, school, sport);
     return mockScrapedData;
   } catch (error) {
-    console.error(`Scraping failed for ${school} ${sport}:`, error);
+    logger.error(`Scraping failed for ${school} ${sport}:`, error);
     return [];
   }
 }
