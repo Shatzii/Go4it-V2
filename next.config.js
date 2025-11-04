@@ -42,8 +42,7 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Disable minification to avoid webpack plugin errors
-  swcMinify: false,
+  // Note: swcMinify is enabled by default in Next.js 15 and cannot be disabled
   
   // Experimental optimizations (removed webpackMemoryOptimizations due to incompatibility)
   experimental: {
@@ -124,6 +123,12 @@ const nextConfig = {
   webpack: (config, { isServer, dev, buildId, nextRuntime }) => {
     // Memory optimization - limit parallel processing
     config.parallelism = 1;
+    
+    // Disable the problematic webpack minify plugin
+    if (!dev && !isServer) {
+      config.optimization = config.optimization || {};
+      config.optimization.minimize = false;
+    }
     
     // Exclude OpenTelemetry from Edge runtime (middleware) to prevent eval() errors
     if (nextRuntime === 'edge') {
