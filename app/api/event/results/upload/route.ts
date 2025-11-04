@@ -114,13 +114,12 @@ export async function POST(req: NextRequest) {
 
     // PostHog server event
     await captureServer("svr_gar_batch_uploaded", {
-      distinct_id: session.studentId,
+      distinctId: session.userId,
       sessionId,
       staffId,
       metricsCount: metrics.length,
       duration,
       verified: !!verifiedBy,
-      source: "server",
     });
 
     return NextResponse.json({

@@ -211,3 +211,6 @@ export type NewNCAACourseMapping = typeof ncaaCourseMappings.$inferInsert;
 
 export type NCAAAutoPlan = typeof ncaaAutoPlans.$inferSelect;
 export type NewNCAAAutoPlan = typeof ncaaAutoPlans.$inferInsert;
+
+// Re-export garSessions as starpathGARSessions for v2 schema compatibility
+export const starpathGARSessions = garSessions;

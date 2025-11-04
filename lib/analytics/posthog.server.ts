@@ -62,6 +62,12 @@ export async function trackServerEvent(
 }
 
 /**
+ * Capture server event (alias for trackServerEvent)
+ * Provides consistent API with PostHog client
+ */
+export const captureServer = trackServerEvent;
+
+/**
  * Shutdown PostHog gracefully (call on server shutdown)
  */
 export async function shutdownPostHog() {

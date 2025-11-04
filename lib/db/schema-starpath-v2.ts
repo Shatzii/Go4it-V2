@@ -11,6 +11,9 @@ import { pgTable, text, integer, real, timestamp, boolean, jsonb, unique, index 
 import { users } from "./schema";
 import { garSessions } from "./schema-starpath";
 
+// Re-export garSessions as starpathGARSessions for consistency
+export const starpathGARSessions = garSessions;
+
 // ========== MULTI-TENANT FOUNDATION ==========
 
 /**
@@ -121,7 +124,6 @@ export const starpathEvents = pgTable("starpath_events", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  statusCheck: check("chk_event_status", `status IN ('draft', 'open', 'full', 'completed', 'cancelled')`),
   startsAtIdx: index("idx_events_starts_at").on(table.startsAt),
   slugIdx: index("idx_events_slug").on(table.slug),
 }));
@@ -147,8 +149,6 @@ export const starpathEventRegistrations = pgTable("starpath_event_registrations"
   uniqueReg: unique("unique_event_user").on(table.eventId, table.userId),
   eventIdx: index("idx_event_regs_event").on(table.eventId),
   userIdx: index("idx_event_regs_user").on(table.userId),
-  statusCheck: check("chk_reg_status", `status IN ('registered', 'checked_in', 'no_show', 'cancelled')`),
-  waveCheck: check("chk_reg_wave", `wave IS NULL OR wave IN ('AM', 'PM')`),
 }));
 
 // ========== COMPLIANCE & AUDIT ==========
@@ -189,7 +189,6 @@ export const starpathConsent = pgTable("starpath_consent", {
   metadata: jsonb("metadata"),
 }, (table) => ({
   uniqueConsent: unique("unique_user_kind_version").on(table.userId, table.kind, table.version),
-  kindCheck: check("chk_consent_kind", `kind IN ('terms', 'privacy', 'recording', 'marketing')`),
   userIdx: index("idx_consent_user").on(table.userId),
   kindIdx: index("idx_consent_kind").on(table.kind),
 }));

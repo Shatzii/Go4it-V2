@@ -18,9 +18,9 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
 import { 
   starpathEventRegistrations, 
-  starpathGARSessions 
-} from "@/lib/db/schema-starpath";
-import { starpathAuditLog } from "@/lib/db/schema-starpath-v2";
+  starpathGARSessions,
+  starpathAuditLog
+} from "@/lib/db/schema-starpath-v2";
 import { eq, and } from "drizzle-orm";
 import { z } from "zod";
 import { captureServer } from "@/lib/analytics/posthog.server";
@@ -90,12 +90,11 @@ export async function POST(req: NextRequest) {
     const sessionId = crypto.randomUUID();
     await db.insert(starpathGARSessions).values({
       id: sessionId,
-      studentId: targetUserId,
-      sessionDate: new Date(),
+      userId: targetUserId,
+      sport: "multi-sport",
       sessionType: "testing",
-      duration: 0, // Updated when results uploaded
+      startTime: new Date(),
       tags: ["event", eventId],
-      notes: `Checked in at ${new Date().toISOString()}`,
     });
 
     // Audit log
@@ -111,12 +110,11 @@ export async function POST(req: NextRequest) {
 
     // PostHog server event
     await captureServer("svr_event_checked_in", {
-      distinct_id: targetUserId,
+      distinctId: targetUserId,
       eventId,
       staffId,
       wave,
       sessionId,
-      source: "server",
     });
 
     return NextResponse.json({
