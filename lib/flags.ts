@@ -29,6 +29,12 @@ export const flags = {
   
   // Parent Night RSVP page with Cal.com embeds
   PARENT_NIGHT_PAGE: process.env.NEXT_PUBLIC_FEATURE_PARENT_NIGHT_PAGE === 'true',
+
+  // Enable Edge runtime for ICS route
+  EDGE_ICS: process.env.NEXT_PUBLIC_FEATURE_EDGE_ICS === 'true',
+
+  // Enable offer testing and payment plan variants
+  OFFERS: process.env.NEXT_PUBLIC_FEATURE_OFFERS === 'true',
 } as const;
 
 export type FeatureFlag = keyof typeof flags;

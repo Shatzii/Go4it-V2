@@ -1,0 +1,9 @@
+{
+  "name": "Parent Night Orchestration",
+  "nodes": [
+    { "id": "cron", "type": "n8n-nodes-base.cron", "parameters": { "triggerTimes": { "item": [ { "hour": 8, "minute": 0 } ] } } },
+    { "id": "fetch_events", "type": "n8n-nodes-base.httpRequest", "parameters": { "url": "{{ $json.baseUrl }}/api/events/next?region=eu&limit=2" } },
+    { "id": "reminders", "type": "n8n-nodes-base.function", "parameters": { "functionCode": "return items.map(i=>({json:{event:i.json, schedule:[-1440,-120,-30]}}));" } },
+    { "id": "email_sms", "type": "n8n-nodes-base.httpRequest", "parameters": { "url": "{{ $json.listmonkUrl }}/api/tx", "options": {} } }
+  ]
+}

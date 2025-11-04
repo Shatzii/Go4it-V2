@@ -8,12 +8,8 @@ import {
   jsonb,
   decimal,
   uuid,
-  index,
-  uniqueIndex,
-  serial,
 } from 'drizzle-orm/pg-core';
 import { createInsertSchema } from 'drizzle-zod';
-import { z } from 'zod';
 
 // Enhanced Academy Schema for Full Educational System
 
@@ -149,10 +145,10 @@ export const discussions = pgTable('discussions', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
-export const discussionPosts = pgTable('discussion_posts', {
+export const discussionPosts: any = pgTable('discussion_posts', {
   id: uuid('id').primaryKey().defaultRandom(),
   discussionId: uuid('discussion_id').references(() => discussions.id),
-  parentId: uuid('parent_id').references(() => discussionPosts.id),
+  parentId: uuid('parent_id').references((): any => discussionPosts.id),
   userId: uuid('user_id').references(() => users.id),
   content: text('content').notNull(),
   attachments: jsonb('attachments'),

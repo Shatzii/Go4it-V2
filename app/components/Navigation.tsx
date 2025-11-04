@@ -43,10 +43,13 @@ export default function Navigation() {
       label: 'Performance',
       icon: TrendingUp,
       submenu: [
+        { label: 'GAR Analytics', href: '/gar', icon: Target },
         { label: 'GAR Upload', href: '/gar-upload', icon: Target },
         { label: 'Video Analysis', href: '/video-analysis', icon: Video },
         { label: 'Performance Analytics', href: '/performance', icon: BarChart3 },
-        { label: 'StarPath Progress', href: '/starpath', icon: Star },
+        ...(process.env.NEXT_PUBLIC_FEATURE_STARPATH === 'true' 
+          ? [{ label: 'StarPath Progress', href: '/starpath', icon: Star }] 
+          : []),
       ],
     },
     {
@@ -55,6 +58,7 @@ export default function Navigation() {
       submenu: [
         { label: 'Recruiting Hub', href: '/recruiting-hub', icon: Trophy },
         { label: 'NCAA Eligibility', href: '/ncaa-eligibility', icon: Shield },
+        { label: 'GetVerified™ Combines', href: '/getverified', icon: Trophy },
         { label: 'College Explorer', href: '/college-explorer', icon: GraduationCap },
         { label: 'Scholarship Tracker', href: '/scholarship-tracker', icon: Target },
       ],
@@ -63,7 +67,8 @@ export default function Navigation() {
       label: 'Academy',
       icon: GraduationCap,
       submenu: [
-        { label: 'Go4It Academy', href: '/academy', icon: GraduationCap },
+        { label: 'Academy Dashboard', href: '/academy', icon: GraduationCap },
+        { label: 'Studio (3-Hour)', href: '/studio', icon: GraduationCap },
         { label: 'AI Coach', href: '/ai-coach', icon: Brain },
         { label: 'Courses', href: '/academy/courses', icon: GraduationCap },
         { label: 'Flag Football', href: '/flag-football-academy', icon: Trophy },

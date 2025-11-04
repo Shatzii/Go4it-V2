@@ -119,6 +119,23 @@ git push origin main
 
 ---
 
+### 4. Replit Deployment (alternative)
+
+If you're running on Replit, Vercel Cron won't be available. Use one of the cron alternatives documented in `docs/replit-cron.md` to trigger:
+
+- Weekly (Sunday 09:00 UTC)
+- Endpoint: `POST /api/parent-night/schedule`
+
+You can also run a quick health check locally against your Repl using:
+
+```bash
+npm run smoke:parent-night
+```
+
+Ensure `NEXT_PUBLIC_APP_URL` points at your Replit URL before running.
+
+---
+
 ## 🗓️ Cal.com Configuration
 
 ### Create Event Types

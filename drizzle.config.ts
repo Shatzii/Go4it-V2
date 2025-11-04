@@ -10,7 +10,12 @@ const dialect = isSQLite ? 'sqlite' : 'postgresql';
 
 export default defineConfig({
   out: './migrations',
-  schema: ['./shared/schema.ts', './shared/enterprise-schema.ts', './lib/db/schema.ts'],
+  schema: [
+    './shared/schema.ts', 
+    './shared/enterprise-schema.ts', 
+    './lib/db/schema.ts',
+    './lib/db/schema/funnel.ts' // Parent Night funnel tables
+  ],
   dialect: dialect as 'sqlite' | 'postgresql',
   dbCredentials: {
     url: process.env.DATABASE_URL,

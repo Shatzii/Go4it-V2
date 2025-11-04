@@ -21,7 +21,7 @@ export const users = pgTable('users', {
 }));
 
 // Goals (The Hierarchy)
-export const goals = pgTable('goals', {
+export const goals: any = pgTable('goals', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
@@ -30,7 +30,7 @@ export const goals = pgTable('goals', {
   currentValue: numeric('current_value').default('0'),
   startDate: date('start_date'),
   endDate: date('end_date'),
-  parentGoalId: uuid('parent_goal_id').references(() => goals.id, { onDelete: 'cascade' }),
+  parentGoalId: uuid('parent_goal_id').references((): any => goals.id, { onDelete: 'cascade' }),
   createdBy: uuid('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
@@ -69,7 +69,7 @@ export const projects = pgTable('projects', {
 });
 
 // Tasks
-export const tasks = pgTable('tasks', {
+export const tasks: any = pgTable('tasks', {
   id: uuid('id').primaryKey().defaultRandom(),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
@@ -86,7 +86,7 @@ export const tasks = pgTable('tasks', {
   estimatedHours: numeric('estimated_hours'), // For time tracking (#11)
   actualHours: numeric('actual_hours'), // For time tracking (#11)
   tags: text('tags').array(), // For filtering and categorization
-  blockedBy: uuid('blocked_by').references(() => tasks.id), // For dependencies (#8)
+  blockedBy: uuid('blocked_by').references((): any => tasks.id), // For dependencies (#8)
   progress: numeric('progress').default('0'), // 0-100 percentage
   outcome: varchar('outcome', { length: 100 }), // For KPI tracking (#3)
   location: varchar('location', { length: 100 }), // For multi-location support
@@ -299,7 +299,7 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
 export const eventsRelations = relations(events, ({ one, many }) => ({
   project: one(projects, {
     fields: [events.projectId],
-    references: [events.id],
+    references: [projects.id],
   }),
   creator: one(users, {
     fields: [events.createdBy],

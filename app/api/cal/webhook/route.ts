@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { db } from "@/lib/db";
-import { leads, rsvps, events } from "@/lib/db/schema/funnel";
+import { leads, rsvps, parentNightEvents } from "@/lib/db/schema/funnel";
 import { eq, and, sql } from "drizzle-orm";
 
 /**
@@ -12,15 +13,60 @@ import { eq, and, sql } from "drizzle-orm";
  * TODO: Verify webhook signature using CAL_WEBHOOK_SECRET
  * See: https://cal.com/docs/core-features/webhooks
  */
+function parseSignatureHeader(sigRaw: string | null): string | null {
+  if (!sigRaw) return null;
+  // Accept plain hex or prefixed formats like "sha256=..."
+  const parts = sigRaw.split("=");
+  return parts.length === 2 ? parts[1] : sigRaw;
+}
+
+function safeEqualHex(aHex: string, bHex: string): boolean {
+  try {
+    const a = Buffer.from(aHex, "hex");
+    const b = Buffer.from(bHex, "hex");
+    if (a.length !== b.length) return false;
+    return crypto.timingSafeEqual(a, b);
+  } catch (_e) {
+    return false;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const payload = await request.json();
+    const secret = process.env.CAL_WEBHOOK_SECRET;
 
-    // TODO: Verify signature
-    // const signature = request.headers.get("x-cal-signature");
-    // if (!verifySignature(payload, signature)) {
-    //   return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-    // }
+    // Read raw body first for signature verification
+    const raw = await request.text();
+
+    if (secret) {
+      // Common header variants used by webhook providers
+      const sigHeader =
+        request.headers.get("x-cal-signature-256") ||
+        request.headers.get("x-cal-signature") ||
+        request.headers.get("cal-signature") ||
+        request.headers.get("x-signature") ||
+        null;
+
+      const provided = parseSignatureHeader(sigHeader);
+      if (!provided) {
+        return NextResponse.json({ error: "Missing signature" }, { status: 401 });
+      }
+
+      const computed = crypto
+        .createHmac("sha256", secret)
+        .update(raw, "utf8")
+        .digest("hex");
+
+      const valid = safeEqualHex(provided, computed);
+      if (!valid) {
+        return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+      }
+    }
+
+    // Parse JSON after signature verification
+    const payload = JSON.parse(raw);
+
+  // Signature verified above when CAL_WEBHOOK_SECRET is set
 
     const { triggerEvent, payload: bookingData } = payload;
 
@@ -99,11 +145,11 @@ export async function POST(request: NextRequest) {
     const startIso = new Date(startTime).toISOString();
     const matchingEvent = await db
       .select()
-      .from(events)
+      .from(parentNightEvents)
       .where(
         and(
-          eq(events.kind, eventKind),
-          sql`${events.startIso} = ${startIso}`
+          eq(parentNightEvents.kind, eventKind),
+          sql`${parentNightEvents.startIso} = ${startIso}`
         )
       )
       .limit(1);
@@ -118,7 +164,7 @@ export async function POST(request: NextRequest) {
       const region = eventTypeSlug?.includes("eu") ? "eu" : "us";
       const tz = region === "eu" ? "Europe/Vienna" : "America/Chicago";
       
-      const newEvent = await db.insert(events).values({
+      const newEvent = await db.insert(parentNightEvents).values({
         kind: eventKind,
         region,
         tz,

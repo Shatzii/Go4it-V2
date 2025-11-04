@@ -195,6 +195,7 @@ const callAnthropic = async (
         totalTokens: response.usage.input_tokens + response.usage.output_tokens,
       },
     };
+    } // end if (process.env.ANTHROPIC_API_KEY)
   } catch (error) {
     throw handleAIError(error, 'anthropic');
   }

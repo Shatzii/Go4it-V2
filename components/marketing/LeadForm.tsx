@@ -22,6 +22,15 @@ export function LeadForm({ className }: LeadFormProps) {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Convenience cookie: store email hint only with personalization consent
+      try {
+        const m = document.cookie.match(/(?:^|; )g4t_consent=([^;]+)/);
+        const allowed = m ? (JSON.parse(decodeURIComponent(m[1]))?.personalization !== false) : false;
+        if (allowed && email) {
+          const maxAge = 60 * 60 * 24 * 30; // 30 days
+          document.cookie = `g4t_email_hint=${encodeURIComponent(email)}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+        }
+      } catch {}
       
       toast({
         title: "Welcome to Go4It! 🎯",

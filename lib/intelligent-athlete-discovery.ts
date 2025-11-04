@@ -862,5 +862,4 @@ Provide analysis in JSON format:
   }
 }
 
-export default IntelligentAthleteDiscovery;</content>
-<parameter name="filePath">/home/runner/workspace/lib/intelligent-athlete-discovery.ts
+export default IntelligentAthleteDiscovery;

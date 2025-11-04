@@ -1,0 +1,2 @@
+Payment update needed: complete your Credit Audit → {{audit_url}}
+We’ll retry automatically. Reply STOP to opt out.

@@ -34,8 +34,8 @@ export async function GET(request: NextRequest) {
       offers,
       count: offers.length,
     });
-  } catch (error) {
-    logger.error('Error fetching offers:', error);
+  } catch (error: unknown) {
+    logger.error('Error fetching offers', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to fetch offers' },
       { status: 500 }
@@ -88,8 +88,8 @@ export async function POST(request: NextRequest) {
       success: true,
       offer: newOffer,
     });
-  } catch (error) {
-    logger.error('Error creating offer:', error);
+  } catch (error: unknown) {
+    logger.error('Error creating offer', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to create offer' },
       { status: 500 }
@@ -127,8 +127,8 @@ export async function PUT(request: NextRequest) {
       success: true,
       offer: updatedOffer,
     });
-  } catch (error) {
-    logger.error('Error updating offer:', error);
+  } catch (error: unknown) {
+    logger.error('Error updating offer', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to update offer' },
       { status: 500 }
@@ -154,8 +154,8 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: 'Offer deleted successfully',
     });
-  } catch (error) {
-    logger.error('Error deleting offer:', error);
+  } catch (error: unknown) {
+    logger.error('Error deleting offer', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to delete offer' },
       { status: 500 }

@@ -1,14 +1,17 @@
 // Stripe Payment Processing Integration
 import Stripe from 'stripe';
 import { databaseStorage } from '@/server/database-storage';
+import { db } from '@/lib/db';
+import { creditAudits } from '@/lib/db/schema/go4it_os';
+import { leads } from '@/lib/db/schema/funnel';
+import { eq } from 'drizzle-orm';
+import { sendOnboardingTransactional } from '@/lib/utils/listmonk-client';
 
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
 }
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Stripe Price IDs for different subscription tiers
 const STRIPE_PRICE_IDS = {
@@ -333,8 +336,61 @@ export class StripeIntegration {
         await this.handlePaymentFailed(event.data.object as Stripe.Invoice);
         break;
 
+      case 'payment_intent.succeeded':
+        await this.handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
+        break;
+
+      case 'payment_intent.payment_failed':
+        await this.handlePaymentIntentFailed(event.data.object as Stripe.PaymentIntent);
+        break;
+
       default:
         console.log(`Unhandled webhook type: ${event.type}`);
+    }
+  }
+
+  // Handle one-time Credit Audit success (PaymentIntent)
+  private async handlePaymentIntentSucceeded(pi: Stripe.PaymentIntent): Promise<void> {
+    const stripePi = pi.id;
+    try {
+      // Update credit audit status
+      await db.update(creditAudits).set({ status: 'succeeded' }).where(eq(creditAudits.stripePi, stripePi));
+    } catch (e) {
+      console.error('Failed to update creditAudits on success:', e);
+    }
+
+    try {
+      // Fetch lead and send onboarding transactional via Listmonk
+      const [audit] = await db
+        .select({ leadId: creditAudits.leadId })
+        .from(creditAudits)
+        .where(eq(creditAudits.stripePi, stripePi));
+
+      if (audit?.leadId) {
+        const [lead] = await db
+          .select({ id: leads.id, email: leads.email, firstName: leads.firstName })
+          .from(leads)
+          .where(eq(leads.id, audit.leadId));
+
+        if (lead?.email) {
+          await sendOnboardingTransactional({
+            email: lead.email,
+            firstName: lead.firstName || 'there',
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Failed to trigger onboarding transactional:', e);
+    }
+  }
+
+  // Handle one-time Credit Audit failure (PaymentIntent)
+  private async handlePaymentIntentFailed(pi: Stripe.PaymentIntent): Promise<void> {
+    const stripePi = pi.id;
+    try {
+      await db.update(creditAudits).set({ status: 'failed' }).where(eq(creditAudits.stripePi, stripePi));
+    } catch (e) {
+      console.error('Failed to update creditAudits on failure:', e);
     }
   }
 

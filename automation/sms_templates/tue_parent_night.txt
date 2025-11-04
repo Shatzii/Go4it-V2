@@ -1,0 +1,2 @@
+Parent Night (Tue): Join {{join_url}} • Add to calendar: {{ics_url}}
+Verification ≠ recruitment.

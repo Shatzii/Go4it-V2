@@ -12,15 +12,11 @@ export async function POST(request: NextRequest) {
     }
 
     await stripeIntegration.handleWebhook(body, signature);
-
     return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error('Webhook processing error:', error);
-
-    if (error.message === 'Invalid signature') {
+  } catch (error: any) {
+    if (error?.message === 'Invalid signature') {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
-
     return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 }

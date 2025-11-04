@@ -1,0 +1,1 @@
+{ "name": "Hot-Lead SLA", "nodes": [ { "id": "score", "type": "n8n-nodes-base.webhook", "parameters": { "path": "hot-lead", "httpMethod": "POST" } }, { "id": "slack", "type": "n8n-nodes-base.httpRequest", "parameters": { "url": "{{ $json.slackWebhook }}", "method": "POST" } } ] }

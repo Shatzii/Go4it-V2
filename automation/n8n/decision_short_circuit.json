@@ -1,0 +1,1 @@
+{ "name": "Decision Night Short-circuit", "nodes": [ { "id": "webhook", "type": "n8n-nodes-base.webhook", "parameters": { "path": "decision-short", "httpMethod": "POST" } }, { "id": "send", "type": "n8n-nodes-base.httpRequest", "parameters": { "url": "{{ $json.listmonkUrl }}/api/tx" } } ] }

@@ -107,21 +107,21 @@ export default function TeacherDashboard() {
 
   const quickActions: QuickAction[] = [
     {
-      title: 'Create New Course',
-      description: 'Build a course from curriculum templates',
+      title: 'Course Studio (AI)',
+      description: 'Build complete courses with AI assistance',
       icon: <Plus className="w-5 h-5" />,
+      action: '/academy/course-studio',
+      color: 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700',
+    },
+    {
+      title: 'Create Course (Manual)',
+      description: 'Build a course from curriculum templates',
+      icon: <Upload className="w-5 h-5" />,
       action: '/academy/create-class',
       color: 'bg-blue-600 hover:bg-blue-700',
     },
     {
-      title: 'Upload Content',
-      description: 'Add videos, documents, and assignments',
-      icon: <Upload className="w-5 h-5" />,
-      action: '/academy/content-upload',
-      color: 'bg-green-600 hover:bg-green-700',
-    },
-    {
-      title: 'Grade Assignments',
+      title: 'Grade Submissions',
       description: 'Review and grade pending submissions',
       icon: <FileText className="w-5 h-5" />,
       action: '/academy/grading',
@@ -300,12 +300,20 @@ export default function TeacherDashboard() {
                   )}
 
                   <div className="flex gap-2 mt-4">
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                      View Details
+                    <Button 
+                      size="sm" 
+                      className="bg-blue-600 hover:bg-blue-700"
+                      onClick={() => window.location.href = `/academy/course-management/${cls.id}`}
+                    >
+                      Manage Course
                     </Button>
                     {cls.status === 'active' && (
                       <>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => window.location.href = `/academy/courses/${cls.id}`}
+                        >
                           Start Class
                         </Button>
                         <Button size="sm" variant="outline">
@@ -314,7 +322,11 @@ export default function TeacherDashboard() {
                       </>
                     )}
                     {cls.status === 'draft' && (
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => window.location.href = `/academy/course-management/${cls.id}`}
+                      >
                         Continue Setup
                       </Button>
                     )}

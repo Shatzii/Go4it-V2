@@ -20,6 +20,8 @@ import {
 import { HeroNew } from "@/components/site/HeroNew";
 import { Hub } from "@/components/site/Hub";
 import { flags } from "@/lib/flags";
+import StickyAuditRail from "@/components/site/StickyAuditRail";
+import UserProfileShowcase from "@/components/landing/UserProfileShowcase";
 
 export default function LandingPage() {
   const [showLeadForm, setShowLeadForm] = useState(false);
@@ -219,6 +221,26 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Featured Athletes Section */}
+      <section className="px-4 py-20 bg-gradient-to-b from-slate-900 to-slate-950">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime-400/10 border border-lime-400/20 mb-6">
+              <Users className="w-4 h-4 text-lime-400" />
+              <span className="text-lime-400 text-sm font-medium">Success Stories</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Athletes Crushing Their Goals
+            </h2>
+            <p className="text-xl text-slate-300">
+              Real students making real progress with Go4It
+            </p>
+          </div>
+
+          <UserProfileShowcase />
+        </div>
+      </section>
+
       {/* Features Section */}
       <section className="px-4 py-20 bg-gradient-to-b from-slate-950 to-slate-900">
         <div className="max-w-7xl mx-auto">
@@ -386,6 +408,19 @@ export default function LandingPage() {
           </div>
         </div>
       )}
+      {/* Sticky Audit CTA (flagged) */}
+      <StickyAuditRail visible={flags.OFFERS} onClickAction={() => { window.location.href = '/audit/book'; }} />
     </div>
   );
+}
+ 
+// Sticky audit rail for offer testing appears on landing when OFFERS flag is enabled
+// Render outside main return to ensure it overlays; but since this is a client page, we can include it.
+// Note: The rail links to /audit/book (requires a leadId query param for payment flow).
+
+export function StickyRailMount() {
+  return <StickyAuditRail visible={flags.OFFERS} onClickAction={() => {
+    // Navigate to credit audit booking; if leadId known, pass via query
+    window.location.href = '/audit/book';
+  }} />
 }

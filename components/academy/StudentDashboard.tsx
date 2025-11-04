@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import StarPathWidget from '@/components/starpath/StarPathWidget';
 import {
   BookOpen,
   Calendar,
@@ -252,12 +253,15 @@ export default function StudentDashboard() {
         </Card>
       </div>
 
-      {/* Today's Schedule */}
+      {/* StarPath Widget - New Addition */}
+      <StarPathWidget />
+
+      {/* Today&apos;s Schedule */}
       <Card className="bg-slate-800/50 border-slate-700">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Calendar className="w-5 h-5" />
-            Today's Schedule
+            Today&apos;s Schedule
           </CardTitle>
         </CardHeader>
         <CardContent>

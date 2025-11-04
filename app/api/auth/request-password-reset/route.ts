@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { storage } from '@/server/storage';
 import { sign } from 'jsonwebtoken';
 import { limiters } from '@/lib/rateLimiter';
-import { logger, mask } from '@/lib/logger';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   const t0 = Date.now();
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';
     const resetUrl = `${appUrl}/reset-password?token=${encodeURIComponent(resetToken)}`;
     logger.info('auth.pwdreset.request', {
-      email: mask.email(email),
+      email: email,
       resetUrl,
       dev: process.env.NODE_ENV !== 'production',
     });
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     logger.info('auth.pwdreset.request.success', {
-      email: mask.email(email),
+      email: email,
       durationMs: Date.now() - t0,
     });
     return NextResponse.json({ success: true });

@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Brand tokens as CSS variables */
+:root {
+  --brand-bg: #0B0F14;
+  --brand-bg-elevated: #0F141B;
+  --brand-fg: #E6EAF0;
+  --brand-muted: #5C6678;
+  --brand-accent: #00D4FF;
+  --brand-success: #27E36A;
+  --brand-border: #1C2430;
+}
+
+.brand-bg { background-color: var(--brand-bg); }
+.brand-fg { color: var(--brand-fg); }
+.brand-border { border-color: var(--brand-border); }
+.focus-brand:focus { outline: 2px solid var(--brand-accent); outline-offset: 2px; }
+
 /* Go4It Sports Landing Page - Custom Neon Styling */
 .hero-bg {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);

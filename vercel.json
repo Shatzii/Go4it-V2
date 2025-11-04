@@ -3,6 +3,10 @@
     {
       "path": "/api/parent-night/schedule",
       "schedule": "0 9 * * 0"
+    },
+    {
+      "path": "/api/pseo/generate",
+      "schedule": "0 8 * * 1"
     }
   ]
 }

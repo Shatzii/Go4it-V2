@@ -1,0 +1,9 @@
+- [ ] Brand/UI: Tokens match palette; headings uppercase (Oswald/Anton); body Inter; contrast ≥ 4.5:1; Green only for badges
+- [ ] Compliance: Middleware header injection; mailer signer enforced; CI content linter blocks banned claims; “Verification ≠ recruitment.” present where required
+- [ ] Funnel: Parent Night page shows EU Vienna and US Central; 1-click ICS works; Decision Night nudges to Audit; Audit page shows “$299 credited within 30 days if enrolled.”
+- [ ] Analytics: UTM persisted 30d and attached to lead; server money events captured; PostHog proxy active
+- [ ] Performance: LCP ≤ 2.5s (Home/RSVP/Audit), CLS ≤ 0.1, INP ≤ 200ms; hero ≤ 200KB
+- [ ] Accessibility: Axe pass; visible focus; labeled inputs; ARIA errors; captions/transcripts for long video
+- [ ] Internationalization: i18n keys for de-AT & es-MX on Hero/FAQ/CTA
+- [ ] QA & Flags: All new features behind flags; defaults safe-off; E2E green for /parent-night, /audit/book, /api/ics/[id]
+- [ ] SLAs: Hot-Lead Slack workflow live; ICS p95 < 400ms

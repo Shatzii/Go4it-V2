@@ -80,6 +80,18 @@ module.exports = {
           ring: 'hsl(var(--sidebar-ring))',
         },
         // Go4It OS Brand Colors
+        brand: {
+          bg: '#0B0F14',
+          bgElevated: '#0F141B',
+          fg: '#E6EAF0',
+          muted: '#5C6678',
+          accent: '#00D4FF',
+          success: '#27E36A',
+          danger: '#FF4D4F',
+          warning: '#FFC53D',
+          border: '#1C2430',
+          focus: '#00D4FF',
+        },
         texas: {
           blue: '#002868',
           red: '#bf0a30',
@@ -122,6 +134,7 @@ module.exports = {
         },
       },
       backgroundImage: {
+        // Gradients are available but brand rules prefer solid backgrounds (no gradients)
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'hero-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',

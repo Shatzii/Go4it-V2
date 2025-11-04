@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { storage } from '@/server/storage';
 import { verify } from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { logger, mask } from '@/lib/logger';
+import { logger } from '@/lib/logger';
 
 export async function POST(req: NextRequest) {
   const t0 = Date.now();
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
 
     logger.info('auth.pwdreset.success', {
       userId: user.id,
-      email: mask.email(user.email),
+      email: user.email,
       durationMs: Date.now() - t0,
     });
     return NextResponse.json({ success: true });

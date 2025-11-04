@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { events } from "@/lib/db/schema/funnel";
+import { funnelEvents } from "@/lib/db/schema/funnel";
 import { flags } from "@/lib/flags";
 import { sql } from "drizzle-orm";
 import { PARENT_NIGHT_COPY } from "@/content/parent-night-copy";
@@ -23,9 +23,9 @@ export default async function HeroDynamic() {
     const now = new Date().toISOString();
     const results = await db
       .select()
-      .from(events)
-      .where(sql`${events.kind} = 'parent_night_info' AND ${events.startIso} > ${now}`)
-      .orderBy(sql`${events.startIso} ASC`)
+      .from(funnelEvents)
+      .where(sql`${funnelEvents.kind} = 'parent_night_info' AND ${funnelEvents.startIso} > ${now}`)
+      .orderBy(sql`${funnelEvents.startIso} ASC`)
       .limit(1);
     
     nextEvent = results[0] || null;

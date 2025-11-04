@@ -1,0 +1,1 @@
+{ "name": "P-SEO Weekly", "nodes": [ { "id": "cron", "type": "n8n-nodes-base.cron" }, { "id": "generate", "type": "n8n-nodes-base.httpRequest", "parameters": { "url": "{{ $json.baseUrl }}/api/pseo/generate" } }, { "id": "vercel", "type": "n8n-nodes-base.httpRequest", "parameters": { "url": "https://api.vercel.com/v13/deployments", "method": "POST" } } ] }

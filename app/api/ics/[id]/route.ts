@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+export const runtime = 'edge';
 import { db } from "@/lib/db";
-import { events } from "@/lib/db/schema/funnel";
+import { parentNightEvents } from "@/lib/db/schema/funnel";
 import { eq } from "drizzle-orm";
 import { BRAND } from "@/content/brand";
 
@@ -9,7 +10,7 @@ import { BRAND } from "@/content/brand";
  * Generate ICS calendar file for an event
  */
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -25,8 +26,8 @@ export async function GET(
     // Fetch event
     const results = await db
       .select()
-      .from(events)
-      .where(eq(events.id, eventId))
+      .from(parentNightEvents)
+      .where(eq(parentNightEvents.id, eventId))
       .limit(1);
 
     if (results.length === 0) {

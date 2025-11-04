@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid token purpose' }, { status: 400 });
     }
 
-    const userId = Number(decoded.userId);
+    const userId = String(decoded.userId);
     const user = await storage.getUser(userId);
     if (!user) {
       logger.warn('auth.verify.user_not_found', { userId });
@@ -25,10 +25,9 @@ export async function GET(req: NextRequest) {
     }
 
     // Mark verified
-    const updated = await storage.updateUser(user.id, {
+    await storage.updateUser(user.id, {
       isVerified: true,
-      verifiedAt: new Date(),
-    } as any);
+    });
 
     // Redirect to a success page or dashboard
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:5000';

@@ -1,12 +1,14 @@
 import { users, type User, type UpsertUser } from '../shared/schema';
 import { db } from './db';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, inArray } from 'drizzle-orm';
 import { databaseStorage } from './database-storage';
 
 // Interface for storage operations
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  updateUser(id: string, updates: Partial<User>): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
 
   // Academy courses
@@ -34,6 +36,20 @@ export class DatabaseStorage implements IStorage {
   // User operations (mandatory for Replit Auth)
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async updateUser(id: string, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
     return user;
   }
 
@@ -75,7 +91,7 @@ export class DatabaseStorage implements IStorage {
 
   async getCourseById(id: string): Promise<any | undefined> {
     const { academyCourses } = await import('../shared/schema');
-    const [c] = await db.select().from(academyCourses).where(eq(academyCourses.id, id));
+    const [c] = await db.select().from(academyCourses).where(eq(academyCourses.id, parseInt(id)));
     return c || undefined;
   }
 
@@ -131,7 +147,7 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(academyEnrollments.studentId, studentId),
-          academyEnrollments.courseId.in(courseIds.map((id) => parseInt(id))),
+          inArray(academyEnrollments.courseId, courseIds.map((id) => parseInt(id))),
         ),
       );
 
@@ -186,7 +202,7 @@ export class DatabaseStorage implements IStorage {
           eq(academyEnrollments.studentId, studentId),
         ),
       )
-      .where(academyEnrollments.isActive);
+      .where(eq(academyEnrollments.isActive, true));
 
     return rows;
   }

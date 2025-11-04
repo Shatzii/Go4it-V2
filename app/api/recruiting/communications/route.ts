@@ -34,8 +34,8 @@ export async function GET(request: NextRequest) {
       communications,
       count: communications.length,
     });
-  } catch (error) {
-    logger.error('Error fetching communications:', error);
+  } catch (error: unknown) {
+    logger.error('Error fetching communications', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to fetch communications' },
       { status: 500 }
@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
       success: true,
       communication: newCommunication,
     });
-  } catch (error) {
-    logger.error('Error creating communication:', error);
+  } catch (error: unknown) {
+    logger.error('Error creating communication', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to create communication' },
       { status: 500 }
@@ -99,8 +99,8 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: 'Communication deleted successfully',
     });
-  } catch (error) {
-    logger.error('Error deleting communication:', error);
+  } catch (error: unknown) {
+    logger.error('Error deleting communication', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to delete communication' },
       { status: 500 }

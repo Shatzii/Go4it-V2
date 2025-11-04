@@ -256,6 +256,14 @@ docker run -p 5000:5000 go4it-os
 - Update documentation for API changes
 - Follow conventional commit messages
 
+## 🧠 Copilot/GPT Master Prompt
+
+For a one‑paste, end‑to‑end prompt that generates the full Go4it OS upgrade (code diffs, scripts, n8n flows, Listmonk templates, PostHog wiring, and the Playwright screenshot service) on Replit, see:
+
+- COPILOT_MASTER_PROMPT.md
+
+Use it with Copilot/GPT to plan changes and return PR‑style diffs that are safe and feature‑flagged.
+
 ## 📝 API Documentation
 
 ### REST API Endpoints

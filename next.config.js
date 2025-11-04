@@ -71,6 +71,7 @@ const nextConfig = {
     '@opentelemetry/core',
     '@opentelemetry/resources',
     '@opentelemetry/instrumentation',
+    'full-icu',
   ],
 
   // Turbopack configuration (replaces experimental.turbo)

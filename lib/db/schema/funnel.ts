@@ -3,11 +3,11 @@
  * SQLite dev / Postgres prod compatible
  */
 
-import { pgTable, text, timestamp, integer, serial } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, serial, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-// Event types for our funnel
-export const events = pgTable("events", {
+// Event types for our funnel (renamed to avoid collision with main schema)
+export const parentNightEvents = pgTable("parent_night_events", {
   id: serial("id").primaryKey(),
   kind: text("kind", { 
     enum: ["parent_night_info", "parent_night_decision", "onboarding"] 
@@ -33,18 +33,33 @@ export const leads = pgTable("leads", {
   location: text("location"), // City, State/Country
   sport: text("sport"),
   gradYear: integer("grad_year"),
+  // Funnel stage progression
   stage: text("stage").notNull().default("site_visit"), 
+  // UTM attribution
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+  utmTerm: text("utm_term"),
+  utmContent: text("utm_content"),
+  // Lead scoring and experiment variant
+  score: integer("score").notNull().default(0),
+  offerVariant: text("offer_variant"),
+  lastActivity: timestamp("last_activity"),
   // Stages: site_visit → rsvp_tuesday → attended_tuesday → rsvp_thursday → 
   //         attended_thursday → audit_booked → applied → enrolled
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (t) => ({
+  emailUnique: uniqueIndex("leads_email_unique").on(t.email),
+  stageIdx: index("leads_stage_idx").on(t.stage),
+  updatedIdx: index("leads_updated_idx").on(t.updatedAt),
+}));
 
 // RSVP tracking for events
 export const rsvps = pgTable("rsvps", {
   id: serial("id").primaryKey(),
   leadId: integer("lead_id").notNull().references(() => leads.id),
-  eventId: integer("event_id").notNull().references(() => events.id),
+  eventId: integer("event_id").notNull().references(() => parentNightEvents.id),
   status: text("status", { 
     enum: ["registered", "attended", "no_show"] 
   }).notNull().default("registered"),
@@ -79,7 +94,7 @@ export const leadsRelations = relations(leads, ({ many }) => ({
   rsvps: many(rsvps),
 }));
 
-export const eventsRelations = relations(events, ({ many }) => ({
+export const parentNightEventsRelations = relations(parentNightEvents, ({ many }) => ({
   rsvps: many(rsvps),
 }));
 
@@ -88,8 +103,8 @@ export const rsvpsRelations = relations(rsvps, ({ one }) => ({
     fields: [rsvps.leadId],
     references: [leads.id],
   }),
-  event: one(events, {
+  event: one(parentNightEvents, {
     fields: [rsvps.eventId],
-    references: [events.id],
+    references: [parentNightEvents.id],
   }),
 }));

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { events } from "@/lib/db/schema/funnel";
+import { parentNightEvents as events } from "@/lib/db/schema/funnel";
 import { sql } from "drizzle-orm";
 
 /**

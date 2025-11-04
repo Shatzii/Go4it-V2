@@ -677,5 +677,4 @@ Return in JSON format with title, content, and excerpt.
 
 type WritingStyle = 'professional' | 'casual' | 'inspirational' | 'analytical';
 
-export default AIJournalismEngine;</content>
-<parameter name="filePath">/home/runner/workspace/lib/ai-journalism-engine.ts
+export default AIJournalismEngine;

@@ -60,10 +60,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Upload Video",
+      "name": "GAR Upload",
       "short_name": "Upload",
-      "description": "Upload your highlight videos",
-      "url": "/upload-mobile",
+      "description": "Upload and analyze video",
+      "url": "/gar-upload",
       "icons": [
         {
           "src": "/icons/upload-icon-96x96.png",
@@ -75,7 +75,7 @@
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
-      "description": "View your athletic dashboard",
+      "description": "View performance dashboard",
       "url": "/dashboard",
       "icons": [
         {
@@ -86,10 +86,23 @@
       ]
     },
     {
-      "name": "AI Coach",
-      "short_name": "AI Coach",
-      "description": "Get personalized coaching",
-      "url": "/ai-coach",
+      "name": "StarPath",
+      "short_name": "StarPath",
+      "description": "Track your StarPath progress",
+      "url": "/starpath",
+      "icons": [
+        {
+          "src": "/icons/coach-icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Recruiting Hub",
+      "short_name": "Recruiting",
+      "description": "Manage recruiting communications",
+      "url": "/recruiting-hub",
       "icons": [
         {
           "src": "/icons/coach-icon-96x96.png",
@@ -100,7 +113,7 @@
     }
   ],
   "share_target": {
-    "action": "/upload-mobile",
+    "action": "/gar-upload",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
@@ -110,7 +123,7 @@
       "files": [
         {
           "name": "file",
-          "accept": ["video/*", "image/*"]
+          "accept": ["video/*"]
         }
       ]
     }
@@ -118,15 +131,14 @@
   "protocol_handlers": [
     {
       "protocol": "web+go4itsports",
-      "url": "/upload-mobile?url=%s"
+      "url": "/gar-upload?url=%s"
     }
   ],
   "file_handlers": [
     {
-      "action": "/upload-mobile",
+      "action": "/gar-upload",
       "accept": {
-        "video/*": [".mp4", ".mov", ".avi", ".mkv", ".webm"],
-        "image/*": [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+        "video/*": [".mp4", ".mov", ".avi", ".mkv", ".webm"]
       }
     }
   ]

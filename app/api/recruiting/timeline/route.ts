@@ -34,8 +34,8 @@ export async function GET(request: NextRequest) {
       events,
       count: events.length,
     });
-  } catch (error) {
-    logger.error('Error fetching timeline:', error);
+  } catch (error: unknown) {
+    logger.error('Error fetching timeline', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to fetch timeline' },
       { status: 500 }
@@ -82,8 +82,8 @@ export async function POST(request: NextRequest) {
       success: true,
       event: newEvent,
     });
-  } catch (error) {
-    logger.error('Error creating timeline event:', error);
+  } catch (error: unknown) {
+    logger.error('Error creating timeline event', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to create timeline event' },
       { status: 500 }
@@ -117,8 +117,8 @@ export async function PUT(request: NextRequest) {
       success: true,
       event: updatedEvent,
     });
-  } catch (error) {
-    logger.error('Error updating timeline event:', error);
+  } catch (error: unknown) {
+    logger.error('Error updating timeline event', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to update timeline event' },
       { status: 500 }
@@ -144,8 +144,8 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: 'Timeline event deleted successfully',
     });
-  } catch (error) {
-    logger.error('Error deleting timeline event:', error);
+  } catch (error: unknown) {
+    logger.error('Error deleting timeline event', { error: error instanceof Error ? error.message : String(error) });
     return NextResponse.json(
       { success: false, error: 'Failed to delete timeline event' },
       { status: 500 }
