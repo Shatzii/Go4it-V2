@@ -47,14 +47,20 @@ export default function LandingPage() {
       <nav id="nav" className="nav" role="navigation" aria-label="Main navigation">
         <div className="container">
           <div className="nav__brand">
-            <strong>Go4it Sports Academy</strong>
+            <Link href="/">
+              <strong>Go4it Sports Academy</strong>
+            </Link>
           </div>
           <ul className="nav__menu">
-            <li><a href="#pathways">Get Started</a></li>
-            <li><a href="#gar-top100">Browse Athletes</a></li>
-            <li><a href="#pathway">NCAA Pathway</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#signup" className="btn btn--primary" data-cta="nav-signup">Apply</a></li>
+            <li><Link href="/dashboard">Dashboard</Link></li>
+            <li><Link href="/academy">Academy</Link></li>
+            <li><Link href="/events">Events</Link></li>
+            <li><Link href="/starpath">StarPath</Link></li>
+            <li><Link href="/athleteai">AthleteAI</Link></li>
+            <li><Link href="/recruiting-hub">Recruiting</Link></li>
+            <li><Link href="/automation/dashboard">Automation</Link></li>
+            <li><Link href="/audit" className="btn btn--primary" data-cta="nav-audit">48hr Audit</Link></li>
+            <li><Link href="/apply" className="btn btn--primary" data-cta="nav-apply">Apply</Link></li>
           </ul>
         </div>
       </nav>

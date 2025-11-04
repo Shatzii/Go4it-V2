@@ -61,6 +61,7 @@ export default function Navigation() {
         { label: 'GetVerified™ Combines', href: '/getverified', icon: Trophy },
         { label: 'College Explorer', href: '/college-explorer', icon: GraduationCap },
         { label: 'Scholarship Tracker', href: '/scholarship-tracker', icon: Target },
+        { label: '48-Hour Audit', href: '/audit', icon: Shield },
       ],
     },
     {
@@ -68,10 +69,28 @@ export default function Navigation() {
       icon: GraduationCap,
       submenu: [
         { label: 'Academy Dashboard', href: '/academy', icon: GraduationCap },
-        { label: 'Studio (3-Hour)', href: '/studio', icon: GraduationCap },
-        { label: 'AI Coach', href: '/ai-coach', icon: Brain },
+        { label: 'Daily Studio (3-Hour)', href: '/dashboard/studio', icon: GraduationCap },
+        { label: 'Course Studio', href: '/academy/course-studio', icon: GraduationCap },
         { label: 'Courses', href: '/academy/courses', icon: GraduationCap },
-        { label: 'Flag Football', href: '/flag-football-academy', icon: Trophy },
+        { label: 'Flag Football Academy', href: '/flag-football-academy', icon: Trophy },
+      ],
+    },
+    {
+      label: 'AI Services',
+      icon: Brain,
+      submenu: [
+        { label: 'AthleteAI Coach', href: '/athleteai', icon: Brain },
+        { label: 'AI Coach', href: '/ai-coach', icon: Brain },
+        { label: 'AI Football Coach', href: '/ai-football-coach', icon: Trophy },
+      ],
+    },
+    {
+      label: 'Events',
+      icon: Trophy,
+      submenu: [
+        { label: 'All Events', href: '/events', icon: Trophy },
+        { label: 'Friday Night Lights', href: '/friday-night-lights', icon: Trophy },
+        { label: 'Combine Registration', href: '/combine-registration', icon: Trophy },
       ],
     },
     {
