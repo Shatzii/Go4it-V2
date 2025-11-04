@@ -39,7 +39,15 @@ export default function LandingPage() {
       {/* TOPBAR */}
       <div id="topbar" className="topbar" role="banner">
         <div className="container">
-          <p>Denver • Vienna • Dallas • Mérida (MX) | <a href="mailto:invest@go4itsports.org">invest@go4itsports.org</a> | <a href="tel:+12054344005">+1-205-434-4005</a></p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p>Denver • Vienna • Dallas • Mérida (MX) | <a href="mailto:invest@go4itsports.org">invest@go4itsports.org</a> | <a href="tel:+12054344005">+1-205-434-4005</a></p>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <a href="https://instagram.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'white', fontSize: '18px' }}>📷</a>
+              <a href="https://facebook.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: 'white', fontSize: '18px' }}>👤</a>
+              <a href="https://twitter.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X" style={{ color: 'white', fontSize: '18px' }}>🐦</a>
+              <a href="https://tiktok.com/@go4itsports" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: 'white', fontSize: '18px' }}>🎵</a>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -102,9 +110,13 @@ export default function LandingPage() {
           </div>
 
           <div className="hero__cta-group" role="group" aria-label="Primary actions">
-            <a href="#pathways" className="btn btn--primary" data-cta="hero-pathways" data-kpi="conversion">Choose Your Path</a>
-            <a href="#gar-top100" className="btn btn--secondary" data-cta="hero-athletes">Browse Verified Athletes</a>
+            <a href="/parent-night" className="btn btn--primary" data-cta="hero-parent-night" data-kpi="conversion">Join Parent Night (Tues/Thurs)</a>
+            <a href="#pathways" className="btn btn--secondary" data-cta="hero-pathways">Choose Your Path</a>
           </div>
+          
+          <p className="text-center text-white/80 mt-4">
+            <strong>Every Tuesday & Thursday:</strong> Live Parent Night sessions to learn how Go4it helps athletes succeed
+          </p>
 
           <div className="hero__proof stack" data-scroll="slide-up">
             <div className="stat">
@@ -480,6 +492,16 @@ export default function LandingPage() {
               <li><Link href="/contact">Contact</Link></li>
             </ul>
           </nav>
+          
+          <div className="footer__social" style={{ marginTop: '20px', textAlign: 'center' }}>
+            <p style={{ marginBottom: '10px', color: '#888' }}>Follow Us</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+              <a href="https://instagram.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ fontSize: '24px', textDecoration: 'none' }}>📷 Instagram</a>
+              <a href="https://facebook.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ fontSize: '24px', textDecoration: 'none' }}>👤 Facebook</a>
+              <a href="https://twitter.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X" style={{ fontSize: '24px', textDecoration: 'none' }}>🐦 Twitter</a>
+              <a href="https://tiktok.com/@go4itsports" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ fontSize: '24px', textDecoration: 'none' }}>🎵 TikTok</a>
+            </div>
+          </div>
         </div>
       </footer>
 
