@@ -37,14 +37,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Memory optimization settings
+  // Compiler optimization - keep minimal to avoid conflicts
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    // Let Next.js 15 handle optimizations automatically
   },
   
-  // Note: swcMinify is enabled by default in Next.js 15 and cannot be disabled
+  // Note: SWC minification is enabled by default in Next.js 15
   
-  // Experimental optimizations (removed webpackMemoryOptimizations due to incompatibility)
+  // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
@@ -124,11 +124,8 @@ const nextConfig = {
     // Memory optimization - limit parallel processing
     config.parallelism = 1;
     
-    // Disable the problematic webpack minify plugin
-    if (!dev && !isServer) {
-      config.optimization = config.optimization || {};
-      config.optimization.minimize = false;
-    }
+    // Let Next.js 15 handle minification automatically with SWC
+    // Do not override config.optimization.minimize
     
     // Exclude OpenTelemetry from Edge runtime (middleware) to prevent eval() errors
     if (nextRuntime === 'edge') {
@@ -212,25 +209,8 @@ const nextConfig = {
       };
     }
 
-    // Optimize bundle splitting
-    if (!dev) {
-      config.optimization.splitChunks.cacheGroups = {
-        ...config.optimization.splitChunks.cacheGroups,
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-          priority: 10,
-        },
-        radix: {
-          test: /[\\/]node_modules[\\/]@radix-ui[\\/]/,
-          name: 'radix-ui',
-          chunks: 'all',
-          priority: 20,
-        },
-      };
-    }
-
+    // Let Next.js 15 handle bundle optimization automatically
+    
     return config;
   },
 };
