@@ -16,7 +16,6 @@ import {
   PlayCircle,
   ChartLine,
   Bot,
-  Football,
   Dumbbell,
   Sparkles,
   CheckCircle2,
@@ -280,7 +279,7 @@ export default function LandingPage() {
             {/* Flag Football */}
             <div className="bg-[#0E1424]/50 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 text-center hover:border-[#00D4FF]/50 transition-all">
               <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mx-auto mb-6 border border-[#00D4FF]/30">
-                <Football className="w-10 h-10 text-[#00D4FF]" />
+                <Trophy className="w-10 h-10 text-[#00D4FF]" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">Flag Football</h3>
               <p className="text-[#AAB2C3] mb-6">Speed, agility, and strategic gameplay development.</p>

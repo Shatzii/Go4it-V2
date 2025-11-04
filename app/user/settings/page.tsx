@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState } from 'react';
-import ProfilePictureUpload from '../../components/ProfilePictureUpload';
+import ProfilePictureUpload from '../../../components/ProfilePictureUpload';
 import { useUser } from '@clerk/nextjs';
 
 export default function UserSettings() {
@@ -202,4 +204,3 @@ export default function UserSettings() {
     </div>
   );
 }
-
