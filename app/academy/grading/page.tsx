@@ -111,7 +111,7 @@ export default function GradingDashboard() {
           ) : (
             <AssignmentGrader 
               assignmentId={selectedItem.id}
-              onGradeComplete={handleGradeComplete}
+              onGraded={handleGradeComplete}
             />
           )}
         </div>

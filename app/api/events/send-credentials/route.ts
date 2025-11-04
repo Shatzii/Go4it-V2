@@ -6,16 +6,13 @@ const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function POST(request: Request) {
   try {
-    // Check if Resend is configured
-    if (!resend || !resendApiKey) {
-      console.error('RESEND_API_KEY not configured');
+    // Check if RESEND_API_KEY is configured
+    if (!process.env.RESEND_API_KEY) {
       return NextResponse.json(
         { error: 'Email service not configured' },
         { status: 500 }
       );
-    }
-
-    const body = await request.json();
+    }    const body = await request.json();
     const { email, firstName, lastName, password, userId } = body;
 
     const loginUrl = `${process.env.NEXT_PUBLIC_APP_URL}/sign-in`;

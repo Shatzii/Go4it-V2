@@ -16,7 +16,6 @@ import {
   TrendingUp,
   Target,
   Bell,
-  MessageSquare,
   Video,
   FileText,
   Star,

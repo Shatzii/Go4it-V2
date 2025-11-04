@@ -31,7 +31,17 @@ export default async function LiveEventPage({
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <LiveRoom event={{...event, description: event.description || ''}} />
+      <LiveRoom event={{
+        id: event.id,
+        title: event.title,
+        description: event.description || '',
+        roomId: event.roomId,
+        status: event.status,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        allowChat: event.allowChat ?? true,
+        allowQA: event.allowQA ?? true
+      }} />
     </div>
   );
 }

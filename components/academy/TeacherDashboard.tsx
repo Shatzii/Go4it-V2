@@ -12,11 +12,9 @@ import {
   Plus,
   BarChart3,
   Clock,
-  CheckCircle,
   AlertTriangle,
   TrendingUp,
   FileText,
-  Video,
   Upload,
   Settings,
 } from 'lucide-react';

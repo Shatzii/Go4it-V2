@@ -10,7 +10,6 @@ import {
   Star,
   Trophy,
   Target,
-  TrendingUp,
   Award,
   Zap,
   Crown,

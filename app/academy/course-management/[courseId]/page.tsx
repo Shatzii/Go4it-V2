@@ -40,12 +40,13 @@ interface Course {
 export default function CourseManagementPage() {
   const params = useParams();
   const router = useRouter();
-  const courseId = params.courseId as string;
+  const courseId = params?.courseId as string;
   
   const [course, setCourse] = useState<Course | null>(null);
   const [activeTab, setActiveTab] = useState('lessons');
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<'teacher' | 'student'>('teacher');
+  const [currentUserId, setCurrentUserId] = useState<string>('');
 
   useEffect(() => {
     const loadCourse = async () => {
@@ -55,6 +56,7 @@ export default function CourseManagementPage() {
         if (roleRes.ok) {
           const userData = await roleRes.json();
           setUserRole(userData.user?.publicMetadata?.role || 'student');
+          setCurrentUserId(userData.user?.id || '');
         }
 
         // Load course data
@@ -64,7 +66,7 @@ export default function CourseManagementPage() {
           setCourse(data.course);
         }
       } catch (error) {
-        console.error('Error loading course:', error);
+        // Error loading course
       } finally {
         setIsLoading(false);
       }
@@ -209,7 +211,7 @@ export default function CourseManagementPage() {
               <CardContent>
                 {userRole === 'teacher' ? (
                   <AssignmentCreator onAssignmentCreated={() => {
-                    console.log('Assignment created successfully');
+                    // Assignment created successfully
                   }} />
                 ) : (
                   <div className="text-center py-8 text-slate-400">
@@ -291,7 +293,7 @@ export default function CourseManagementPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <DiscussionForum courseId={courseId} />
+                <DiscussionForum courseId={courseId} studentId={currentUserId} />
               </CardContent>
             </Card>
           </TabsContent>

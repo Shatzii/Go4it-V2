@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { users, studentAthleteProfiles } from '@/lib/db/schema';
-import { eq, desc, and, isNotNull } from 'drizzle-orm';
+import { eq, desc, and, isNotNull, sql } from 'drizzle-orm';
 
 export async function GET() {
   try {
     // Fetch featured student athlete profiles with high GAR scores
-    const featured = await db
+    const featuredProfiles = await db
       .select({
         id: users.id,
         name: users.firstName,
@@ -14,7 +14,7 @@ export async function GET() {
         profileImage: users.profileImageUrl,
         sport: studentAthleteProfiles.teamAffiliation,
         position: studentAthleteProfiles.positions,
-        grade: studentAthleteProfiles.graduationYear,
+        graduationYear: studentAthleteProfiles.graduationYear,
         garScore: sql<number>`75.0`, // Default placeholder
         achievements: studentAthleteProfiles.athleticAchievements,
         collegeCommit: studentAthleteProfiles.recruitingStatus,

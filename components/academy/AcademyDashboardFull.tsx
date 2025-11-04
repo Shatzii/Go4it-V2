@@ -48,7 +48,6 @@ export default function AcademyDashboardFull() {
     studyStreak: 0,
   });
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
