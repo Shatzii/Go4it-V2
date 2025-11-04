@@ -32,7 +32,7 @@ const nextConfig = {
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   trailingSlash: false,
 
-  // Build error handling - optimize for memory
+  // Build error handling
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -40,7 +40,7 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // SWC minification (enabled by default in Next.js 14+)
+  // SWC minification
   swcMinify: true,
   
   // Experimental optimizations
@@ -48,9 +48,8 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
 
-  // Server-side package externalization for AI/ML packages and legacy features
-  // Note: In Next.js 15, serverComponentsExternalPackages moved to serverExternalPackages
-  serverExternalPackages: [
+  // Next.js 14 uses serverComponentsExternalPackages (not serverExternalPackages)
+  serverComponentsExternalPackages: [
     '@tensorflow/tfjs',
     '@tensorflow/tfjs-node',
     '@tensorflow/tfjs-backend-webgl',
@@ -67,24 +66,8 @@ const nextConfig = {
     'express',
     'node-cron',
     'form-data',
-    '@opentelemetry/api',
-    '@opentelemetry/core',
-    '@opentelemetry/resources',
-    '@opentelemetry/instrumentation',
-    '@opentelemetry/semantic-conventions',
-    '@opentelemetry/context-async-hooks',
     'full-icu',
   ],
-
-  // Turbopack configuration (replaces experimental.turbo)
-  turbopack: {
-    rules: {
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
 
   // Security headers
   async headers() {
@@ -118,24 +101,8 @@ const nextConfig = {
 
   allowedDevOrigins: ['*.replit.dev', '*.replit.app', 'localhost:5000', '127.0.0.1:5000'],
 
-  // Minimal webpack configuration for Next.js 15 compatibility
-  webpack: (config, { isServer, nextRuntime }) => {
-    // Exclude OpenTelemetry from Edge Runtime (middleware) to prevent compatibility issues
-    if (nextRuntime === 'edge') {
-      config.resolve = config.resolve || {};
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@opentelemetry/api': false,
-        '@opentelemetry/core': false,
-        '@opentelemetry/resources': false,
-        '@opentelemetry/instrumentation': false,
-        '@opentelemetry/semantic-conventions': false,
-        '@opentelemetry/context-async-hooks': false,
-      };
-      config.externals = config.externals || [];
-      config.externals.push(/@opentelemetry\/.*/);
-    }
-
+  // Minimal webpack configuration for Next.js 14
+  webpack: (config, { isServer }) => {
     if (isServer) {
       // Externalize server-only packages
       config.externals = config.externals || [];
