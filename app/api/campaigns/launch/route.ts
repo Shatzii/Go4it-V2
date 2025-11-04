@@ -3,6 +3,7 @@ import { db } from '@/server/db';
 import { campaigns, prospects } from '@/shared/schema';
 import { eq, and, sql, inArray } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 // Email service simulation (replace with actual service like SendGrid/Twilio)
 class EmailAutomationService {
   async sendBulkEmail(prospects: any[], template: string, subject: string): Promise<any> {

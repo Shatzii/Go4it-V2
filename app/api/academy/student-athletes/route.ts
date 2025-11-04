@@ -3,6 +3,7 @@ import { db } from '@/server/db';
 import { users, studentAthleteProfiles, studentEnrollments, academyCourses } from '@/shared/schema';
 import { eq, and } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

@@ -3,6 +3,7 @@ import { db } from '@/server/db';
 import { prospects, campaigns } from '@/shared/schema';
 import { eq, sql } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 // Track email link clicks and redirect
 export async function GET(request: NextRequest) {
   try {

@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { liveSessions, performanceMetrics } from '@/shared/enhanced-schema';
 import { eq, and } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);

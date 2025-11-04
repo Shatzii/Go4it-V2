@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Database from 'better-sqlite3';
 import path from 'path';
 
+export const dynamic = 'force-dynamic';
 const dbPath = path.join(process.cwd(), 'go4it-os.db');
 const db = new Database(dbPath);
 

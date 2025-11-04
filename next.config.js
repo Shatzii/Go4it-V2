@@ -48,27 +48,6 @@ const nextConfig = {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
 
-  // Next.js 14 uses serverComponentsExternalPackages (not serverExternalPackages)
-  serverComponentsExternalPackages: [
-    '@tensorflow/tfjs',
-    '@tensorflow/tfjs-node',
-    '@tensorflow/tfjs-backend-webgl',
-    '@tensorflow-models/pose-detection',
-    '@mediapipe/camera_utils',
-    '@mediapipe/drawing_utils',
-    '@mediapipe/holistic',
-    '@mediapipe/pose',
-    'puppeteer',
-    'sharp',
-    'canvas',
-    '@prisma/client',
-    'prisma',
-    'express',
-    'node-cron',
-    'form-data',
-    'full-icu',
-  ],
-
   // Security headers
   async headers() {
     return [

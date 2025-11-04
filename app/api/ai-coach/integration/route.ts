@@ -30,6 +30,7 @@ import {
   generateTeamStrategy,
 } from '@/lib/ai-coach-helpers';
 
+export const dynamic = 'force-dynamic';
 // Comprehensive AI Coach Integration API
 export async function POST(request: NextRequest) {
   try {

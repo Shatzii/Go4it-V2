@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { marketingItems } from "@/lib/db/schema/funnel";
 import { z } from "zod";
 
+export const dynamic = 'force-dynamic';
 /**
  * Validation schema for marketing items
  */

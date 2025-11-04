@@ -3,6 +3,7 @@ import { db } from '@/server/db';
 import { prospects, campaigns, scrapingJobs, type InsertProspect } from '@/shared/schema';
 import { eq, desc, and, or, like, sql } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 // GET - Fetch prospects with filtering and pagination
 export async function GET(request: NextRequest) {
   try {

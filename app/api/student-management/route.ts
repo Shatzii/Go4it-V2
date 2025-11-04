@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { storage } from '../../../server/storage'
 
+export const dynamic = 'force-dynamic';
 // Integrated with main storage system
 const getStudentData = async () => {
   const students = await storage.getEnrollmentStudents()

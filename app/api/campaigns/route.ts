@@ -3,6 +3,7 @@ import { db } from '@/server/db';
 import { campaigns, prospects, type InsertCampaign } from '@/shared/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 // GET - Fetch campaigns
 export async function GET(request: NextRequest) {
   try {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
 // SpacePharaoh Admin Credentials (In production, these would be stored securely)
 const ADMIN_CREDENTIALS = {
   master_admin: {

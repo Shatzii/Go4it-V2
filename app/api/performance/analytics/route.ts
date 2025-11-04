@@ -4,6 +4,7 @@ import { db } from '@/lib/db';
 import { videoAnalysis } from '@/lib/schema';
 import { eq, desc, gte } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);

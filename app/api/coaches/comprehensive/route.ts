@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { colleges, coachingStaff, sportsPrograms } from '@/shared/schema';
 import { eq, and, ilike, sql, or } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 // Comprehensive coaching staff database - ALL NCAA, NAIA, and Junior College coaches
 export async function GET(request: Request) {
   try {

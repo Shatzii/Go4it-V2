@@ -5,6 +5,7 @@ import { db } from '@/lib/db';
 import { contentTags, userFiles } from '@/shared/schema';
 import { eq } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);

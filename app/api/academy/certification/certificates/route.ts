@@ -3,6 +3,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { randomBytes } from 'crypto';
 
+export const dynamic = 'force-dynamic';
 const dbPath = path.join(process.cwd(), 'go4it-os.db');
 const db = new Database(dbPath);
 

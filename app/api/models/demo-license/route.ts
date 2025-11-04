@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createModelEncryptionManager } from '@/lib/model-encryption';
 
+export const dynamic = 'force-dynamic';
 export async function POST(request: NextRequest) {
   try {
     const { modelName } = await request.json();

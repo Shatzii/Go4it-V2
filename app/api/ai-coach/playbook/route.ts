@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromRequest } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
 // AI Playbook Creator - Phase 2 Feature
 export async function POST(request: NextRequest) {
   try {

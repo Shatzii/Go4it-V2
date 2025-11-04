@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripeIntegration } from '@/lib/stripe-integration';
 
+export const dynamic = 'force-dynamic';
 // GET - Get user subscription status
 export async function GET(request: NextRequest) {
   try {

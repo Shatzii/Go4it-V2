@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { ncaaSchools } from '@/shared/schema';
 import { eq, and, or, ilike } from 'drizzle-orm';
 
+export const dynamic = 'force-dynamic';
 // Real NCAA Division I Schools with Athletic Department Contacts
 const REAL_ATHLETIC_CONTACTS = [
   {
