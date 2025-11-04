@@ -1,389 +1,485 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 import Link from "next/link";
-import { 
-  Target, 
-  Brain, 
-  TrendingUp, 
-  Trophy,
-  Zap,
-  Users,
-  Video,
-  LineChart,
-  Rocket,
-  PlayCircle,
-  ChartLine,
-  Bot,
-  Dumbbell,
-  Sparkles,
-  CheckCircle2,
-} from "lucide-react";
+import Script from "next/script";
 
 export default function LandingPage() {
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
-    // Create animated particles
-    createParticles();
+    // Scripts will be loaded via Script component
   }, []);
 
-  const createParticles = () => {
-    const particlesContainer = document.getElementById('particles');
-    if (!particlesContainer) return;
-    
-    const particleCount = 50;
-    particlesContainer.innerHTML = ''; // Clear existing
-    
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      particle.className = 'particle';
-      
-      const size = Math.random() * 4 + 2;
-      particle.style.width = `${size}px`;
-      particle.style.height = `${size}px`;
-      particle.style.left = `${Math.random() * 100}vw`;
-      particle.style.top = `${Math.random() * 100}vh`;
-      
-      const delay = Math.random() * 15;
-      const duration = Math.random() * 10 + 15;
-      particle.style.animationDelay = `${delay}s`;
-      particle.style.animationDuration = `${duration}s`;
-      
-      particlesContainer.appendChild(particle);
-    }
-  };
-
   return (
-    <div className="hud-bg min-h-screen relative overflow-hidden">
-      {/* Animated Background Particles */}
-      <div className="particles" id="particles"></div>
+    <>
+      {/* Load external stylesheets */}
+      <link rel="stylesheet" href="/landing-page.css" />
+      <link rel="stylesheet" href="/chat-widget.css" />
 
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center text-center px-4 pt-20 pb-32">
-        <div className="max-w-5xl mx-auto relative z-10">
-          <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-6">
-            International Combine 2025
-          </span>
+      {/* Structured Data */}
+      <Script id="structured-data-org" type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "SportsOrganization",
+          "name": "Go4it Sports Academy",
+          "description": "Online + hybrid school for elite student-athletes with NCAA Pathway support and GAR™ verification",
+          "url": "https://go4itsports.org",
+          "logo": "https://go4itsports.org/logo.png",
+          "email": "info@go4itsports.org",
+          "telephone": "+1-205-434-8405",
+          "slogan": "Train Here. Place Anywhere.",
+          "address": [
+            { "@type": "PostalAddress", "addressLocality": "Denver", "addressCountry": "US" },
+            { "@type": "PostalAddress", "addressLocality": "Vienna", "addressCountry": "AT" },
+            { "@type": "PostalAddress", "addressLocality": "Dallas", "addressCountry": "US" },
+            { "@type": "PostalAddress", "addressLocality": "Mérida", "addressCountry": "MX" }
+          ]
+        })}
+      </Script>
+
+      {/* TOPBAR */}
+      <div id="topbar" className="topbar" role="banner">
+        <div className="container">
+          <p>Denver • Vienna • Dallas • Mérida (MX) | <a href="mailto:invest@go4itsports.org">invest@go4itsports.org</a> | <a href="tel:+12054344005">+1-205-434-4005</a></p>
+        </div>
+      </div>
+
+      {/* NAVIGATION */}
+      <nav id="nav" className="nav" role="navigation" aria-label="Main navigation">
+        <div className="container">
+          <div className="nav__brand">
+            <strong>Go4it Sports Academy</strong>
+          </div>
+          <ul className="nav__menu">
+            <li><a href="#pathways">Get Started</a></li>
+            <li><a href="#gar-top100">Browse Athletes</a></li>
+            <li><a href="#pathway">NCAA Pathway</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#signup" className="btn btn--primary" data-cta="nav-signup">Apply</a></li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      <header id="hero" className="hero section--dark" data-scroll="fade-in">
+        <div className="container">
+          <h1>Your All-in-One Platform to Play at the Next Level</h1>
+          <p className="lead">Go4it Sports Academy: Online School + AI Coaching + NCAA Tracker + Get Verified Combines. Everything elite student-athletes need in one place.</p>
           
-          <h1 className="text-5xl md:text-8xl font-black text-white leading-tight mb-6">
-            UNLEASH YOUR{" "}
-            <span className="text-neon">POTENTIAL</span>
-          </h1>
+          {/* Live GAR Leaderboard Ticker */}
+          <div className="gar-ticker" aria-label="Top GAR Athletes">
+            <div className="gar-ticker__track">
+              <div className="gar-ticker__item">
+                <span className="flag">🇺🇸</span> Marcus J. <span className="score">GAR 97</span> ⭐⭐⭐⭐⭐ Basketball
+              </div>
+              <div className="gar-ticker__item">
+                <span className="flag">🇩🇪</span> Lena K. <span className="score">GAR 94</span> ⭐⭐⭐⭐⭐ Soccer
+              </div>
+              <div className="gar-ticker__item">
+                <span className="flag">🇲🇽</span> Diego R. <span className="score">GAR 92</span> ⭐⭐⭐⭐ Football
+              </div>
+              <div className="gar-ticker__item">
+                <span className="flag">🇪🇸</span> Sofia M. <span className="score">GAR 90</span> ⭐⭐⭐⭐ Volleyball
+              </div>
+              <div className="gar-ticker__item">
+                <span className="flag">🇨🇦</span> Alex T. <span className="score">GAR 89</span> ⭐⭐⭐⭐ Basketball
+              </div>
+              <div className="gar-ticker__item">
+                <span className="flag">🇫🇷</span> Emma D. <span className="score">GAR 88</span> ⭐⭐⭐⭐ Soccer
+              </div>
+              <div className="gar-ticker__item">
+                <span className="flag">🇧🇷</span> Lucas S. <span className="score">GAR 87</span> ⭐⭐⭐⭐ Football
+              </div>
+              <div className="gar-ticker__item">
+                <span className="flag">🇬🇧</span> Olivia W. <span className="score">GAR 86</span> ⭐⭐⭐⭐ Volleyball
+              </div>
+            </div>
+          </div>
+
+          <div className="hero__cta-group" role="group" aria-label="Primary actions">
+            <a href="#pathways" className="btn btn--primary" data-cta="hero-pathways" data-kpi="conversion">Choose Your Path</a>
+            <a href="#gar-top100" className="btn btn--secondary" data-cta="hero-athletes">Browse Verified Athletes</a>
+          </div>
+
+          <div className="hero__proof stack" data-scroll="slide-up">
+            <div className="stat">
+              <span className="badge badge--green">GAR™ Verified Athletes</span>
+            </div>
+            <div className="stat">
+              <strong>NCAA Pathway + AI Coaching</strong>
+            </div>
+            <div className="stat">
+              <strong>Online School Available</strong>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* THREE PATHWAYS */}
+      <section id="pathways" className="pathways section--accent">
+        <div className="container">
+          <h2>Three Ways to Go4it</h2>
+          <p className="lead">Choose the path that fits your goals—or combine all three for maximum impact.</p>
           
-          <p className="text-xl md:text-2xl text-[#AAB2C3] max-w-3xl mx-auto mb-8">
-            Film. Metrics. AI Coach. Ages 12–18 — Soccer • Basketball • Flag Football
-          </p>
-
-          {/* Hero Stats */}
-          <div className="flex flex-wrap justify-center gap-8 mb-12">
-            <div className="text-center">
-              <div className="text-5xl font-black text-[#00D4FF] mb-2" style={{ textShadow: '0 0 12px rgba(0,212,255,.45)' }}>
-                89%
-              </div>
-              <div className="text-sm text-[#AAB2C3] uppercase tracking-wider">GAR Score Avg</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-black text-[#00D4FF] mb-2" style={{ textShadow: '0 0 12px rgba(0,212,255,.45)' }}>
-                2.4K
-              </div>
-              <div className="text-sm text-[#AAB2C3] uppercase tracking-wider">Athletes</div>
-            </div>
-            <div className="text-center">
-              <div className="text-5xl font-black text-[#00D4FF] mb-2" style={{ textShadow: '0 0 12px rgba(0,212,255,.45)' }}>
-                98%
-              </div>
-              <div className="text-sm text-[#AAB2C3] uppercase tracking-wider">Satisfaction</div>
-            </div>
-          </div>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link href="/auth/signup">
-              <Button 
-                size="lg" 
-                className="pulse-animation bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] hover:from-[#00D4FF]/90 hover:to-[#36E4FF]/90 text-slate-900 font-black text-lg px-8 py-6 rounded-xl shadow-[0_0_28px_rgba(0,212,255,.25)]"
-              >
-                <Rocket className="mr-2 w-5 h-5" />
-                Register Now
-              </Button>
-            </Link>
-            <Link href="/dashboard">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-2 border-[#00D4FF]/30 bg-[#0E1424]/50 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF] text-lg px-8 py-6 rounded-xl backdrop-blur-sm"
-              >
-                <PlayCircle className="mr-2 w-5 h-5" />
-                Watch Demo
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="relative py-20 px-4" id="features">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-4">
-              Why Choose GO4IT
-            </span>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-4">
-              Next-Level{" "}
-              <span className="text-neon">Athlete Development</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Feature Card 1 */}
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#00D4FF]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
-              <div className="relative bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mb-6 border border-[#00D4FF]/30">
-                  <ChartLine className="w-8 h-8 text-[#00D4FF]" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Advanced Analytics</h3>
-                <p className="text-[#AAB2C3] mb-6">Real-time performance tracking with our proprietary GAR scoring system.</p>
-                
-                {/* Metric Bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm font-bold">
-                    <span className="text-white">Data Accuracy</span>
-                    <span className="text-[#00D4FF]">95%</span>
-                  </div>
-                  <div className="h-3 rounded-full bg-[#0e1628] overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,212,255,.2)]">
-                    <div 
-                      className="h-full bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] rounded-full relative"
-                      style={{ width: '95%' }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50 animate-[shine_2s_infinite]"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Card 2 */}
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#00D4FF]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
-              <div className="relative bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mb-6 border border-[#00D4FF]/30">
-                  <Bot className="w-8 h-8 text-[#00D4FF]" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-3">AI Coaching</h3>
-                <p className="text-[#AAB2C3] mb-6">Personalized training programs powered by machine learning algorithms.</p>
-                
-                {/* Metric Bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm font-bold">
-                    <span className="text-white">Improvement Rate</span>
-                    <span className="text-[#00D4FF]">87%</span>
-                  </div>
-                  <div className="h-3 rounded-full bg-[#0e1628] overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,212,255,.2)]">
-                    <div 
-                      className="h-full bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] rounded-full relative"
-                      style={{ width: '87%' }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50 animate-[shine_2s_infinite]"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Feature Card 3 */}
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#00D4FF]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
-              <div className="relative bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
-                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mb-6 border border-[#00D4FF]/30">
-                  <Video className="w-8 h-8 text-[#00D4FF]" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Film Analysis</h3>
-                <p className="text-[#AAB2C3] mb-6">Break down every play with our advanced video analysis tools.</p>
-                
-                {/* Metric Bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm font-bold">
-                    <span className="text-white">Processing Speed</span>
-                    <span className="text-[#00D4FF]">2.3s</span>
-                  </div>
-                  <div className="h-3 rounded-full bg-[#0e1628] overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,212,255,.2)]">
-                    <div 
-                      className="h-full bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] rounded-full relative"
-                      style={{ width: '100%' }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50 animate-[shine_2s_infinite]"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Programs Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-b from-transparent to-[#0B0F1A]" id="programs">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-4">
-              Our Programs
-            </span>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-4">
-              Sport-Specific{" "}
-              <span className="text-neon">Training</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {/* Soccer */}
-            <div className="bg-[#0E1424]/50 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 text-center hover:border-[#00D4FF]/50 transition-all">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mx-auto mb-6 border border-[#00D4FF]/30">
-                <Target className="w-10 h-10 text-[#00D4FF]" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Soccer</h3>
-              <p className="text-[#AAB2C3] mb-6">Technical skills, tactical awareness, and physical conditioning.</p>
-              <div className="flex flex-wrap gap-2 justify-center mb-6">
-                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Denver</span>
-                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Vienna</span>
-                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Online</span>
-              </div>
-              <Link href="/academy">
-                <Button variant="outline" className="border-[#00D4FF]/30 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF]">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
-
-            {/* Basketball */}
-            <div className="bg-[#0E1424]/50 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 text-center hover:border-[#00D4FF]/50 transition-all">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mx-auto mb-6 border border-[#00D4FF]/30">
-                <Trophy className="w-10 h-10 text-[#00D4FF]" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Basketball</h3>
-              <p className="text-[#AAB2C3] mb-6">Shooting, ball handling, and basketball IQ development.</p>
-              <div className="flex flex-wrap gap-2 justify-center mb-6">
-                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Denver</span>
-                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Online</span>
-              </div>
-              <Link href="/academy">
-                <Button variant="outline" className="border-[#00D4FF]/30 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF]">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
-
-            {/* Flag Football */}
-            <div className="bg-[#0E1424]/50 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 text-center hover:border-[#00D4FF]/50 transition-all">
-              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mx-auto mb-6 border border-[#00D4FF]/30">
-                <Trophy className="w-10 h-10 text-[#00D4FF]" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3">Flag Football</h3>
-              <p className="text-[#AAB2C3] mb-6">Speed, agility, and strategic gameplay development.</p>
-              <div className="flex flex-wrap gap-2 justify-center mb-6">
-                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Denver</span>
-                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Vienna</span>
-              </div>
-              <Link href="/academy">
-                <Button variant="outline" className="border-[#00D4FF]/30 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF]">
-                  Learn More
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="relative py-20 px-4" id="testimonials">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-4">
-              Success Stories
-            </span>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-4">
-              Athlete{" "}
-              <span className="text-neon">Testimonials</span>
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Testimonial 1 */}
-            <div className="bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
-              <p className="text-[#AAB2C3] text-lg mb-6 leading-relaxed">
-                &ldquo;The GO4IT Combine completely transformed my approach to training. The data-driven insights helped me identify weaknesses I didn&apos;t even know I had. My GAR score improved by 22 points in just 3 months!&rdquo;
+          <div className="pathway-grid">
+            {/* Student Path */}
+            <div className="pathway-card" data-scroll="fade-in">
+              <div className="pathway-card__icon">🎓</div>
+              <h3>Full Academy Student</h3>
+              <p className="pathway-card__tagline">Online + Hybrid School for Elite Athletes</p>
+              <ul className="pathway-card__features">
+                <li>✓ American-taught online courses</li>
+                <li>✓ NCAA core-course alignment</li>
+                <li>✓ Study Hall & academic coaching</li>
+                <li>✓ GAR™ testing included</li>
+                <li>✓ AthleteAI platform access</li>
+                <li>✓ International training blocks</li>
+              </ul>
+              <p className="pathway-card__cta">
+                <Link href="/apply" className="btn btn--primary" data-cta="pathway-student">Apply Now</Link>
               </p>
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#36E4FF] flex items-center justify-center text-white font-black text-lg">
-                  JE
-                </div>
-                <div>
-                  <h4 className="text-white font-bold text-lg">Jayden Ellis</h4>
-                  <p className="text-[#AAB2C3] text-sm">WR, Colorado State Commit</p>
-                </div>
-              </div>
+              <p className="microcopy">Full-time enrollment with NCAA Pathway support</p>
             </div>
 
-            {/* Testimonial 2 */}
-            <div className="bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
-              <p className="text-[#AAB2C3] text-lg mb-6 leading-relaxed">
-                &ldquo;As a soccer player, the film analysis tools were game-changing. Being able to break down every touch and movement helped me refine my technique in ways I never thought possible. Highly recommend!&rdquo;
+            {/* AI Coach Path */}
+            <div className="pathway-card pathway-card--featured" data-scroll="fade-in">
+              <div className="pathway-card__badge">MOST POPULAR</div>
+              <div className="pathway-card__icon">🤖</div>
+              <h3>AthleteAI Coach</h3>
+              <p className="pathway-card__tagline">AI-Powered Training + NCAA Tracker</p>
+              <ul className="pathway-card__features">
+                <li>✓ 24/7 AI coaching chatbot</li>
+                <li>✓ Personalized training plans</li>
+                <li>✓ Performance tracking & analytics</li>
+                <li>✓ NCAA eligibility dashboard</li>
+                <li>✓ GPA & credit monitoring</li>
+                <li>✓ No school enrollment required</li>
+              </ul>
+              <p className="pathway-card__cta">
+                <Link href="/athleteai" className="btn btn--primary" data-cta="pathway-ai">Try Free</Link>
               </p>
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#36E4FF] flex items-center justify-center text-white font-black text-lg">
-                  SM
-                </div>
-                <div>
-                  <h4 className="text-white font-bold text-lg">Sophia Martinez</h4>
-                  <p className="text-[#AAB2C3] text-sm">Forward, U17 National Team</p>
-                </div>
-              </div>
+              <p className="microcopy">Perfect for athletes at any school</p>
+            </div>
+
+            {/* Get Verified Path */}
+            <div className="pathway-card" data-scroll="fade-in">
+              <div className="pathway-card__icon">⭐</div>
+              <h3>Get Verified Athlete</h3>
+              <p className="pathway-card__tagline">GAR™ Testing + NCAA Audit</p>
+              <ul className="pathway-card__features">
+                <li>✓ Official GAR™ combine testing</li>
+                <li>✓ Verified athletic profile</li>
+                <li>✓ 48-hour NCAA credit audit</li>
+                <li>✓ Core-course gap analysis</li>
+                <li>✓ Coach-ready film & metrics</li>
+                <li>✓ Top 100 leaderboard ranking</li>
+              </ul>
+              <p className="pathway-card__cta">
+                <Link href="/events" className="btn btn--primary" data-cta="pathway-verified">Book Testing</Link>
+              </p>
+              <p className="microcopy">Get discovered by college coaches</p>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Final CTA Section */}
-      <section className="relative py-32 px-4" id="register">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#00D4FF]/5 to-transparent"></div>
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-6">
-            Limited Spots Available
-          </span>
-          <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
-            Ready to{" "}
-            <span className="text-neon">Elevate Your Game</span>?
-          </h2>
-          <p className="text-xl text-[#AAB2C3] mb-12">
-            Join thousands of athletes who have transformed their performance with GO4IT Combine.
-          </p>
-
-          <Link href="/auth/signup">
-            <Button 
-              size="lg"
-              className="pulse-animation bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] hover:from-[#00D4FF]/90 hover:to-[#36E4FF]/90 text-slate-900 font-black text-xl px-12 py-8 rounded-xl shadow-[0_0_38px_rgba(0,212,255,.35)]"
-            >
-              <Zap className="mr-2 w-6 h-6" />
-              Register Now
-            </Button>
-          </Link>
-
-          <div className="flex flex-wrap gap-3 justify-center mt-12">
-            <span className="inline-flex items-center justify-center min-w-[140px] px-4 py-3 rounded-xl bg-transparent border border-[#00D4FF]/35 shadow-[0_0_18px_rgba(0,212,255,.15)_inset] font-black text-white text-sm tracking-wide">
-              NEXTUP PROSPECT
-            </span>
-            <span className="inline-flex items-center justify-center min-w-[140px] px-4 py-3 rounded-xl bg-transparent border border-[#00D4FF]/35 shadow-[0_0_18px_rgba(0,212,255,.15)_inset] font-black text-white text-sm tracking-wide">
-              ELITE SPEED
-            </span>
-            <span className="inline-flex items-center justify-center min-w-[140px] px-4 py-3 rounded-xl bg-transparent border border-[#00D4FF]/35 shadow-[0_0_18px_rgba(0,212,255,.15)_inset] font-black text-white text-sm tracking-wide">
-              AI COACHING
-            </span>
+          <div className="pathways__compare">
+            <p><strong>Not sure which path?</strong> <a href="#compare">Compare all options →</a></p>
           </div>
         </div>
       </section>
-    </div>
+
+      {/* GAR TOP 100 */}
+      <section id="gar-top100" className="gar-top100 section--dark">
+        <div className="container">
+          <h2 className="neon-text">GAR Top 100</h2>
+          <p className="lead">The highest verified athlete scores worldwide</p>
+          
+          {/* Filters */}
+          <div className="gar-filters">
+            <div className="filter-group">
+              <label htmlFor="filter-sport">Sport:</label>
+              <select id="filter-sport" className="filter-select">
+                <option value="all">All Sports</option>
+                <option value="basketball">Basketball</option>
+                <option value="football">Football</option>
+                <option value="soccer">Soccer</option>
+                <option value="volleyball">Volleyball</option>
+                <option value="baseball">Baseball</option>
+              </select>
+            </div>
+            
+            <div className="filter-group">
+              <label htmlFor="filter-year">Grad Year:</label>
+              <select id="filter-year" className="filter-select">
+                <option value="all">All Years</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+                <option value="2028">2028</option>
+              </select>
+            </div>
+          </div>
+          
+          {/* Athlete Grid */}
+          <div className="athlete-grid" data-athlete-grid>
+            {[
+              { name: "Marcus J.", sport: "Basketball", position: "Point Guard", year: "2026", gar: 97, stars: 5, flag: "🇺🇸", stats: ["40yd: 4.3s", "Vertical: 38\"", "GPA: 3.8"] },
+              { name: "Lena K.", sport: "Soccer", position: "Midfielder", year: "2025", gar: 94, stars: 5, flag: "🇩🇪", stats: ["20m: 6.8s", "Vertical: 32\"", "GPA: 3.9"] },
+              { name: "Diego R.", sport: "Football", position: "Wide Receiver", year: "2027", gar: 92, stars: 4, flag: "🇲🇽", stats: ["40yd: 4.5s", "Vertical: 36\"", "GPA: 3.7"] },
+              { name: "Sofia M.", sport: "Volleyball", position: "Outside Hitter", year: "2026", gar: 90, stars: 4, flag: "🇪🇸", stats: ["Approach: 10'2\"", "Block: 9'8\"", "GPA: 3.6"] },
+              { name: "Alex T.", sport: "Basketball", position: "Shooting Guard", year: "2025", gar: 89, stars: 4, flag: "🇨🇦", stats: ["40yd: 4.4s", "Vertical: 35\"", "GPA: 3.9"] },
+              { name: "Emma D.", sport: "Soccer", position: "Forward", year: "2027", gar: 88, stars: 4, flag: "🇫🇷", stats: ["20m: 7.1s", "Vertical: 30\"", "GPA: 3.7"] },
+            ].map((athlete, idx) => (
+              <div key={idx} className="athlete-card" data-sport={athlete.sport.toLowerCase()} data-year={athlete.year} data-gar={athlete.gar}>
+                <div className="athlete-card__image">
+                  <img src="/placeholder-athlete.jpg" alt={athlete.name} width="200" height="250" />
+                  <div className="gar-badge">
+                    <span className="gar-badge__score">{athlete.gar}</span>
+                    <span className="gar-badge__stars">{"⭐".repeat(athlete.stars)}</span>
+                  </div>
+                </div>
+                <div className="athlete-card__info">
+                  <h3>{athlete.name}</h3>
+                  <p className="sport">{athlete.sport}</p>
+                  <p className="details">{athlete.position} | {athlete.year} | <span className="flag">{athlete.flag}</span></p>
+                  <div className="athlete-card__hover">
+                    {athlete.stats.map((stat, i) => <p key={i} className="metric">{stat}</p>)}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="load-more-container">
+            <button className="btn btn--secondary load-more-btn" data-load-more>Load More Athletes</button>
+          </div>
+        </div>
+      </section>
+
+      {/* NCAA PATHWAY */}
+      <section id="pathway" className="pathway">
+        <div className="container">
+          <h2>NCAA Pathway</h2>
+          <p className="lead">Clean eligibility from day one.</p>
+          
+          <ul className="stack">
+            <li>Eligibility Center registration (DI/DII) or DIII profile</li>
+            <li>Official transcripts + certified translations (as needed)</li>
+            <li>GPA conversion & standardized test guidance (when applicable)</li>
+            <li>Amateur status protection: no pay-for-play, no inducements</li>
+          </ul>
+
+          <Link href="/audit" className="btn btn--primary" data-cta="pathway-audit" data-kpi="conversion">Book the 48-Hour Credit Audit</Link>
+        </div>
+      </section>
+
+      {/* TESTIMONIALS */}
+      <section id="testimonials" className="testimonials section--dark">
+        <div className="container">
+          <h2>What Families Say</h2>
+          
+          <div className="grid" data-scroll="stagger">
+            <blockquote className="card">
+              <p>&quot;Finally, a program that respects my academics and my athletic goals. The NCAA Pathway support is real.&quot;</p>
+              <footer>— Student-Athlete, Class of 2026</footer>
+            </blockquote>
+            
+            <blockquote className="card">
+              <p>&quot;We needed clarity on eligibility. The 48-Hour Credit Audit gave us a roadmap and peace of mind.&quot;</p>
+              <footer>— Parent, International Family</footer>
+            </blockquote>
+            
+            <blockquote className="card">
+              <p>&quot;GAR testing gives me objective data to track my players. The verification is professional and standardized.&quot;</p>
+              <footer>— Club Coach, Denver</footer>
+            </blockquote>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="faq" className="faq">
+        <div className="container">
+          <h2>Frequently Asked Questions</h2>
+          
+          <dl className="faq-list">
+            <div className="faq-item" data-accordion="faq-1">
+              <dt>
+                <button type="button" aria-expanded="false" aria-controls="faq-1-answer">
+                  Does this guarantee recruiting?
+                </button>
+              </dt>
+              <dd id="faq-1-answer">
+                <p>No. We verify and prepare. Verification ≠ recruitment.</p>
+              </dd>
+            </div>
+
+            <div className="faq-item" data-accordion="faq-2">
+              <dt>
+                <button type="button" aria-expanded="false" aria-controls="faq-2-answer">
+                  Is online learning accepted?
+                </button>
+              </dt>
+              <dd id="faq-2-answer">
+                <p>NCAA cares about credits, core courses, and amateurism. We align and track all three.</p>
+              </dd>
+            </div>
+
+            <div className="faq-item" data-accordion="faq-3">
+              <dt>
+                <button type="button" aria-expanded="false" aria-controls="faq-3-answer">
+                  Can international athletes participate?
+                </button>
+              </dt>
+              <dd id="faq-3-answer">
+                <p>Yes—Eligibility Center registration, translations, GPA conversion, amateur status documentation.</p>
+              </dd>
+            </div>
+
+            <div className="faq-item" data-accordion="faq-4">
+              <dt>
+                <button type="button" aria-expanded="false" aria-controls="faq-4-answer">
+                  What ages do you work with?
+                </button>
+              </dt>
+              <dd id="faq-4-answer">
+                <p>Youth 5–12 (movement focus); 13–25 (full GAR).</p>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      {/* SIGNUP */}
+      <section id="signup" className="signup section--accent">
+        <div className="container">
+          <h2>Claim Your Spot</h2>
+          <p className="lead">Choose your path—Apply to the Academy, book a 48-Hour Credit Audit, or register for an event.</p>
+          
+          <form className="signup-form" action="/api/leads" method="POST" data-form="lead-capture">
+            <fieldset>
+              <legend>Your Information</legend>
+              
+              <div className="form-group">
+                <label htmlFor="role">I am a <abbr title="required">*</abbr></label>
+                <select id="role" name="role" required aria-required="true">
+                  <option value="">Select one</option>
+                  <option value="parent">Parent</option>
+                  <option value="student-athlete">Student-Athlete</option>
+                  <option value="coach-club">Coach/Club</option>
+                </select>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="first-name">First Name <abbr title="required">*</abbr></label>
+                  <input type="text" id="first-name" name="first_name" required aria-required="true" />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="last-name">Last Name <abbr title="required">*</abbr></label>
+                  <input type="text" id="last-name" name="last_name" required aria-required="true" />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="email">Email <abbr title="required">*</abbr></label>
+                <input type="email" id="email" name="email" required aria-required="true" />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="city">City</label>
+                  <input type="text" id="city" name="city" />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="country">Country</label>
+                  <input type="text" id="country" name="country" />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="sport">Sport</label>
+                  <select id="sport" name="sport">
+                    <option value="">Select one</option>
+                    <option value="basketball">Basketball</option>
+                    <option value="football">American Football</option>
+                    <option value="soccer">Soccer</option>
+                    <option value="volleyball">Volleyball</option>
+                    <option value="baseball">Baseball</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="grad-year">Graduation Year</label>
+                  <input type="number" id="grad-year" name="graduation_year" min="2024" max="2035" />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="interest">I&apos;m interested in <abbr title="required">*</abbr></label>
+                <select id="interest" name="interest" required aria-required="true">
+                  <option value="">Select one</option>
+                  <option value="apply">Apply to the Academy</option>
+                  <option value="audit">48-Hour Credit Audit</option>
+                  <option value="events">Events (FNL, Camps, Testing)</option>
+                  <option value="athleteai">AthleteAI</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="notes">Additional Notes</label>
+                <textarea id="notes" name="notes" rows={4}></textarea>
+              </div>
+
+              <p className="microcopy">By submitting, you agree to our policies and data processing. Verification ≠ recruitment.</p>
+
+              <button type="submit" className="btn btn--primary" data-cta="form-submit" data-kpi="conversion">Submit</button>
+            </fieldset>
+          </form>
+        </div>
+      </section>
+
+      {/* CONTACT */}
+      <section id="contact" className="contact section--dark">
+        <div className="container">
+          <h2>Talk to Our Team</h2>
+          <p>Email <a href="mailto:invest@go4itsports.org">invest@go4itsports.org</a> or call <a href="tel:+12054344005">+1-205-434-4005</a>.</p>
+          <p><strong>Hubs:</strong> Denver • Vienna • Dallas • Mérida (MX)</p>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer id="footer" className="footer">
+        <div className="container">
+          <div className="footer__compliance">
+            <p>Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.</p>
+          </div>
+          
+          <div className="footer__brand">
+            <p>&copy; Go4it Sports Academy. <strong>Train Here. Place Anywhere.</strong></p>
+          </div>
+
+          <nav className="footer__nav" aria-label="Footer navigation">
+            <ul>
+              <li><Link href="/privacy">Privacy</Link></li>
+              <li><Link href="/terms">Terms</Link></li>
+              <li><Link href="/accessibility">Accessibility</Link></li>
+              <li><Link href="/contact">Contact</Link></li>
+            </ul>
+          </nav>
+        </div>
+      </footer>
+
+      {/* Load external scripts */}
+      <Script src="/landing-page.js" strategy="afterInteractive" />
+      <Script src="/chat-widget.js" strategy="afterInteractive" />
+    </>
   );
 }
