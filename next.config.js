@@ -31,6 +31,9 @@ const nextConfig = {
   generateEtags: false,
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
   trailingSlash: false,
+  
+  // Increase timeout for slow static page generation
+  staticPageGenerationTimeout: 120,
 
   // Build error handling
   eslint: {
@@ -46,6 +49,7 @@ const nextConfig = {
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    skipTrailingSlashRedirect: true,
   },
 
   // Security headers
