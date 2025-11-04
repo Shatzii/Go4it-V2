@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-export const runtime = 'edge';
+// Use Node.js runtime for database operations
+export const runtime = 'nodejs';
 import { db } from "@/lib/db";
 import { parentNightEvents } from "@/lib/db/schema/funnel";
 import { eq } from "drizzle-orm";
