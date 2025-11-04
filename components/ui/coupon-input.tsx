@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Check, X, Percent, Gift, Star } from 'lucide-react';
+import { useUser } from '@clerk/nextjs';
 
 interface CouponInputProps {
   onCouponApplied?: (coupon: any) => void;
@@ -15,6 +16,7 @@ interface CouponInputProps {
 }
 
 export function CouponInput({ onCouponApplied, planId, amount = 0, className }: CouponInputProps) {
+  const { user } = useUser();
   const [couponCode, setCouponCode] = useState('');
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
@@ -37,7 +39,7 @@ export function CouponInput({ onCouponApplied, planId, amount = 0, className }: 
           code: couponCode.trim(),
           planId,
           amount,
-          userId: 'demo-user', // In real app, get from auth
+          userId: user?.id || 'anonymous',
         }),
       });
 

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { DollarSign, BookOpen, Users, TrendingUp, Plus, Edit, Eye, BarChart3, Calendar } from 'lucide-react'
-import { useAuth } from '@/hooks/use-auth'
+import { useUser } from '@clerk/nextjs'
 import { useToast } from '@/hooks/use-toast'
 
 interface CreatorCourse {
@@ -28,7 +28,7 @@ interface CreatorCourse {
 }
 
 export default function CreatorDashboardPage() {
-  const { user } = useAuth()
+  const { user } = useUser()
   const { toast } = useToast()
   const [courses, setCourses] = useState<CreatorCourse[]>([])
   const [isCreatingCourse, setIsCreatingCourse] = useState(false)

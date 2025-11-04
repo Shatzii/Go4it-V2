@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { db } from '@/lib/db';
 import { coupons, couponUsage } from '@/shared/coupon-schema';
-import { eq, and, lt, gt, or, isNull } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
+import { auth } from '@clerk/nextjs/server';
 
 const validateCouponSchema = z.object({
   code: z.string().min(1),
@@ -14,7 +15,11 @@ const validateCouponSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { code, planId, amount, userId } = validateCouponSchema.parse(body);
+    const { code, planId, amount, userId: providedUserId } = validateCouponSchema.parse(body);
+
+    // Get authenticated user from Clerk
+    const { userId: clerkUserId } = await auth();
+    const userId = clerkUserId || providedUserId || 'anonymous';
 
     // Find the coupon
     const coupon = await db
@@ -153,8 +158,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Coupon validation error:', error);
-
+    // Log error silently
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         {

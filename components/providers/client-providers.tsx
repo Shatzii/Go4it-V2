@@ -3,7 +3,7 @@
 import { ReactNode } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from '@/components/providers/theme-provider'
-import { AuthProvider } from '@/hooks/use-auth'
+import { ClerkProvider } from '@clerk/nextjs'
 
 // Create a stable QueryClient instance
 const queryClient = new QueryClient({
@@ -17,17 +17,17 @@ const queryClient = new QueryClient({
 
 export function ClientProviders({ children }: { children: ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <AuthProvider>
+    <ClerkProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
           {children}
-        </AuthProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ClerkProvider>
   )
 }

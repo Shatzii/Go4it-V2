@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -14,9 +14,10 @@ import {
 import { User, Settings, LogOut, Shield } from 'lucide-react';
 
 export function AuthenticatedNavbar() {
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
       <div className="flex items-center gap-4">
         <div className="animate-pulse bg-slate-700 h-8 w-20 rounded"></div>
@@ -25,7 +26,7 @@ export function AuthenticatedNavbar() {
     );
   }
 
-  if (!isAuthenticated || !user) {
+  if (!user) {
     return (
       <div className="flex items-center gap-4">
         <a
@@ -44,57 +45,52 @@ export function AuthenticatedNavbar() {
     );
   }
 
+  const userRole = user.publicMetadata?.role as string;
+
   return (
     <div className="flex items-center gap-4">
       {/* Role Badge */}
-      {user.role === 'admin' && (
-        <Badge variant="secondary" className="bg-red-100 text-red-800">
+      {userRole === 'admin' && (
+        <Badge className="bg-red-600 hover:bg-red-700">
           <Shield className="w-3 h-3 mr-1" />
           Admin
         </Badge>
       )}
 
-      {/* Subscription Badge */}
-      <Badge variant="outline" className="text-blue-400 border-blue-400">
-        {user.subscription}
-      </Badge>
-
       {/* User Menu */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={user.profileImage} alt={user.name} />
-              <AvatarFallback className="bg-slate-700 text-white">
-                {user.name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .join('')}
+          <Button variant="ghost" className="flex items-center gap-2 hover:bg-slate-800">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={user.imageUrl} alt={user.fullName || ''} />
+              <AvatarFallback>
+                {user.firstName?.[0]}{user.lastName?.[0]}
               </AvatarFallback>
             </Avatar>
+            <span className="text-sm text-slate-300">{user.firstName || user.fullName}</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 bg-slate-800 border-slate-700" align="end" forceMount>
-          <div className="flex flex-col space-y-1 p-2">
-            <p className="text-sm font-medium leading-none text-white">{user.name}</p>
-            <p className="text-xs leading-none text-slate-400">{user.email}</p>
+        <DropdownMenuContent align="end" className="w-56 bg-slate-800 border-slate-700">
+          <div className="px-2 py-1.5">
+            <p className="text-sm font-medium text-white">{user.fullName}</p>
+            <p className="text-xs text-slate-400">{user.primaryEmailAddress?.emailAddress}</p>
           </div>
           <DropdownMenuSeparator className="bg-slate-700" />
-          <DropdownMenuItem className="text-white hover:bg-slate-700" asChild>
-            <a href="/profile" className="flex items-center">
+          <DropdownMenuItem asChild className="text-slate-300 hover:bg-slate-700">
+            <a href="/dashboard" className="flex items-center cursor-pointer">
               <User className="mr-2 h-4 w-4" />
-              Profile
+              Dashboard
             </a>
           </DropdownMenuItem>
-          <DropdownMenuItem className="text-white hover:bg-slate-700" asChild>
-            <a href="/settings" className="flex items-center">
+          <DropdownMenuItem asChild className="text-slate-300 hover:bg-slate-700">
+            <a href="/settings" className="flex items-center cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
               Settings
             </a>
           </DropdownMenuItem>
-          {user.role === 'admin' && (
-            <DropdownMenuItem className="text-white hover:bg-slate-700" asChild>
-              <a href="/admin" className="flex items-center">
+          {userRole === 'admin' && (
+            <DropdownMenuItem asChild className="text-slate-300 hover:bg-slate-700">
+              <a href="/admin" className="flex items-center cursor-pointer">
                 <Shield className="mr-2 h-4 w-4" />
                 Admin Panel
               </a>
@@ -102,8 +98,8 @@ export function AuthenticatedNavbar() {
           )}
           <DropdownMenuSeparator className="bg-slate-700" />
           <DropdownMenuItem
-            className="text-red-400 hover:bg-slate-700 hover:text-red-300"
-            onClick={logout}
+            onClick={() => signOut()}
+            className="text-red-400 hover:bg-slate-700 hover:text-red-300 cursor-pointer"
           >
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out

@@ -1,36 +1,38 @@
 'use client';
 
-import { useAuth } from '@/hooks/useAuth';
+import { useUser, useClerk } from '@clerk/nextjs';
 import Link from 'next/link';
+import { Loader2 } from 'lucide-react';
 
 export default function AuthButton() {
-  const { user, isLoading, isAuthenticated } = useAuth();
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
 
-  if (isLoading) {
+  if (!isLoaded) {
     return (
-      <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
     );
   }
 
-  if (isAuthenticated && user) {
+  if (user) {
     return (
       <div className="flex items-center gap-4">
         <span className="text-white">
-          {user.firstName} {user.lastName}
+          {user.firstName} {user.lastName || ''}
         </span>
-        {user.profileImageUrl && (
+        {user.imageUrl && (
           <img
-            src={user.profileImageUrl}
+            src={user.imageUrl}
             alt="Profile"
             className="w-8 h-8 rounded-full object-cover"
           />
         )}
-        <Link
-          href="/api/auth/logout"
+        <button
+          onClick={() => signOut()}
           className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-lg transition-colors"
         >
           Logout
-        </Link>
+        </button>
       </div>
     );
   }
@@ -38,16 +40,16 @@ export default function AuthButton() {
   return (
     <div className="flex items-center gap-4">
       <Link
-        href="/api/auth/login"
-        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors font-medium"
+        href="/login"
+        className="text-white hover:text-blue-400 transition-colors"
       >
-        Sign In
+        Login
       </Link>
       <Link
         href="/register"
-        className="border border-slate-400 hover:border-white text-slate-300 hover:text-white px-6 py-2 rounded-lg transition-colors font-medium"
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
       >
-        Register
+        Sign Up
       </Link>
     </div>
   );

@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import OnboardingTooltip from './OnboardingTooltip';
 import { useOnboarding, onboardingFlows } from '@/hooks/useOnboarding';
-import { useAuth } from '@/hooks/useAuth';
+import { useUser } from '@clerk/nextjs';
 
 interface OnboardingManagerProps {
   flowId: keyof typeof onboardingFlows;
@@ -16,13 +16,12 @@ export default function OnboardingManager({
   autoStart = false,
   autoStartDelay = 2000,
 }: OnboardingManagerProps) {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isLoaded } = useUser();
   const steps = onboardingFlows[flowId];
 
   const {
     isActive,
     currentStep,
-    setCurrentStep,
     startOnboarding,
     completeOnboarding,
     skipOnboarding,
@@ -37,16 +36,17 @@ export default function OnboardingManager({
 
   // Auto-start onboarding with delay for new users
   useEffect(() => {
-    if (autoStart && isAuthenticated && user && !isCompleted && !isSkipped && !isActive) {
+    if (autoStart && isLoaded && user && !isCompleted && !isSkipped && !isActive) {
       const timer = setTimeout(() => {
         startOnboarding();
       }, autoStartDelay);
 
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [
     autoStart,
-    isAuthenticated,
+    isLoaded,
     user,
     isCompleted,
     isSkipped,

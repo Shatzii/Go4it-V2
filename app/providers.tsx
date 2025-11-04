@@ -1,7 +1,7 @@
 'use client'
 
+import { ClerkProvider } from '@clerk/nextjs'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AuthProvider } from '../hooks/use-auth'
 import { Toaster } from '@/components/ui/toaster'
 import { useState } from 'react'
 
@@ -23,11 +23,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   }))
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+    <ClerkProvider>
+      <QueryClientProvider client={queryClient}>
         {children}
         <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ClerkProvider>
   )
 }

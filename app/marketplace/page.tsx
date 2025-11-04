@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Star, ShoppingCart, User, Clock, BookOpen, Filter, Search, TrendingUp, Award } from 'lucide-react'
-import { useAuth } from '@/hooks/use-auth'
+import { useUser } from '@clerk/nextjs'
 
 interface CourseItem {
   id: string
@@ -31,7 +31,7 @@ interface CourseItem {
 }
 
 export default function MarketplacePage() {
-  const { user } = useAuth()
+  const { user } = useUser()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedLevel, setSelectedLevel] = useState('all')

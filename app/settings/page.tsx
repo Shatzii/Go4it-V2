@@ -14,21 +14,20 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { useAuth } from '@/hooks/useAuth';
+import { useUser } from '@clerk/nextjs';
 import { Settings, User, Bell, Shield, Palette, Save } from 'lucide-react';
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, isLoaded } = useUser();
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
   const [autoAnalysis, setAutoAnalysis] = useState(false);
 
   const handleSave = () => {
     // Save settings logic would go here
-    console.log('Settings saved');
   };
 
-  if (!user) {
+  if (!isLoaded || !user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center">
         <div className="text-center text-white">
@@ -69,7 +68,7 @@ export default function SettingsPage() {
                   </Label>
                   <Input
                     id="name"
-                    defaultValue={user.name}
+                    defaultValue={user.fullName || user.firstName || ''}
                     className="bg-slate-700 border-slate-600 text-white"
                   />
                 </div>
@@ -79,7 +78,7 @@ export default function SettingsPage() {
                   </Label>
                   <Input
                     id="email"
-                    defaultValue={user.email}
+                    defaultValue={user.primaryEmailAddress?.emailAddress || ''}
                     className="bg-slate-700 border-slate-600 text-white"
                     disabled
                   />

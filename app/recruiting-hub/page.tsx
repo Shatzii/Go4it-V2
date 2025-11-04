@@ -7,11 +7,11 @@ import OfferTracker from './components/OfferTracker';
 import RecruitingTimeline from './components/RecruitingTimeline';
 import CommunicationLog from './components/CommunicationLog';
 import { useRecruitingData } from './hooks/useRecruitingData';
-import { useAuth } from '@/hooks/use-auth';
+import { useUser } from '@clerk/nextjs';
 
 export default function RecruitingHub() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const { user } = useAuth();
+  const { user } = useUser();
   
   // Convert string ID to number for recruiting API (or use 1 as fallback for demo)
   const userId = user?.id ? (isNaN(parseInt(user.id)) ? 1 : parseInt(user.id)) : 1;

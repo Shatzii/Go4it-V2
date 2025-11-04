@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/use-auth';
+import { useUser } from '@clerk/nextjs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -63,7 +63,7 @@ interface Course {
 }
 
 export default function StudentDashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isSignedIn: isAuthenticated } = useUser();
   const [selectedSchool, setSelectedSchool] = useState('primary-school');
   const [isAdmin, setIsAdmin] = useState(false);
 

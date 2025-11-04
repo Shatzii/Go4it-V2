@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import ProfilePictureUpload from '../../components/ProfilePictureUpload';
-import { useAuth } from '../../hooks/useAuth';
+import { useUser } from '@clerk/nextjs';
 
 export default function UserSettings() {
-  const { user } = useAuth();
-  const [profileImageUrl, setProfileImageUrl] = useState(user?.profileImage || null);
+  const { user } = useUser();
+  const [profileImageUrl, setProfileImageUrl] = useState(user?.imageUrl || null);
   const [formData, setFormData] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
+    name: user?.fullName || '',
+    email: user?.primaryEmailAddress?.emailAddress || '',
     password: '',
     notifications: 'all'
   });

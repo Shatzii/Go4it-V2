@@ -19,7 +19,7 @@ import {
   BarChart3,
   Clock
 } from 'lucide-react';
-import { useAuth } from '../../hooks/useAuth';
+import { useUser } from '@clerk/nextjs';
 import { apiRequest } from '@/lib/queryClient';
 import type { SecurityAlert, SocialMediaAccount, SocialMediaActivity } from '@shared/schema';
 
@@ -45,7 +45,7 @@ interface SafetyMetrics {
 }
 
 export function StudentSafetyDashboard() {
-  const { user } = useAuth();
+  const { user } = useUser();
 
   const { data: safetyMetrics, isLoading } = useQuery({
     queryKey: ['/api/social-media/safety-metrics', user?.id],
