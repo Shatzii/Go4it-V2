@@ -1,5 +1,6 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
+import './globals-neon.css';
 import type { Metadata } from 'next';
 import Navigation from './components/Navigation';
 import Providers from './providers';

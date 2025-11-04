@@ -1,0 +1,157 @@
+/* =========================================================
+   ENHANCED NEON/HUD THEME - Dynamic & Interactive
+   For GO4IT Combine Landing Page
+   ========================================================= */
+
+:root {
+  /* Enhanced Color System */
+  --neon-bg-0: #05070A;
+  --neon-bg-1: #0B0F1A;
+  --neon-bg-2: #0D1220;
+  --neon-panel: #0E1424;
+  --neon-line: #1A2030;
+  --neon-text: #F5F7FA;
+  --neon-muted: #AAB2C3;
+
+  --neon-brand: #00D4FF;
+  --neon-brand2: #36E4FF;
+  --neon-accent: #27E36A;
+  --neon-danger: #FF4D6D;
+  --neon-warning: #FFC857;
+  --neon-purple: #A78BFA;
+
+  /* Enhanced FX tokens */
+  --neon-radius-sm: 12px;
+  --neon-radius: 16px;
+  --neon-radius-lg: 22px;
+
+  --neon-shadow: 0 0 0 1px rgba(0,212,255,.22) inset, 0 0 28px rgba(0,212,255,.25);
+  --neon-glow-text: 0 0 12px rgba(0,212,255,.45);
+  --neon-ring-focus: 0 0 0 3px rgba(255,238,88,0.8);
+
+  /* Animation tokens */
+  --neon-transition-fast: 0.3s ease;
+  --neon-transition-medium: 0.5s ease;
+  --neon-transition-slow: 0.8s ease;
+}
+
+/* HUD Background */
+.hud-bg {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background:
+    radial-gradient(1400px 400px at 20% 0%, rgba(0,212,255,.10), transparent 70%),
+    linear-gradient(180deg, rgba(0,0,0,.25), transparent 15%, rgba(0,0,0,.5) 80%),
+    linear-gradient(135deg, var(--neon-bg-0), var(--neon-bg-2));
+}
+
+.hud-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: .25;
+  background:
+    repeating-linear-gradient(to right, transparent 0 119px, rgba(26,32,48,.45) 119px 120px),
+    repeating-linear-gradient(to bottom, transparent 0 119px, rgba(26,32,48,.45) 119px 120px);
+  pointer-events: none;
+}
+
+/* Animated particles */
+.particles {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--neon-brand);
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: float 20s infinite ease-in-out;
+  box-shadow: 0 0 10px rgba(0,212,255,0.5);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translate(100px, -100px) scale(1.5);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50px, -200px) scale(0.8);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translate(-150px, -100px) scale(1.2);
+    opacity: 0.5;
+  }
+}
+
+/* Neon glow animations */
+@keyframes pulse-neon {
+  0%, 100% {
+    text-shadow: 0 0 12px rgba(0,212,255,.45), 0 0 24px rgba(0,212,255,.25);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(0,212,255,.6), 0 0 36px rgba(0,212,255,.4);
+  }
+}
+
+.text-neon {
+  color: var(--neon-brand);
+  text-shadow: var(--neon-glow-text);
+  animation: pulse-neon 3s ease-in-out infinite;
+}
+
+/* Shine animation for metric bars */
+@keyframes shine {
+  0% {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

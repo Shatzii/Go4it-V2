@@ -1,426 +1,390 @@
 "use client";
 
-import { useState } from "react";
-import { LeadForm } from "@/components/marketing/LeadForm";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { 
   Target, 
   Brain, 
   TrendingUp, 
-  Award, 
-  Zap, 
-  Users, 
-  CheckCircle2,
-  ArrowRight,
-  Star,
   Trophy,
+  Zap,
+  Users,
+  Video,
   LineChart,
-  GraduationCap
+  Rocket,
+  PlayCircle,
+  ChartLine,
+  Bot,
+  Football,
+  Dumbbell,
+  Sparkles,
+  CheckCircle2,
 } from "lucide-react";
-import { HeroNew } from "@/components/site/HeroNew";
-import { Hub } from "@/components/site/Hub";
-import { flags } from "@/lib/flags";
-import StickyAuditRail from "@/components/site/StickyAuditRail";
-import UserProfileShowcase from "@/components/landing/UserProfileShowcase";
 
 export default function LandingPage() {
-  const [showLeadForm, setShowLeadForm] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    // Create animated particles
+    createParticles();
+  }, []);
+
+  const createParticles = () => {
+    const particlesContainer = document.getElementById('particles');
+    if (!particlesContainer) return;
+    
+    const particleCount = 50;
+    particlesContainer.innerHTML = ''; // Clear existing
+    
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      
+      const size = Math.random() * 4 + 2;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${Math.random() * 100}vw`;
+      particle.style.top = `${Math.random() * 100}vh`;
+      
+      const delay = Math.random() * 15;
+      const duration = Math.random() * 10 + 15;
+      particle.style.animationDelay = `${delay}s`;
+      particle.style.animationDuration = `${duration}s`;
+      
+      particlesContainer.appendChild(particle);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      {/* Hero Section - Feature Flag Controlled */}
-      {flags.NEW_HERO ? (
-        <HeroNew />
-      ) : (
-      <section className="relative overflow-hidden px-4 pt-20 pb-32">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-        
-        <div className="max-w-7xl mx-auto relative">
-          <div className="text-center space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime-400/10 border border-lime-400/20">
-              <Zap className="w-4 h-4 text-lime-400" />
-              <span className="text-lime-400 text-sm font-medium">AI-Powered Athletic Development</span>
+    <div className="hud-bg min-h-screen relative overflow-hidden">
+      {/* Animated Background Particles */}
+      <div className="particles" id="particles"></div>
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center text-center px-4 pt-20 pb-32">
+        <div className="max-w-5xl mx-auto relative z-10">
+          <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-6">
+            International Combine 2025
+          </span>
+          
+          <h1 className="text-5xl md:text-8xl font-black text-white leading-tight mb-6">
+            UNLEASH YOUR{" "}
+            <span className="text-neon">POTENTIAL</span>
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-[#AAB2C3] max-w-3xl mx-auto mb-8">
+            Film. Metrics. AI Coach. Ages 12–18 — Soccer • Basketball • Flag Football
+          </p>
+
+          {/* Hero Stats */}
+          <div className="flex flex-wrap justify-center gap-8 mb-12">
+            <div className="text-center">
+              <div className="text-5xl font-black text-[#00D4FF] mb-2" style={{ textShadow: '0 0 12px rgba(0,212,255,.45)' }}>
+                89%
+              </div>
+              <div className="text-sm text-[#AAB2C3] uppercase tracking-wider">GAR Score Avg</div>
             </div>
+            <div className="text-center">
+              <div className="text-5xl font-black text-[#00D4FF] mb-2" style={{ textShadow: '0 0 12px rgba(0,212,255,.45)' }}>
+                2.4K
+              </div>
+              <div className="text-sm text-[#AAB2C3] uppercase tracking-wider">Athletes</div>
+            </div>
+            <div className="text-center">
+              <div className="text-5xl font-black text-[#00D4FF] mb-2" style={{ textShadow: '0 0 12px rgba(0,212,255,.45)' }}>
+                98%
+              </div>
+              <div className="text-sm text-[#AAB2C3] uppercase tracking-wider">Satisfaction</div>
+            </div>
+          </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight">
-              Go Beyond Limits.{" "}
-              <span className="bg-gradient-to-r from-lime-400 to-emerald-500 bg-clip-text text-transparent">
-                Go4It.
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-slate-300 max-w-3xl mx-auto">
-              The only platform built specifically for neurodivergent student athletes, combining 
-              <span className="text-lime-400 font-semibold"> GAR Analytics</span>, 
-              <span className="text-emerald-400 font-semibold"> NCAA Pathways</span>, and 
-              <span className="text-cyan-400 font-semibold"> Recruitment Automation</span>
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href="/auth/signup">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-lime-400 to-emerald-500 text-slate-900 font-semibold text-lg px-8 py-6 hover:from-lime-500 hover:to-emerald-600"
-                onClick={() => setShowLeadForm(true)}
-                data-testid="button-hero-cta"
+                className="pulse-animation bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] hover:from-[#00D4FF]/90 hover:to-[#36E4FF]/90 text-slate-900 font-black text-lg px-8 py-6 rounded-xl shadow-[0_0_28px_rgba(0,212,255,.25)]"
               >
-                Start Free Trial
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <Rocket className="mr-2 w-5 h-5" />
+                Register Now
               </Button>
+            </Link>
+            <Link href="/dashboard">
               <Button 
                 size="lg" 
                 variant="outline"
-                className="border-slate-700 text-white hover:bg-slate-800 text-lg px-8 py-6"
-                data-testid="button-watch-demo"
+                className="border-2 border-[#00D4FF]/30 bg-[#0E1424]/50 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF] text-lg px-8 py-6 rounded-xl backdrop-blur-sm"
               >
+                <PlayCircle className="mr-2 w-5 h-5" />
                 Watch Demo
               </Button>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <CheckCircle2 className="w-5 h-5 text-lime-400 mx-auto mb-2" />
-                <p className="text-sm text-slate-400">Instant GAR scoring (less than 2 min)</p>
-              </div>
-              <div className="text-center">
-                <CheckCircle2 className="w-5 h-5 text-lime-400 mx-auto mb-2" />
-                <p className="text-sm text-slate-400">40% higher recruiter responses</p>
-              </div>
-              <div className="text-center">
-                <CheckCircle2 className="w-5 h-5 text-lime-400 mx-auto mb-2" />
-                <p className="text-sm text-slate-400">ADHD-friendly Focus Mode</p>
-              </div>
-              <div className="text-center">
-                <CheckCircle2 className="w-5 h-5 text-lime-400 mx-auto mb-2" />
-                <p className="text-sm text-slate-400">NCAA eligibility tracking</p>
-              </div>
-            </div>
+            </Link>
           </div>
-        </div>
-      </section>
-      )}
-
-      {/* Hub Section - Feature Flag Controlled */}
-      {flags.HUB_SECTION && <Hub />}
-
-      {/* Gap Year Program Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-slate-900 to-slate-950">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-400/10 border border-emerald-400/20">
-                <Trophy className="w-4 h-4 text-emerald-400" />
-                <span className="text-emerald-400 text-sm font-medium">Flagship Program</span>
-              </div>
-              
-              <h2 className="text-4xl md:text-5xl font-bold text-white">
-                Gap Year NCAA Pathway
-              </h2>
-              
-              <p className="text-lg text-slate-300">
-                Train with NFL coaching staff while completing NCAA-approved coursework. 
-                Live training sessions, D1-level statistics tracking, and guaranteed recruitment support.
-              </p>
-
-              <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <Star className="w-5 h-5 text-lime-400 mt-1" />
-                  <div>
-                    <p className="font-semibold text-white">Live NFL-Level Training</p>
-                    <p className="text-slate-400 text-sm">Daily sessions with professional coaching staff</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <GraduationCap className="w-5 h-5 text-lime-400 mt-1" />
-                  <div>
-                    <p className="font-semibold text-white">NCAA-Approved Education</p>
-                    <p className="text-slate-400 text-sm">Complete coursework for eligibility</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <LineChart className="w-5 h-5 text-lime-400 mt-1" />
-                  <div>
-                    <p className="font-semibold text-white">D1 Statistics Platform</p>
-                    <p className="text-slate-400 text-sm">Professional-grade performance analytics</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <p className="text-3xl font-bold text-white mb-2">$999.95<span className="text-lg text-slate-400">/month</span></p>
-                <Button 
-                  size="lg"
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold"
-                  data-testid="button-gap-year-enroll"
-                >
-                  Enroll in Gap Year Program
-                </Button>
-              </div>
-            </div>
-
-            <div className="relative">
-              <div className="bg-gradient-to-br from-emerald-500/20 to-lime-500/20 rounded-2xl p-8 border border-emerald-500/30">
-                <div className="space-y-4">
-                  <div className="bg-slate-900/80 rounded-lg p-4">
-                    <p className="text-slate-400 text-sm mb-1">Success Rate</p>
-                    <p className="text-3xl font-bold text-white">94%</p>
-                    <p className="text-lime-400 text-sm">Athletes placed in college programs</p>
-                  </div>
-                  <div className="bg-slate-900/80 rounded-lg p-4">
-                    <p className="text-slate-400 text-sm mb-1">Average Improvement</p>
-                    <p className="text-3xl font-bold text-white">2.3x</p>
-                    <p className="text-emerald-400 text-sm">Performance metrics increase</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* GAR Analytics Section */}
-      <section className="px-4 py-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-400/10 border border-cyan-400/20 mb-6">
-              <Brain className="w-4 h-4 text-cyan-400" />
-              <span className="text-cyan-400 text-sm font-medium">AI Video Analysis</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              GAR Analytics System
-            </h2>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-              Industry-leading video analysis providing instant performance scores and biomechanical insights
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-cyan-400/50 transition-colors">
-              <Target className="w-12 h-12 text-cyan-400 mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Instant Scoring</h3>
-              <p className="text-slate-400">
-                Upload video, get GAR score in under 2 minutes. AI identifies strengths and improvement areas automatically.
-              </p>
-            </div>
-
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-cyan-400/50 transition-colors">
-              <Brain className="w-12 h-12 text-cyan-400 mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Biomechanical Analysis</h3>
-              <p className="text-slate-400">
-                Advanced AI tracks movement patterns, identifies technical flaws, and suggests corrective drills.
-              </p>
-            </div>
-
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-cyan-400/50 transition-colors">
-              <TrendingUp className="w-12 h-12 text-cyan-400 mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">Progress Tracking</h3>
-              <p className="text-slate-400">
-                Monitor improvement over time with detailed analytics, comparison tools, and performance trends.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Athletes Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-slate-900 to-slate-950">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime-400/10 border border-lime-400/20 mb-6">
-              <Users className="w-4 h-4 text-lime-400" />
-              <span className="text-lime-400 text-sm font-medium">Success Stories</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Athletes Crushing Their Goals
-            </h2>
-            <p className="text-xl text-slate-300">
-              Real students making real progress with Go4It
-            </p>
-          </div>
-
-          <UserProfileShowcase />
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-slate-950 to-slate-900">
+      <section className="relative py-20 px-4" id="features">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Everything You Need to Succeed
+            <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-4">
+              Why Choose GO4IT
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4">
+              Next-Level{" "}
+              <span className="text-neon">Athlete Development</span>
             </h2>
-            <p className="text-xl text-slate-300">
-              Built for neurodivergent athletes with ADHD-friendly design
-            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              { icon: Award, title: "StarPath Progression", desc: "Gamified skill tree with XP rewards for completed training" },
-              { icon: Users, title: "Recruitment Automation", desc: "40% higher response rates, 91% lower outreach costs" },
-              { icon: GraduationCap, title: "Academic Tracking", desc: "Monitor NCAA eligibility, grades, and coursework" },
-              { icon: Brain, title: "Focus Mode", desc: "Distraction-free interface designed for ADHD brains" },
-              { icon: LineChart, title: "Performance Analytics", desc: "Track every metric that matters to recruiters" },
-              { icon: Trophy, title: "College Matching", desc: "AI-powered recommendations based on your profile" },
-            ].map((feature, idx) => (
-              <div key={idx} className="bg-slate-900/50 border border-slate-800 rounded-xl p-6 hover:border-lime-400/50 transition-colors">
-                <feature.icon className="w-10 h-10 text-lime-400 mb-4" />
-                <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-slate-400 text-sm">{feature.desc}</p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Feature Card 1 */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00D4FF]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
+              <div className="relative bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mb-6 border border-[#00D4FF]/30">
+                  <ChartLine className="w-8 h-8 text-[#00D4FF]" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">Advanced Analytics</h3>
+                <p className="text-[#AAB2C3] mb-6">Real-time performance tracking with our proprietary GAR scoring system.</p>
+                
+                {/* Metric Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm font-bold">
+                    <span className="text-white">Data Accuracy</span>
+                    <span className="text-[#00D4FF]">95%</span>
+                  </div>
+                  <div className="h-3 rounded-full bg-[#0e1628] overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,212,255,.2)]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] rounded-full relative"
+                      style={{ width: '95%' }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50 animate-[shine_2s_infinite]"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="px-4 py-20">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Choose Your Path
-            </h2>
-            <p className="text-xl text-slate-300">
-              Flexible plans for every athlete&apos;s journey
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Starter */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Starter</h3>
-              <p className="text-slate-400 mb-6">Perfect for getting started</p>
-              <p className="text-4xl font-bold text-white mb-6">Free</p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">5 GAR video analyses</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Basic StarPath access</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Academic tracking</span>
-                </li>
-              </ul>
-              <Button className="w-full" variant="outline" data-testid="button-starter-plan">
-                Get Started Free
-              </Button>
             </div>
 
-            {/* Pro */}
-            <div className="bg-gradient-to-br from-lime-500/10 to-emerald-500/10 border-2 border-lime-400 rounded-xl p-8 relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-lime-400 text-slate-900 px-4 py-1 rounded-full text-sm font-semibold">
-                Most Popular
+            {/* Feature Card 2 */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00D4FF]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
+              <div className="relative bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mb-6 border border-[#00D4FF]/30">
+                  <Bot className="w-8 h-8 text-[#00D4FF]" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">AI Coaching</h3>
+                <p className="text-[#AAB2C3] mb-6">Personalized training programs powered by machine learning algorithms.</p>
+                
+                {/* Metric Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm font-bold">
+                    <span className="text-white">Improvement Rate</span>
+                    <span className="text-[#00D4FF]">87%</span>
+                  </div>
+                  <div className="h-3 rounded-full bg-[#0e1628] overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,212,255,.2)]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] rounded-full relative"
+                      style={{ width: '87%' }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50 animate-[shine_2s_infinite]"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
-              <p className="text-slate-400 mb-6">For serious athletes</p>
-              <p className="text-4xl font-bold text-white mb-6">$29<span className="text-lg text-slate-400">/mo</span></p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Unlimited GAR analyses</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Full StarPath progression</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Recruitment automation</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">College matching AI</span>
-                </li>
-              </ul>
-              <Button className="w-full bg-lime-400 hover:bg-lime-500 text-slate-900" data-testid="button-pro-plan">
-                Start Pro Trial
-              </Button>
             </div>
 
-            {/* Elite */}
-            <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Elite</h3>
-              <p className="text-slate-400 mb-6">Maximum advantage</p>
-              <p className="text-4xl font-bold text-white mb-6">$99<span className="text-lg text-slate-400">/mo</span></p>
-              <ul className="space-y-3 mb-8">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Everything in Pro</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">1-on-1 coach sessions</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Custom training plans</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-lime-400 mt-0.5" />
-                  <span className="text-slate-300">Priority support</span>
-                </li>
-              </ul>
-              <Button className="w-full" variant="outline" data-testid="button-elite-plan">
-                Contact Sales
-              </Button>
+            {/* Feature Card 3 */}
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#00D4FF]/20 to-transparent rounded-2xl blur-xl group-hover:blur-2xl transition-all"></div>
+              <div className="relative bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
+                <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mb-6 border border-[#00D4FF]/30">
+                  <Video className="w-8 h-8 text-[#00D4FF]" />
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">Film Analysis</h3>
+                <p className="text-[#AAB2C3] mb-6">Break down every play with our advanced video analysis tools.</p>
+                
+                {/* Metric Bar */}
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm font-bold">
+                    <span className="text-white">Processing Speed</span>
+                    <span className="text-[#00D4FF]">2.3s</span>
+                  </div>
+                  <div className="h-3 rounded-full bg-[#0e1628] overflow-hidden shadow-[inset_0_0_0_1px_rgba(0,212,255,.2)]">
+                    <div 
+                      className="h-full bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] rounded-full relative"
+                      style={{ width: '100%' }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/50 animate-[shine_2s_infinite]"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-4 py-20 bg-gradient-to-b from-slate-900 to-slate-950">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Go4It?
+      {/* Programs Section */}
+      <section className="relative py-20 px-4 bg-gradient-to-b from-transparent to-[#0B0F1A]" id="programs">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-4">
+              Our Programs
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4">
+              Sport-Specific{" "}
+              <span className="text-neon">Training</span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Soccer */}
+            <div className="bg-[#0E1424]/50 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 text-center hover:border-[#00D4FF]/50 transition-all">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mx-auto mb-6 border border-[#00D4FF]/30">
+                <Target className="w-10 h-10 text-[#00D4FF]" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Soccer</h3>
+              <p className="text-[#AAB2C3] mb-6">Technical skills, tactical awareness, and physical conditioning.</p>
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
+                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Denver</span>
+                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Vienna</span>
+                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Online</span>
+              </div>
+              <Link href="/academy">
+                <Button variant="outline" className="border-[#00D4FF]/30 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF]">
+                  Learn More
+                </Button>
+              </Link>
+            </div>
+
+            {/* Basketball */}
+            <div className="bg-[#0E1424]/50 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 text-center hover:border-[#00D4FF]/50 transition-all">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mx-auto mb-6 border border-[#00D4FF]/30">
+                <Trophy className="w-10 h-10 text-[#00D4FF]" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Basketball</h3>
+              <p className="text-[#AAB2C3] mb-6">Shooting, ball handling, and basketball IQ development.</p>
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
+                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Denver</span>
+                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Online</span>
+              </div>
+              <Link href="/academy">
+                <Button variant="outline" className="border-[#00D4FF]/30 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF]">
+                  Learn More
+                </Button>
+              </Link>
+            </div>
+
+            {/* Flag Football */}
+            <div className="bg-[#0E1424]/50 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 text-center hover:border-[#00D4FF]/50 transition-all">
+              <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#00D4FF]/20 to-[#36E4FF]/20 flex items-center justify-center mx-auto mb-6 border border-[#00D4FF]/30">
+                <Football className="w-10 h-10 text-[#00D4FF]" />
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Flag Football</h3>
+              <p className="text-[#AAB2C3] mb-6">Speed, agility, and strategic gameplay development.</p>
+              <div className="flex flex-wrap gap-2 justify-center mb-6">
+                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Denver</span>
+                <span className="px-3 py-1 rounded-full bg-[#00D4FF]/10 border border-[#00D4FF]/30 text-[#36E4FF] text-sm font-bold">Vienna</span>
+              </div>
+              <Link href="/academy">
+                <Button variant="outline" className="border-[#00D4FF]/30 text-white hover:bg-[#00D4FF]/10 hover:border-[#00D4FF]">
+                  Learn More
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="relative py-20 px-4" id="testimonials">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-4">
+              Success Stories
+            </span>
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-4">
+              Athlete{" "}
+              <span className="text-neon">Testimonials</span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Testimonial 1 */}
+            <div className="bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
+              <p className="text-[#AAB2C3] text-lg mb-6 leading-relaxed">
+                &ldquo;The GO4IT Combine completely transformed my approach to training. The data-driven insights helped me identify weaknesses I didn&apos;t even know I had. My GAR score improved by 22 points in just 3 months!&rdquo;
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#36E4FF] flex items-center justify-center text-white font-black text-lg">
+                  JE
+                </div>
+                <div>
+                  <h4 className="text-white font-bold text-lg">Jayden Ellis</h4>
+                  <p className="text-[#AAB2C3] text-sm">WR, Colorado State Commit</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Testimonial 2 */}
+            <div className="bg-[#0E1424]/80 backdrop-blur-sm border border-[#1A2030] rounded-2xl p-8 hover:border-[#00D4FF]/50 transition-all">
+              <p className="text-[#AAB2C3] text-lg mb-6 leading-relaxed">
+                &ldquo;As a soccer player, the film analysis tools were game-changing. Being able to break down every touch and movement helped me refine my technique in ways I never thought possible. Highly recommend!&rdquo;
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#00D4FF] to-[#36E4FF] flex items-center justify-center text-white font-black text-lg">
+                  SM
+                </div>
+                <div>
+                  <h4 className="text-white font-bold text-lg">Sophia Martinez</h4>
+                  <p className="text-[#AAB2C3] text-sm">Forward, U17 National Team</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="relative py-32 px-4" id="register">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#00D4FF]/5 to-transparent"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <span className="inline-block px-4 py-2 rounded-full text-xs font-black tracking-wider uppercase text-[#36E4FF] bg-[#36E4FF]/10 border border-[#36E4FF]/30 mb-6">
+            Limited Spots Available
+          </span>
+          <h2 className="text-4xl md:text-6xl font-black text-white mb-6">
+            Ready to{" "}
+            <span className="text-neon">Elevate Your Game</span>?
           </h2>
-          <p className="text-xl text-slate-300 mb-8">
-            Join thousands of athletes already using Go4It to reach their potential
+          <p className="text-xl text-[#AAB2C3] mb-12">
+            Join thousands of athletes who have transformed their performance with GO4IT Combine.
           </p>
-          <Button 
-            size="lg"
-            className="bg-gradient-to-r from-lime-400 to-emerald-500 text-slate-900 font-semibold text-lg px-8 py-6 hover:from-lime-500 hover:to-emerald-600"
-            onClick={() => setShowLeadForm(true)}
-            data-testid="button-final-cta"
-          >
-            Start Your Free Trial
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
-        </div>
-      </section>
 
-      {/* Lead Form Modal */}
-      {showLeadForm && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50" onClick={() => setShowLeadForm(false)}>
-          <div className="bg-slate-900 rounded-xl p-8 max-w-md w-full border border-slate-800" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-2xl font-bold text-white mb-6">Start Your Free Trial</h3>
-            <LeadForm />
-            <button
-              onClick={() => setShowLeadForm(false)}
-              className="mt-4 text-slate-400 hover:text-white text-sm"
-              data-testid="button-close-modal"
+          <Link href="/auth/signup">
+            <Button 
+              size="lg"
+              className="pulse-animation bg-gradient-to-r from-[#00D4FF] to-[#36E4FF] hover:from-[#00D4FF]/90 hover:to-[#36E4FF]/90 text-slate-900 font-black text-xl px-12 py-8 rounded-xl shadow-[0_0_38px_rgba(0,212,255,.35)]"
             >
-              Close
-            </button>
+              <Zap className="mr-2 w-6 h-6" />
+              Register Now
+            </Button>
+          </Link>
+
+          <div className="flex flex-wrap gap-3 justify-center mt-12">
+            <span className="inline-flex items-center justify-center min-w-[140px] px-4 py-3 rounded-xl bg-transparent border border-[#00D4FF]/35 shadow-[0_0_18px_rgba(0,212,255,.15)_inset] font-black text-white text-sm tracking-wide">
+              NEXTUP PROSPECT
+            </span>
+            <span className="inline-flex items-center justify-center min-w-[140px] px-4 py-3 rounded-xl bg-transparent border border-[#00D4FF]/35 shadow-[0_0_18px_rgba(0,212,255,.15)_inset] font-black text-white text-sm tracking-wide">
+              ELITE SPEED
+            </span>
+            <span className="inline-flex items-center justify-center min-w-[140px] px-4 py-3 rounded-xl bg-transparent border border-[#00D4FF]/35 shadow-[0_0_18px_rgba(0,212,255,.15)_inset] font-black text-white text-sm tracking-wide">
+              AI COACHING
+            </span>
           </div>
         </div>
-      )}
-      {/* Sticky Audit CTA (flagged) */}
-      <StickyAuditRail visible={flags.OFFERS} onClickAction={() => { window.location.href = '/audit/book'; }} />
+      </section>
     </div>
   );
-}
- 
-// Sticky audit rail for offer testing appears on landing when OFFERS flag is enabled
-// Render outside main return to ensure it overlays; but since this is a client page, we can include it.
-// Note: The rail links to /audit/book (requires a leadId query param for payment flow).
-
-export function StickyRailMount() {
-  return <StickyAuditRail visible={flags.OFFERS} onClickAction={() => {
-    // Navigate to credit audit booking; if leadId known, pass via query
-    window.location.href = '/audit/book';
-  }} />
 }
