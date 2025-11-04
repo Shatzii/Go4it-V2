@@ -40,12 +40,8 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Compiler optimization - keep minimal to avoid conflicts
-  compiler: {
-    // Let Next.js 15 handle optimizations automatically
-  },
-  
-  // Note: SWC minification is enabled by default in Next.js 15
+  // SWC minification (enabled by default in Next.js 14+)
+  swcMinify: true,
   
   // Experimental optimizations
   experimental: {
