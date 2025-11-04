@@ -119,27 +119,9 @@ const nextConfig = {
 
   allowedDevOrigins: ['*.replit.dev', '*.replit.app', 'localhost:5000', '127.0.0.1:5000'],
 
-  // Enhanced webpack configuration for Next.js 15
-  webpack: (config, { isServer, dev, buildId, nextRuntime }) => {
-    // Memory optimization - limit parallel processing
-    config.parallelism = 1;
-    
-    // Let Next.js 15 handle minification automatically with SWC
-    // Do not override config.optimization.minimize
-    
-    // Exclude OpenTelemetry from Edge runtime (middleware) to prevent eval() errors
-    if (nextRuntime === 'edge') {
-      config.resolve = config.resolve || {};
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        '@opentelemetry/api': false,
-        '@opentelemetry/core': false,
-        '@opentelemetry/resources': false,
-        '@opentelemetry/instrumentation': false,
-      };
-    }
-
-    // Exclude OpenTelemetry from Edge Runtime (middleware)
+  // Minimal webpack configuration for Next.js 15 compatibility
+  webpack: (config, { isServer, nextRuntime }) => {
+    // Exclude OpenTelemetry from Edge Runtime (middleware) to prevent compatibility issues
     if (nextRuntime === 'edge') {
       config.resolve = config.resolve || {};
       config.resolve.alias = {
@@ -151,23 +133,12 @@ const nextConfig = {
         '@opentelemetry/semantic-conventions': false,
         '@opentelemetry/context-async-hooks': false,
       };
-      // Exclude all OpenTelemetry packages from edge bundle
       config.externals = config.externals || [];
       config.externals.push(/@opentelemetry\/.*/);
     }
-    
-    // Add build ID to environment
-    if (!isServer) {
-      config.plugins = config.plugins || [];
-      config.plugins.push(
-        new (require('webpack')).DefinePlugin({
-          __BUILD_ID__: JSON.stringify(buildId),
-        })
-      );
-    }
 
     if (isServer) {
-      // Completely exclude browser-only AI packages and server-only legacy packages from server builds
+      // Externalize server-only packages
       config.externals = config.externals || [];
       config.externals.push({
         '@tensorflow/tfjs': 'commonjs @tensorflow/tfjs',
@@ -209,8 +180,6 @@ const nextConfig = {
       };
     }
 
-    // Let Next.js 15 handle bundle optimization automatically
-    
     return config;
   },
 };
