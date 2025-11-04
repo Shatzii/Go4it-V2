@@ -46,6 +46,14 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     webpackMemoryOptimizations: true,
+    serverComponentsExternalPackages: [
+      '@opentelemetry/api',
+      '@opentelemetry/core',
+      '@opentelemetry/resources',
+      '@opentelemetry/instrumentation',
+      '@opentelemetry/semantic-conventions',
+      '@opentelemetry/context-async-hooks',
+    ],
   },
 
   // Server-side package externalization for AI/ML packages and legacy features
@@ -131,6 +139,23 @@ const nextConfig = {
         '@opentelemetry/resources': false,
         '@opentelemetry/instrumentation': false,
       };
+    }
+
+    // Exclude OpenTelemetry from Edge Runtime (middleware)
+    if (nextRuntime === 'edge') {
+      config.resolve = config.resolve || {};
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@opentelemetry/api': false,
+        '@opentelemetry/core': false,
+        '@opentelemetry/resources': false,
+        '@opentelemetry/instrumentation': false,
+        '@opentelemetry/semantic-conventions': false,
+        '@opentelemetry/context-async-hooks': false,
+      };
+      // Exclude all OpenTelemetry packages from edge bundle
+      config.externals = config.externals || [];
+      config.externals.push(/@opentelemetry\/.*/);
     }
     
     // Add build ID to environment
