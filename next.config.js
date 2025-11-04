@@ -42,21 +42,16 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
-  // Experimental memory optimizations
+  // Disable minification to avoid webpack plugin errors
+  swcMinify: false,
+  
+  // Experimental optimizations (removed webpackMemoryOptimizations due to incompatibility)
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    webpackMemoryOptimizations: true,
-    serverComponentsExternalPackages: [
-      '@opentelemetry/api',
-      '@opentelemetry/core',
-      '@opentelemetry/resources',
-      '@opentelemetry/instrumentation',
-      '@opentelemetry/semantic-conventions',
-      '@opentelemetry/context-async-hooks',
-    ],
   },
 
   // Server-side package externalization for AI/ML packages and legacy features
+  // Note: In Next.js 15, serverComponentsExternalPackages moved to serverExternalPackages
   serverExternalPackages: [
     '@tensorflow/tfjs',
     '@tensorflow/tfjs-node',
@@ -74,11 +69,12 @@ const nextConfig = {
     'express',
     'node-cron',
     'form-data',
-    'canvas',
     '@opentelemetry/api',
     '@opentelemetry/core',
     '@opentelemetry/resources',
     '@opentelemetry/instrumentation',
+    '@opentelemetry/semantic-conventions',
+    '@opentelemetry/context-async-hooks',
     'full-icu',
   ],
 
