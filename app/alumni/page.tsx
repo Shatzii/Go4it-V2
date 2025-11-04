@@ -4,9 +4,11 @@ import FeaturedStories from '@/components/alumni/FeaturedStories';
 import UpcomingEvents from '@/components/alumni/UpcomingEvents';
 import NetworkStats from '@/components/alumni/NetworkStats';
 
-export const metadata = {
-  title: 'Alumni & Coaches Network | Go4It Sports',
-  description: 'Connect with successful alumni and experienced coaches. Get mentorship, share your journey, and grow your athletic career.',
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Alumni & Coaches Network - Go4It Sports',
+  description: 'Connect with alumni and coaches in the Go4It community',
 };
 
 export default function AlumniNetworkPage() {

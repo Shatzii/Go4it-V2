@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser } from '@clerk/nextjs';
 
 interface LiveEvent {
@@ -52,6 +52,37 @@ export default function LiveRoom({ event }: { event: LiveEvent }) {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages]);
 
+  const fetchEventStatus = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/events/${event.id}/status`);
+      const data = await response.json();
+      setIsLive(data.status === 'live');
+      setAttendeeCount(data.attendeeCount || 0);
+    } catch {
+      // Error fetching status
+    }
+  }, [event.id]);
+
+  const fetchChatMessages = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/events/${event.id}/chat`);
+      const data = await response.json();
+      setChatMessages(data.messages || []);
+    } catch {
+      // Error fetching messages
+    }
+  }, [event.id]);
+
+  const fetchQuestions = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/events/${event.id}/questions`);
+      const data = await response.json();
+      setQuestions(data.questions || []);
+    } catch {
+      // Error fetching questions
+    }
+  }, [event.id]);
+
   // Poll for event status and messages
   useEffect(() => {
     const interval = setInterval(() => {
@@ -61,38 +92,7 @@ export default function LiveRoom({ event }: { event: LiveEvent }) {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [event.roomId]);
-
-  const fetchEventStatus = async () => {
-    try {
-      const response = await fetch(`/api/events/${event.id}/status`);
-      const data = await response.json();
-      setIsLive(data.status === 'live');
-      setAttendeeCount(data.attendeeCount || 0);
-    } catch {
-      // Error fetching status
-    }
-  };
-
-  const fetchChatMessages = async () => {
-    try {
-      const response = await fetch(`/api/events/${event.id}/chat`);
-      const data = await response.json();
-      setChatMessages(data.messages || []);
-    } catch {
-      // Error fetching messages
-    }
-  };
-
-  const fetchQuestions = async () => {
-    try {
-      const response = await fetch(`/api/events/${event.id}/questions`);
-      const data = await response.json();
-      setQuestions(data.questions || []);
-    } catch {
-      // Error fetching questions
-    }
-  };
+  }, [event.roomId, event.allowChat, event.allowQA, fetchEventStatus, fetchChatMessages, fetchQuestions]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !user) return;

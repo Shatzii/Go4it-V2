@@ -6,32 +6,32 @@ import { eq, desc, and, isNotNull } from 'drizzle-orm';
 export async function GET() {
   try {
     // Fetch featured student athlete profiles with high GAR scores
-    const featuredProfiles = await db
+    const featured = await db
       .select({
         id: users.id,
-        name: users.name,
+        name: users.firstName,
         email: users.email,
-        profileImage: users.profileImage,
-        sport: studentAthleteProfiles.primarySport,
-        position: studentAthleteProfiles.position,
-        graduationYear: studentAthleteProfiles.graduationYear,
-        garScore: studentAthleteProfiles.garScore,
-        achievements: studentAthleteProfiles.achievements,
-        collegeCommit: studentAthleteProfiles.collegeCommit,
-        totalVideos: studentAthleteProfiles.totalVideos,
-        garImprovement: studentAthleteProfiles.garImprovement,
-        recruitersContacted: studentAthleteProfiles.recruitersContacted,
+        profileImage: users.profileImageUrl,
+        sport: studentAthleteProfiles.teamAffiliation,
+        position: studentAthleteProfiles.positions,
+        grade: studentAthleteProfiles.graduationYear,
+        garScore: sql<number>`75.0`, // Default placeholder
+        achievements: studentAthleteProfiles.athleticAchievements,
+        collegeCommit: studentAthleteProfiles.recruitingStatus,
+        totalVideos: sql<number>`0`, // Placeholder
+        garImprovement: sql<number>`0`, // Placeholder
+        recruitersContacted: sql<number>`0`, // Placeholder
       })
       .from(users)
-      .innerJoin(studentAthleteProfiles, eq(users.id, studentAthleteProfiles.userId))
+      .leftJoin(studentAthleteProfiles, eq(users.id, studentAthleteProfiles.userId))
       .where(
         and(
-          isNotNull(studentAthleteProfiles.garScore),
-          eq(studentAthleteProfiles.isFeatured, true)
+          isNotNull(studentAthleteProfiles.userId),
+          eq(studentAthleteProfiles.isActive, true)
         )
       )
-      .orderBy(desc(studentAthleteProfiles.garScore))
-      .limit(8);
+      .orderBy(desc(users.createdAt))
+      .limit(10);
 
     const profiles = featuredProfiles.map((profile) => ({
       id: profile.id,

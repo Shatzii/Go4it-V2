@@ -11,7 +11,8 @@ export async function POST(request: Request) {
 
     try {
       // Create Clerk user
-      const user = await clerkClient.users.createUser({
+      const clerk = await clerkClient();
+      const user = await clerk.users.createUser({
         emailAddress: [email],
         firstName,
         lastName,

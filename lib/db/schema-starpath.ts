@@ -82,6 +82,30 @@ export const garMetricsSnapshots = pgTable("gar_metrics_snapshots", {
 });
 
 /**
+ * StarPath Progress - Track athlete development milestones
+ */
+export const starPathProgress = pgTable("starpath_progress", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  
+  // XP and Level
+  totalXP: integer("total_xp").default(0),
+  currentLevel: integer("current_level").default(1),
+  
+  // Milestone tracking
+  milestonesCompleted: jsonb("milestones_completed"), // Array of milestone IDs
+  badgesEarned: jsonb("badges_earned"), // Array of badge IDs
+  
+  // Progress metrics
+  sessionsCompleted: integer("sessions_completed").default(0),
+  streakDays: integer("streak_days").default(0),
+  lastActivityDate: timestamp("last_activity_date"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+/**
  * Student Profiles - Extended with StarPath + NCAA integration
  */
 export const studentProfiles = pgTable("student_profiles", {

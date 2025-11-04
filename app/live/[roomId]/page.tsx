@@ -4,8 +4,11 @@ import { db } from '@/lib/db';
 import { liveEvents } from '@/lib/db/live-events-schema';
 import { eq } from 'drizzle-orm';
 
-export const metadata = {
-  title: 'Live Event | Go4It Sports',
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Live Parent Night - Go4It Sports',
+  description: 'Join the live parent night session',
 };
 
 export default async function LiveEventPage({ 
@@ -28,7 +31,7 @@ export default async function LiveEventPage({
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <LiveRoom event={event} />
+      <LiveRoom event={{...event, description: event.description || ''}} />
     </div>
   );
 }
