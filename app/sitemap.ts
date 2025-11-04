@@ -58,6 +58,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${appUrl}/automation/shortlinks`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 },
     { url: `${appUrl}/automation/video-conferencing`, lastModified: now, changeFrequency: 'weekly', priority: 0.5 },
     
+    // Parent Night & Onboarding
+    { url: `${appUrl}/parent-night`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
+    
     // Legal & Info
     { url: `${appUrl}/privacy`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
     { url: `${appUrl}/terms`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },

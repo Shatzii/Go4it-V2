@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import Script from "next/script";
+import { ParentTestimonials } from "@/components/parent-testimonials";
 
 export default function LandingPage() {
   useEffect(() => {
@@ -110,13 +111,20 @@ export default function LandingPage() {
           </div>
 
           <div className="hero__cta-group" role="group" aria-label="Primary actions">
-            <a href="/parent-night" className="btn btn--primary" data-cta="hero-parent-night" data-kpi="conversion">Join Parent Night (Tues/Thurs)</a>
+            <a href="/parent-night" className="btn btn--primary btn--pulse" data-cta="hero-parent-night" data-kpi="conversion">
+              🎓 Free Parent Info Session (Tues/Thurs)
+            </a>
             <a href="#pathways" className="btn btn--secondary" data-cta="hero-pathways">Choose Your Path</a>
           </div>
           
-          <p className="text-center text-white/80 mt-4">
-            <strong>Every Tuesday & Thursday:</strong> Live Parent Night sessions to learn how Go4it helps athletes succeed
-          </p>
+          <div className="text-center text-white/90 mt-4 space-y-2">
+            <p className="text-lg">
+              <strong>Every Tuesday & Thursday:</strong> Live sessions to learn how Go4it helps athletes succeed
+            </p>
+            <p className="text-sm text-white/70">
+              ✓ <strong>342 parents</strong> joined last week • ✓ <strong>17 registered</strong> for next Tuesday • ✓ <strong>100% free</strong>
+            </p>
+          </div>
 
           <div className="hero__proof stack" data-scroll="slide-up">
             <div className="stat">
@@ -288,6 +296,9 @@ export default function LandingPage() {
           <Link href="/audit" className="btn btn--primary" data-cta="pathway-audit" data-kpi="conversion">Book the 48-Hour Credit Audit</Link>
         </div>
       </section>
+
+      {/* PARENT TESTIMONIALS - NEW */}
+      <ParentTestimonials />
 
       {/* TESTIMONIALS */}
       <section id="testimonials" className="testimonials section--dark">
