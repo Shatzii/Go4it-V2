@@ -6,6 +6,7 @@ import { videoAnalysis } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 // Predictive analytics endpoint
 export async function POST(request: NextRequest) {
   try {

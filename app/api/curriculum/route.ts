@@ -3,6 +3,7 @@ import { storage } from '../../../server/storage'
 import Anthropic from '@anthropic-ai/sdk'
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 /**
  * GET /api/studio/ncaa-report?studentId=xxx
  * Returns NCAA core course progress and Carnegie unit estimates

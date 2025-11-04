@@ -6,6 +6,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { createModelEncryptionManager } from '@/lib/model-encryption';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);

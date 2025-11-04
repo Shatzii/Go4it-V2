@@ -9,6 +9,7 @@ import {
 import { eq, desc, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 // Enhanced scraper with real data from production sources
 class AutomatedProspectScraper {
   private async getProductionBasketballData(): Promise<any[]> {

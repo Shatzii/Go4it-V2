@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 const createAthleteProfileSchema = z.object({
   userId: z.number(),
   height: z.string().optional(),

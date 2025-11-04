@@ -5,6 +5,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { z } from 'zod'
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 const DEFAULT_MODEL_STR = "claude-sonnet-4-20250514";
 
 const anthropic = new Anthropic({

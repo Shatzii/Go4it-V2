@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { storage } from '../../../server/storage'
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

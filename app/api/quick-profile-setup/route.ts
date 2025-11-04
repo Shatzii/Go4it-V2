@@ -5,6 +5,7 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 const quickSetupSchema = z.object({
   userId: z.number(),
   setupStep: z.enum(['basic-info', 'athletics', 'contacts', 'goals', 'complete']),

@@ -5,6 +5,7 @@ import { prospects, campaigns } from '@/shared/schema';
 import { eq, desc } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 // POST - Run advanced automation features
 export async function POST(request: NextRequest) {
   try {

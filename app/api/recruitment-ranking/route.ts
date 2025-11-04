@@ -4,6 +4,7 @@ import { users, videoAnalysis } from '@/shared/schema';
 import { eq, and, or, desc, asc } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 // Regional Athletic Rankings and Recruitment Analysis
 interface AthleteRanking {
   id: string;

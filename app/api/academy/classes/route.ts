@@ -4,6 +4,7 @@ import { academyCourses, studentEnrollments, studentAthleteProfiles, users } fro
 import { eq, and, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

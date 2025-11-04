@@ -4,6 +4,7 @@ import { nutritionPlans } from '@/shared/schema';
 import { eq, and } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

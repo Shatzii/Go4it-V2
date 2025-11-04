@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 const createCouponSchema = z.object({
   code: z.string().min(1).max(50),
   name: z.string().min(1).max(100),

@@ -4,6 +4,7 @@ import { campaigns, prospects, type InsertCampaign } from '@/shared/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 // GET - Fetch campaigns
 export async function GET(request: NextRequest) {
   try {

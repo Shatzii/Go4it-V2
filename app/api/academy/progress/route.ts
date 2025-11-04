@@ -3,6 +3,7 @@ import Database from 'better-sqlite3';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 const dbPath = path.join(process.cwd(), 'go4it-academy.db');
 const db = new Database(dbPath);
 

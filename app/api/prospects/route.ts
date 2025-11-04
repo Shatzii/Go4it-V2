@@ -4,6 +4,7 @@ import { prospects, campaigns, scrapingJobs, type InsertProspect } from '@/share
 import { eq, desc, and, or, like, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 // GET - Fetch prospects with filtering and pagination
 export async function GET(request: NextRequest) {
   try {

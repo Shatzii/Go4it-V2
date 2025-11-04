@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { AdvancedSocialMediaEngine } from '@/lib/advanced-social-media-engine';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export async function POST(request: Request) {
   try {
     const body = await request.json();

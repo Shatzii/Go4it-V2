@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 // Real college matching algorithm with verified data
 const collegeDatabase = [
   {

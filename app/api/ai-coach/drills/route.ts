@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { createAIModelManager } from '@/lib/ai-models';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 export async function POST(request: NextRequest) {
   try {
     const user = await getUserFromRequest(request);
