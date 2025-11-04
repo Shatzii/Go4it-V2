@@ -1,4 +1,4 @@
-import { neon } from '@neondatabase/serverless';
+import Database from 'better-sqlite3';
 import { readFileSync } from 'fs';
 
 async function applyEnterpriseMigration() {
@@ -6,7 +6,8 @@ async function applyEnterpriseMigration() {
     console.log('🚀 Applying enterprise social media migration...');
 
     // Initialize database connection
-    const sql = neon(process.env.DATABASE_URL!);
+    const dbPath = (process.env.DATABASE_URL || 'file:./go4it-os.db').replace('file:', '');
+    const db = new Database(dbPath);
 
     // Read the migration file
     const migrationSQL = readFileSync('./migrations/enterprise/0000_mean_kingpin.sql', 'utf-8');

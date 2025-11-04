@@ -49,8 +49,6 @@ const nextConfig = {
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    skipTrailingSlashRedirect: true,
-    dynamicIO: true, // Allow dynamic I/O in server components
   },
 
   // Security headers
