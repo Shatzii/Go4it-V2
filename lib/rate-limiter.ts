@@ -1,7 +1,14 @@
 // Enterprise Rate Limiter Module
 // Production-ready rate limiting with Redis and database persistence
 
-import Redis from 'ioredis';
+// Dynamic Redis import - optional dependency
+let Redis: any = null;
+try {
+  Redis = require('ioredis');
+} catch {
+  // ioredis not available, will use in-memory rate limiting only
+}
+
 import { createClient } from '@supabase/supabase-js';
 
 // Enterprise rate limiter configuration
@@ -9,7 +16,7 @@ const config = {
   redisUrl: process.env.REDIS_URL,
   supabaseUrl: process.env.SUPABASE_URL!,
   supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  enableRedis: process.env.ENABLE_REDIS !== 'false',
+  enableRedis: process.env.ENABLE_REDIS !== 'false' && Redis !== null,
   enableDatabasePersistence: process.env.ENABLE_RATE_LIMIT_PERSISTENCE !== 'false',
   defaultWindowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
   defaultMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),

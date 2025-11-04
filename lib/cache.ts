@@ -1,7 +1,14 @@
 // Enterprise Cache Module
 // Production-ready caching with Redis and in-memory fallback
 
-import Redis from 'ioredis';
+// Dynamic Redis import - optional dependency
+let Redis: any = null;
+try {
+  Redis = require('ioredis');
+} catch {
+  // ioredis not available, will use in-memory cache only
+}
+
 import { createClient } from '@supabase/supabase-js';
 
 // Enterprise cache configuration
@@ -9,7 +16,7 @@ const config = {
   redisUrl: process.env.REDIS_URL,
   supabaseUrl: process.env.SUPABASE_URL!,
   supabaseServiceKey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  enableRedis: process.env.ENABLE_REDIS !== 'false',
+  enableRedis: process.env.ENABLE_REDIS !== 'false' && Redis !== null,
   enableSupabaseCache: process.env.ENABLE_SUPABASE_CACHE !== 'false',
   defaultTTL: parseInt(process.env.CACHE_DEFAULT_TTL || '3600'), // 1 hour
   maxMemory: process.env.CACHE_MAX_MEMORY || '512mb',

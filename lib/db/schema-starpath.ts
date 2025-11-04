@@ -6,7 +6,7 @@
 
 import { pgTable, text, integer, real, timestamp, serial, boolean, jsonb, varchar } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { users } from "../shared/schema";
+import { users } from "@/shared/schema";
 
 /**
  * GAR Sessions - Track individual training/testing sessions
