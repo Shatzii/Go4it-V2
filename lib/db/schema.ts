@@ -532,3 +532,5 @@ export const aiTutorProgress = pgTable('ai_tutor_progress', {
   lastPracticedIdx: index('ai_tutor_progress_last_practiced_idx').on(table.lastPracticed),
 }));
 
+// Re-export from shared schema for compatibility
+export { scraperResults, studentAthleteProfiles } from '@/shared/schema';

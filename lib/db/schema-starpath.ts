@@ -214,3 +214,10 @@ export type NewNCAAAutoPlan = typeof ncaaAutoPlans.$inferInsert;
 
 // Re-export garSessions as starpathGARSessions for v2 schema compatibility
 export const starpathGARSessions = garSessions;
+
+// Re-export studentProfiles as starpathStudentProfiles for API compatibility
+export const starpathStudentProfiles = studentProfiles;
+
+// Create placeholder for NCAA evaluations (to be migrated from intl schema)
+// For now, alias to studentProfiles to prevent build failures
+export const starpathNCAEvaluations = studentProfiles;

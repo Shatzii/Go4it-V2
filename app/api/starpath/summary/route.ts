@@ -69,13 +69,13 @@ export async function GET(req: NextRequest) {
       .orderBy(desc(starpathNCAEvaluations.createdAt))
       .limit(1);
 
-    // Fetch latest GAR session
-    const [latestSession] = await db
+        // Get latest GAR sessions (last 5)
+    const garSessions = await db
       .select()
       .from(starpathGARSessions)
-      .where(eq(starpathGARSessions.studentId, studentId))
-      .orderBy(desc(starpathGARSessions.sessionDate))
-      .limit(1);
+      .where(eq(starpathGARSessions.userId, studentId))
+      .orderBy(desc(starpathGARSessions.startTime))
+      .limit(5);
 
     // Fetch GAR metrics for latest session
     let garMetrics: any[] = [];
@@ -183,7 +183,7 @@ export async function GET(req: NextRequest) {
       gar: latestSession
         ? {
             garScore,
-            lastTestAt: latestSession.sessionDate,
+            lastTestAt: latestSession.startTime,
             metrics: garMetrics.map((m) => ({
               metric: m.metric,
               value: m.value,
