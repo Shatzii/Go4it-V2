@@ -3,6 +3,9 @@ const nextConfig = {
   // Standalone output for better deployment compatibility
   output: 'standalone',
   
+  // Increase timeout for pages with database queries
+  staticPageGenerationTimeout: 180,
+  
   // Force server-side rendering for payment pages to handle runtime env vars
   pageExtensions: ['ts', 'tsx', 'js', 'jsx'],
 
@@ -56,6 +59,8 @@ const nextConfig = {
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Prevent database access during static generation
+    instrumentationHook: true,
     // Speed up builds
     turbo: {
       rules: {

@@ -16,14 +16,37 @@ if (isSQLite) {
   // SQLite (development / Replit default)
   // Strip the `file:` prefix for better-sqlite3
   const filePath = DATABASE_URL.replace(/^file:/, '');
+  const fs = require('fs');
+  const path = require('path');
+  
+  // Ensure database directory exists before creating database
+  const dbDir = path.dirname(filePath);
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+  }
+  
   const Database = require('better-sqlite3');
   const { drizzle } = require('drizzle-orm/better-sqlite3');
-  const sqlite = new Database(filePath);
-  db = drizzle(sqlite, { schema });
+  
+  // Wrap database initialization in try-catch for build time
+  let sqlite;
+  try {
+    sqlite = new Database(filePath);
+    db = drizzle(sqlite, { schema });
+  } catch (error) {
+    // During build time, database might not be accessible
+    // Create a mock db object that will be replaced at runtime
+    if (process.env.NEXT_PHASE === 'phase-production-build') {
+      console.warn('Database not accessible during build, using mock');
+      db = null;
+    } else {
+      throw error;
+    }
+  }
 
   shutdown = () => {
     try {
-      sqlite.close();
+      if (sqlite) sqlite.close();
     } catch (_) {
       // noop
     }

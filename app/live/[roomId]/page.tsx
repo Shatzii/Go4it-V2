@@ -6,6 +6,10 @@ import { eq } from 'drizzle-orm';
 
 import { Metadata } from 'next';
 
+// Force dynamic rendering - do not statically generate this page
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Live Parent Night - Go4It Sports',
   description: 'Join the live parent night session',

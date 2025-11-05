@@ -19,6 +19,10 @@ import { athleteDrillAssignments, workoutTemplates, drills } from '@/lib/db/dril
 import { eq, and } from 'drizzle-orm';
 import MobileAthleteView from './MobileAthleteView';
 
+// Force dynamic rendering - do not statically generate this page
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   title: 'My Training | Go4it Sports Academy',
   description: 'Your personalized training dashboard',

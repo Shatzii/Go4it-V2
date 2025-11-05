@@ -11,6 +11,10 @@ import { db } from "@/lib/db";
 import { starpathEvents } from "@/lib/db/schema-starpath-v2";
 import { gte, eq } from "drizzle-orm";
 
+// Force dynamic rendering - do not statically generate this page
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "GetVerified™ Combines | Go4it Sports Academy",
   description:

@@ -18,6 +18,10 @@ import { athleteDrillAssignments, drills, workoutTemplates } from '@/lib/db/dril
 import { eq } from 'drizzle-orm';
 import MobileWorkoutPlayer from './MobileWorkoutPlayer';
 
+// Force dynamic rendering - do not statically generate this page
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
   title: 'Workout | Go4it Sports Academy',
   description: 'Execute your training workout',
