@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Script from "next/script";
 import { ParentTestimonials } from "@/components/parent-testimonials";
+import { InstagramIcon, FacebookIcon, XIcon, TikTokIcon } from "@/components/BrandIcons";
 
 export default function LandingPage() {
   useEffect(() => {
@@ -42,11 +43,19 @@ export default function LandingPage() {
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <p>Denver • Vienna • Dallas • Mérida (MX) | <a href="mailto:info@go4itsports.org">info@go4itsports.org</a> | USA: <a href="tel:+12054348405">+1-205-434-8405</a> | EU: <a href="tel:+436505644236">+43 650 564 4236</a></p>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <a href="https://instagram.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'white', fontSize: '18px' }}>📷</a>
-              <a href="https://facebook.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: 'white', fontSize: '18px' }}>👤</a>
-              <a href="https://twitter.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X" style={{ color: 'white', fontSize: '18px' }}>🐦</a>
-              <a href="https://tiktok.com/@go4itsports" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ color: 'white', fontSize: '18px' }}>🎵</a>
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+              <a href="https://instagram.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="icon-blueglow" title="Instagram">
+                <InstagramIcon size={20} className="icon-blueglow" />
+              </a>
+              <a href="https://facebook.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="icon-blueglow" title="Facebook">
+                <FacebookIcon size={20} className="icon-blueglow" />
+              </a>
+              <a href="https://twitter.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X" className="icon-blueglow" title="X / Twitter">
+                <XIcon size={20} className="icon-blueglow" />
+              </a>
+              <a href="https://tiktok.com/@go4itsports" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="icon-blueglow" title="TikTok">
+                <TikTokIcon size={20} className="icon-blueglow" />
+              </a>
             </div>
           </div>
         </div>
@@ -535,10 +544,18 @@ export default function LandingPage() {
           <div className="footer__social" style={{ marginTop: '20px', textAlign: 'center' }}>
             <p style={{ marginBottom: '10px', color: '#888' }}>Follow Us</p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
-              <a href="https://instagram.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ fontSize: '24px', textDecoration: 'none' }}>📷 Instagram</a>
-              <a href="https://facebook.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ fontSize: '24px', textDecoration: 'none' }}>👤 Facebook</a>
-              <a href="https://twitter.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X" style={{ fontSize: '24px', textDecoration: 'none' }}>🐦 Twitter</a>
-              <a href="https://tiktok.com/@go4itsports" target="_blank" rel="noopener noreferrer" aria-label="TikTok" style={{ fontSize: '24px', textDecoration: 'none' }}>🎵 TikTok</a>
+              <a href="https://instagram.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="icon-blueglow" title="Instagram">
+                <InstagramIcon size={22} className="icon-blueglow" />
+              </a>
+              <a href="https://facebook.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="icon-blueglow" title="Facebook">
+                <FacebookIcon size={22} className="icon-blueglow" />
+              </a>
+              <a href="https://twitter.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Twitter/X" className="icon-blueglow" title="X / Twitter">
+                <XIcon size={22} className="icon-blueglow" />
+              </a>
+              <a href="https://tiktok.com/@go4itsports" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="icon-blueglow" title="TikTok">
+                <TikTokIcon size={22} className="icon-blueglow" />
+              </a>
             </div>
           </div>
         </div>
