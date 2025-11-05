@@ -1,7 +1,7 @@
 {
-  "name": "Go4It Sports Platform",
-  "short_name": "Go4It Sports",
-  "description": "AI-enhanced sports analytics platform for neurodivergent student athletes",
+  "name": "Go4it Academy",
+  "short_name": "Go4it Academy",
+  "description": "Get Verified - AI-powered athletic development and recruitment platform for student athletes",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

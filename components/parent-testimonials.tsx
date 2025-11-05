@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ interface Testimonial {
   quote: string;
   videoUrl?: string;
   thumbnail?: string;
+  profileImage?: string;
   date: string;
   session: 'Tuesday' | 'Thursday';
   results?: string;
@@ -35,6 +37,7 @@ const testimonials: Testimonial[] = [
     date: '2024-10-28',
     session: 'Tuesday',
     results: '3 D1 offers, GAR 94',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jennifer',
   },
   {
     id: '2',
@@ -48,6 +51,7 @@ const testimonials: Testimonial[] = [
     date: '2024-10-25',
     session: 'Thursday',
     results: 'GAR Top 100, 5 college scouts',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=David',
   },
   {
     id: '3',
@@ -61,6 +65,7 @@ const testimonials: Testimonial[] = [
     date: '2024-10-21',
     session: 'Tuesday',
     results: '3.8 GPA, 20+ training hours/week',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
   },
   {
     id: '4',
@@ -74,6 +79,7 @@ const testimonials: Testimonial[] = [
     date: '2024-10-18',
     session: 'Thursday',
     results: 'Full academic support, active recruiting',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Miguel',
   },
   {
     id: '5',
@@ -87,6 +93,7 @@ const testimonials: Testimonial[] = [
     date: '2024-10-15',
     session: 'Tuesday',
     results: 'GAR 92, confidence boost',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Lisa',
   },
   {
     id: '6',
@@ -100,6 +107,7 @@ const testimonials: Testimonial[] = [
     date: '2024-10-12',
     session: 'Thursday',
     results: 'Thriving in academy',
+    profileImage: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Robert',
   },
 ];
 
@@ -161,12 +169,34 @@ export function ParentTestimonials() {
               onClick={() => setSelectedTestimonial(testimonial)}
             >
               <CardContent className="p-6">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="font-bold text-gray-900">{testimonial.name}</h3>
-                    <p className="text-sm text-gray-600">{testimonial.location}</p>
+                {/* Header with Profile Image */}
+                <div className="flex items-start gap-4 mb-4">
+                  {/* Profile Image */}
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 flex-shrink-0 ring-2 ring-white shadow-md">
+                    {testimonial.profileImage ? (
+                      <Image
+                        src={testimonial.profileImage}
+                        alt={testimonial.name}
+                        width={64}
+                        height={64}
+                        className="object-cover w-full h-full"
+                        unoptimized
+                        priority={false}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white font-bold text-xl">
+                        {testimonial.name.charAt(0)}
+                      </div>
+                    )}
                   </div>
+
+                  {/* Name & Location */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-900 truncate">{testimonial.name}</h3>
+                    <p className="text-sm text-gray-600 truncate">{testimonial.location}</p>
+                  </div>
+
+                  {/* Session Badge */}
                   <Badge variant="outline" className="text-xs">
                     {testimonial.session}
                   </Badge>

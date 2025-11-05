@@ -33,7 +33,14 @@ const nextConfig = {
   trailingSlash: false,
   
   // Increase timeout for slow static page generation
-  staticPageGenerationTimeout: 120,
+  staticPageGenerationTimeout: 180, // Increased to 3 minutes
+  
+  // Optimize builds
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
 
   // Build error handling
   eslint: {
@@ -49,6 +56,15 @@ const nextConfig = {
   // Experimental optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    // Speed up builds
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
 
   // Security headers

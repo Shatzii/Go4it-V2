@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  * Content Calendar Automation API
  * Auto-schedules 3-5 posts per week showcasing:

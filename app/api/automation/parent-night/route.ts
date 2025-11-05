@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
+import { sendSMS } from '@/lib/sms'; // FREE email-to-SMS
+import { sendEmailNodemailer } from '@/lib/sendEmailNodemailer'; // FREE SMTP email
+
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 /**
- * Parent Night Automation API
+ * Parent Night Automation API - 100% FREE Communication
+ * Uses Email-to-SMS gateway (no Twilio costs!)
+ * 
  * Handles automated SMS and Email sequences for Parent Night funnel:
  * - Tuesday RSVP → Confirmation + Reminder
  * - Thursday RSVP → Confirmation + Reminder  
@@ -13,6 +20,7 @@ interface ParentLead {
   name: string;
   email: string;
   phone: string;
+  carrier: string; // att, verizon, tmobile, sprint, etc.
   athleteName?: string;
   sport?: string;
   gradYear?: string;
@@ -127,6 +135,37 @@ const EMAIL_TEMPLATES = {
     `,
   },
 };
+
+// Helper function to send SMS using FREE email-to-SMS
+async function sendParentSMS(lead: ParentLead, template: keyof typeof SMS_TEMPLATES) {
+  const message = SMS_TEMPLATES[template]
+    .replace(/{name}/g, lead.name.split(' ')[0])
+    .replace(/{athlete}/g, lead.athleteName || 'your athlete')
+    .replace(/{time}/g, new Date(lead.rsvpDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }))
+    .replace(/{link}/g, 'https://yourdomain.com/parent-night'); // Update with your actual domain
+
+  return await sendSMS({
+    to: lead.phone,
+    message,
+    carrier: lead.carrier || 'att', // Default to AT&T if not specified
+  });
+}
+
+// Helper function to send email using FREE SMTP
+async function sendParentEmail(lead: ParentLead, template: keyof typeof EMAIL_TEMPLATES) {
+  const emailTemplate = EMAIL_TEMPLATES[template];
+  const html = emailTemplate.html
+    .replace(/{name}/g, lead.name)
+    .replace(/{athlete}/g, lead.athleteName || 'your athlete')
+    .replace(/{time}/g, new Date(lead.rsvpDate).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }))
+    .replace(/{link}/g, 'https://yourdomain.com/parent-night'); // Update with your actual domain
+
+  return await sendEmailNodemailer({
+    to: lead.email,
+    subject: emailTemplate.subject.replace(/{name}/g, lead.name),
+    html,
+  });
+}
 
 export async function POST(request: Request) {
   try {

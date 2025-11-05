@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 /**
  * Parent Retargeting API
  * Finds engaged parents on Instagram/Facebook for remarketing campaigns

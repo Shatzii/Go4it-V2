@@ -16,11 +16,12 @@ import OfflineIndicator from '@/components/pwa/OfflineIndicator';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'GO4IT Combine | Neon HUD Experience',
-  description: 'International Combine 2025 - Film. Metrics. AI Coach. Ages 12–18 — Soccer • Basketball • Flag Football',
+  title: 'Go4it Academy',
+  description: 'Get Verified - AI-powered athletic development and recruitment platform for student athletes',
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
