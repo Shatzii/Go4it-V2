@@ -34,7 +34,7 @@ const REQUIRED_PATHS = {
   // Schema and types
   "lib/db/schema-starpath.ts": "StarPath database schema",
   "lib/db/schema-starpath-v2.ts": "StarPath v2 schema (multi-tenant + events)",
-  "drizzle/20251103_starpath_v2.sql": "StarPath v2 migration"
+  "drizzle/20251103_starpath_v2.sql": "StarPath v2 migration",
   "lib/types/starpath.ts": "Shared StarPath types and DTOs",
 
   // Pages
