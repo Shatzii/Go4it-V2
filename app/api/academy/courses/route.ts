@@ -3,6 +3,11 @@ import { storage } from '@/server/storage';
 import { logger } from '@/lib/logger';
 
 export async function GET(_req: NextRequest) {
+  // Build-time safety: skip during static generation
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
+  }
+
   const t0 = Date.now();
   try {
     await storage.ensureSeedCourses();

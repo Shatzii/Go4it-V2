@@ -1,16 +1,15 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
 import * as schema from '../shared/schema';
 
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'file:./go4it-os.db';
+// Build-time safety: return null during static generation
+const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+
+if (isBuildPhase) {
+  console.log('[server/db] Build phase detected - skipping database initialization');
+  // @ts-ignore - db will be null during build
+  export const db = null;
+} else {
+  // Runtime: Use main database from lib/db
+  // This ensures consistency across the application
+  const { db: mainDb } = require('@/lib/db');
+  export const db = mainDb;
 }
-
-// Extract the file path from the DATABASE_URL
-const dbPath = process.env.DATABASE_URL.replace('file:', '').replace(/^\/+/, '');
-
-// Create SQLite database connection
-const sqlite = new Database(dbPath);
-sqlite.pragma('journal_mode = WAL');
-
-export const db = drizzle(sqlite, { schema });
