@@ -135,7 +135,7 @@ export default function AcademyDashboard() {
                         </div>
                       </div>
                     )}
-                    <Link href="/starpath">
+                    <Link href="/dashboard/starpath">
                       <Button size="sm" className="w-full mt-3 bg-blue-600 hover:bg-blue-700">
                         View Full StarPath
                       </Button>

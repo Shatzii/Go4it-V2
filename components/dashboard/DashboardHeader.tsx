@@ -16,7 +16,7 @@ export function DashboardHeader() {
               <NavLink href="/dashboard" active>
                 Dashboard
               </NavLink>
-              <NavLink href="/starpath">StarPath</NavLink>
+              <NavLink href="/dashboard/starpath">StarPath</NavLink>
               <NavLink href="/gar-upload">GAR Analysis</NavLink>
               <NavLink href="/academy">Academy</NavLink>
               <NavLink href="/teams">Teams</NavLink>
