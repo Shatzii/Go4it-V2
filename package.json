@@ -26,6 +26,8 @@
     "integrity": "node scripts/integrity-check.mjs",
     "smoke": "node scripts/smoke.mjs",
     "clean": "rm -rf .next node_modules/.cache",
+    "test:local": "./scripts/test-local.sh",
+    "setup:local": "./scripts/setup-local-test.sh",
     "deploy:production": "./scripts/deploy-production.sh",
     "deploy:check": "npm run typecheck && npm run lint",
     "smoke:parent-night": "node scripts/smoke-parent-night.mjs",
