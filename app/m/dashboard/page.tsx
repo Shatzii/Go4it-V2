@@ -12,7 +12,7 @@
  * - StarPath metrics
  */
 
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { athleteDrillAssignments, workoutTemplates, drills } from '@/lib/db/drill-library-schema';

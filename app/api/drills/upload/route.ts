@@ -14,7 +14,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { db } from '@/lib/db';
 import { mediaAssets } from '@/lib/db/drill-library-schema';
 import { drillEvents } from '@/lib/events/drill-events';

@@ -11,7 +11,7 @@
  * - Performance logging
  */
 
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { db } from '@/lib/db';
 import { athleteDrillAssignments, drills, workoutTemplates } from '@/lib/db/drill-library-schema';

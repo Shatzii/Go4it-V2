@@ -11,7 +11,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 
 // NEW: Intelligent router (with automatic fallback)
 import { aiEngine } from '@/lib/ai/intelligent-router';

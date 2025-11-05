@@ -1,25 +1,30 @@
 import * as schema from './schema';
 
-// Replit-friendly DB bootstrapper: SQLite in dev (file: URL) and Postgres otherwise
-const DATABASE_URL = process.env.DATABASE_URL ?? 'file:./go4it-os.db';
-const isSQLite = DATABASE_URL.startsWith('file:') || DATABASE_URL.startsWith('sqlite:');
+// Database configuration - use PostgreSQL by default, SQLite only for local dev
+const DATABASE_URL = process.env.DATABASE_URL;
+const isSQLite = DATABASE_URL?.startsWith('file:') || DATABASE_URL?.startsWith('sqlite:');
 
 let shutdown: (() => Promise<void> | void) | null = null;
 
-// Export a unified `db` instance regardless of backend
-// - SQLite: better-sqlite3
-// - Postgres: postgres-js
-// Note: Both imports exist to avoid dynamic import complexity in Next.js server runtime
+// Export a unified `db` instance
 let db: any;
 
-if (isSQLite) {
-  // SQLite (development / Replit default)
-  // Strip the `file:` prefix for better-sqlite3
+// Skip database initialization during build phase
+const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || 
+                     process.env.NEXT_PHASE === 'phase-production-server';
+
+if (isBuildPhase) {
+  console.log('Build phase detected - skipping database initialization');
+  db = null;
+} else if (!DATABASE_URL) {
+  console.error('DATABASE_URL environment variable is not set');
+  throw new Error('DATABASE_URL must be configured. Set it to your PostgreSQL connection string.');
+} else if (isSQLite) {
+  // SQLite (local development only)
   const filePath = DATABASE_URL.replace(/^file:/, '');
   const fs = require('fs');
   const path = require('path');
   
-  // Ensure database directory exists before creating database
   const dbDir = path.dirname(filePath);
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
@@ -28,34 +33,22 @@ if (isSQLite) {
   const Database = require('better-sqlite3');
   const { drizzle } = require('drizzle-orm/better-sqlite3');
   
-  // Wrap database initialization in try-catch for build time
-  let sqlite;
-  try {
-    sqlite = new Database(filePath);
-    db = drizzle(sqlite, { schema });
-  } catch (error) {
-    // During build time, database might not be accessible
-    // Create a mock db object that will be replaced at runtime
-    if (process.env.NEXT_PHASE === 'phase-production-build') {
-      console.warn('Database not accessible during build, using mock');
-      db = null;
-    } else {
-      throw error;
-    }
-  }
+  const sqlite = new Database(filePath);
+  db = drizzle(sqlite, { schema });
 
   shutdown = () => {
     try {
-      if (sqlite) sqlite.close();
+      sqlite.close();
     } catch (_) {
       // noop
     }
   };
 } else {
-  // Postgres (production)
+  // PostgreSQL (production and staging)
   const postgres = require('postgres');
   const { drizzle } = require('drizzle-orm/postgres-js');
-  // Connection pooling configuration based on environment
+  
+  // Connection pooling configuration
   const { poolConfig } = require('../database-optimizations');
   const isProduction = process.env.NODE_ENV === 'production';
   const poolSettings = isProduction ? poolConfig.production : poolConfig.development;
@@ -66,11 +59,8 @@ if (isSQLite) {
     idle_timeout: poolSettings.idle,
     connect_timeout: poolSettings.acquire,
     max_lifetime: poolSettings.evict,
-    // Enable prepared statements for better performance
     prepare: true,
-    // Connection retry logic
     retry_on_release: true,
-    // Health checks
     keep_alive: 60,
   });
 
