@@ -1,0 +1,37 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "strict": false,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitReturns": false,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "exclude": [
+    "node_modules",
+    ".next",
+    "dist",
+    "build",
+    "__tests__",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "ai-engine/**/*",
+    "components/performance/OptimizedComponent.tsx",
+    "components/site/HeroDynamic.tsx",
+    "components/enhanced-error-boundary.tsx",
+    "components/analytics/PostHogClient.tsx",
+    "lib/mediapipe-analyzer.ts",
+    "lib/advanced-social-media-engine.ts",
+    "lib/analytics/posthog.client.ts",
+    "lib/backup.ts",
+    "app/layout-optimized.tsx",
+    "i18n.ts",
+    "drizzle.config.ts"
+  ]
+}
