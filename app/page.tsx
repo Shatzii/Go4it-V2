@@ -60,14 +60,26 @@ export default function LandingPage() {
               <strong>Go4it Sports Academy</strong>
             </Link>
           </div>
-          <ul className="nav__menu">
+          
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="nav__mobile-toggle" 
+            id="mobile-menu-toggle"
+            aria-label="Toggle menu"
+            aria-expanded="false"
+          >
+            <span className="hamburger"></span>
+            <span className="hamburger"></span>
+            <span className="hamburger"></span>
+          </button>
+
+          <ul className="nav__menu" id="nav-menu">
             <li><Link href="/dashboard">Dashboard</Link></li>
             <li><Link href="/academy">Academy</Link></li>
             <li><Link href="/events">Events</Link></li>
             <li><Link href="/starpath">StarPath</Link></li>
             <li><Link href="/athleteai">AthleteAI</Link></li>
             <li><Link href="/recruiting-hub">Recruiting</Link></li>
-            <li><Link href="/automation/dashboard">Automation</Link></li>
             <li><Link href="/audit" className="btn btn--primary" data-cta="nav-audit">48hr Audit</Link></li>
             <li><Link href="/apply" className="btn btn--primary" data-cta="nav-apply">Apply</Link></li>
           </ul>
