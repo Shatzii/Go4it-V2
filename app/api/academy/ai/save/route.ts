@@ -1,15 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Database from 'better-sqlite3';
-import path from 'path';
 
-const dbPath = path.join(process.cwd(), 'go4it-academy.db');
-const db = new Database(dbPath);
+
+// TODO: This route uses raw SQLite queries and needs migration to Drizzle ORM
+// Temporarily disabled during PostgreSQL migration
+
+const MIGRATION_MESSAGE = {
+  error: 'Academy feature requires database migration',
+  message: 'This endpoint uses legacy SQLite and is being migrated to PostgreSQL',
+  status: 'under_maintenance'
+};
+
+export async function GET(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
 
 export async function POST(request: NextRequest) {
-  try {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+export async function PUT(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+export async function PATCH(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+/* 
+ * ORIGINAL CODE BELOW - NEEDS MIGRATION TO DRIZZLE ORM
+ * ====================================================
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function POST(request: NextRequest) {
+// Build-time safety: skip during static generation
+if (process.env.NEXT_PHASE === 'phase-production-build') {
+  return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
+}
+
+    try {
     const body = await request.json();
     const { contentId, courseId, teacherId } = body;
-
     if (!contentId || !teacherId) {
       return NextResponse.json(
         { error: 'Missing required fields: contentId, teacherId' },
@@ -43,3 +77,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+ */

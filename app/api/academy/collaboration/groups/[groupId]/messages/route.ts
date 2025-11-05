@@ -1,15 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Database from 'better-sqlite3';
-import path from 'path';
 
-const dbPath = path.join(process.cwd(), 'go4it-os.db');
-const db = new Database(dbPath);
+
+// TODO: This route uses raw SQLite queries and needs migration to Drizzle ORM
+// Temporarily disabled during PostgreSQL migration
+
+const MIGRATION_MESSAGE = {
+  error: 'Academy feature requires database migration',
+  message: 'This endpoint uses legacy SQLite and is being migrated to PostgreSQL',
+  status: 'under_maintenance'
+};
+
+export async function GET(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+export async function POST(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+export async function PUT(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+export async function DELETE(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+export async function PATCH(request: NextRequest) {
+  return NextResponse.json(MIGRATION_MESSAGE, { status: 503 });
+}
+
+/* 
+ * ORIGINAL CODE BELOW - NEEDS MIGRATION TO DRIZZLE ORM
+ * ====================================================
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { groupId: string } }
 ) {
-  try {
+// Build-time safety: skip during static generation
+if (process.env.NEXT_PHASE === 'phase-production-build') {
+  return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
+}
+
+    try {
     const messages = db.prepare(`
       SELECT
         gm.id,
@@ -25,7 +60,6 @@ export async function GET(
       ORDER BY gm.created_at DESC
       LIMIT 50
     `).all(params.groupId);
-
     // Reverse to show oldest first
     messages.reverse();
 
@@ -40,7 +74,12 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { groupId: string } }
 ) {
-  try {
+// Build-time safety: skip during static generation
+if (process.env.NEXT_PHASE === 'phase-production-build') {
+  return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
+}
+
+    try {
     const { content, studentId, messageType, fileUrl } = await request.json();
 
     if (!studentId) {
@@ -83,3 +122,4 @@ export async function POST(
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+ */
