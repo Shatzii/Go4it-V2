@@ -264,12 +264,12 @@ export default function LandingPage() {
           {/* Athlete Grid */}
           <div className="athlete-grid" data-athlete-grid>
             {[
-              { name: "Marcus J.", sport: "Basketball", position: "Point Guard", year: "2026", gar: 97, stars: 5, flag: "🇺🇸", stats: ["40yd: 4.3s", "Vertical: 38\"", "GPA: 3.8"], image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=500&fit=crop" },
-              { name: "Lena K.", sport: "Soccer", position: "Midfielder", year: "2025", gar: 94, stars: 5, flag: "🇩🇪", stats: ["20m: 6.8s", "Vertical: 32\"", "GPA: 3.9"], image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=400&h=500&fit=crop" },
-              { name: "Diego R.", sport: "Football", position: "Wide Receiver", year: "2027", gar: 92, stars: 4, flag: "🇲🇽", stats: ["40yd: 4.5s", "Vertical: 36\"", "GPA: 3.7"], image: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=400&h=500&fit=crop" },
-              { name: "Sofia M.", sport: "Volleyball", position: "Outside Hitter", year: "2026", gar: 90, stars: 4, flag: "🇪🇸", stats: ["Approach: 10'2\"", "Block: 9'8\"", "GPA: 3.6"], image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=500&fit=crop" },
-              { name: "Alex T.", sport: "Basketball", position: "Shooting Guard", year: "2025", gar: 89, stars: 4, flag: "🇨🇦", stats: ["40yd: 4.4s", "Vertical: 35\"", "GPA: 3.9"], image: "https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=400&h=500&fit=crop" },
-              { name: "Emma D.", sport: "Soccer", position: "Forward", year: "2027", gar: 88, stars: 4, flag: "🇫🇷", stats: ["20m: 7.1s", "Vertical: 30\"", "GPA: 3.7"], image: "https://images.unsplash.com/photo-1594671564628-9d6f3ce4c0cd?w=400&h=500&fit=crop" },
+              { name: "Marcus J.", sport: "Basketball", position: "Point Guard", year: "2026", gar: 97, stars: 5, flag: "🇺🇸", stats: ["40yd: 4.3s", "Vertical: 38\"", "GPA: 3.8"], image: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=max&w=500&q=80" },
+              { name: "Lena K.", sport: "Soccer", position: "Midfielder", year: "2025", gar: 94, stars: 5, flag: "🇩🇪", stats: ["20m: 6.8s", "Vertical: 32\"", "GPA: 3.9"], image: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?auto=format&fit=max&w=500&q=80" },
+              { name: "Diego R.", sport: "Football", position: "Wide Receiver", year: "2027", gar: 92, stars: 4, flag: "🇲🇽", stats: ["40yd: 4.5s", "Vertical: 36\"", "GPA: 3.7"], image: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=max&w=500&q=80" },
+              { name: "Sofia M.", sport: "Volleyball", position: "Outside Hitter", year: "2026", gar: 90, stars: 4, flag: "🇪🇸", stats: ["Approach: 10'2\"", "Block: 9'8\"", "GPA: 3.6"], image: "https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?auto=format&fit=max&w=500&q=80" },
+              { name: "Alex T.", sport: "Basketball", position: "Shooting Guard", year: "2025", gar: 89, stars: 4, flag: "🇨🇦", stats: ["40yd: 4.4s", "Vertical: 35\"", "GPA: 3.9"], image: "https://images.unsplash.com/photo-1607962837359-5e7e89f86776?auto=format&fit=max&w=500&q=80" },
+              { name: "Emma D.", sport: "Soccer", position: "Forward", year: "2027", gar: 88, stars: 4, flag: "🇫🇷", stats: ["20m: 7.1s", "Vertical: 30\"", "GPA: 3.7"], image: "https://images.unsplash.com/photo-1594671564628-9d6f3ce4c0cd?auto=format&fit=max&w=500&q=80" },
             ].map((athlete, idx) => (
               <div key={idx} className="athlete-card" data-sport={athlete.sport.toLowerCase()} data-year={athlete.year} data-gar={athlete.gar}>
                 <div className="athlete-card__image">
