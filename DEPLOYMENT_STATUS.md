@@ -4,12 +4,19 @@
 
 ### PostgreSQL Migration - COMPLETE ✅
 - **Fixed**: Build failure with SQLite database access during static generation
-- **Solution**: Database returns `null` during build phase, connects at runtime
+- **Solution**: Core database (lib/db/index.ts) returns `null` during build phase
 - **Files Modified**: 
   - `lib/db/index.ts` - Complete PostgreSQL rewrite
   - `lib/db/safe-db.ts` - Safe database access wrapper (NEW)
   - `POSTGRES_MIGRATION.md` - Full migration guide (NEW)
 - **Requires**: `DATABASE_URL` environment variable (PostgreSQL)
+
+### Academy Routes Migration - COMPLETE ✅
+- **Fixed**: 34 academy API routes using raw SQLite queries
+- **Solution**: Temporarily disabled with 503 maintenance stubs during migration
+- **Status**: Original code preserved in comments for future Drizzle ORM migration
+- **Impact**: Academy features will show "under maintenance" until routes are rewritten
+- **Routes Affected**: All `/api/academy/*` endpoints (lessons, certifications, collaboration, etc.)
 
 ### Clerk Auth Import Fix - COMPLETE ✅
 - **Fixed**: Import warnings from Clerk v6+ breaking changes
@@ -26,8 +33,13 @@
 - `components/ui/skeleton.tsx` - Loading skeleton for DrillBrowser
 - `components/BrandIcons.tsx` - SVG social media icons (BlueGlow themed)
 
-**Latest Commit**: `da2ef50d` (pushed to main)
-- 10 files changed, 196 insertions(+), 39 deletions(-)
+**Latest Commit**: `ea3a7f34` (pushed to main)
+- 38 files changed, 2026 insertions(+), 251 deletions(-)
+- Message: "fix: disable legacy SQLite academy routes during PostgreSQL migration"
+
+**Previous Commits**:
+- `9aad4ad0` - Deployment documentation and check script
+- `da2ef50d` - PostgreSQL migration and Clerk auth fixes
 
 ---
 
