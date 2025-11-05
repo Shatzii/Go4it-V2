@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { generateWeeklyContentCalendar } from '@/ai-engine/starpath/starpath-content';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -10,6 +11,8 @@ export const runtime = 'nodejs';
  * - StarPath progress updates
  * - Recruiting success stories
  * - Parent Night highlights
+ * 
+ * NOW WITH AI: Integrates StarPath AI content generator for personalized posts
  */
 
 interface ScheduledPost {
@@ -101,12 +104,75 @@ export async function POST(request: Request) {
       platforms = ['Instagram', 'Facebook', 'Twitter'],
       contentTypes = ['gar-score', 'starpath', 'recruiting', 'parent-night', 'success-story'],
       athleteData = null,
+      useAI = true, // NEW: Toggle AI content generation
     } = await request.json();
 
     const calendars: ContentCalendar[] = [];
     const now = new Date();
 
-    // Generate content for each week
+    // NEW: Use AI to generate content if enabled
+    if (useAI) {
+      try {
+        const aiCalendar = await generateWeeklyContentCalendar();
+
+        // Convert AI calendar to our format
+        const weekPosts: ScheduledPost[] = [];
+        const baseDate = new Date();
+
+        // Extract posts from the calendar
+        Object.values(aiCalendar).forEach((platformResult, dayIndex) => {
+          platformResult.posts.forEach((post: any, postIndex: number) => {
+            const postDate = new Date(baseDate);
+            postDate.setDate(postDate.getDate() + dayIndex);
+            postDate.setHours(10 + (postIndex % 3) * 4, 0, 0, 0); // Spread throughout day
+
+            weekPosts.push({
+              id: `ai_post_${Date.now()}_${dayIndex}_${postIndex}`,
+              platform: platformResult.platform,
+              postType: 'starpath',
+              content: post.caption,
+              hashtags: post.hashtags,
+              imageUrl: post.imagePrompt,
+              scheduledFor: postDate.toISOString(),
+              status: 'scheduled',
+              createdAt: new Date().toISOString(),
+            });
+          });
+        });
+
+        const calendar: ContentCalendar = {
+          week: now.getWeek(),
+          year: now.getFullYear(),
+          posts: weekPosts,
+          analytics: {
+            totalScheduled: weekPosts.length,
+            byPlatform: weekPosts.reduce((acc, post) => {
+              acc[post.platform] = (acc[post.platform] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+            byType: weekPosts.reduce((acc, post) => {
+              acc[post.postType] = (acc[post.postType] || 0) + 1;
+              return acc;
+            }, {} as Record<string, number>),
+          },
+        };
+
+        calendars.push(calendar);
+
+        return NextResponse.json({
+          success: true,
+          message: 'AI-powered content calendar generated successfully',
+          calendars,
+          aiGenerated: true,
+          totalPosts: weekPosts.length,
+        });
+      } catch (aiError) {
+        // AI content generation failed, falling back to templates
+        // Continue with template-based generation below
+      }
+    }
+
+    // FALLBACK: Generate content for each week using templates
     for (let week = 0; week < weeksAhead; week++) {
       const weekStart = new Date(now);
       weekStart.setDate(weekStart.getDate() + week * 7);
@@ -214,7 +280,7 @@ function getNextWeekday(startDate: Date, dayName: string): Date {
   return result;
 }
 
-function generateCaption(type: string, template: any, athleteData: any): string {
+function generateCaption(_type: string, template: any, athleteData: any): string {
   const captions = template.captions;
   let caption = captions[Math.floor(Math.random() * captions.length)];
 

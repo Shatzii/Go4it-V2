@@ -12,7 +12,9 @@ import {
   MapPin,
   Users,
   MoreHorizontal,
+  X,
 } from 'lucide-react';
+import { VideoRoom } from '@/components/video/VideoRoom';
 
 interface Message {
   id: string;
@@ -263,13 +265,46 @@ export function TeamCommunicationSystem() {
 
   const startVideoCall = () => {
     setIsVideoCall(true);
-    // Integration with video calling service would go here
+  };
+
+  const leaveVideoCall = () => {
+    setIsVideoCall(false);
   };
 
   if (!selectedTeam) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  // Show video call interface
+  if (isVideoCall && selectedChannel) {
+    return (
+      <div className="flex flex-col h-screen bg-slate-950">
+        <div className="flex items-center justify-between p-4 bg-slate-900 border-b border-slate-700">
+          <div>
+            <h2 className="text-lg font-semibold text-white">
+              {selectedTeam.name} - #{selectedChannel.name}
+            </h2>
+            <p className="text-sm text-slate-400">Video Call</p>
+          </div>
+          <button
+            onClick={leaveVideoCall}
+            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+          >
+            <X className="h-4 w-4" />
+            Leave Call
+          </button>
+        </div>
+        <div className="flex-1">
+          <VideoRoom
+            roomName={`team-${selectedTeam.id}-${selectedChannel.id}`}
+            roomType="team"
+            onLeave={leaveVideoCall}
+          />
+        </div>
       </div>
     );
   }

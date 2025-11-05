@@ -141,7 +141,38 @@ RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxxxxx
 
 ---
 
-### **6. SMS Alternative - Twilio (NOT NEEDED!)**
+### **6. Video Chat - LiveKit (Optional)**
+```bash
+LIVEKIT_API_KEY=APIxxxxxxxxxx
+LIVEKIT_API_SECRET=xxxxxxxxxxxxxxx
+LIVEKIT_URL=wss://your-project.livekit.cloud
+NEXT_PUBLIC_LIVEKIT_URL=wss://your-project.livekit.cloud
+```
+
+**Setup:**
+1. Sign up: https://livekit.io (no credit card required)
+2. Create new project
+3. Copy API Key and API Secret
+4. Copy WebSocket URL (looks like: `wss://your-project.livekit.cloud`)
+5. Add all 4 secrets to Replit
+
+**What This Enables:**
+- ✅ Live video calls (team communication)
+- ✅ Parent night video sessions
+- ✅ 1-on-1 coaching sessions
+- ✅ Screen sharing
+- ✅ Recording (optional)
+
+**Cost:** 
+- Free: 10,000 participant minutes/month
+- Example: 50 users × 30 min = 1,500 minutes (6 parent nights free!)
+- Paid: $0.001/minute = $1 per 1,000 minutes
+
+**See Full Guide:** `REPLIT_LIVEKIT_SETUP.md`
+
+---
+
+### **7. SMS Alternative - Twilio (NOT NEEDED!)**
 ```bash
 # DON'T ADD - You have FREE email-to-SMS!
 TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -157,7 +188,7 @@ TWILIO_PHONE_NUMBER=+1234567890
 
 ---
 
-### **7. Social Media APIs (Optional)**
+### **8. Social Media APIs (Optional)**
 ```bash
 # Instagram
 INSTAGRAM_ACCESS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxx
@@ -192,7 +223,7 @@ TIKTOK_CLIENT_SECRET=xxxxxxxxxxxxxxxxxxxxxxxx
 
 ---
 
-### **8. Analytics - PostHog (Optional)**
+### **9. Analytics - PostHog (Optional)**
 ```bash
 NEXT_PUBLIC_POSTHOG_KEY=phc_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
@@ -213,7 +244,7 @@ NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
 
 ---
 
-### **9. SMS Alternatives (Optional - If Email-to-SMS Not Enough)**
+### **10. SMS Alternatives (Optional - If Email-to-SMS Not Enough)**
 
 #### **Textbelt (1 free SMS/day, then cheap)**
 ```bash
@@ -265,6 +296,7 @@ nano .env.local
 ### **Recommended Additions:**
 - [ ] Stripe keys (enable payments)
 - [ ] OpenAI key (enable AI features)
+- [ ] LiveKit keys (enable video chat)
 - [ ] Database URL (scale beyond SQLite)
 
 ### **Nice to Have:**
@@ -299,6 +331,16 @@ Visit: `https://your-site.com/admin/email-sms-setup`
 3. Any 3-digit CVC
 4. ✅ Payments active!
 
+### **Test Video Chat:**
+1. Visit: `https://your-site.com/api/video/status`
+2. Should show: `"configured": true`
+3. Go to team communication
+4. Click video icon 📹
+5. Allow camera/microphone
+6. ✅ Video chat active!
+
+**See:** `REPLIT_LIVEKIT_SETUP.md` for troubleshooting
+
 ---
 
 ## 💰 Cost Summary
@@ -308,6 +350,7 @@ Visit: `https://your-site.com/admin/email-sms-setup`
 | **Email (Gmail SMTP)** | 500/day | N/A | **$0** |
 | **SMS (Email-to-SMS)** | Unlimited | N/A | **$0** |
 | **Clerk Auth** | 10K users | $25/mo | **$0** |
+| **LiveKit Video** | 10K min/mo | $0.001/min | **$0** |
 | **Stripe** | Free | 2.9% + $0.30 | **Pay per use** |
 | **OpenAI** | $5 credit | Pay-as-you-go | **~$2/mo** |
 | **Database** | Replit free | N/A | **$0** |
@@ -345,6 +388,13 @@ Visit: `https://your-site.com/admin/email-sms-setup`
 - ✅ Verify webhook endpoint is set
 - ✅ Check webhook secret matches
 
+### **Video Chat Not Working**
+- ✅ Verify all 4 LiveKit secrets are set (including NEXT_PUBLIC_ version)
+- ✅ Use LiveKit Cloud URL (starts with `wss://`)
+- ✅ Check status: `/api/video/status`
+- ✅ Restart Replit after adding secrets
+- ✅ See `REPLIT_LIVEKIT_SETUP.md` for detailed troubleshooting
+
 ---
 
 ## 🎯 Priority Order
@@ -357,11 +407,12 @@ Visit: `https://your-site.com/admin/email-sms-setup`
 **Add Later (Week 1):**
 4. ✅ Stripe for payments
 5. ✅ OpenAI for AI features
+6. ✅ LiveKit for video chat
 
 **Optional (Month 1):**
-6. ✅ Social media APIs
-7. ✅ Analytics
-8. ✅ PostgreSQL database
+7. ✅ Social media APIs
+8. ✅ Analytics
+9. ✅ PostgreSQL database
 
 ---
 
@@ -369,10 +420,16 @@ Visit: `https://your-site.com/admin/email-sms-setup`
 
 - **Gmail App Passwords:** https://myaccount.google.com/apppasswords
 - **Clerk Dashboard:** https://dashboard.clerk.com
+- **LiveKit Dashboard:** https://cloud.livekit.io/
 - **Stripe Dashboard:** https://dashboard.stripe.com
 - **OpenAI API:** https://platform.openai.com
 - **Resend Dashboard:** https://resend.com/home
 - **PostHog Dashboard:** https://app.posthog.com
+
+**Detailed Guides:**
+- 📹 **Video Chat Setup:** `REPLIT_LIVEKIT_SETUP.md`
+- 🔧 **General Integration:** `LIVEKIT_INTEGRATION.md`
+- ⚡ **Optimizations:** `LIVEKIT_REPLIT_OPTIMIZATIONS.md`
 
 ---
 

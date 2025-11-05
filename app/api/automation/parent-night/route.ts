@@ -13,6 +13,8 @@ export const runtime = 'nodejs';
  * - Tuesday RSVP → Confirmation + Reminder
  * - Thursday RSVP → Confirmation + Reminder  
  * - Monday Onboarding → Welcome sequence
+ * 
+ * NEW: Integrates StarPath followup after Parent Night attendance
  */
 
 interface ParentLead {
@@ -310,10 +312,37 @@ export async function POST(request: Request) {
     // await saveLeadToDatabase(lead);
     // await scheduleAutomations(sequences, lead);
 
+    // NEW: After Parent Night attendance, trigger StarPath followup
+    // This helps parents understand the next step: Transcript Audit ($199)
+    if (lead.status === 'attended' && lead.athleteName) {
+      try {
+        // Trigger StarPath followup to introduce Transcript Audit
+        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/automation/starpath-followup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            athleteId: lead.id,
+            athleteName: lead.athleteName,
+            parentName: lead.name,
+            parentEmail: lead.email,
+            parentPhone: lead.phone,
+            triggerType: 'milestone',
+            recipientType: 'both',
+            deliveryMethod: 'email', // Start with email for post-event followup
+            customMessage: {
+              context: `Attended Parent Night on ${new Date(lead.rsvpDate).toLocaleDateString()}`,
+              nextStep: 'Schedule Transcript Audit to get NCAA-ready with StarPath tracking',
+            },
+          }),
+        });
+      } catch (followupError) {
+        // Followup failed but don't block parent night confirmation
+      }
+    }
+
     return NextResponse.json({
       success: true,
       lead: {
-        id: lead.id || `lead_${Date.now()}`,
         ...lead,
         status: 'confirmed',
       },

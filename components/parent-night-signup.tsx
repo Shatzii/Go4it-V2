@@ -42,7 +42,14 @@ export default function ParentNightSignup({ eventType = 'tuesday', defaultDate }
           success: true,
           message: `🎉 You're registered! Check your ${formData.carrier ? 'phone' : 'email'} for confirmation.`,
         });
-        // Reset form
+        
+        // NEW: Redirect to StarPath after successful registration
+        // Show success message for 3 seconds, then redirect
+        setTimeout(() => {
+          window.location.href = '/starpath?utm_source=parent-night&utm_medium=signup&utm_campaign=transcript-audit';
+        }, 3000);
+        
+        // Reset form (will happen before redirect)
         setFormData({
           name: '',
           email: '',
@@ -87,11 +94,17 @@ export default function ParentNightSignup({ eventType = 'tuesday', defaultDate }
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
           {eventType === 'tuesday' ? '📋 Tuesday Info Session' : '🔥 Thursday Decision Session'}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-gray-600 mb-3">
           {eventType === 'tuesday' 
             ? 'Learn about NCAA eligibility, GAR testing, and how Go4it works'
             : 'Make your decision - 89% of Thursday attendees enroll'}
         </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+          <strong className="text-blue-900">⭐ New: StarPath System</strong>
+          <p className="text-blue-700 mt-1">
+            After registration, see your $199 Transcript Audit + NCAA Tracker
+          </p>
+        </div>
       </div>
 
       {result && (

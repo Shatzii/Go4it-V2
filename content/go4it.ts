@@ -11,8 +11,11 @@ export const brand = {
   slogan: "Your All-in-One Platform to Play at the Next Level",
   hubs: "Denver • Vienna • Dallas • Mérida (MX)",
   contact: {
-    email: "invest@go4itsports.org",
-    phone: "+1-205-434-4005",
+    email: "info@go4itsports.org",
+    phone: {
+      usa: "+1-205-434-8405",
+      eu: "+43 650 564 4236"
+    },
     website: "go4itsports.org"
   },
   compliance: "Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice."

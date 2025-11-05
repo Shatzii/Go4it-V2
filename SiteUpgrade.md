@@ -45,8 +45,8 @@ export const brand = {
   name: "Go4it Sports Academy",
   tagline: "Train Here. Place Anywhere.",
   hubs: "Denver • Vienna • Dallas • Mérida (MX)",
-  contact: "invest@go4itsports.org • +1-205-434-4005 • go4itsports.org",
-  compliance: "“Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.”"
+  contact: "info@go4itsports.org • USA: +1-205-434-8405 • EU: +43 650 564 4236 • go4itsports.org",
+  compliance: ""Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.""
 };
 
 export const hero = {

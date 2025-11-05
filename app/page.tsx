@@ -41,7 +41,7 @@ export default function LandingPage() {
       <div id="topbar" className="topbar" role="banner">
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <p>Denver • Vienna • Dallas • Mérida (MX) | <a href="mailto:invest@go4itsports.org">invest@go4itsports.org</a> | <a href="tel:+12054344005">+1-205-434-4005</a></p>
+            <p>Denver • Vienna • Dallas • Mérida (MX) | <a href="mailto:info@go4itsports.org">info@go4itsports.org</a> | USA: <a href="tel:+12054348405">+1-205-434-8405</a> | EU: <a href="tel:+436505644236">+43 650 564 4236</a></p>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <a href="https://instagram.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Instagram" style={{ color: 'white', fontSize: '18px' }}>📷</a>
               <a href="https://facebook.com/go4itsports" target="_blank" rel="noopener noreferrer" aria-label="Facebook" style={{ color: 'white', fontSize: '18px' }}>👤</a>
@@ -111,18 +111,23 @@ export default function LandingPage() {
           </div>
 
           <div className="hero__cta-group" role="group" aria-label="Primary actions">
-            <a href="/parent-night" className="btn btn--primary btn--pulse" data-cta="hero-parent-night" data-kpi="conversion">
+            <a href="/starpath" className="btn btn--primary btn--pulse" data-cta="hero-starpath" data-kpi="conversion">
+              ⭐ Start Your StarPath → Get NCAA-Ready
+            </a>
+            <a href="/parent-night" className="btn btn--secondary" data-cta="hero-parent-night">
               🎓 Free Parent Info Session (Tues/Thurs)
             </a>
-            <a href="#pathways" className="btn btn--secondary" data-cta="hero-pathways">Choose Your Path</a>
           </div>
           
           <div className="text-center text-white/90 mt-4 space-y-2">
             <p className="text-lg">
-              <strong>Every Tuesday & Thursday:</strong> Live sessions to learn how Go4it helps athletes succeed
+              <strong>StarPath System:</strong> Academic + Athletic + Behavioral tracking in one dashboard
             </p>
             <p className="text-sm text-white/70">
-              ✓ <strong>342 parents</strong> joined last week • ✓ <strong>17 registered</strong> for next Tuesday • ✓ <strong>100% free</strong>
+              ✓ <strong>Transcript Audit ($199)</strong> shows exactly where you stand • ✓ <strong>GAR Testing</strong> verifies your skills • ✓ <strong>NCAA Eligibility Tracker</strong> keeps you on track
+            </p>
+            <p className="text-xs text-white/60 mt-2">
+              Parent Night: <strong>342 parents</strong> joined last week • <strong>17 registered</strong> for next Tuesday • <strong>100% free</strong>
             </p>
           </div>
 
@@ -166,24 +171,24 @@ export default function LandingPage() {
               <p className="microcopy">Full-time enrollment with NCAA Pathway support</p>
             </div>
 
-            {/* AI Coach Path */}
+            {/* AI Coach Path - NOW WITH STARPATH */}
             <div className="pathway-card pathway-card--featured" data-scroll="fade-in">
               <div className="pathway-card__badge">MOST POPULAR</div>
-              <div className="pathway-card__icon">🤖</div>
-              <h3>AthleteAI Coach</h3>
-              <p className="pathway-card__tagline">AI-Powered Training + NCAA Tracker</p>
+              <div className="pathway-card__icon">⭐</div>
+              <h3>StarPath System</h3>
+              <p className="pathway-card__tagline">All-in-One: Academic + Athletic + NCAA Tracker</p>
               <ul className="pathway-card__features">
-                <li>✓ 24/7 AI coaching chatbot</li>
-                <li>✓ Personalized training plans</li>
-                <li>✓ Performance tracking & analytics</li>
-                <li>✓ NCAA eligibility dashboard</li>
-                <li>✓ GPA & credit monitoring</li>
-                <li>✓ No school enrollment required</li>
+                <li>✓ Transcript Audit (ARI Score 0-100)</li>
+                <li>✓ GAR Testing (Athletic Rating)</li>
+                <li>✓ Behavior Score (Leadership)</li>
+                <li>✓ NCAA Eligibility Dashboard</li>
+                <li>✓ 30-Day Improvement Plans</li>
+                <li>✓ AI-Powered Progress Reports</li>
               </ul>
               <p className="pathway-card__cta">
-                <Link href="/athleteai" className="btn btn--primary" data-cta="pathway-ai">Try Free</Link>
+                <Link href="/starpath" className="btn btn--primary" data-cta="pathway-starpath">Start $199 Audit</Link>
               </p>
-              <p className="microcopy">Perfect for athletes at any school</p>
+              <p className="microcopy">Complete NCAA readiness tracking</p>
             </div>
 
             {/* Get Verified Path */}
@@ -479,7 +484,7 @@ export default function LandingPage() {
       <section id="contact" className="contact section--dark">
         <div className="container">
           <h2>Talk to Our Team</h2>
-          <p>Email <a href="mailto:invest@go4itsports.org">invest@go4itsports.org</a> or call <a href="tel:+12054344005">+1-205-434-4005</a>.</p>
+          <p>Email <a href="mailto:info@go4itsports.org">info@go4itsports.org</a> or call USA: <a href="tel:+12054348405">+1-205-434-8405</a> | EU: <a href="tel:+436505644236">+43 650 564 4236</a>.</p>
           <p><strong>Hubs:</strong> Denver • Vienna • Dallas • Mérida (MX)</p>
         </div>
       </section>
