@@ -2,10 +2,13 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
 const isPublicRoute = createRouteMatcher([
   '/',
+  '/getverified(.*)',
+  '/academy(.*)',
   '/login(.*)',
   '/register(.*)',
   '/api/public(.*)',
   '/api/webhook(.*)',
+  '/api/health(.*)',
 ])
 
 const isAdminRoute = createRouteMatcher([
@@ -13,6 +16,17 @@ const isAdminRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, request) => {
+  // Skip auth check if no valid Clerk keys (local testing)
+  const hasClerkKeys = 
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && 
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes('YOUR_KEY_HERE') &&
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.length > 20
+
+  if (!hasClerkKeys) {
+    // Local testing mode - allow all public routes
+    return
+  }
+
   // Protect all non-public routes
   if (!isPublicRoute(request)) {
     await auth.protect()
