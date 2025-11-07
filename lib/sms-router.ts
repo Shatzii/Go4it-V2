@@ -9,10 +9,12 @@ import { sendSMSViaEmail } from './sms-free';
 
 export type SmsProvider = 'phonecom' | 'email-to-sms' | 'none';
 
+export type CarrierType = 'att' | 'verizon' | 'tmobile' | 'sprint' | 'uscellular' | 'boost' | 'cricket' | 'metropcs' | 'auto';
+
 export interface SendSmsOptions {
   to: string;
   message: string;
-  carrierHint?: string; // For email-to-SMS fallback (att, verizon, tmobile, etc.)
+  carrierHint?: CarrierType; // For email-to-SMS fallback
 }
 
 export interface SendSmsResult {
@@ -62,7 +64,7 @@ export async function sendSMS(options: SendSmsOptions): Promise<SendSmsResult> {
     const emailResult = await sendSMSViaEmail({
       to,
       message,
-      carrier: carrierHint,
+      carrier: carrierHint || 'auto',
     });
     
     if (emailResult.success) {
@@ -73,11 +75,13 @@ export async function sendSMS(options: SendSmsOptions): Promise<SendSmsResult> {
       };
     }
     
-    console.error('[SMS Router] Email-to-SMS failed:', emailResult.error);
+    // Email result has 'reason' not 'error'
+    const errorMsg = emailResult.skipped ? emailResult.reason : 'Email-to-SMS failed';
+    console.error('[SMS Router] Email-to-SMS failed:', errorMsg);
     return {
       success: false,
       provider: 'none',
-      error: emailResult.error || 'Email-to-SMS failed',
+      error: errorMsg,
     };
   } catch (error) {
     console.error('[SMS Router] Email-to-SMS exception:', error);

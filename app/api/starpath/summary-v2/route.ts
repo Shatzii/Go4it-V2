@@ -27,7 +27,7 @@ import { generateStarPathSummary } from '@/ai-engine/starpath/starpath-summary';
 export async function POST(req: NextRequest) {
   try {
     // Auth check (unchanged)
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     const useIntelligentRouter = process.env.FEATURE_SMART_ROUTING === 'true';
 
-    let summary: string;
+    let summary: any; // Can be string or StarPathSummaryResult
     let executionMethod: string;
     let responseTime: number;
 

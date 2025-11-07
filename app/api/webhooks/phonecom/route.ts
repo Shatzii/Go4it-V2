@@ -21,6 +21,18 @@ interface PhoneComIncomingMessage {
 
 export async function POST(request: NextRequest) {
   try {
+    // Verify webhook authenticity (optional but recommended)
+    const webhookSecret = process.env.PHONECOM_WEBHOOK_SECRET;
+    if (webhookSecret) {
+      const authHeader = request.headers.get('authorization');
+      const providedSecret = authHeader?.replace('Bearer ', '');
+      
+      if (providedSecret !== webhookSecret) {
+        console.error('[Phone.com Webhook] Unauthorized request - invalid secret');
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+      }
+    }
+    
     const payload = await request.json();
     
     // Parse Phone.com webhook payload

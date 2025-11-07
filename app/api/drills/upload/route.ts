@@ -46,7 +46,7 @@ interface UploadMetadata {
 export async function POST(request: NextRequest) {
   try {
     // Authentication
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized - Please sign in' },
@@ -292,7 +292,7 @@ async function uploadToR2(file: File, storagePath: string): Promise<boolean> {
  */
 export async function POST_GENERATE_THUMBNAIL(request: NextRequest) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -326,7 +326,7 @@ export async function POST_GENERATE_THUMBNAIL(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
