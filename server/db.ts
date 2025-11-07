@@ -1,7 +1,10 @@
 import * as schema from '../shared/schema';
 
 // Build-time safety: return null during static generation
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build';
+// Check multiple conditions to ensure we skip during ANY build scenario
+const isBuildPhase = 
+  process.env.NEXT_PHASE === 'phase-production-build' ||
+  process.env.SKIP_DB_INIT === 'true';
 
 let db: any;
 

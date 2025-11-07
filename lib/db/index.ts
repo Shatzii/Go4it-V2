@@ -10,8 +10,11 @@ let shutdown: (() => Promise<void> | void) | null = null;
 let db: any;
 
 // Skip database initialization during build phase
-const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || 
-                     process.env.NEXT_PHASE === 'phase-production-server';
+// Check multiple conditions to ensure we skip during ANY build scenario
+const isBuildPhase = 
+  process.env.NEXT_PHASE === 'phase-production-build' || 
+  process.env.SKIP_DB_INIT === 'true' ||
+  typeof window !== 'undefined'; // Never init on client-side
 
 if (isBuildPhase) {
   console.log('Build phase detected - skipping database initialization');
