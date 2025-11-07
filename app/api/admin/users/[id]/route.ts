@@ -7,6 +7,11 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  // Build-time safety: skip during static generation
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
+  }
+
   try {
     const resolvedParams = await params;
     const userId = parseInt(resolvedParams.id);

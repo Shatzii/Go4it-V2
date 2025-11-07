@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
+  // Build-time safety: skip during static generation
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
+  }
+
   try {
     // Import database connection
     const { db } = await import('@/server/db');
