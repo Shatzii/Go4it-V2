@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // Admin verification endpoint
 export async function GET(request: NextRequest) {
+  // Skip during build phase
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ error: 'Not available during build' }, { status: 503 });
+  }
+
   try {
     // In a production system, you would verify the actual logged-in user
     // For now, we'll check for admin credentials or context
