@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sendSMSViaEmail } from '@/lib/sms-free';
+import { sendSMS } from '@/lib/sms-router';
 import { sendEmailNodemailer } from '@/lib/sendEmailNodemailer';
 
 export const dynamic = 'force-dynamic';
@@ -91,10 +91,10 @@ export async function POST(request: Request) {
     // Send SMS confirmation if phone and carrier provided
     if (phone && carrier && carrier !== 'auto') {
       try {
-        const smsResult = await sendSMSViaEmail({
+        const smsResult = await sendSMS({
           to: phone,
           message: `✅ Parent Night confirmed! ${eventDay} at ${eventTime}. You'll get a reminder 24hrs before. - Go4it Sports`,
-          carrier: carrier as any,
+          carrierHint: carrier,
         });
         smsSent = smsResult.success;
       } catch (smsError) {
