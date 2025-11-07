@@ -13,8 +13,9 @@ export const PHONE_COM_CONFIG = {
   phoneNumber: '+13039704655',
   displayNumber: '(303) 970-4655',
   
-  // API Configuration
+  // API Configuration (v4.7.0)
   apiBaseUrl: 'https://api.phone.com/v4',
+  apiVersion: '4.7.0',
   
   // Get API token from environment
   get apiToken() {
@@ -57,6 +58,8 @@ export class PhoneComClient {
       headers: {
         'Authorization': `Bearer ${this.token}`,
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'User-Agent': `Go4It-Platform/${PHONE_COM_CONFIG.apiVersion}`,
         ...options.headers,
       },
     });
@@ -133,6 +136,61 @@ export class PhoneComClient {
    */
   async getCallRecording(callId: string) {
     return this.request(`/accounts/${PHONE_COM_CONFIG.accountId}/calls/${callId}/recording`);
+  }
+
+  /**
+   * Get SMS messages
+   */
+  async getSMSMessages(params?: {
+    startDate?: string;
+    endDate?: string;
+    limit?: number;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/accounts/${PHONE_COM_CONFIG.accountId}/sms?${query}`);
+  }
+
+  /**
+   * Set call forwarding
+   */
+  async setCallForwarding(extensionId: string, forwardTo: string, enabled: boolean) {
+    return this.request(`/accounts/${PHONE_COM_CONFIG.accountId}/extensions/${extensionId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        call_forwarding: {
+          enabled,
+          forward_to: forwardTo,
+        },
+      }),
+    });
+  }
+
+  /**
+   * Get extensions
+   */
+  async getExtensions() {
+    return this.request(`/accounts/${PHONE_COM_CONFIG.accountId}/extensions`);
+  }
+
+  /**
+   * Get queues (call center queues)
+   */
+  async getQueues() {
+    return this.request(`/accounts/${PHONE_COM_CONFIG.accountId}/queues`);
+  }
+
+  /**
+   * Get call logs (detailed analytics)
+   */
+  async getCallLogs(params?: {
+    direction?: 'inbound' | 'outbound';
+    startDate?: string;
+    endDate?: string;
+    limit?: number;
+    offset?: number;
+  }) {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request(`/accounts/${PHONE_COM_CONFIG.accountId}/call-logs?${query}`);
   }
 }
 
