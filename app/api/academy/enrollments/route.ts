@@ -9,11 +9,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
   }
 
-  // Build-time safety: skip during static generation
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
-  }
-
   const t0 = Date.now();
   try {
     const { searchParams } = new URL(req.url);
@@ -33,11 +28,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  // Build-time safety: skip during static generation
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
-  }
-
   // Build-time safety: skip during static generation
   if (process.env.NEXT_PHASE === 'phase-production-build') {
     return NextResponse.json({ error: 'Service temporarily unavailable during build' }, { status: 503 });
