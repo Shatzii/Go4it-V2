@@ -4,7 +4,7 @@
  * Run: npm run seed:studio
  */
 
-import { db } from '../lib/db';
+import { db } from '../lib/db/index';
 import { dailyStudios, studioRotations, curriculumUnits } from '../lib/db/schema/studio';
 
 async function seedStudio() {

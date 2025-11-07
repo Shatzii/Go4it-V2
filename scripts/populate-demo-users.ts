@@ -1,4 +1,4 @@
-import { db } from '../lib/db';
+import { db } from '../lib/db/index';
 import { users, videoAnalysis, starPathProgress } from '../shared/schema';
 import { eq, like } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
