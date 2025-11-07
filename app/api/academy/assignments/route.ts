@@ -39,7 +39,6 @@ export async function POST(req: NextRequest) {
   }
 
   const t0 = Date.now();
-  const t0 = Date.now();
   try {
     const assignmentData = await req.json();
     const assignment = await storage.createAssignment(assignmentData);
