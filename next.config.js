@@ -119,7 +119,16 @@ const nextConfig = {
     ];
   },
 
-  allowedDevOrigins: ['*.replit.dev', '*.replit.app', 'localhost:5000', '127.0.0.1:5000'],
+  // Allow development origins for Replit and local dev
+  allowedDevOrigins: [
+    '*.replit.dev', 
+    '*.replit.app', 
+    '*.kirk.replit.dev',  // Add Replit workspace domains
+    'localhost:3000',
+    'localhost:5000', 
+    '127.0.0.1:3000',
+    '127.0.0.1:5000'
+  ],
 
   // Minimal webpack configuration for Next.js 14
   webpack: (config, { isServer }) => {
