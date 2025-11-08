@@ -1,24 +1,10 @@
 import { pgTable, uuid, varchar, text, timestamp, boolean, numeric, date, index, uniqueIndex } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
+// Import canonical users table from shared schema to avoid conflicts
+import { users } from '../../shared/schema';
 
-// Users (Synced from Clerk)
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  clerkUserId: varchar('clerk_user_id', { length: 255 }).notNull().unique(),
-  email: varchar('email', { length: 255 }).notNull(),
-  firstName: varchar('first_name', { length: 100 }),
-  lastName: varchar('last_name', { length: 100 }),
-  profileImageUrl: text('profile_image_url'),
-  role: varchar('role', { length: 50 }).notNull().default('staff'),
-  location: varchar('location', { length: 100 }),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-}, (table) => ({
-  emailIdx: index('users_email_idx').on(table.email),
-  roleIdx: index('users_role_idx').on(table.role),
-  locationIdx: index('users_location_idx').on(table.location),
-  createdAtIdx: index('users_created_at_idx').on(table.createdAt),
-}));
+// NOTE: users table is imported from shared/schema.ts to maintain consistency
+// The canonical users table uses varchar ID, not uuid
 
 // Goals (The Hierarchy)
 export const goals: any = pgTable('goals', {
@@ -31,7 +17,7 @@ export const goals: any = pgTable('goals', {
   startDate: date('start_date'),
   endDate: date('end_date'),
   parentGoalId: uuid('parent_goal_id').references((): any => goals.id, { onDelete: 'cascade' }),
-  createdBy: uuid('created_by').notNull().references(() => users.id),
+  createdBy: varchar('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -43,7 +29,7 @@ export const projects = pgTable('projects', {
   description: text('description'),
   status: varchar('status', { length: 50 }).default('active'),
   goalId: uuid('goal_id').notNull().references(() => goals.id),
-  leadId: uuid('lead_id').notNull().references(() => users.id),
+  leadId: varchar('lead_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 
@@ -77,8 +63,8 @@ export const tasks: any = pgTable('tasks', {
   priority: varchar('priority', { length: 20 }).default('medium'),
   dueDate: timestamp('due_date', { withTimezone: true }),
   projectId: uuid('project_id').references(() => projects.id, { onDelete: 'cascade' }),
-  assignedTo: uuid('assigned_to').references(() => users.id),
-  createdBy: uuid('created_by').notNull().references(() => users.id),
+  assignedTo: varchar('assigned_to').references(() => users.id),
+  createdBy: varchar('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 
@@ -114,7 +100,7 @@ export const events = pgTable('events', {
   type: varchar('type', { length: 50 }).notNull(),
   location: varchar('location', { length: 255 }),
   projectId: uuid('project_id').references(() => projects.id),
-  createdBy: uuid('created_by').notNull().references(() => users.id),
+  createdBy: varchar('created_by').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -136,7 +122,7 @@ export const comments = pgTable('comments', {
   id: uuid('id').primaryKey().defaultRandom(),
   content: text('content').notNull(),
   taskId: uuid('task_id').notNull().references(() => tasks.id, { onDelete: 'cascade' }),
-  userId: uuid('user_id').notNull().references(() => users.id),
+  userId: varchar('user_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -144,7 +130,7 @@ export const comments = pgTable('comments', {
 // Activity Log & Audit Trail (Upgrade #10)
 export const activityLog = pgTable('activity_log', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: varchar('user_id').references(() => users.id),
   action: varchar('action', { length: 100 }).notNull(), // e.g., 'task.created', 'task.status.updated'
   entityType: varchar('entity_type', { length: 50 }).notNull(), // 'task', 'project', 'goal'
   entityId: uuid('entity_id').notNull(),
@@ -171,7 +157,7 @@ export const taskDependencies = pgTable('task_dependencies', {
 // Time Tracking (Upgrade #11)
 export const timeEntries = pgTable('time_entries', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: varchar('user_id').references(() => users.id),
   taskId: uuid('task_id'),
   projectId: uuid('project_id'),
   startTime: timestamp('start_time', { withTimezone: true }).notNull(),
@@ -189,7 +175,7 @@ export const timeEntries = pgTable('time_entries', {
 // Custom Views & Filters (Upgrade #15)
 export const savedViews = pgTable('saved_views', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: varchar('user_id').references(() => users.id),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
   viewType: varchar('view_type', { length: 50 }).notNull(), // 'tasks', 'projects', 'dashboard'
@@ -211,7 +197,7 @@ export const workflowTemplates = pgTable('workflow_templates', {
   triggerConditions: text('trigger_conditions'), // JSON string
   actions: text('actions').notNull(), // JSON string array of actions
   isActive: boolean('is_active').default(true),
-  createdBy: uuid('created_by').references(() => users.id),
+  createdBy: varchar('created_by').references(() => users.id),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
@@ -219,7 +205,7 @@ export const workflowTemplates = pgTable('workflow_templates', {
 // Notifications (Upgrade #4)
 export const notifications = pgTable('notifications', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').references(() => users.id),
+  userId: varchar('user_id').references(() => users.id),
   type: varchar('type', { length: 50 }).notNull(), // 'email', 'sms', 'in_app', 'slack'
   title: varchar('title', { length: 255 }).notNull(),
   message: text('message').notNull(),
@@ -402,7 +388,7 @@ export const ncaaSchools = pgTable('ncaa_schools', {
 // Recruiting Contacts (CRM)
 export const recruitingContacts = pgTable('recruiting_contacts', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id),
+  userId: varchar('user_id').notNull().references(() => users.id),
   schoolId: uuid('school_id').references(() => ncaaSchools.id),
   name: varchar('name', { length: 255 }).notNull(),
   title: varchar('title', { length: 255 }),
@@ -418,7 +404,7 @@ export const recruitingContacts = pgTable('recruiting_contacts', {
 // Recruiting Communications Log
 export const recruitingCommunications = pgTable('recruiting_communications', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id),
+  userId: varchar('user_id').notNull().references(() => users.id),
   contactId: uuid('contact_id').references(() => recruitingContacts.id),
   type: varchar('type', { length: 50 }).notNull(),
   subject: varchar('subject', { length: 500 }),
@@ -431,7 +417,7 @@ export const recruitingCommunications = pgTable('recruiting_communications', {
 // Recruiting Offers and Interest
 export const recruitingOffers = pgTable('recruiting_offers', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id),
+  userId: varchar('user_id').notNull().references(() => users.id),
   schoolId: uuid('school_id').notNull().references(() => ncaaSchools.id),
   contactId: uuid('contact_id').references(() => recruitingContacts.id),
   status: varchar('status', { length: 50 }).notNull().default('interested'),
@@ -449,7 +435,7 @@ export const recruitingOffers = pgTable('recruiting_offers', {
 // Recruiting Timeline Events
 export const recruitingTimeline = pgTable('recruiting_timeline', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id),
+  userId: varchar('user_id').notNull().references(() => users.id),
   schoolId: uuid('school_id').references(() => ncaaSchools.id),
   contactId: uuid('contact_id').references(() => recruitingContacts.id),
   eventType: varchar('event_type', { length: 100 }).notNull(),
@@ -464,7 +450,7 @@ export const recruitingTimeline = pgTable('recruiting_timeline', {
 // Recruiting Documents
 export const recruitingDocuments = pgTable('recruiting_documents', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull().references(() => users.id),
+  userId: varchar('user_id').notNull().references(() => users.id),
   documentType: varchar('document_type', { length: 100 }).notNull(),
   fileName: varchar('file_name', { length: 500 }).notNull(),
   filePath: text('file_path').notNull(),
