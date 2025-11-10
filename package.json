@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
-    "build": "next build",
-    "build:production": "cross-env NODE_ENV=production SKIP_TYPE_CHECK=true next build",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build:production": "cross-env NODE_ENV=production SKIP_TYPE_CHECK=true NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "next start -p 3000 -H 0.0.0.0",
     "start:production": "cross-env NODE_ENV=production next start -p 3000 -H 0.0.0.0",
     "lint": "next lint",
