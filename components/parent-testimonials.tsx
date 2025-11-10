@@ -125,38 +125,38 @@ export function ParentTestimonials() {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-b from-slate-50 to-white">
+    <section className="py-16 bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-blue-100 text-blue-800 border-blue-200">
+          <Badge className="mb-4 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
             Parent Night Success Stories
           </Badge>
-          <h2 className="text-4xl font-black text-gray-900 mb-4">
+          <h2 className="text-4xl font-black text-white mb-4">
             What Parents Say About Our Tuesday/Thursday Sessions
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
             Real feedback from parents who attended our free Parent Night info sessions
           </p>
         </div>
 
         {/* Stats Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center border border-gray-100">
-            <div className="text-3xl font-black text-blue-600 mb-1">342</div>
-            <div className="text-sm text-gray-600">Parents Last Week</div>
+          <div className="bg-slate-900 rounded-lg shadow-lg p-6 text-center border border-cyan-500/20 hover:border-cyan-500/40 transition-colors">
+            <div className="text-3xl font-black text-cyan-400 mb-1">342</div>
+            <div className="text-sm text-slate-400">Parents Last Week</div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center border border-gray-100">
-            <div className="text-3xl font-black text-green-600 mb-1">4.9</div>
-            <div className="text-sm text-gray-600">Average Rating</div>
+          <div className="bg-slate-900 rounded-lg shadow-lg p-6 text-center border border-cyan-500/20 hover:border-cyan-500/40 transition-colors">
+            <div className="text-3xl font-black text-green-400 mb-1">4.9</div>
+            <div className="text-sm text-slate-400">Average Rating</div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center border border-gray-100">
-            <div className="text-3xl font-black text-purple-600 mb-1">89%</div>
-            <div className="text-sm text-gray-600">Enroll After Thursday</div>
+          <div className="bg-slate-900 rounded-lg shadow-lg p-6 text-center border border-cyan-500/20 hover:border-cyan-500/40 transition-colors">
+            <div className="text-3xl font-black text-purple-400 mb-1">89%</div>
+            <div className="text-sm text-slate-400">Enroll After Thursday</div>
           </div>
-          <div className="bg-white rounded-lg shadow-sm p-6 text-center border border-gray-100">
-            <div className="text-3xl font-black text-orange-600 mb-1">100%</div>
-            <div className="text-sm text-gray-600">Free Sessions</div>
+          <div className="bg-slate-900 rounded-lg shadow-lg p-6 text-center border border-cyan-500/20 hover:border-cyan-500/40 transition-colors">
+            <div className="text-3xl font-black text-orange-400 mb-1">100%</div>
+            <div className="text-sm text-slate-400">Free Sessions</div>
           </div>
         </div>
 
@@ -165,14 +165,14 @@ export function ParentTestimonials() {
           {testimonials.map((testimonial) => (
             <Card
               key={testimonial.id}
-              className="hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+              className="bg-slate-900 border-cyan-500/20 hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 cursor-pointer"
               onClick={() => setSelectedTestimonial(testimonial)}
             >
               <CardContent className="p-6">
                 {/* Header with Profile Image */}
                 <div className="flex items-start gap-4 mb-4">
                   {/* Profile Image */}
-                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-blue-400 to-purple-500 flex-shrink-0 ring-2 ring-white shadow-md">
+                  <div className="relative w-16 h-16 rounded-full overflow-hidden bg-gradient-to-br from-cyan-400 to-blue-500 flex-shrink-0 ring-2 ring-cyan-500/30 shadow-md">
                     {testimonial.profileImage ? (
                       <Image
                         src={testimonial.profileImage}
@@ -192,12 +192,12 @@ export function ParentTestimonials() {
 
                   {/* Name & Location */}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 truncate">{testimonial.name}</h3>
-                    <p className="text-sm text-gray-600 truncate">{testimonial.location}</p>
+                    <h3 className="font-bold text-white truncate">{testimonial.name}</h3>
+                    <p className="text-sm text-slate-400 truncate">{testimonial.location}</p>
                   </div>
 
                   {/* Session Badge */}
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="outline" className="text-xs border-cyan-500/30 text-cyan-400">
                     {testimonial.session}
                   </Badge>
                 </div>
@@ -207,19 +207,19 @@ export function ParentTestimonials() {
 
                 {/* Quote */}
                 <div className="mb-4">
-                  <Quote className="w-8 h-8 text-blue-200 mb-2" />
-                  <p className="text-gray-700 text-sm leading-relaxed line-clamp-4">
+                  <Quote className="w-8 h-8 text-cyan-500/30 mb-2" />
+                  <p className="text-slate-300 text-sm leading-relaxed line-clamp-4">
                     {testimonial.quote}
                   </p>
                 </div>
 
                 {/* Athlete Info */}
-                <div className="pt-4 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 mb-2">
-                    <strong>Athlete:</strong> {testimonial.athleteName} • {testimonial.sport}
+                <div className="pt-4 border-t border-cyan-500/20">
+                  <p className="text-xs text-slate-400 mb-2">
+                    <strong className="text-white">Athlete:</strong> {testimonial.athleteName} • {testimonial.sport}
                   </p>
                   {testimonial.results && (
-                    <Badge variant="secondary" className="text-xs bg-green-50 text-green-700">
+                    <Badge variant="secondary" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
                       ✓ {testimonial.results}
                     </Badge>
                   )}
@@ -227,7 +227,7 @@ export function ParentTestimonials() {
 
                 {/* Video Preview */}
                 {testimonial.videoUrl && (
-                  <Button variant="outline" size="sm" className="w-full mt-4">
+                  <Button variant="outline" size="sm" className="w-full mt-4 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10">
                     <Play className="w-4 h-4 mr-2" />
                     Watch Video
                   </Button>
@@ -239,24 +239,24 @@ export function ParentTestimonials() {
 
         {/* CTA */}
         <div className="text-center mt-12">
-          <p className="text-lg text-gray-600 mb-6">
-            Join <strong>hundreds of parents</strong> who discovered how Go4it helps athletes succeed
+          <p className="text-lg text-slate-300 mb-6">
+            Join <strong className="text-cyan-400">hundreds of parents</strong> who discovered how Go4it helps athletes succeed
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/parent-night"
-              className="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+              className="inline-flex items-center justify-center px-8 py-4 bg-cyan-500 text-black font-bold rounded-lg hover:bg-cyan-400 transition-colors shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30"
             >
               🎓 Reserve Your Spot for Free Parent Night
             </a>
             <a
               href="#pathways"
-              className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 font-bold rounded-lg border-2 border-gray-200 hover:border-blue-600 transition-colors"
+              className="inline-flex items-center justify-center px-8 py-4 bg-slate-900 text-white font-bold rounded-lg border-2 border-cyan-500/30 hover:border-cyan-500 transition-colors"
             >
               Browse All Pathways
             </a>
           </div>
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="text-sm text-slate-400 mt-4">
             Every Tuesday & Thursday • US & Europe Times • 100% Free • No Credit Card Required
           </p>
         </div>
@@ -265,23 +265,23 @@ export function ParentTestimonials() {
       {/* Modal for selected testimonial (optional enhancement) */}
       {selectedTestimonial && (
         <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedTestimonial(null)}
         >
-          <Card className="max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
+          <Card className="max-w-2xl w-full bg-slate-900 border-cyan-500/30" onClick={(e) => e.stopPropagation()}>
             <CardContent className="p-8">
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-1">
+                  <h3 className="text-2xl font-bold text-white mb-1">
                     {selectedTestimonial.name}
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-slate-400">
                     {selectedTestimonial.location} • {selectedTestimonial.session} Session
                   </p>
                 </div>
                 <button
                   onClick={() => setSelectedTestimonial(null)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+                  className="text-slate-400 hover:text-cyan-400 text-2xl leading-none"
                 >
                   ×
                 </button>
@@ -290,29 +290,29 @@ export function ParentTestimonials() {
               {renderStars(selectedTestimonial.rating)}
 
               <div className="my-6">
-                <Quote className="w-12 h-12 text-blue-200 mb-4" />
-                <p className="text-lg text-gray-700 leading-relaxed">
+                <Quote className="w-12 h-12 text-cyan-500/30 mb-4" />
+                <p className="text-lg text-slate-300 leading-relaxed">
                   {selectedTestimonial.quote}
                 </p>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 mb-6">
-                <p className="text-sm text-gray-600 mb-2">
-                  <strong>Athlete:</strong> {selectedTestimonial.athleteName}
+              <div className="bg-slate-800 border border-cyan-500/20 rounded-lg p-4 mb-6">
+                <p className="text-sm text-slate-300 mb-2">
+                  <strong className="text-white">Athlete:</strong> {selectedTestimonial.athleteName}
                 </p>
-                <p className="text-sm text-gray-600 mb-2">
-                  <strong>Sport:</strong> {selectedTestimonial.sport}
+                <p className="text-sm text-slate-300 mb-2">
+                  <strong className="text-white">Sport:</strong> {selectedTestimonial.sport}
                 </p>
                 {selectedTestimonial.results && (
-                  <p className="text-sm text-gray-600">
-                    <strong>Results:</strong> {selectedTestimonial.results}
+                  <p className="text-sm text-slate-300">
+                    <strong className="text-white">Results:</strong> {selectedTestimonial.results}
                   </p>
                 )}
               </div>
 
               <Button
                 onClick={() => (window.location.href = '/parent-night')}
-                className="w-full"
+                className="w-full bg-cyan-500 text-black hover:bg-cyan-400 font-bold"
                 size="lg"
               >
                 Join Parent Night Like {selectedTestimonial.name}

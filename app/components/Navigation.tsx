@@ -29,9 +29,8 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  if (isHomePage) {
-    return null; // Home page has its own nav
-  }
+  // Note: Home page nav is rendered inline in page.tsx
+  // This component handles other pages
 
   const navigationLinks = [
     {
