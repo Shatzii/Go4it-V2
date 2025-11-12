@@ -13,7 +13,7 @@ export const brand = {
   contact: {
     email: "info@go4itsports.org",
     phone: {
-      usa: "+1-205-434-8405",
+      usa: "+1-303-970-4655",
       eu: "+43 650 564 4236"
     },
     website: "go4itsports.org"

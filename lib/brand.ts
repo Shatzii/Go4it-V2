@@ -4,7 +4,7 @@ export const brand = {
   tagline: 'Train Here. Place Anywhere.',
   contact: {
     email: 'info@go4itsports.org',
-    phone: '+1 205-434-8405',
+    phone: '+1 303-970-4655',
   },
   colors: {
     bg: '#0B0F14',

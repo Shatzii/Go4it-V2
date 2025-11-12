@@ -8,8 +8,8 @@ export const BRAND = {
   tagline: "Train Here. Place Anywhere.",
   hubs: ["Denver", "Vienna", "Dallas", "Mérida (MX)"],
   email: "info@go4itsports.org",
-  phoneDisplay: "+1 205-434-8405",
-  phoneTel: "tel:+12054348405",
+  phoneDisplay: "+1 303-970-4655",
+  phoneTel: "tel:+13039704655",
   url: "https://go4itsports.org",
   
   compliance: {
