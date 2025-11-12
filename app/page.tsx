@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import ChatWidget from "./components/ChatWidget";
 
 export default function SimpleLandingPage() {
   const [activeFeature, setActiveFeature] = useState("gap-year");
@@ -180,8 +181,8 @@ export default function SimpleLandingPage() {
           </p>
           <div className="flex flex-col items-center gap-4">
             <div className="text-gray-300">
-              <p>USA: +1-303-970-4655 | EU: +43 650 564 4236</p>
-              <p>info@go4itsports.org</p>
+              <p>USA: <a href="tel:+13039704655" className="hover:text-blue-400">+1-303-970-4655</a> | EU: <a href="tel:+436505644236" className="hover:text-blue-400">+43 650 564 4236</a></p>
+              <p><a href="mailto:info@go4itsports.org" className="hover:text-blue-400">info@go4itsports.org</a></p>
             </div>
             <button className="bg-blue-600 hover:bg-blue-700 px-12 py-4 rounded-lg font-semibold text-lg">
               Start Your Journey
@@ -197,6 +198,9 @@ export default function SimpleLandingPage() {
           <p className="mt-2">Train Here. Place Anywhere.™</p>
         </div>
       </footer>
+
+      {/* Chat Widget */}
+      <ChatWidget />
     </div>
   );
 }
