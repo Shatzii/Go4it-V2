@@ -1144,11 +1144,89 @@ export const fridayNightLightsRegistrations = pgTable('friday_night_lights_regis
 export type FridayNightLightsRegistration = typeof fridayNightLightsRegistrations.$inferSelect;
 export type InsertFridayNightLightsRegistration = typeof fridayNightLightsRegistrations.$inferInsert;
 
-// Zod validation schemas for academy
-export const insertCourseSchema = createInsertSchema(courses);
-export const insertEnrollmentSchema = createInsertSchema(enrollments);
-export const insertAssessmentSchema = createInsertSchema(assessments);
-export const insertContentLibrarySchema = createInsertSchema(contentLibrary);
-export const insertCurriculumSchema = createInsertSchema(curriculum);
-export const insertCourseContentSchema = createInsertSchema(courseContent);
-export const insertFridayNightLightsRegistrationSchema = createInsertSchema(fridayNightLightsRegistrations);
+
+// AI Tutor Tables
+export const aiTutorConversations = pgTable('ai_tutor_conversations', {
+  id: serial('id').primaryKey(),
+  sessionId: text('session_id').notNull(),
+  userId: text('user_id').notNull(),
+  tutorId: text('tutor_id').notNull(),
+  subject: text('subject').notNull(),
+  userMessage: text('user_message').notNull(),
+  aiResponse: text('ai_response').notNull(),
+  difficulty: text('difficulty'),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+export const aiTutorSessions = pgTable('ai_tutor_sessions', {
+  id: serial('id').primaryKey(),
+  sessionId: text('session_id').notNull().unique(),
+  userId: text('user_id').notNull(),
+  tutorId: text('tutor_id').notNull(),
+  subject: text('subject').notNull(),
+  totalMessages: integer('total_messages').default(0),
+  totalTime: integer('total_time').default(0),
+  difficulty: text('difficulty'),
+  startedAt: timestamp('started_at').defaultNow(),
+  lastActivity: timestamp('last_activity').defaultNow()
+});
+
+export const aiTutorProgress = pgTable('ai_tutor_progress', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  subject: text('subject').notNull(),
+  topic: text('topic').notNull(),
+  masteryLevel: text('mastery_level').notNull(),
+  attemptsCount: text('attempts_count').default('0'),
+  correctCount: text('correct_count').default('0'),
+  averageTimePerQuestion: text('average_time_per_question'),
+  lastPracticed: timestamp('last_practiced'),
+  strengths: text('strengths'),
+  weaknesses: text('weaknesses'),
+  recommendations: text('recommendations'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+// Tasks Table
+export const tasks = pgTable('tasks', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  projectId: integer('project_id'),
+  title: text('title').notNull(),
+  description: text('description'),
+  status: text('status').default('pending'),
+  priority: text('priority').default('medium'),
+  dueDate: timestamp('due_date'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow()
+});
+
+// Task Dependencies Table
+export const taskDependencies = pgTable('task_dependencies', {
+  id: serial('id').primaryKey(),
+  taskId: integer('task_id').notNull(),
+  dependsOnTaskId: integer('depends_on_task_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+// Time Entries Table
+export const timeEntries = pgTable('time_entries', {
+  id: serial('id').primaryKey(),
+  taskId: integer('task_id'),
+  userId: text('user_id').notNull(),
+  duration: integer('duration').notNull(),
+  description: text('description'),
+  createdAt: timestamp('created_at').defaultNow()
+});
+
+// Activity Log Table
+export const activityLog = pgTable('activity_log', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(),
+  action: text('action').notNull(),
+  entityType: text('entity_type'),
+  entityId: text('entity_id'),
+  metadata: text('metadata'),
+  createdAt: timestamp('created_at').defaultNow()
+});
