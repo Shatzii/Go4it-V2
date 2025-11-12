@@ -1,4 +1,6 @@
 #!/bin/bash
+# Force fresh package install on Replit
+export REPLIT_DISABLE_PACKAGE_LAYER=1
 # deploy-production.sh - Master deployment script for Go4it v2.1
 # Usage: ./scripts/deploy-production.sh
 

@@ -3,7 +3,14 @@
 // Supports Facebook, Instagram, TikTok, and Hudl.com with AI-optimized content
 
 import OpenAI from 'openai';
-import { createCanvas, loadImage } from 'canvas';
+let createCanvas: any, loadImage: any;
+try {
+  const canvasModule = await import('canvas');
+  createCanvas = canvasModule.createCanvas;
+  loadImage = canvasModule.loadImage;
+} catch (e) {
+  console.warn('Canvas module not available:', e);
+}
 import sharp from 'sharp';
 import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';

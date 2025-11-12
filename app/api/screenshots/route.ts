@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
-import puppeteer from 'puppeteer';
+let puppeteer: typeof import('puppeteer') | null = null;
+async function getPuppeteer() {
+  if (!puppeteer) {
+    puppeteer = await import('puppeteer');
+  }
+  return puppeteer;
+}
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -26,7 +32,14 @@ export async function POST(request: Request) {
     const targetUrl = url || getFeatureUrl(feature, athleteId);
 
     // Launch headless browser
-    const browser = await puppeteer.launch({
+    const puppeteerModule = await getPuppeteer();
+    if (!puppeteerModule) {
+      return NextResponse.json(
+        { success: false, error: 'Puppeteer module not available' },
+        { status: 500 }
+      );
+    }
+    const browser = await puppeteerModule.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
@@ -55,7 +68,7 @@ export async function POST(request: Request) {
     await browser.close();
 
     // Convert to base64
-    const base64Screenshot = screenshot.toString('base64');
+    const base64Screenshot = Buffer.from(screenshot).toString('base64');
     const dataUrl = `data:image/${format};base64,${base64Screenshot}`;
 
     return NextResponse.json({
