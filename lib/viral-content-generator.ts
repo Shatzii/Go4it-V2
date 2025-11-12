@@ -1,7 +1,19 @@
 // Viral Content Generation System
 import OpenAI from 'openai';
-import { createCanvas, loadImage } from 'canvas';
 import sharp from 'sharp';
+
+// Make canvas optional with fallback
+let createCanvas: any, loadImage: any;
+try {
+  const canvasModule = await import('canvas');
+  createCanvas = canvasModule.createCanvas;
+  loadImage = canvasModule.loadImage;
+} catch (e) {
+  console.warn('Canvas module not available in viral-content-generator:', e);
+  // Provide fallback functions that return null
+  createCanvas = () => null;
+  loadImage = () => null;
+}
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
