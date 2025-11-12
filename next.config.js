@@ -46,47 +46,7 @@ const nextConfig = {
   staticPageGenerationTimeout: 180, // Increased to 3 minutes
   
   // Optimize builds
-  compiler: {
-    removeConsole: process.env.NODE_ENV === 'production' ? {
-      exclude: ['error', 'warn'],
-    } : false,
-  },
-
-  // Build error handling
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  
-  // SWC minification
-  swcMinify: true,
-  
-  // Experimental optimizations
-  experimental: {
-    optimizePackageImports: [
-      'lucide-react', 
-      '@radix-ui/react-icons',
-      '@radix-ui/react-avatar',
-      '@radix-ui/react-dialog',
-      '@radix-ui/react-dropdown-menu',
-      '@radix-ui/react-select',
-      '@radix-ui/react-tabs',
-      '@radix-ui/react-accordion',
-    ],
-    // Prevent database access during static generation
-    instrumentationHook: true,
-    // Disable turbo to reduce memory usage during builds
-    // turbo: {
-    //   rules: {
-    //     '*.svg': {
-    //       loaders: ['@svgr/webpack'],
-    //       as: '*.js',
-    //     },
-    //   },
-    // },
-  },
+  // Removed unsupported and experimental options
 
   // Security headers
   async headers() {
@@ -146,53 +106,6 @@ const nextConfig = {
     '127.0.0.1:5000'
   ],
 
-  // Minimal webpack configuration for Next.js 14
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Externalize server-only packages
-      config.externals = config.externals || [];
-      config.externals.push({
-        '@tensorflow/tfjs': 'commonjs @tensorflow/tfjs',
-        '@tensorflow/tfjs-backend-webgl': 'commonjs @tensorflow/tfjs-backend-webgl',
-        '@tensorflow-models/pose-detection': 'commonjs @tensorflow-models/pose-detection',
-        '@mediapipe/camera_utils': 'commonjs @mediapipe/camera_utils',
-        '@mediapipe/drawing_utils': 'commonjs @mediapipe/drawing_utils',
-        '@mediapipe/holistic': 'commonjs @mediapipe/holistic',
-        '@mediapipe/pose': 'commonjs @mediapipe/pose',
-        canvas: 'commonjs canvas',
-        puppeteer: 'commonjs puppeteer',
-        express: 'commonjs express',
-        'node-cron': 'commonjs node-cron',
-        'form-data': 'commonjs form-data',
-      });
-    }
-
-    if (!isServer) {
-      // Node.js fallbacks for client-side
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-        crypto: false,
-        stream: false,
-        buffer: false,
-        util: false,
-        assert: false,
-        http: false,
-        https: false,
-        os: false,
-        url: false,
-        zlib: false,
-        querystring: false,
-        child_process: false,
-        worker_threads: false,
-        net: false,
-        tls: false,
-      };
-    }
-
-    return config;
-  },
 };
 
 module.exports = nextConfig;

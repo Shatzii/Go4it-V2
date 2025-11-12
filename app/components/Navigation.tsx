@@ -25,12 +25,8 @@ import {
 
 export default function Navigation() {
   const pathname = usePathname();
-  const isHomePage = pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-  // Note: Home page nav is rendered inline in page.tsx
-  // This component handles other pages
 
   const navigationLinks = [
     {

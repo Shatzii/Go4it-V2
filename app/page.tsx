@@ -61,39 +61,7 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* NAVIGATION */}
-      <nav id="nav" className="nav" role="navigation" aria-label="Main navigation">
-        <div className="container">
-          <div className="nav__brand">
-            <Link href="/">
-              <strong>Go4it Sports Academy</strong>
-            </Link>
-          </div>
-          
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="nav__mobile-toggle" 
-            id="mobile-menu-toggle"
-            aria-label="Toggle menu"
-            aria-expanded="false"
-          >
-            <span className="hamburger"></span>
-            <span className="hamburger"></span>
-            <span className="hamburger"></span>
-          </button>
-
-          <ul className="nav__menu" id="nav-menu">
-            <li><Link href="/dashboard">Dashboard</Link></li>
-            <li><Link href="/academy">Academy</Link></li>
-            <li><Link href="/events">Events</Link></li>
-            <li><Link href="/starpath">StarPath</Link></li>
-            <li><Link href="/athleteai">AthleteAI</Link></li>
-            <li><Link href="/recruiting-hub">Recruiting</Link></li>
-            <li><Link href="/audit" className="btn btn--primary" data-cta="nav-audit">48hr Audit</Link></li>
-            <li><Link href="/apply" className="btn btn--primary" data-cta="nav-apply">Apply</Link></li>
-          </ul>
-        </div>
-      </nav>
+      {/* NAVIGATION - Now handled by global Navigation component in layout.tsx */}
 
       {/* HERO */}
       <header id="hero" className="hero section--dark" data-scroll="fade-in">

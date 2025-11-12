@@ -183,68 +183,6 @@ const nextConfig = {
   },
   
   // ============================================================================
-  // WEBPACK OPTIMIZATION
-  // ============================================================================
-  webpack: (config, { isServer, dev }) => {
-    // Production optimizations only
-    if (!dev && !isServer) {
-      // Split chunks for better caching
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          // Common dependencies
-          commons: {
-            name: 'commons',
-            chunks: 'all',
-            minChunks: 2,
-            priority: 10,
-          },
-          // Framework code (React, Next.js)
-          framework: {
-            name: 'framework',
-            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|prop-types|use-subscription)[\\/]/,
-            priority: 40,
-            enforce: true,
-          },
-          // Lib code (large libraries)
-          lib: {
-            test: /[\\/]node_modules[\\/]/,
-            name(module) {
-              const packageName = module.context.match(
-                /[\\/]node_modules[\\/](.*?)([\\/]|$)/
-              )?.[1];
-              return `npm.${packageName?.replace('@', '') || 'unknown'}`;
-            },
-            priority: 30,
-            minChunks: 1,
-            reuseExistingChunk: true,
-          },
-          // Shared code
-          shared: {
-            name(module, chunks) {
-              return `shared.${chunks.map((chunk) => chunk.name).join('_')}`;
-            },
-            priority: 20,
-            minChunks: 2,
-            reuseExistingChunk: true,
-          },
-        },
-        maxInitialRequests: 25,
-        minSize: 20000,
-      };
-      
-      // Minimize bundle size
-      config.optimization.minimize = true;
-    }
-    
-    // Handle Canvas (for potential node-canvas usage)
-    config.externals = config.externals || {};
-    config.externals['canvas'] = 'commonjs canvas';
-    
-    return config;
-  },
   
   // ============================================================================
   // ENVIRONMENT & BUILD
