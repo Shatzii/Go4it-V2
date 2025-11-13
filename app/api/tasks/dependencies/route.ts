@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const taskId = searchParams.get('taskId');
 
-    let whereConditions = [];
+    const whereConditions = [];
 
     if (taskId) {
       whereConditions.push(eq(taskDependencies.taskId, taskId));

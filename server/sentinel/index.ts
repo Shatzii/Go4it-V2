@@ -544,7 +544,7 @@ export function remediateVulnerability(moduleId: string, action: string) {
     // For this implementation, we'll simulate successful remediation
     
     // Default response
-    let response = {
+    const response = {
       success: true,
       message: `Applied ${action} to module ${moduleId}`
     };

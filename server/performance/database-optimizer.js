@@ -30,7 +30,7 @@ const defaultConfig = {
 };
 
 // Performance stats tracking
-let dbStats = {
+const dbStats = {
   totalQueries: 0,
   activeConnections: 0,
   slowQueries: 0,

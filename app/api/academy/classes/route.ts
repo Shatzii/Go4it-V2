@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const includeStudents = searchParams.get('includeStudents') === 'true';
 
     // Get all academy courses/classes
-    let classes = await db.select().from(academyCourses).where(eq(academyCourses.isActive, true));
+    const classes = await db.select().from(academyCourses).where(eq(academyCourses.isActive, true));
 
     // If requesting classes with student information
     if (includeStudents) {

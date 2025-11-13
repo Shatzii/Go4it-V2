@@ -12,7 +12,7 @@ const { db } = require('../db');
 const { eq } = require('drizzle-orm');
 
 // Sample in-memory storage until we set up the database schema
-let courses = [];
+const courses = [];
 
 /**
  * Verify the AI engine is available

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mock study session data - in a real app this would come from a database
-let studySessions = [
+const studySessions = [
   {
     id: '1',
     studentId: 'dev-user-123',

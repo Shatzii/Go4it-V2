@@ -349,7 +349,7 @@ export async function populateRealUsers() {
     }
 
     // Add video analysis for athletes
-    let userIndex = 0;
+    const userIndex = 0;
     for (const analysis of realVideoAnalysis) {
       const athlete = createdUsers.find(
         (u) =>

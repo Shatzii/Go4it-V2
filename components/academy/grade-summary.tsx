@@ -97,7 +97,7 @@ export default function GradeSummary({
   const { data: grades = [], isLoading } = useQuery({
     queryKey: ['grades', userId, courseId],
     queryFn: async () => {
-      let url = `/api/grades/user/${userId}`;
+      const url = `/api/grades/user/${userId}`;
       const response = await fetch(url);
       if (!response.ok) throw new Error('Failed to fetch grades');
       const allGrades = await response.json();

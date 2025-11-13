@@ -291,7 +291,7 @@ export class SOC2BackupManager {
   private static calculateNextRun(frequency: string, timeOfDay: string): Date {
     const [hours, minutes] = timeOfDay.split(':').map(Number);
     const now = new Date();
-    let nextRun = new Date(now);
+    const nextRun = new Date(now);
 
     nextRun.setHours(hours, minutes, 0, 0);
 

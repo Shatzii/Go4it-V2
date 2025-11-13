@@ -114,7 +114,7 @@ const sampleEasterEggs = [
 ];
 
 // In-memory storage for Easter eggs and user discoveries
-let easterEggs = [...sampleEasterEggs];
+const easterEggs = [...sampleEasterEggs];
 const userDiscoveries = {};
 
 class EasterEggService {

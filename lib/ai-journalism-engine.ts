@@ -549,7 +549,7 @@ Return in JSON format.
 
   private applySEOOptimizations(content: string, optimizations: any): string {
     // Apply keyword optimizations to content
-    let optimizedContent = content;
+    const optimizedContent = content;
 
     if (optimizations.keywordPlacements) {
       // Apply suggested keyword placements

@@ -60,7 +60,7 @@ let serverStats = {
 
 // Request queue for limiting concurrent operations
 const requestQueue = [];
-let activeRequests = 0;
+const activeRequests = 0;
 
 // Worker registry for cluster mode
 const workers = new Map();

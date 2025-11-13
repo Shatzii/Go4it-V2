@@ -558,7 +558,7 @@ export function processADHDAssessmentResults(answers: Record<number, string>): A
   const questions = generateADHDQuestions();
   
   // Process each answer
-  let counts: Record<keyof ADHDIndicators, number> = {
+  const counts: Record<keyof ADHDIndicators, number> = {
     sustainedAttention: 0,
     impulseControl: 0,
     hyperactivity: 0,

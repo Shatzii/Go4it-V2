@@ -136,7 +136,7 @@ export default function LearningEngine() {
 
       const performanceScore = (module.accuracy + module.completionRate) / 2
       let newDifficulty = module.currentDifficulty
-      let newAdaptations = [...module.adaptations]
+      const newAdaptations = [...module.adaptations]
 
       if (performanceScore > 85 && module.currentDifficulty < settings.maxDifficulty) {
         newDifficulty = Math.min(settings.maxDifficulty, module.currentDifficulty + 0.5)

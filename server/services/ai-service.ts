@@ -602,7 +602,7 @@ export const checkAIConnections = async (): Promise<{
   openai: boolean;
   message: string;
 }> => {
-  let results = {
+  const results = {
     anthropic: false,
     openai: false,
     message: "",

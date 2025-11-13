@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-let learningPaths = [
+const learningPaths = [
   {
     id: '1',
     name: 'Algebra Mastery Path',

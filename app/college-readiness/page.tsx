@@ -208,7 +208,7 @@ export default function CollegeReadinessCenter() {
   // AI College Matching Algorithm
   const calculateCollegeMatch = (student, college) => {
     let score = 0
-    let factors = []
+    const factors = []
     
     // Academic fit (40% weight)
     const gpaFit = (student.gpa / 4.0) * 100

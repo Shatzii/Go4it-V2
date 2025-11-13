@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
       ),
     ]);
 
-    let studentData = {
+    const studentData = {
       enrollments: [],
       assignments: [],
       weakAreas: ['Quadratic Equations', 'Cell Structure'],

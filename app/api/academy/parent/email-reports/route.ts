@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
 
 function getNextScheduledDate(frequency: 'daily' | 'weekly' | 'monthly'): string {
   const now = new Date();
-  let nextDate = new Date(now);
+  const nextDate = new Date(now);
 
   switch (frequency) {
     case 'daily':

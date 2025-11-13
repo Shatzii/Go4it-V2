@@ -1052,6 +1052,77 @@ export const contentLibrary = pgTable('content_library', {
 export type ContentLibraryItem = typeof contentLibrary.$inferSelect;
 export type InsertContentLibraryItem = typeof contentLibrary.$inferInsert;
 
+// Insert helper schemas for compatibility with legacy imports
+export const insertAssessmentSchema = createInsertSchema(assessments);
+export const insertContentLibrarySchema = createInsertSchema(contentLibrary);
+export const insertCourseSchema = createInsertSchema(courses);
+export const insertEnrollmentSchema = createInsertSchema(enrollments);
+
+// Goals (compatibility layer)
+export const goals = pgTable('goals', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar('title').notNull(),
+  description: text('description'),
+  type: varchar('type'),
+  targetValue: decimal('target_value'),
+  currentValue: decimal('current_value').default(0),
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
+  parentGoalId: varchar('parent_goal_id'),
+  createdBy: varchar('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export type Goal = typeof goals.$inferSelect;
+export type InsertGoal = typeof goals.$inferInsert;
+
+// Projects (compatibility layer)
+export const projects = pgTable('projects', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar('title').notNull(),
+  description: text('description'),
+  status: varchar('status').default('active'),
+  goalId: varchar('goal_id').references(() => goals.id),
+  leadId: varchar('lead_id').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+  type: varchar('type'),
+  location: varchar('location'),
+  department: varchar('department'),
+  priority: varchar('priority').default('medium'),
+  progress: decimal('progress').default(0),
+});
+
+export type Project = typeof projects.$inferSelect;
+export type InsertProject = typeof projects.$inferInsert;
+
+// Events and attendees (compatibility layer)
+export const events = pgTable('events', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar('title').notNull(),
+  description: text('description'),
+  startTime: timestamp('start_time').notNull(),
+  endTime: timestamp('end_time').notNull(),
+  allDay: boolean('all_day').default(false),
+  type: varchar('type'),
+  location: varchar('location'),
+  projectId: varchar('project_id').references(() => projects.id),
+  createdBy: varchar('created_by').references(() => users.id),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const eventAttendees = pgTable('event_attendees', {
+  id: varchar('id').primaryKey().default(sql`gen_random_uuid()`),
+  eventId: varchar('event_id').notNull().references(() => events.id),
+  userId: varchar('user_id').notNull().references(() => users.id),
+  status: varchar('status').default('invited'),
+});
+
+export type Event = typeof events.$inferSelect;
+export type EventAttendee = typeof eventAttendees.$inferSelect;
+
 // Curriculum-related tables
 export const curriculum = pgTable('curriculum', {
   id: varchar('id')
@@ -1202,31 +1273,7 @@ export const tasks = pgTable('tasks', {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
-// Task Dependencies Table
-export const taskDependencies = pgTable('task_dependencies', {
-  id: serial('id').primaryKey(),
-  taskId: integer('task_id').notNull(),
-  dependsOnTaskId: integer('depends_on_task_id').notNull(),
-  createdAt: timestamp('created_at').defaultNow()
-});
-
-// Time Entries Table
-export const timeEntries = pgTable('time_entries', {
-  id: serial('id').primaryKey(),
-  taskId: integer('task_id'),
-  userId: text('user_id').notNull(),
-  duration: integer('duration').notNull(),
-  description: text('description'),
-  createdAt: timestamp('created_at').defaultNow()
-});
-
-// Activity Log Table
-export const activityLog = pgTable('activity_log', {
-  id: serial('id').primaryKey(),
-  userId: text('user_id').notNull(),
-  action: text('action').notNull(),
-  entityType: text('entity_type'),
-  entityId: text('entity_id'),
-  metadata: text('metadata'),
-  createdAt: timestamp('created_at').defaultNow()
-});
+// NOTE: taskDependencies, timeEntries, and activityLog are defined earlier
+// in this file with full UUID-based primary keys and indexes. The older
+// serial-based duplicates were removed to avoid duplicate-export errors
+// during Turbopack/Next builds.

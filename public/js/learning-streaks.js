@@ -1359,7 +1359,7 @@ class LearningStreakSystem {
     const notification = document.createElement('div');
     notification.className = 'streak-notification';
     
-    let message = `You've maintained your learning streak for ${this.streakData.currentStreak} days!`;
+    const message = `You've maintained your learning streak for ${this.streakData.currentStreak} days!`;
     let special = '';
     
     if (this.streakData.currentStreak === 7) {
