@@ -80,6 +80,14 @@ jobs:
         run: |
           npx next build 2>&1 | tee build.log
 
+      - name: Append .next listing to build.log
+        if: always()
+        run: |
+          echo "\n---- .next listing ----" >> build.log || true
+          ls -la .next >> build.log 2>&1 || true
+          echo "\n---- .next size ----" >> build.log || true
+          du -sh .next >> build.log 2>&1 || true
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
