@@ -19,8 +19,6 @@ const nextConfig = {
   // Deployment optimizations to reduce build size
   productionBrowserSourceMaps: false,
 
-  // Use SWC minifier for faster minification
-  swcMinify: true,
 
   images: {
     // Disable Next.js image optimization during production builds on constrained hosts.
@@ -41,19 +39,8 @@ const nextConfig = {
     ],
   },
 
-  // Enable persistent filesystem cache for webpack to speed up repeated builds
-  webpack(config, { dev, isServer }) {
-    if (!dev) {
-      try {
-        config.cache = config.cache || {};
-        config.cache.type = 'filesystem';
-        config.cache.cacheDirectory = '.next/.cache/webpack';
-      } catch (e) {
-        // ignore cache configuration errors
-      }
-    }
-    return config;
-  },
+  // Turbopack placeholder to avoid errors when custom webpack config is not used
+  turbopack: {},
 
   poweredByHeader: false,
   compress: true,
