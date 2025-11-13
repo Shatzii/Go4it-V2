@@ -57,29 +57,8 @@ export async function generateStarPathSummary(
       const systemPrompt = `You are the Go4it StarPath AI assistant specialized in analyzing athlete performance data and generating comprehensive summaries for parents and coaches.`;
       const userPrompt = prompt;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `You are the Go4it StarPath AI assistant. Your job is to analyze student-athlete data and create clear, encouraging, actionable reports for parents. 
 
-Key guidelines:
-- Be positive and encouraging while honest about areas needing improvement
-- Use simple language (avoid jargon)
-- Provide specific, actionable next steps
-- Always end with a call-to-action to book next services
-- Focus on the holistic athlete: academics, athletics, and character`,
-        },
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-      temperature: 0.7,
-      max_tokens: 1500,
-    });
-
+    // Use a single OpenAI completion call
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -100,8 +79,19 @@ Key guidelines:
       return generateFallbackSummary(athlete, audit);
     }
 
-    // Parse GPT response into structured format
-    return parseGPTResponse(response, athlete);
+    // Extract text content from the OpenAI response, then parse
+    let assistantText = '';
+    // OpenAI response shape: { choices: [{ message: { role, content } }, ...] }
+    if (response && (response as any).choices && Array.isArray((response as any).choices)) {
+      assistantText = (response as any).choices
+        .map((c: any) => (c?.message?.content ?? ''))
+        .filter(Boolean)
+        .join('\n\n');
+    } else if (typeof response === 'string') {
+      assistantText = response;
+    }
+
+    return parseGPTResponse(assistantText, athlete);
 
   } catch (error) {
     console.error('GPT summary generation error:', error);
