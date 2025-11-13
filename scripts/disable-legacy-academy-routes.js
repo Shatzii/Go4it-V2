@@ -58,7 +58,7 @@ filesToFix.forEach((filePath) => {
     return;
   }
 
-  let content = fs.readFileSync(fullPath, 'utf8');
+  const content = fs.readFileSync(fullPath, 'utf8');
   
   // Check if already has proper stub
   if (content.includes('Academy feature requires database migration')) {

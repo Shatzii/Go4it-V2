@@ -90,7 +90,7 @@ export default function CourseDiscovery() {
   }, []);
 
   useEffect(() => {
-    let filtered = courses.filter((course) => {
+    const filtered = courses.filter((course) => {
       const matchesSearch =
         course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||

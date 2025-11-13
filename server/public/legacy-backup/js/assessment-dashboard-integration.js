@@ -10,7 +10,7 @@
 let assessmentResults = null;
 let learningPersona = null;
 let recommendedStrategies = [];
-let strengthsAndChallenges = {
+const strengthsAndChallenges = {
   strengths: [],
   challenges: []
 };

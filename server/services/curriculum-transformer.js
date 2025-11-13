@@ -186,7 +186,7 @@ async function performBasicTransformation(content, learningDifference, gradeLeve
 export async function transformCurriculumFromFile(file, learningDifference, gradeLevel, options = {}) {
   try {
     let content;
-    let fileType = file.mimetype || '';
+    const fileType = file.mimetype || '';
     
     // Extract content based on file type
     if (fileType.includes('text/plain')) {

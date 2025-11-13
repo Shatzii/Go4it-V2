@@ -99,7 +99,7 @@ const sampleEasterEggs = [
 
 // In-memory storage for Easter eggs and user discoveries
 // This would be replaced with database storage in production
-let easterEggs = [...sampleEasterEggs];
+const easterEggs = [...sampleEasterEggs];
 const userDiscoveries = {};
 
 /**

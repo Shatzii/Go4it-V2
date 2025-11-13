@@ -564,7 +564,7 @@ export function processAutismSpectrumAssessmentResults(answers: Record<number, s
   const questions = generateAutismSpectrumQuestions();
   
   // Process each answer
-  let counts: Record<keyof AutismSpectrumIndicators, number> = {
+  const counts: Record<keyof AutismSpectrumIndicators, number> = {
     socialCommunication: 0,
     flexibilityPreferences: 0,
     sensorySensitivity: 0,

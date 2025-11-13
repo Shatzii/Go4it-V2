@@ -19,7 +19,7 @@ const teacherConfig = {
 };
 
 // Conversation history
-let conversationHistory = [];
+const conversationHistory = [];
 
 // Send a message to the AI teacher
 async function sendMessage() {

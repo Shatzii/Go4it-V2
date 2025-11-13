@@ -58,7 +58,7 @@ function createAssetOptimizerMiddleware(config = {}) {
   const mergedConfig = { ...defaultConfig, ...config };
   
   // Asset manifest storage
-  let assetManifest = {};
+  const assetManifest = {};
   
   // Precompiled asset cache
   const assetCache = new Map();

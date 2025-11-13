@@ -232,7 +232,7 @@ function startScheduledTasks() {
  */
 function scheduleDaily(task, hour, minute) {
   const now = new Date();
-  let scheduledTime = new Date(
+  const scheduledTime = new Date(
     now.getFullYear(),
     now.getMonth(),
     now.getDate(),

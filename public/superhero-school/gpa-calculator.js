@@ -429,7 +429,7 @@ function calculateSemesterGPA() {
   
   activeCourses.forEach(course => {
     const credits = parseFloat(course.credits) || 0;
-    let gradeValue = GPA_SCALE[course.grade] || 0;
+    const gradeValue = GPA_SCALE[course.grade] || 0;
     
     // Add honor/AP points
     const extraPoints = course.isAP ? 1.0 : (course.isHonors ? 0.5 : 0);
@@ -464,7 +464,7 @@ function calculateCumulativeGPA() {
   Object.keys(courses).forEach(semester => {
     courses[semester].forEach(course => {
       const credits = parseFloat(course.credits) || 0;
-      let gradeValue = GPA_SCALE[course.grade] || 0;
+      const gradeValue = GPA_SCALE[course.grade] || 0;
       
       // Add honor/AP points
       const extraPoints = course.isAP ? 1.0 : (course.isHonors ? 0.5 : 0);

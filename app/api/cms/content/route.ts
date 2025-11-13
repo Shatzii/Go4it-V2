@@ -21,7 +21,7 @@ interface ContentItem {
 }
 
 // Mock data store - in production, this would be a database
-let contentStore: ContentItem[] = [
+const contentStore: ContentItem[] = [
   {
     id: '1',
     title: 'Advanced Basketball Training Techniques',

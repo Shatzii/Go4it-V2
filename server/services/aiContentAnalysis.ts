@@ -327,7 +327,7 @@ Provide your analysis in JSON format.`
 
     // Calculate overall risk score
     let riskScore = 0;
-    let threatTypes: string[] = [];
+    const threatTypes: string[] = [];
     let highestSeverity = 'low';
 
     if (predatorRisk && predatorRisk.riskLevel !== 'low') {

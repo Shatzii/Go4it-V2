@@ -27,7 +27,7 @@ export class LmsIntegrationService {
       
       // If tokens are not provided, authenticate
       let finalAccessToken = accessToken;
-      let finalRefreshToken = refreshToken || '';
+      const finalRefreshToken = refreshToken || '';
       
       if (!finalAccessToken) {
         finalAccessToken = await psService.authenticate();

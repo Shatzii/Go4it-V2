@@ -156,7 +156,7 @@ export class AdvancedScraper {
       ];
 
       const scrapedData: any[] = [];
-      let totalErrors: string[] = [];
+      const totalErrors: string[] = [];
 
       for (const url of espnUrls) {
         try {
@@ -243,7 +243,7 @@ export class AdvancedScraper {
       ];
 
       const scrapedData: any[] = [];
-      let totalErrors: string[] = [];
+      const totalErrors: string[] = [];
 
       for (const url of maxPrepsUrls) {
         try {
@@ -315,7 +315,7 @@ export class AdvancedScraper {
       ];
 
       const scrapedData: any[] = [];
-      let totalErrors: string[] = [];
+      const totalErrors: string[] = [];
 
       for (const url of rivalsUrls) {
         try {
@@ -390,7 +390,7 @@ export class AdvancedScraper {
       ];
 
       const scrapedData: any[] = [];
-      let totalErrors: string[] = [];
+      const totalErrors: string[] = [];
 
       for (const url of europeanUrls) {
         try {

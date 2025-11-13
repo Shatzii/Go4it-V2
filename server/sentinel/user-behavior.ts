@@ -215,7 +215,7 @@ function updateUserMetrics(profile: UserProfile): void {
   // Calculate averages across sessions
   let totalSessionDuration = 0;
   let totalSessionRequests = 0;
-  let sessionCount = sessions.size;
+  const sessionCount = sessions.size;
   
   for (const session of sessions.values()) {
     totalSessionDuration += session.duration;

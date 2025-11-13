@@ -62,8 +62,8 @@ const upload = multer({
 
 // Initialize AI components
 const aiManager = createAIModelManager();
-let processQueue = [];
-let isProcessing = false;
+const processQueue = [];
+const isProcessing = false;
 
 // Health check endpoint
 app.get('/health', (req, res) => {

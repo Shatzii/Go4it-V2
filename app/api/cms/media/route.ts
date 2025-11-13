@@ -20,7 +20,7 @@ interface MediaItem {
 }
 
 // Mock data store - in production, this would be a database
-let mediaStore: MediaItem[] = [
+const mediaStore: MediaItem[] = [
   {
     id: '1',
     name: 'basketball-training-hero.jpg',

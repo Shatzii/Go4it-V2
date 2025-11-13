@@ -478,7 +478,7 @@ export function processDyslexiaAssessmentResults(answers: Record<number, string>
   const questions = generateDyslexiaQuestions();
   
   // Process each answer
-  let counts: Record<keyof DyslexiaIndicators, number> = {
+  const counts: Record<keyof DyslexiaIndicators, number> = {
     readingFluency: 0,
     phonologicalAwareness: 0,
     spelling: 0,

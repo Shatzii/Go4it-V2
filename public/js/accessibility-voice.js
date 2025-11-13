@@ -339,7 +339,7 @@ class VoiceGuidance {
    */
   getElementDescription(element) {
     // Check for aria-label first
-    let description = element.getAttribute('aria-label');
+    const description = element.getAttribute('aria-label');
     if (description) return description;
     
     // Check for neurodivergent cards which have specific structure
