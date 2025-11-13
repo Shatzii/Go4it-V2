@@ -78,8 +78,7 @@
     "bcryptjs": "^3.0.2",
     "better-sqlite3": "^12.4.1",
     "bufferutil": "^4.0.8",
-    "canvas": "^3.2.0",
-    "chart.js": "^4.5.1",
+    
     "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -102,14 +101,12 @@
     "postcss-import": "^16.1.1",
     "postcss-nested": "^7.0.2",
     "postgres": "^3.4.5",
-    "posthog-node": "^5.11.0",
-    "puppeteer": "^24.29.1",
+    
     "react": "^18.3.1",
     "react-big-calendar": "^1.19.4",
-    "react-chartjs-2": "^5.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.0",
-    "recharts": "^2.13.0",
+    
     "resend": "^6.4.0",
     "sonner": "^1.5.0",
     "stripe": "^17.2.0",
@@ -117,7 +114,7 @@
     "tailwind-merge": "^2.5.0",
     "tailwindcss-animate": "^1.0.7",
     "twilio": "^5.10.3",
-    "typescript": "^5.6.0",
+    "typescript": "^5.9.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -141,5 +138,11 @@
     "tailwindcss": "^3.4.17",
     "typescript-eslint": "^8.46.1",
     "vitest": "^4.0.7"
+    "puppeteer": "^24.29.1",
+    "canvas": "^3.2.0",
+    "chart.js": "^4.5.1",
+    "react-chartjs-2": "^5.3.1",
+    "recharts": "^2.13.0",
+    "posthog-node": "^5.11.0"
   }
 }
