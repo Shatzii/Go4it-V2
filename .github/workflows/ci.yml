@@ -70,8 +70,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: Install production dependencies
-        run: npm ci --omit=dev
+      - name: Install dependencies (include dev for build)
+        run: npm ci
 
       - name: Build production (skip type check)
         env:
