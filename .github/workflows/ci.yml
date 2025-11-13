@@ -2,6 +2,80 @@ name: CI
 
 on:
   push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  type-check:
+    name: Type Check
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check (separate job)
+        env:
+          NODE_OPTIONS: '--max-old-space-size=8192'
+        run: npm run type-check
+
+  build-and-artifact:
+    name: Build (artifact)
+    runs-on: ubuntu-22.04
+    needs: type-check
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install production dependencies
+        run: npm ci --omit=dev
+
+      - name: Build production (skip type check)
+        env:
+          SKIP_TYPE_CHECK: 'true'
+          NODE_OPTIONS: '--max-old-space-size=12288'
+        run: npm run build:production
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next
+name: CI
+
+on:
+  push:
     branches: [main]
   pull_request:
     branches: [main]
