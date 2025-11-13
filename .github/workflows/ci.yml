@@ -38,7 +38,15 @@ jobs:
       - name: Type check (separate job)
         env:
           NODE_OPTIONS: '--max-old-space-size=8192'
-        run: npm run type-check
+        run: |
+          npm run type-check 2>&1 | tee type-check.log || true
+
+      - name: Upload type-check logs (always)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: type-check-logs
+          path: type-check.log
 
   build-and-artifact:
     name: Build (artifact)
