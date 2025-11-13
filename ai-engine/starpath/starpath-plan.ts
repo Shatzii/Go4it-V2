@@ -73,12 +73,7 @@ export async function generateStarPathPlan(
 
     const prompt = buildPlanPrompt(athlete, audit);
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `You are Go4it's performance planning specialist. Create personalized 30-day improvement plans that:
+    const systemPrompt = `You are Go4it's performance planning specialist. Create personalized 30-day improvement plans that:
 
 - Set realistic, measurable goals
 - Break down complex objectives into weekly tasks
@@ -92,7 +87,14 @@ Plans should be:
 - Actionable (specific tasks, not vague advice)
 - Time-boxed (clear weekly structure)
 - Balanced (don't overload any one area)
-- Motivating (celebrate small wins)`,
+- Motivating (celebrate small wins)`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt,
         },
         {
           role: 'user',

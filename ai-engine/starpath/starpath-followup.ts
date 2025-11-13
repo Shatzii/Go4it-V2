@@ -58,12 +58,7 @@ export async function generateStarPathFollowup(
 
     const prompt = buildFollowupPrompt(options);
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `You are the Go4it StarPath communication specialist. Create personalized, action-oriented messages for student-athletes and their families.
+    const systemPrompt = `You are the Go4it StarPath communication specialist. Create personalized, action-oriented messages for student-athletes and their families.
 
 Guidelines:
 - Be warm, encouraging, and professional
@@ -73,7 +68,14 @@ Guidelines:
 - End with clear call-to-action
 - Keep email under 200 words
 - Keep SMS under 160 characters
-- Use emojis sparingly but effectively (1-2 max in SMS)`,
+- Use emojis sparingly but effectively (1-2 max in SMS)`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt,
         },
         {
           role: 'user',

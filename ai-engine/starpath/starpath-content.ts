@@ -47,12 +47,7 @@ export async function generateStarPathContent(
 
     const prompt = buildContentPrompt(request);
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'system',
-          content: `You are Go4it's social media content specialist. Create engaging, authentic posts that:
+    const systemPrompt = `You are Go4it's social media content specialist. Create engaging, authentic posts that:
 
 - Celebrate athlete success stories
 - Educate parents about recruiting
@@ -67,7 +62,14 @@ Platform Guidelines:
 - Facebook: Conversational, informative, 200-300 characters
 - Twitter: Concise, timely, 200-280 characters
 - TikTok: Trend-aware, energetic, hook-focused
-- LinkedIn: Professional, data-driven, 200-400 characters`,
+- LinkedIn: Professional, data-driven, 200-400 characters`;
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'system',
+          content: systemPrompt,
         },
         {
           role: 'user',

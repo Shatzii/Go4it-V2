@@ -53,8 +53,12 @@ export async function generateStarPathSummary(
 
     const prompt = buildSummaryPrompt(athlete, audit);
 
-      // Define systemPrompt and userPrompt for the second completion call
-      const systemPrompt = `You are the Go4it StarPath AI assistant specialized in analyzing athlete performance data and generating comprehensive summaries for parents and coaches.`;
+      // Define systemPrompt and userPrompt for the completion call
+      const systemPrompt = `You are the Go4it StarPath AI assistant specialized in generating athlete performance summaries.
+
+    Your role is to analyze athlete data including ARI (Academic Rigor Index), GAR (General Athletic Readiness), core GPA and behavioral scores to provide clear, parent-friendly NCAA readiness overviews.
+
+    Identify strengths, gaps, and provide actionable, time-bound recommendations. Keep tone supportive, factual, and concise.`;
       const userPrompt = prompt;
 
 
