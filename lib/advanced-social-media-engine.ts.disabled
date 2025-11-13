@@ -1,0 +1,9 @@
+// Backup of original Advanced Social Media Engine
+// File moved here to disable video/canvas heavy build inclusion.
+// If you need to re-enable the full engine, rename this file back to
+// `lib/advanced-social-media-engine.ts` and ensure the build host
+// has required native dependencies installed.
+
+/* Original file content preserved for reference and future re-enabling */
+
+export {};

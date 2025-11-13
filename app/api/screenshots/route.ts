@@ -10,6 +10,13 @@ async function getPuppeteer() {
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export async function POST(request: Request) {
+  // Short-circuit when video features are disabled to avoid importing native modules
+  if (process.env.FEATURE_VIDEO !== 'true') {
+    return NextResponse.json(
+      { success: false, error: 'Video features disabled', message: 'Set FEATURE_VIDEO=true to enable' },
+      { status: 503 }
+    );
+  }
   try {
     const body = await request.json();
     const {
@@ -116,6 +123,12 @@ function getFeatureUrl(feature: string, athleteId?: string): string {
 
 // GET endpoint for quick screenshot preview
 export async function GET(request: Request) {
+  if (process.env.FEATURE_VIDEO !== 'true') {
+    return NextResponse.json(
+      { success: false, error: 'Video features disabled', message: 'Set FEATURE_VIDEO=true to enable' },
+      { status: 503 }
+    );
+  }
   try {
     const { searchParams } = new URL(request.url);
     const feature = searchParams.get('feature') || 'gar-analysis';

@@ -4,6 +4,12 @@ import { AdvancedSocialMediaEngine } from '@/lib/advanced-social-media-engine';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export async function POST(request: Request) {
+  if (process.env.FEATURE_VIDEO !== 'true') {
+    return NextResponse.json(
+      { success: false, error: 'Video features disabled', message: 'Set FEATURE_VIDEO=true to enable' },
+      { status: 503 }
+    );
+  }
   try {
     const body = await request.json();
     const {
@@ -88,6 +94,12 @@ export async function POST(request: Request) {
 
 // Preview generated content without saving
 export async function GET(request: Request) {
+  if (process.env.FEATURE_VIDEO !== 'true') {
+    return NextResponse.json(
+      { success: false, error: 'Video features disabled', message: 'Set FEATURE_VIDEO=true to enable' },
+      { status: 503 }
+    );
+  }
   try {
     const { searchParams } = new URL(request.url);
     const feature = searchParams.get('feature') || 'gar-analysis';

@@ -30,6 +30,13 @@ interface ScreenshotRequest {
 }
 
 export async function POST(req: NextRequest) {
+  // Short-circuit when video features are disabled to avoid importing native modules
+  if (process.env.FEATURE_VIDEO !== 'true') {
+    return NextResponse.json(
+      { error: 'Video features disabled', message: 'Set FEATURE_VIDEO=true to enable' },
+      { status: 503 }
+    );
+  }
   try {
     // Check auth: Clerk session OR shared secret
     const { userId } = await auth();
