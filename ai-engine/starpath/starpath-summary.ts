@@ -53,6 +53,10 @@ export async function generateStarPathSummary(
 
     const prompt = buildSummaryPrompt(athlete, audit);
 
+      // Define systemPrompt and userPrompt for the second completion call
+      const systemPrompt = `You are the Go4it StarPath AI assistant specialized in analyzing athlete performance data and generating comprehensive summaries for parents and coaches.`;
+      const userPrompt = prompt;
+
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
