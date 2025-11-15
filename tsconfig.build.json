@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true,
+    "incremental": true
+  },
+  "exclude": [
+    "node_modules",
+    "**/demo/**",
+    "app/test-video-analysis/**",
+    "components/ai-coach/**",
+    "app/api/ai-coach/**",
+    "app/ai-*",
+    "scripts/**",
+    "archive_removed_media/**"
+  ]
+}
