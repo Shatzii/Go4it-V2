@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Go4it • Residency Prospectus • Offer Letter • Parent Night Pack</title>
+<style>
+  :root{
+    --charcoal:#0B0F14; --cyan:#00D4FF; --green:#27E36A;
+    --mid:#5C6678; --light:#E6EAF0; --ink:#0d1219; --paper:#111722;
+  }
+  html,body{margin:0;background:var(--charcoal);color:#fff;font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  .wrap{max-width:960px;margin:0 auto;padding:20px}
+  header.controls{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(11,15,20,.95),rgba(11,15,20,.85));backdrop-filter:blur(6px);padding:10px 14px;border:1px solid rgba(230,234,240,.12);border-radius:12px;margin:12px 0}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .btn{appearance:none;border:none;border-radius:10px;padding:9px 12px;font-weight:800;cursor:pointer}
+  .btn.primary{background:var(--cyan);color:var(--charcoal)}
+  .btn.secondary{background:transparent;color:var(--cyan);border:1px solid var(--cyan)}
+  .btn.ghost{background:transparent;color:#cfe7ff;border:1px dashed #3a4658}
+  .badge{padding:4px 10px;border-radius:999px;background:#0f1622;border:1px solid rgba(230,234,240,.12);font-size:12px}
+  .brandbar{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:6px 0 12px}
+  .brandL h1{font-size:20px;margin:0;letter-spacing:.4px}
+  .tag{background:var(--green);color:var(--charcoal);padding:3px 8px;border-radius:999px;font-weight:800}
+  /* DOC SHEETS */
+  .doc{background:var(--ink);border:1px solid rgba(230,234,240,.12);border-radius:14px;padding:18px;margin:16px 0}
+  .kicker{color:var(--cyan);font-weight:700;font-size:12px;letter-spacing:.6px}
+  h2.title{margin:.2rem 0 .4rem;font-size:22px}
+  h3{margin:12px 0 6px;color:var(--cyan);font-size:16px}
+  .grid{display:grid;gap:12px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pill{display:inline-block;background:#121a25;border:1px solid rgba(230,234,240,.12);padding:4px 8px;border-radius:999px;font-size:12px}
+  .callout{border-left:4px solid var(--cyan);padding-left:10px;margin:8px 0;color:#dde6f5}
+  .list{margin:0;padding-left:18px}
+  .hr{height:1px;background:rgba(230,234,240,.12);margin:12px 0}
+  .qr{width:120px;height:120px;border-radius:12px;border:2px dashed #3a4a5b;display:flex;align-items:center;justify-content:center;color:#cfe7ff;font-size:12px;cursor:pointer;background:#0f1622;overflow:hidden}
+  .qr img{width:100%;height:100%;object-fit:cover;display:block}
+  .label{font-size:12px;color:#cbd5e7}
+  .muted{color:#c6cfdd}
+  .small{font-size:12px}
+  .seatmeter{display:inline-flex;gap:8px;align-items:center}
+  .meter{height:10px;width:160px;border-radius:999px;background:#0f1622;border:1px solid rgba(230,234,240,.12);overflow:hidden}
+  .meter span{display:block;height:100%;width:60%;background:linear-gradient(90deg,var(--green),var(--cyan))}
+  .cap{font-size:12px;color:#A9B4C6}
+  .price{font-weight:900}
+  .table{width:100%;border-collapse:separate;border-spacing:0}
+  .table th,.table td{padding:8px 10px;border-bottom:1px solid rgba(230,234,240,.12);vertical-align:top;text-align:left}
+  .footnote{font-size:11px;color:#aeb8c9;line-height:1.35;margin-top:8px}
+  /* Contenteditable highlight */
+  [contenteditable="true"]{outline:2px dashed rgba(0,212,255,.35);outline-offset:2px;border-radius:4px;padding:2px}
+  .no-edit [contenteditable="true"]{outline:none}
+  /* PRINT */
+  @page{size:A4;margin:12mm}
+  .pagebreak{break-after:page}
+  @media print{
+    body{background:#fff;color:#000}
+    header.controls{display:none!important}
+    .doc{border-color:#999;background:#fff}
+    .hr{background:#999}
+    .footnote{color:#000}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="controls">
+    <div class="brandbar">
+      <div class="brandL">
+        <div class="row" style="gap:8px;align-items:baseline">
+          <h1>GO4IT SPORTS ACADEMY</h1><span class="tag">Verified. Prepared. Placed.</span>
+        </div>
+        <div class="small muted">Denver (USA) · Vienna (AT) • invest@go4itsports.org • +1-205-434-4005</div>
+      </div>
+      <div class="row">
+        <button class="btn primary" onclick="window.print()">Print / Save PDF</button>
+        <button id="toggleEdit" class="btn secondary">Toggle Edit Mode</button>
+        <span class="badge">A4 Pack • Prospectus • Offer • Parent Night (EU/US)</span>
+      </div>
+    </div>
+    <div class="row small muted">
+      <span>Tip: Click any light-blue outlined text to edit. Click a QR box to upload your PNG/JPG — it embeds for printing.</span>
+    </div>
+  </header>
+
+  <!-- ============= DOC 1 • RESIDENCY PROSPECTUS PAGE 1 ============= -->
+  <section class="doc" id="prospectus-p1">
+    <div class="kicker">PROGRAM OVERVIEW</div>
+    <h2 class="title" contenteditable>Vienna Soccer Residency — 12 Weeks</h2>
+    <div class="row" style="justify-content:space-between;gap:12px">
+      <div class="pill">Cohort: <span contenteditable>Jan 26 – Apr 17, 2026</span></div>
+      <div class="seatmeter">
+        <span class="cap">Capacity:</span>
+        <div class="meter"><span></span></div>
+        <span class="cap">60 total (36 Bed + 24 Day)</span>
+      </div>
+    </div>
+    <div class="hr"></div>
+    <div class="grid g2">
+      <div>
+        <h3>Who it’s for</h3>
+        <p contenteditable>U.S. student-athletes (U15–U19 & PG) seeking a pro-standard European training term while keeping a clean NCAA path.</p>
+        <h3>What you get (at a glance)</h3>
+        <ul class="list">
+          <li contenteditable>Daily performance program (SSA, tech/tactics, film)</li>
+          <li contenteditable>2 club friendlies + 2 Select Weekends (GAR™ + filmed showcases)</li>
+          <li contenteditable>3× GAR reports (baseline, midterm, final) with benchmarks</li>
+          <li contenteditable>Coach-ready packet (bio, metrics, highlights, schedule)</li>
+          <li contenteditable>Academics: Edu-Lite — 2 core courses with W4/W8/W12 proctors + NCAA Tracker</li>
+          <li contenteditable>Placement support (athletic + academic stacking; no guarantees)</li>
+          <li contenteditable>Club-friendly: we train; you keep your team</li>
+          <li contenteditable>Film deliverables ≤ 48h after showcases</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Seats & Dates</h3>
+        <p><b>Seats:</b> <span contenteditable>60 total</span> — <span contenteditable>36 Bed (boarding)</span> + <span contenteditable>24 Day (local/overflow)</span>.</p>
+        <p><b>Secondary intake:</b> <span contenteditable>Feb 9</span> • <b>Final add:</b> <span contenteditable>Feb 23</span></p>
+        <h3>Price</h3>
+        <p class="price">Bed (boarding): <span contenteditable>$9,900</span> all-in</p>
+        <p class="price">Day (local): <span contenteditable>€4,950</span></p>
+        <div class="hr"></div>
+        <div class="row" style="align-items:center;gap:12px">
+          <div>
+            <div class="label">Start StarPath — $249 (credited)</div>
+            <div class="qr" data-hint="Click to add QR (Start Link)"><span>QR: Start</span></div>
+          </div>
+          <div>
+            <div class="label">Deposit / RSVP</div>
+            <div class="qr" data-hint="Click to add QR (Deposit/RSVP)"><span>QR: Deposit</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="callout small"><b>Big idea:</b> Verification first, then development, then showcasing — in that order.</div>
+    <div class="footnote">Truth-in-Marketing (required): “Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.”</div>
+  </section>
+
+  <div class="pagebreak"></div>
+
+  <!-- ============= DOC 1 • RESIDENCY PROSPECTUS PAGE 2 ============= -->
+  <section class="doc" id="prospectus-p2">
+    <div class="kicker">PROGRAM DETAIL</div>
+    <h2 class="title">Daily Rhythm & Deliverables</h2>
+    <div class="grid g2">
+      <div>
+        <h3>Daily Rhythm (Mon–Fri)</h3>
+        <ul class="list">
+          <li contenteditable>06:00–07:15 SSA (speed/strength/agility)</li>
+          <li contenteditable>09:00–11:00 Study Hall A (U.S. core; teacher-initiated touch)</li>
+          <li contenteditable>11:15–12:15 Position skills (small groups)</li>
+          <li contenteditable>13:30–15:00 Film & chalk (Mon/Wed soccer focus)</li>
+          <li contenteditable>18:00–20:00 Team training (progressive phases)</li>
+        </ul>
+        <h3>Competition & Verification</h3>
+        <ul class="list">
+          <li contenteditable>Weeks 4 & 10: club friendlies (refs + film)</li>
+          <li contenteditable>Weeks 6 & 12: Select Weekends — AM GAR testing, PM refereed showcase</li>
+          <li contenteditable>Film delivery ≤ 48h; leaderboards posted</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Academics (NCAA-clean)</h3>
+        <ul class="list">
+          <li contenteditable>Edu-Lite: 2 core courses (0.5 + 0.5 credits)</li>
+          <li contenteditable>Weekly teacher contact + proctored W4/W8/W12</li>
+          <li contenteditable>NCAA/NAIA Tracker for 16-core, GPA, tests</li>
+          <li contenteditable>Optional post-season AP Sprint / Dual-Enrollment</li>
+        </ul>
+        <h3>What’s Included (Bed)</h3>
+        <ul class="list">
+          <li contenteditable>Housing/meals (12 weeks), daily training, facility access</li>
+          <li contenteditable>3× GAR, 2 friendlies, 2 Select Weekends</li>
+          <li contenteditable>Film (showcases + highlight pulls)</li>
+          <li contenteditable>Edu-Lite academics + proctoring + Tracker</li>
+          <li contenteditable>Group transfer window, orientation, safeguarding/EAP</li>
+        </ul>
+        <h3>How to Claim a Seat</h3>
+        <ol class="list">
+          <li contenteditable>Start StarPath — $249 → upload film/transcripts → 7-day turnaround</li>
+          <li contenteditable>If selected, receive Offer Letter (Bed/Day)</li>
+          <li contenteditable>Pay deposit within 7 days</li>
+          <li contenteditable>Complete onboarding (medical, waivers, travel, payment plan)</li>
+        </ol>
+      </div>
+    </div>
+    <div class="footnote">Truth-in-Marketing (required): “Go4it is a homeschool learning provider with American teachers… (see Page 1).”</div>
+  </section>
+
+  <div class="pagebreak"></div>
+
+  <!-- ============= DOC 2 • OFFER LETTER PAGE 1 ============= -->
+  <section class="doc" id="offer-p1">
+    <div class="kicker">OFFER LETTER</div>
+    <h2 class="title" contenteditable>Your Vienna Soccer Residency Offer — <span contenteditable>[Bed / Day]</span></h2>
+    <div class="grid g2">
+      <div>
+        <table class="table">
+          <tr><th>Athlete</th><td contenteditable>[First Last]</td></tr>
+          <tr><th>Cohort</th><td contenteditable>Jan 26 – Apr 17, 2026 (12 weeks)</td></tr>
+          <tr><th>Seat Offered</th><td contenteditable>[Bed (boarding) / Day (local)]</td></tr>
+          <tr><th>Capacity</th><td>60 total (36 Bed + 24 Day)</td></tr>
+        </table>
+        <div class="hr"></div>
+        <h3>Program Summary</h3>
+        <ul class="list">
+          <li contenteditable>Daily performance training (SSA, team sessions, position work)</li>
+          <li contenteditable>2 club friendlies + 2 Select Weekends (GAR + filmed showcases)</li>
+          <li contenteditable>3× GAR reports; coach-packet; film ≤ 48h</li>
+          <li contenteditable>Academics: Edu-Lite (2 cores) with W4/W8/W12 proctors + NCAA Tracker</li>
+          <li contenteditable>Club-friendly load management; NCAA amateurism respected</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Tuition</h3>
+        <p class="price">Bed (boarding): <span contenteditable>$9,900</span> all-in</p>
+        <p class="price">Day (local): <span contenteditable>€4,950</span></p>
+        <div class="hr"></div>
+        <h3>To Accept Your Offer</h3>
+        <p>Deposit due within 7 days: <b>$1,000</b> (Bed) or <b>€300</b> (Day).</p>
+        <div class="row" style="gap:12px;align-items:center">
+          <div>
+            <div class="label">Deposit Link / QR</div>
+            <div class="qr" data-hint="Click to add QR (Deposit)"><span>QR: Deposit</span></div>
+          </div>
+          <div>
+            <div class="label">Questions? Call</div>
+            <div class="pill">+1-205-434-4005</div>
+          </div>
+        </div>
+        <p class="small muted">Seats not deposited within 7 days are released to the waitlist.</p>
+        <h3>Payment Plan (after deposit)</h3>
+        <ul class="list">
+          <li contenteditable>50% by D-30 (30 days before start)</li>
+          <li contenteditable>50% by D-7 (7 days before start)</li>
+          <li contenteditable>Payment methods: card / ACH / SEPA</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footnote">Truth-in-Marketing: “Go4it is a homeschool learning provider with American teachers… (see Prospectus).”</div>
+  </section>
+
+  <div class="pagebreak"></div>
+
+  <!-- ============= DOC 2 • OFFER LETTER PAGE 2 (TERMS) ============= -->
+  <section class="doc" id="offer-p2">
+    <div class="kicker">DEPOSIT & REFUND TERMS</div>
+    <h2 class="title" contenteditable>Vienna Soccer Residency — Deposit & Refund Terms</h2>
+    <table class="table">
+      <tr><th>Program</th><td>Vienna Soccer Residency (12 weeks) — <span contenteditable>Jan 26 – Apr 17, 2026</span></td></tr>
+      <tr><th>Athlete</th><td contenteditable>[First Last]</td></tr>
+      <tr><th>Seat</th><td contenteditable>[Bed / Day]</td></tr>
+    </table>
+    <div class="hr"></div>
+    <h3>Key Terms</h3>
+    <ol class="list">
+      <li contenteditable><b>Deposit & Hold:</b> $1,000 (Bed) / €300 (Day) holds your seat for 7 days; applied to tuition.</li>
+      <li contenteditable><b>Payment Schedule:</b> 50% by D-30; 50% by D-7; late fee €/$50 possible.</li>
+      <li contenteditable><b>Refunds:</b> If Go4it cancels the cohort or visa denial with official proof (within 14 days), tuition refunded minus processing; deposit refunded in full. Otherwise non-refundable.</li>
+      <li contenteditable><b>Deferrals:</b> One deferral ≥21 days before start (availability-based); <21 days at Go4it’s discretion; €/$200 change fee may apply.</li>
+      <li contenteditable><b>Medical & Insurance:</b> Family maintains valid accident/health insurance in AT; Go4it provides event/venue COIs.</li>
+      <li contenteditable><b>Safeguarding & Conduct:</b> Two-adult rule; no closed-door 1:1; zero tolerance for harassment/substances/curfew violations; dismissal may occur without refund.</li>
+      <li contenteditable><b>Academic Integrity:</b> Proctored W4/W8/W12 are mandatory; missed proctors may delay credit.</li>
+      <li contenteditable><b>Amateurism & Clubs:</b> Supplemental; no inducement to switch clubs; written MoUs for friendlies; only actual & necessary expenses covered.</li>
+    </ol>
+    <div class="hr"></div>
+    <div class="grid g2">
+      <div>
+        <div class="label">Parent/Guardian Signature</div>
+        <div contenteditable style="min-height:32px;border-bottom:1px dashed #576a82"></div>
+      </div>
+      <div>
+        <div class="label">Athlete Signature</div>
+        <div contenteditable style="min-height:32px;border-bottom:1px dashed #576a82"></div>
+      </div>
+    </div>
+    <div class="footnote">Truth-in-Marketing: “Go4it is a homeschool learning provider with American teachers… (see Prospectus).”</div>
+  </section>
+
+  <div class="pagebreak"></div>
+
+  <!-- ============= DOC 3 • PARENT NIGHT INVITE (EU) ============= -->
+  <section class="doc" id="pn-eu">
+    <div class="kicker">PARENT NIGHT — EUROPE</div>
+    <h2 class="title" contenteditable>Europe → USA Path with StarPath & Vienna Residency</h2>
+    <div class="grid g2">
+      <div>
+        <p><b>Time:</b> <span contenteditable>Tuesdays, 12:00 CET (45 minutes)</span> · Zoom (live Q&A)</p>
+        <h3>Why attend</h3>
+        <ul class="list">
+          <li contenteditable>How U.S. coaches actually evaluate (metrics & film)</li>
+          <li contenteditable>See a real StarPath report (GAR + NCAA map)</li>
+          <li contenteditable>How the 12-week Vienna residency fits the college path</li>
+          <li contenteditable>First steps + avoid eligibility mistakes</li>
+        </ul>
+        <h3>What you’ll learn</h3>
+        <ol class="list">
+          <li contenteditable>Verification beats hype — why data wins</li>
+          <li contenteditable>NCAA 16-core for internationals + academic map</li>
+          <li contenteditable>Showcasing in Europe — friendlies, Select Weekends, film</li>
+          <li contenteditable>Scholarships 101 — athletic + academic stacking (no guarantees)</li>
+          <li contenteditable>Next steps — StarPath $249 (credited) + seats (60 total)</li>
+        </ol>
+      </div>
+      <div>
+        <h3>RSVP & Start</h3>
+        <div class="row" style="gap:16px">
+          <div>
+            <div class="label">RSVP (Zoom)</div>
+            <div class="qr" data-hint="Click to add QR (Zoom RSVP)"><span>QR: RSVP</span></div>
+          </div>
+          <div>
+            <div class="label">Start StarPath — $249 (credited)</div>
+            <div class="qr" data-hint="Click to add QR (Start Link)"><span>QR: Start</span></div>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="small muted">Who: Parents + U15–U19 athletes, club coaches. Bring transcript/course list & highlight links.</div>
+        <div class="hr"></div>
+        <div class="small">Contact: invest@go4itsports.org · +1-205-434-4005 · Denver | Vienna</div>
+      </div>
+    </div>
+    <div class="footnote">Truth-in-Marketing: “Go4it is a homeschool learning provider with American teachers… (see Prospectus).”</div>
+  </section>
+
+  <div class="pagebreak"></div>
+
+  <!-- ============= DOC 3 • PARENT NIGHT INVITE (US) ============= -->
+  <section class="doc" id="pn-us">
+    <div class="kicker">PARENT NIGHT — USA</div>
+    <h2 class="title" contenteditable>Vienna Soccer Residency (12 Weeks) + StarPath</h2>
+    <div class="grid g2">
+      <div>
+        <p><b>Time:</b> <span contenteditable>Tuesdays, 7:00 PM CST (45 minutes)</span> · Zoom (live Q&A)</p>
+        <h3>What we cover</h3>
+        <ul class="list">
+          <li contenteditable>Verification first (GAR + academic map)</li>
+          <li contenteditable>Daily rhythm, film & showcases (Vienna Residency)</li>
+          <li contenteditable>Academics in-season: Edu-Lite (2 cores + proctors)</li>
+          <li contenteditable>Scholarship realities (DI/DII/NAIA/DIII)</li>
+          <li contenteditable>How to claim one of 60 seats (36 Bed + 24 Day)</li>
+        </ul>
+        <h3>Fast facts</h3>
+        <ul class="list">
+          <li contenteditable>Start: Jan 26 · Secondary: Feb 9 · Final add: Feb 23</li>
+          <li contenteditable>Tuition: Bed $9,900 · Day €4,950</li>
+          <li contenteditable>No seat without deposit (7 days)</li>
+          <li contenteditable>Film delivery ≤ 48h after showcases</li>
+        </ul>
+      </div>
+      <div>
+        <h3>RSVP & Start</h3>
+        <div class="row" style="gap:16px">
+          <div>
+            <div class="label">RSVP (Zoom)</div>
+            <div class="qr" data-hint="Click to add QR (Zoom RSVP)"><span>QR: RSVP</span></div>
+          </div>
+          <div>
+            <div class="label">Start StarPath — $249 (credited)</div>
+            <div class="qr" data-hint="Click to add QR (Start Link)"><span>QR: Start</span></div>
+          </div>
+        </div>
+        <div class="hr"></div>
+        <div class="small">Contact: invest@go4itsports.org · +1-205-434-4005 · Denver | Vienna</div>
+      </div>
+    </div>
+    <div class="footnote">Truth-in-Marketing: “Go4it is a homeschool learning provider with American teachers… (see Prospectus).”</div>
+  </section>
+
+  <div style="height:24px"></div>
+</div>
+
+<input id="qrFile" type="file" accept="image/*" style="display:none"/>
+
+<script>
+  // Toggle edit outlines
+  const root = document.documentElement;
+  let editOn = true;
+  document.getElementById('toggleEdit').addEventListener('click', ()=>{
+    document.body.classList.toggle('no-edit');
+    editOn = !editOn;
+  });
+
+  // QR upload: click any .qr to embed a local image as data URL
+  const fileInput = document.getElementById('qrFile');
+  let targetQR = null;
+  document.querySelectorAll('.qr').forEach(el=>{
+    el.title = 'Click to upload QR image';
+    el.addEventListener('click', ()=>{
+      targetQR = el;
+      fileInput.click();
+    });
+  });
+  fileInput.addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev=>{
+      const data = ev.target.result;
+      targetQR.innerHTML = '';
+      const img = new Image(); img.src = data;
+      targetQR.appendChild(img);
+      fileInput.value = '';
+    };
+    reader.readAsDataURL(file);
+  });
+</script>
+</body>
+</html>
