@@ -47,6 +47,9 @@
       text-transform: uppercase;
       letter-spacing: 0.12em;
       font-weight: 800;
+      text-align: center;
+      /* scale for poster printing */
+      font-size: clamp(20px, 3.5vw, 56px);
     }
 
     header p {
@@ -83,10 +86,11 @@
 
     .week-header {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 4px;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 6px;
     }
 
     .week-title {
@@ -94,6 +98,8 @@
       font-weight: 700;
       letter-spacing: 0.16em;
       text-transform: uppercase;
+      text-align: center;
+      font-size: clamp(16px, 2.2vw + 2px, 36px);
     }
 
     .week-dates {
@@ -101,6 +107,10 @@
       color: var(--muted);
       white-space: nowrap;
     }
+
+    /* Player card / poster color scheme - match Webinar */
+    .player-card { border-radius: 14px; padding: 12px; background: linear-gradient(180deg, rgba(11,15,24,0.98), rgba(7,11,18,0.98)); border: 1px solid rgba(92,102,120,0.85); color: var(--light); }
+    .player-card .name { font-weight:700; color: var(--accent); }
 
     .week-theme {
       font-size: 0.95rem;
