@@ -9,6 +9,7 @@
 import { Metadata } from "next";
 import { db } from "@/lib/db";
 import { starpathEvents } from "@/lib/db/schema-starpath-v2";
+import type { StarpathEvent } from "@/lib/db/schema-starpath-v2";
 import { gte, eq } from "drizzle-orm";
 
 // Force dynamic rendering - do not statically generate this page
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
     "Get tested. Get verified. Get recruited. Athletic testing combines with NCAA eligibility audits.",
 };
 
-async function getUpcomingEvents() {
+async function getUpcomingEvents(): Promise<StarpathEvent[]> {
   return db
     .select()
     .from(starpathEvents)
@@ -29,11 +30,11 @@ async function getUpcomingEvents() {
       gte(starpathEvents.startsAt, new Date())
     )
     .orderBy(starpathEvents.startsAt)
-    .limit(6);
+    .limit(6) as Promise<StarpathEvent[]>;
 }
 
 export default async function GetVerifiedPage() {
-  const events = await getUpcomingEvents();
+  const events: StarpathEvent[] = await getUpcomingEvents();
 
   // JSON-LD structured data for SEO
   const jsonLd = {
@@ -147,7 +148,7 @@ export default async function GetVerifiedPage() {
               </p>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {events.map((event) => (
+                {events.map((event: StarpathEvent) => (
                   <div
                     key={event.id}
                     className="bg-[#0f1419] border border-[#1a1f26] rounded-lg p-6 hover:border-[#00D4FF] transition"

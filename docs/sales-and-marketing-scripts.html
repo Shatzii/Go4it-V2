@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · Sales & Marketing Script Pack (v1)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-main: #05070B;
+      --bg-card: #0B0F14;
+      --bg-card-soft: #111722;
+      --text-main: #E6EAF0;
+      --text-soft: #9BA4BC;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --border-soft: #1E2837;
+      --border-strong: #2C3749;
+      --chip-bg: rgba(0,212,255,0.1);
+      --chip-border: rgba(0,212,255,0.7);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, #151C26 0, #05070B 48%, #000000 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrap {
+      max-width: 960px;
+      margin: 24px auto 40px;
+      padding: 0 16px 24px;
+    }
+
+    .document {
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.65);
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    .doc-header {
+      background: linear-gradient(135deg, #05070B, #101722);
+      color: #FFFFFF;
+      padding: 22px 28px 20px;
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .doc-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-block {
+      max-width: 70%;
+    }
+
+    .brand-name {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .brand-tagline {
+      font-size: 0.98rem;
+      color: #D8E0F2;
+      margin-bottom: 6px;
+    }
+
+    .brand-meta {
+      font-size: 0.82rem;
+      color: #9FAAC3;
+      line-height: 1.4;
+    }
+
+    .doc-label {
+      text-align: right;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #B9C4DC;
+    }
+
+    .doc-label strong {
+      display: block;
+      font-size: 0.9rem;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 3px 10px;
+      border: 1px solid var(--chip-border);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #E6EAF0;
+      background: var(--chip-bg);
+    }
+
+    /* BODY */
+    .doc-body {
+      padding: 20px 26px 24px;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin: 10px 0 14px;
+      font-weight: 800;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin: 18px 0 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #E8EDF9;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin: 12px 0 4px;
+      font-weight: 700;
+      color: #F2F5FF;
+    }
+
+    h4 {
+      font-size: 0.94rem;
+      margin: 10px 0 4px;
+      font-weight: 650;
+      color: #E6ECFF;
+    }
+
+    p {
+      margin: 4px 0 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-soft);
+    }
+
+    ul, ol {
+      margin: 4px 0 8px 1.1rem;
+      padding-left: 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--text-soft);
+    }
+
+    li {
+      margin-bottom: 2px;
+    }
+
+    .muted {
+      color: var(--text-soft);
+      font-size: 0.84rem;
+    }
+
+    .section {
+      padding: 12px 0 16px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .section:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .section-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: #7C88A3;
+      margin-bottom: 2px;
+    }
+
+    .callout {
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      background: #101723;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      margin: 6px 0 10px;
+      color: var(--text-soft);
+    }
+
+    .callout strong {
+      color: #F5F7FF;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.05fr);
+      gap: 14px 18px;
+      margin-top: 4px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 6px;
+    }
+
+    .pill {
+      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #141B28;
+      color: #DCE4FF;
+    }
+
+    .quote {
+      border-left: 3px solid var(--accent);
+      padding-left: 10px;
+      margin: 6px 0 10px;
+      font-size: 0.9rem;
+      color: #D6DFFF;
+      font-style: italic;
+    }
+
+    .script-block {
+      border-radius: 10px;
+      border: 1px solid var(--border-strong);
+      background: #101622;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      margin: 6px 0 10px;
+      white-space: pre-wrap;
+    }
+
+    .script-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #A9B3D1;
+      margin-bottom: 4px;
+    }
+
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .kpi-badge {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 3px 10px;
+      font-size: 0.78rem;
+      background: #121926;
+      color: #D0D7F5;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .brand-block {
+        max-width: 100%;
+      }
+      .doc-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .doc-body {
+        padding: 16px 18px 20px;
+      }
+    }
+
+    /* PRINT */
+    @media print {
+      body {
+        background: #000000;
+      }
+      .page-wrap {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .document {
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+      .doc-header, .document, .script-block, .callout {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+
+    .footer-bar {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-strong);
+      font-size: 0.78rem;
+      color: #A0A8BA;
+      background: #05070B;
+      padding: 10px 28px 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-bar span {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="document">
+      <!-- HEADER -->
+      <header class="doc-header">
+        <div class="doc-header-top">
+          <div class="brand-block">
+            <div class="brand-name">GO4IT ACADEMY</div>
+            <div class="brand-tagline">Train Here. Qualify Anywhere.</div>
+            <div class="brand-meta">
+              Sales &amp; Marketing Script Pack (v1)<br />
+              StarPath Assessment™ · Parent Nights · Academy · Residencies<br />
+              HQ: Denver, USA · Vienna, Austria
+            </div>
+          </div>
+          <div class="doc-label">
+            <strong>SALES PLAYBOOK</strong>
+            Internal Use Only<br />
+            Version 1.0 · Nov 2025
+          </div>
+        </div>
+        <div class="chip-row">
+          <span class="chip">StarPath Assessment™</span>
+          <span class="chip">Parent Nights</span>
+          <span class="chip">DM &amp; Email Scripts</span>
+          <span class="chip">NCAA-Safe Language</span>
+        </div>
+      </header>
+
+      <!-- BODY -->
+      <main class="doc-body">
+
+        <!-- 1. POSITIONING -->
+        <section class="section">
+          <div class="section-label">1 · POSITIONING &amp; GROUND RULES</div>
+          <h1>Go4it Sales &amp; Marketing Script Pack</h1>
+          <p>
+            This pack is for anyone who will message, email, call, or present on behalf of Go4it Academy.
+            Follow these scripts, adjust details to the family, and never go off-script on compliance.
+          </p>
+          <h3>Who We Talk To</h3>
+          <ul>
+            <li>Parents of serious student-athletes (ages ~13–19).</li>
+            <li>Student-athletes themselves (especially on Instagram).</li>
+            <li>Coaches and club directors (multipliers).</li>
+          </ul>
+
+          <h3>What We Sell First</h3>
+          <ul>
+            <li><strong>Parent Nights</strong> (free, weekly, online).</li>
+            <li><strong>StarPath Assessment™ ($199)</strong> – academic + athletic readiness assessment.</li>
+          </ul>
+
+          <div class="callout">
+            <strong>Rule #1:</strong> Early in the relationship, your only hard CTAs are:
+            <strong>“Come to Parent Night”</strong> or <strong>“Do a StarPath Assessment™”</strong>.  
+            School enrollment and residencies are offered only after an assessment.
+          </div>
+
+          <h3>Non-Negotiable “Do Not Say” List</h3>
+          <ul>
+            <li>Do <strong>not</strong> promise scholarships. (We can be part of their journey, not guarantee outcomes.)</li>
+            <li>Do <strong>not</strong> guarantee NCAA eligibility. (We help families understand rules and plan.)</li>
+            <li>Do <strong>not</strong> give immigration, visa, or legal advice.</li>
+            <li>Do <strong>not</strong> trash other schools, clubs, or coaches. (We are a layer on top, not a replacement.)</li>
+          </ul>
+        </section>
+
+        <!-- 2. LEAD STAGES -->
+        <section class="section">
+          <div class="section-label">2 · LEAD STAGES &amp; GOALS</div>
+          <h2>Pipeline Stages</h2>
+
+          <h3>2.1 Stages</h3>
+          <ol>
+            <li><strong>Cold / New Lead:</strong> DM, email, or in-person contact.
+              <ul><li>Goal: RSVP for Parent Night or express interest in StarPath Assessment.</li></ul>
+            </li>
+            <li><strong>Parent Night Attendee:</strong> Has shown up live.
+              <ul><li>Goal: Book StarPath Assessment within 24–48 hours.</li></ul>
+            </li>
+            <li><strong>StarPath Completed:</strong> Report delivered.
+              <ul>
+                <li>Goal: Place athlete into:
+                  <ul>
+                    <li>Full-time Go4it Academy,</li>
+                    <li>StarPath Online track (keep their school), or</li>
+                    <li>12-week Residency (Vienna or Dallas), if fit.</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li><strong>Ongoing:</strong> Retention, upgrades, and referrals.</li>
+          </ol>
+
+          <h3>2.2 Daily KPIs for Sales Reps</h3>
+          <div class="kpi-row">
+            <div class="kpi-badge">New DMs Sent</div>
+            <div class="kpi-badge">New Parent Leads Added</div>
+            <div class="kpi-badge">Parent Night RSVPs</div>
+            <div class="kpi-badge">Parent Night Attended</div>
+            <div class="kpi-badge">StarPath Assessments Sold</div>
+            <div class="kpi-badge">Assessments Completed</div>
+          </div>
+        </section>
+*** End Patch

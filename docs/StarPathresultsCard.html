@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · StarPath Result Card</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-main:#020308;
+      --bg-card:#040711;
+      --bg-inner:#050914;
+      --glow:#00D4FF;
+      --glow-soft:rgba(0,212,255,0.25);
+      --text-main:#E6EAF0;
+      --text-soft:#99A6C5;
+      --accent2:#27E36A;
+      --danger:#FF4D6A;
+      --border-soft:#1A2335;
+      --card-radius:32px;
+    }
+
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      min-height:100vh;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        radial-gradient(circle at top,#121933 0,#020308 45%,#000000 100%);
+      color:var(--text-main);
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+    }
+
+    .page {
+      display:flex;
+      flex-wrap:wrap;
+      gap:32px;
+      padding:32px;
+      max-width:1400px;
+    }
+
+    .card {
+      position:relative;
+      width:420px;
+      min-height:720px;
+      border-radius:var(--card-radius);
+      padding:18px 20px 22px;
+      background:radial-gradient(circle at top,#050C1E 0,var(--bg-card) 55%,#000 100%);
+      border:1px solid rgba(0,212,255,0.7);
+      box-shadow:
+        0 0 18px rgba(0,212,255,0.75),
+        0 0 45px rgba(0,212,255,0.35);
+      overflow:hidden;
+    }
+
+    .card::before {
+      content:"";
+      position:absolute;
+      inset:10px;
+      border-radius:24px;
+      border:1px solid rgba(0,212,255,0.2);
+      pointer-events:none;
+    }
+
+    .card-header-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:10px;
+      position:relative;
+      z-index:1;
+    }
+
+    .badge-pill {
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 14px;
+      border-radius:999px;
+      border:1px solid var(--glow);
+      background:radial-gradient(circle at top left,rgba(0,212,255,0.4),rgba(0,212,255,0.08));
+      font-size:0.82rem;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      color:var(--text-main);
+    }
+
+    .badge-pill span.icon {
+      width:18px;
+      height:18px;
+      border-radius:50%;
+      border:2px solid var(--glow);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:0.75rem;
+    }
+
+    .logo-text {
+      font-size:0.8rem;
+      text-align:right;
+      color:var(--text-soft);
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+    }
+
+    .logo-text strong {
+      display:block;
+      font-size:0.95rem;
+      color:var(--glow);
+    }
+
+    /* FRONT – PLAYER PHOTO + NAME */
+    .photo-wrap {
+      position:relative;
+      margin:10px 0 12px;
+      border-radius:24px;
+      overflow:hidden;
+      height:260px;
+      background:
+        radial-gradient(circle at top,#19284A 0,#050914 50%,#000 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(0,212,255,0.35);
+      box-shadow:0 0 32px rgba(0,0,0,0.85) inset;
+    }
+
+    .photo-placeholder {
+      width:60%;
+      height:80%;
+      border-radius:999px;
+      border:1px solid rgba(0,212,255,0.45);
+      box-shadow:0 0 30px rgba(0,212,255,0.25);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--text-soft);
+      font-size:0.9rem;
+      text-align:center;
+      padding:8px;
+    }
+
+    .player-meta-bar {
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      margin-top:8px;
+      position:relative;
+      z-index:1;
+    }
+
+    .player-name {
+      font-size:1.7rem;
+      font-weight:800;
+      letter-spacing:0.20em;
+      text-transform:uppercase;
+    }
+
+    .player-subline {
+      font-size:0.8rem;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color:var(--text-soft);
+      margin-top:2px;
+    }
+
+    .player-bits {
+      text-align:right;
+      font-size:0.82rem;
+      color:var(--text-soft);
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+    }
+
+    .stars {
+      margin-top:4px;
+      color:var(--glow);
+      font-size:0.9rem;
+      letter-spacing:0.22em;
+    }
+
+    /* FRONT – METRICS */
+    .metrics-grid {
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1.1fr 1.1fr;
+      gap:14px;
+      position:relative;
+      z-index:1;
+    }
+
+    .metric-block,
+    .metric-block-wide {
+      background:rgba(2,7,18,0.96);
+      border-radius:18px;
+      border:1px solid var(--border-soft);
+      padding:10px 12px;
+      box-shadow:0 0 18px rgba(0,0,0,0.75);
+    }
+
+    .metric-block-wide {
+      grid-column:1 / -1;
+    }
+
+    .metric-label {
+      font-size:0.72rem;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      color:var(--text-soft);
+      margin-bottom:2px;
+    }
+
+    .metric-value-lg {
+      font-size:1.4rem;
+      font-weight:800;
+      color:var(--glow);
+    }
+
+    .metric-sub {
+      font-size:0.78rem;
+      color:var(--text-soft);
+    }
+
+    .bar-chart {
+      margin-top:6px;
+    }
+
+    .bar-row {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:4px;
+    }
+
+    .bar-label {
+      font-size:0.74rem;
+      color:var(--text-soft);
+      width:58px;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+    }
+
+    .bar-track {
+      flex:1;
+      height:7px;
+      border-radius:999px;
+      background:#050914;
+      overflow:hidden;
+      border:1px solid #151D2B;
+    }
+
+    .bar-fill {
+      height:100%;
+      border-radius:999px;
+      background:linear-gradient(90deg,var(--glow),#5BFFF7);
+      box-shadow:0 0 12px rgba(0,212,255,0.65);
+    }
+
+    .bar-score {
+      font-size:0.78rem;
+      color:var(--text-main);
+      width:26px;
+      text-align:right;
+    }
+
+    .tag-row {
+      display:flex;
+      gap:10px;
+      margin-top:10px;
+      flex-wrap:wrap;
+    }
+
+    .tag-pill {
+      flex:1 1 45%;
+      border-radius:14px;
+      border:1px solid var(--glow-soft);
+      background:radial-gradient(circle at top,rgba(0,212,255,0.25),rgba(0,212,255,0.05));
+      text-align:center;
+      padding:8px 6px;
+      font-size:0.8rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+    }
+
+    .position-fit {
+      margin-top:14px;
+      text-align:center;
+    }
+
+    .position-label {
+      font-size:0.8rem;
+      letter-spacing:0.18em;
+      text-transform:uppercase;
+      color:var(--text-soft);
+    }
+
+    .position-value {
+      margin-top:4px;
+      font-size:1.2rem;
+      letter-spacing:0.26em;
+      text-transform:uppercase;
+    }
+
+    /* BACK: detailed assessment */
+    .section-title {
+      margin-top:8px;
+      font-size:0.9rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:var(--text-soft);
+    }
+
+    .assessment-grid {
+      margin-top:8px;
+      display:grid;
+      grid-template-columns:1.1fr 1.1fr;
+      gap:12px;
+    }
+
+    .pill-stat {
+      border-radius:16px;
+      border:1px solid var(--border-soft);
+      background:#050914;
+      padding:8px 10px;
+      font-size:0.78rem;
+    }
+
+    .pill-stat-label {
+      text-transform:uppercase;
+      letter-spacing:0.13em;
+      color:var(--text-soft);
+      margin-bottom:2px;
+    }
+
+    .pill-stat-value {
+      font-size:1.05rem;
+      font-weight:700;
+      color:var(--glow);
+    }
+
+    .pill-stat-sub {
+      font-size:0.74rem;
+      color:var(--text-soft);
+    }
+
+    .text-block {
+      margin-top:8px;
+      padding:8px 10px;
+      border-radius:14px;
+      border:1px solid var(--border-soft);
+      background:#050914;
+      font-size:0.84rem;
+      color:var(--text-soft);
+      line-height:1.5;
+    }
+
+    .text-block strong {
+      color:var(--text-main);
+    }
+
+    .badge-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:6px;
+    }
+
+    .badge {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:3px 9px;
+      font-size:0.76rem;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      color:var(--text-main);
+      background:#050914;
+    }
+
+    .badge.green { border-color:rgba(39,227,106,0.8); color:var(--accent2); }
+    .badge.red { border-color:rgba(255,77,106,0.8); color:var(--danger); }
+
+    .list-tight {
+      margin:4px 0 0 1.05rem;
+      padding:0;
+      font-size:0.82rem;
+      color:var(--text-soft);
+      line-height:1.45;
+    }
+
+    @media (max-width:980px){
+      .page{flex-direction:column;align-items:center;padding:20px;}
+    }
+
+    @media print {
+      body{
+        background:#000;
+      }
+      .page{
+        padding:10mm;
+        gap:16px;
+      }
+      .card{
+        box-shadow:none;
+      }
+      .card::before{
+        border-color:rgba(0,212,255,0.25);
+      }
+      .photo-wrap{
+        box-shadow:none;
+      }
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- FRONT OF CARD -->
+    <section class="card" id="starpath-card-front">
+      <div class="card-header-row">
+        <div class="badge-pill">
+          <span class="icon">✓</span>
+          <span>Get Verified</span>
+        </div>
+        <div class="logo-text">
+          <strong>GO4IT ACADEMY</strong>
+          StarPath System™
+        </div>
+      </div>
+
+      <div class="photo-wrap">
+        <!-- Replace this div with an <img> if you have player photos -->
+        <!-- Example: <img src="athlete.jpg" alt="Athlete photo" class="photo-img" /> -->
+        <div class="photo-placeholder">
+          Athlete Photo<br/>
+          (Drop image here in HTML/CSS)
+        </div>
+      </div>
+
+      <div class="player-meta-bar">
+        <div>
+          <div class="player-name">JAYDEN ELLIS</div>
+          <div class="player-subline">STARPATH VERIFIED ATHLETE</div>
+        </div>
+        <div class="player-bits">
+          <div>Age 17 · Class of 2026</div>
+          <div>Denver, CO · DB / WR</div>
+          <div class="stars">★★★★★</div>
+        </div>
+      </div>
+
+      <div class="metrics-grid">
+        <!-- GAR / STARPATH -->
+        <div class="metric-block">
+          <div class="metric-label">StarPath Gar Score</div>
+          <div class="metric-value-lg">89</div>
+          <div class="metric-sub">0–100 athletic readiness index</div>
+        </div>
+
+        <!-- STAR RATING -->
+        <div class="metric-block">
+          <div class="metric-label">Star Rating</div>
+          <div class="metric-value-lg">4.5★</div>
+          <div class="metric-sub">Projection: High D2 / FCS Upside</div>
+        </div>
+
+        <!-- SPEED / TESTING -->
+        <div class="metric-block">
+          <div class="metric-label">Verified Speed</div>
+          <div class="metric-value-lg">4.51s</div>
+          <div class="metric-sub">40-yard dash (laser, FNL Denver)</div>
+        </div>
+
+        <!-- PROJECTION BARS -->
+        <div class="metric-block">
+          <div class="metric-label">Level Projection</div>
+          <div class="bar-chart">
+            <div class="bar-row">
+              <div class="bar-label">D1</div>
+              <div class="bar-track"><div class="bar-fill" style="width:72%;"></div></div>
+              <div class="bar-score">72</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">D2</div>
+              <div class="bar-track"><div class="bar-fill" style="width:88%;"></div></div>
+              <div class="bar-score">88</div>
+            </div>
+            <div class="bar-row">
+              <div class="bar-label">JUCO</div>
+              <div class="bar-track"><div class="bar-fill" style="width:93%;"></div></div>
+              <div class="bar-score">93</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAGS -->
+        <div class="metric-block-wide">
+          <div class="metric-label">Top Traits</div>
+          <div class="tag-row">
+            <div class="tag-pill">Next Up Prospect</div>
+            <div class="tag-pill">Elite Speed</div>
+            <div class="tag-pill">Versatile DB / WR</div>
+            <div class="tag-pill">High Motor</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="position-fit">
+        <div class="position-label">Primary Position Fit</div>
+        <div class="position-value">DB / WR</div>
+        <div class="metric-sub" style="margin-top:2px;">
+          StarPath combines data, film notes, and measurables to recommend position fit.
+        </div>
+      </div>
+    </section>
+
+    <!-- BACK OF CARD -->
+    <section class="card" id="starpath-card-back">
+      <div class="card-header-row">
+        <div class="badge-pill">
+          <span class="icon">★</span>
+          <span>StarPath Report</span>
+        </div>
+        <div class="logo-text">
+          <strong>RESULT SUMMARY</strong>
+          Academic · Athletic · Habits
+        </div>
+      </div>
+
+      <div class="section-title">Athlete Snapshot</div>
+      <div class="assessment-grid">
+        <div class="pill-stat">
+          <div class="pill-stat-label">Academic Readiness (ARI)</div>
+          <div class="pill-stat-value">82</div>
+          <div class="pill-stat-sub">Solid NCAA path · Room to raise GPA.</div>
+        </div>
+        <div class="pill-stat">
+          <div class="pill-stat-label">GAR Score</div>
+          <div class="pill-stat-value">89</div>
+          <div class="pill-stat-sub">Explosive speed &amp; change of direction.</div>
+        </div>
+        <div class="pill-stat">
+          <div class="pill-stat-label">Behavior &amp; Habits</div>
+          <div class="pill-stat-value">86</div>
+          <div class="pill-stat-sub">Coachability, leadership, consistency.</div>
+        </div>
+        <div class="pill-stat">
+          <div class="pill-stat-label">NCAA Tracker</div>
+          <div class="pill-stat-value">On Track</div>
+          <div class="pill-stat-sub">Core GPA 3.1 · 10/16 core credits verified.</div>
+        </div>
+      </div>
+
+      <div class="section-title">Strengths (Current Snapshot)</div>
+      <div class="text-block">
+        <strong>On-field:</strong> Verified top-end speed, long stride, and recovery burst. Comfortable in off-man
+        and zone coverage, with strong ball skills and willingness to tackle.
+        <br/><br/>
+        <strong>Off-field:</strong> Positive coach feedback, reliable practice attendance, takes corrections well,
+        and shows leadership in small group settings.
+        <div class="badge-row">
+          <span class="badge green">Elite Speed</span>
+          <span class="badge green">High Work Rate</span>
+          <span class="badge green">Coachable</span>
+        </div>
+      </div>
+
+      <div class="section-title">Key Growth Areas</div>
+      <div class="text-block">
+        <strong>Academics:</strong> Raise core GPA into the mid–3s by improving grades in English and math.
+        Stay on top of NCAA-approved core course list when choosing future classes.
+        <br/><br/>
+        <strong>Athletics:</strong> Add 4–6 kg of functional strength, refine press technique at the line, and
+        continue route tree work at wide receiver to keep two-position value high.
+        <div class="badge-row">
+          <span class="badge red">Core GPA</span>
+          <span class="badge red">Strength / Mass</span>
+          <span class="badge">Press Technique</span>
+        </div>
+      </div>
+
+      <div class="section-title">Recommended Path &amp; Projection</div>
+      <div class="text-block">
+        <strong>Recommended competitive path (today):</strong> High-level D2 / FCS recruitment with JUCO safety net
+        if academics slip. With improved core GPA and continued progression, selective FBS interest is realistic.
+        <br/><br/>
+        <strong>StarPath Recommendation:</strong> Maintain StarPath tracking each term, target 3–5 key events
+        (FNL combines, verified test days, and 1–2 college camps), and update film every 8–10 games.
+      </div>
+
+      <div class="section-title">Next 90 Days – Action Plan</div>
+      <div class="text-block">
+        <strong>Academics (Weekly):</strong>
+        <ul class="list-tight">
+          <li>2x 45-minute focused study blocks for English and math.</li>
+          <li>Submit all assignments 24 hours early; meet each teacher once per month.</li>
+          <li>Update StarPath GPA and course tracker every Sunday.</li>
+        </ul>
+        <strong>Training (Weekly):</strong>
+        <ul class="list-tight">
+          <li>3x field sessions (DB footwork, transitions, ball skills).</li>
+          <li>3x strength sessions (posterior chain, core, upper body strength).</li>
+          <li>1x dedicated speed session (starts, acceleration, flying 10s).</li>
+        </ul>
+        <strong>Habits &amp; Mindset:</strong>
+        <ul class="list-tight">
+          <li>Minimum 7–8 hours of sleep per night.</li>
+          <li>Log training, classes, and recovery in StarPath app daily.</li>
+          <li>Watch 30 minutes of film, 3 times per week.</li>
+        </ul>
+      </div>
+
+      <div class="section-title">Notes &amp; Disclaimers</div>
+      <div class="text-block">
+        This StarPath card is an internal development tool and does not guarantee NCAA eligibility, scholarships,
+        or professional contracts. Official eligibility decisions are made by the NCAA and individual institutions.
+        Families are responsible for confirming requirements with their school and the NCAA Eligibility Center.
+      </div>
+    </section>
+  </div>
+</body>
+</html>

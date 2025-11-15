@@ -1,0 +1,18 @@
+[
+  {
+    "id": "intro-sports-science",
+    "slug": "introduction-to-sports-science",
+    "title": "Introduction to Sports Science",
+    "price": 49,
+    "summary": "Foundations of training, anatomy, and basic performance principles for student-athletes.",
+    "contentPath": "content/oer/introduction-to-sports-science.md"
+  },
+  {
+    "id": "gar-fundamentals",
+    "slug": "gar-fundamentals",
+    "title": "GAR Fundamentals",
+    "price": 29,
+    "summary": "An introduction to the Game-Athletic Rating (GAR) system and how coaches use it.",
+    "contentPath": "content/oer/gar-fundamentals.md"
+  }
+]

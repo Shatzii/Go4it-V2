@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · Northstar Company Manual & Onboarding Blueprint (v1.0)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0B0F14;
+      --paper: #FFFFFF;
+      --paper-alt: #F8FAFF;
+      --text-main: #111722;
+      --text-soft: #5C6678;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --border: #CAD3E2;
+      --muted: #E6EAF0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070B 55%, #000000 100%);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-wrap {
+      max-width: 960px;
+      margin: 24px auto 40px;
+      padding: 0 16px 24px;
+    }
+
+    .document {
+      background: var(--paper);
+      border-radius: 16px;
+      border: 1px solid #1A2233;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.38);
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    .doc-header {
+      background: linear-gradient(135deg, #0B0F14, #151C28);
+      color: #FFFFFF;
+      padding: 22px 28px 20px;
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .doc-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-block {
+      max-width: 70%;
+    }
+
+    .brand-name {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .brand-tagline {
+      font-size: 0.98rem;
+      color: #D8E0F2;
+      margin-bottom: 6px;
+    }
+
+    .brand-meta {
+      font-size: 0.82rem;
+      color: #9FAAC3;
+      line-height: 1.4;
+    }
+
+    .doc-label {
+      text-align: right;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #B9C4DC;
+    }
+
+    .doc-label strong {
+      display: block;
+      font-size: 0.9rem;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 3px 10px;
+      border: 1px solid rgba(0,212,255,0.6);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #E6EAF0;
+      background: rgba(0,212,255,0.08);
+    }
+
+    /* BODY */
+    .doc-body {
+      padding: 20px 26px 26px;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text-main);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin: 10px 0 14px;
+      font-weight: 800;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      margin: 18px 0 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #1B2333;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin: 12px 0 4px;
+      font-weight: 700;
+      color: #1E2737;
+    }
+
+    h4 {
+      font-size: 0.94rem;
+      margin: 10px 0 4px;
+      font-weight: 650;
+      color: #222B3D;
+    }
+
+    p {
+      margin: 4px 0 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #333A48;
+    }
+
+    ul, ol {
+      margin: 4px 0 8px 1.1rem;
+      padding-left: 0;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #333A48;
+    }
+
+    li {
+      margin-bottom: 2px;
+    }
+
+    .muted {
+      color: var(--text-soft);
+      font-size: 0.85rem;
+    }
+
+    .section {
+      padding: 12px 0 16px;
+      border-bottom: 1px solid var(--muted);
+    }
+
+    .section:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .section-label {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--text-soft);
+      margin-bottom: 2px;
+    }
+
+    .callout {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--paper-alt);
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      margin: 6px 0 10px;
+    }
+
+    .callout strong {
+      color: #111722;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 14px 18px;
+      margin-top: 4px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 6px;
+    }
+
+    .pill {
+      font-size: 0.76rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #F5F7FB;
+      color: #111722;
+    }
+
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .kpi-badge {
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      background: #F9FBFF;
+    }
+
+    .subtle-heading {
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--text-soft);
+      margin: 10px 0 2px;
+    }
+
+    .quote {
+      border-left: 3px solid var(--accent);
+      padding-left: 10px;
+      margin: 6px 0 10px;
+      font-size: 0.9rem;
+      color: #2E3647;
+      font-style: italic;
+    }
+
+    .table-like {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin: 6px 0 10px;
+    }
+
+    .table-header {
+      background: #F0F3FA;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #444F63;
+    }
+
+    .table-row {
+      padding: 6px 10px;
+      border-top: 1px solid var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .footer-bar {
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px solid #1A2233;
+      font-size: 0.78rem;
+      color: #A0A8BA;
+      background: #0B0F14;
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-bar span {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .brand-block {
+        max-width: 100%;
+      }
+      .doc-header-top {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .doc-body {
+        padding: 16px 18px 20px;
+      }
+      .footer-bar {
+        padding: 10px 18px 12px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #FFFFFF;
+      }
+      .page-wrap {
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .document {
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+      }
+      .doc-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .footer-bar {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="document">
+      <!-- HEADER -->
+      <header class="doc-header">
+        <div class="doc-header-top">
+          <div class="brand-block">
+            <div class="brand-name">GO4IT ACADEMY</div>
+            <div class="brand-tagline">Train Here. Qualify Anywhere.</div>
+            <div class="brand-meta">
+              Northstar Company Manual &amp; Onboarding Blueprint (v1.0)<br />
+              Effective: November 2025<br />
+              HQ: Denver, USA · Vienna, Austria<br />
+              Founder &amp; CEO: Alonzo Barrett
+            </div>
+          </div>
+          <div class="doc-label">
+            <strong>INTERNAL USE</strong>
+            Version 1.0 · Working Playbook<br />
+            Last Updated: Nov 2025
+          </div>
+        </div>
+        <div class="chip-row">
+          <span class="chip">StarPath System</span>
+          <span class="chip">Student-Athlete Academy</span>
+          <span class="chip">NCAA &amp; International</span>
+          <span class="chip">Residencies · Vienna &amp; Dallas</span>
+        </div>
+      </header>
+
+      <!-- BODY -->
+      <main class="doc-body">
+
+        <!-- 0. HOW TO USE -->
+        <section class="section">
+          <div class="section-label">0 · HOW TO USE THIS MANUAL</div>
+          <h1>Northstar Operating Manual</h1>
+          <p>
+            This manual is designed so a new teammate, contractor, or partner can understand
+            Go4it Academy quickly and operate without constant hand-holding. If you are reading
+            this as a new staff member, your first job is to understand this playbook.
+          </p>
+          <h3>This manual answers:</h3>
+          <ul>
+            <li>Why Go4it exists and who we serve.</li>
+            <li>Exactly what we sell and how all products connect.</li>
+            <li>How the StarPath System works (assessment → tracking → training → pathways).</li>
+            <li>How we run each week (Parent Nights, media, systems).</li>
+            <li>Who does what (roles, expectations, KPIs).</li>
+            <li>How we sell (DMs, Parent Nights, StarPath).</li>
+            <li>How we deliver (assessment and program SOPs).</li>
+            <li>Which tools we use and how we treat data.</li>
+            <li>Compliance rules we respect (NCAA, FIFA, FERPA, GDPR).</li>
+          </ul>
+          <div class="callout">
+            <strong>Expectation:</strong> All staff and collaborators read this manual fully at least once, and
+            revisit key sections (products, roles, SOPs) whenever they feel unclear. If something is missing or
+            confusing, we fix the manual — not just “wing it.”
+          </div>
+        </section>
+
+        <!-- 1. NORTHSTAR -->
+        <section class="section">
+          <div class="section-label">1 · NORTHSTAR</div>
+          <h2>Why We Exist</h2>
+
+          <h3>1.1 Core Problem We Solve</h3>
+          <p>Most serious student-athletes and families feel:</p>
+          <ul>
+            <li><strong>Confused</strong> by NCAA and international eligibility rules.</li>
+            <li><strong>Underserved</strong> by schools that don’t understand elite training schedules.</li>
+            <li><strong>Uncoached</strong> academically (no one teaches them how to be a student-athlete).</li>
+            <li><strong>Unverified</strong> athletically (no honest measure of their true level).</li>
+          </ul>
+          <p>
+            We solve this by building a clear, verified pathway from:
+          </p>
+          <blockquote class="quote">
+            <strong>“Talented &amp; confused” → “Qualified, ready, and seen.”</strong>
+          </blockquote>
+
+          <h3>1.2 Mission</h3>
+          <p>
+            To build a global academy and operating system that gives student-athletes:
+          </p>
+          <ul>
+            <li><strong>Academic clarity</strong> – where they stand and what to fix.</li>
+            <li><strong>Athletic development</strong> – training, habits, and feedback that actually move the needle.</li>
+            <li><strong>Pathways</strong> – realistic routes into NCAA, JUCO, NAIA, or international opportunities.</li>
+          </ul>
+
+          <h3>1.3 Vision (3–5 Years)</h3>
+          <ul>
+            <li>Go4it Academy recognized as the #1 StarPath provider for U.S. and international student-athletes.</li>
+            <li>Vienna and Dallas residencies running full, recurring 12-week cohorts every year.</li>
+            <li>StarPath used by clubs, academies, and schools as the default NCAA readiness OS.</li>
+          </ul>
+
+          <h3>1.4 Brand Promise</h3>
+          <p>To every family, we promise:</p>
+          <blockquote class="quote">
+            <strong>“We will tell you the truth about where your athlete stands academically and athletically —
+            and give you a real plan, not hype.”</strong>
+          </blockquote>
+        </section>
+
+        <!-- 2. WHAT GO4IT IS -->
+        <section class="section">
+          <div class="section-label">2 · IDENTITY</div>
+          <h2>What Go4it Academy Is (and Isn’t)</h2>
+
+          <h3>2.1 We Are</h3>
+          <ul>
+            <li>A homeschool / online-friendly academy built for serious student-athletes.</li>
+            <li>The creator and operator of the <strong>StarPath System</strong>.</li>
+            <li>A provider of 12-week residencies in Vienna (soccer) and Dallas (football &amp; basketball).</li>
+            <li>A bridge between U.S. and international pathways.</li>
+          </ul>
+
+          <h3>2.2 We Are NOT</h3>
+          <ul>
+            <li>Not a traditional brick-and-mortar high school.</li>
+            <li>Not a recruiting service that guarantees scholarships.</li>
+            <li>Not a legal, immigration, or visa advisory firm.</li>
+            <li>Not a club trying to replace existing teams. We <strong>layer on top</strong> of current environments.</li>
+          </ul>
+
+          <h3>2.3 Truth-in-Marketing Disclaimer</h3>
+          <div class="callout">
+            <strong>This text MUST appear on all academic/eligibility documents, PDFs, and key pages:</strong><br /><br />
+            Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are
+            issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic
+            and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected.
+            Families remain responsible for local education registration. We do not provide immigration or legal advice.
+          </div>
+          <p class="muted">
+            Staff rule: if you’re not sure whether to include this, include it.
+          </p>
+        </section>
+
+        <!-- 3. PRODUCT LADDER -->
+        <section class="section">
+          <div class="section-label">3 · PRODUCT LADDER</div>
+          <h2>What We Sell (Value Stack)</h2>
+
+          <p>
+            We focus on a small set of products that stack together and support one Northstar: <strong>StarPath</strong>.
+          </p>
+
+          <h3>3.1 Ladder Overview</h3>
+          <ol>
+            <li><strong>StarPath Assessment™</strong> – entry point, single purchase.</li>
+            <li><strong>StarPath System (Ongoing)</strong>
+              <ul>
+                <li>Full-Time Go4it Academy student.</li>
+                <li>StarPath Online (keep their school, we run the OS).</li>
+              </ul>
+            </li>
+            <li><strong>Residencies (Vienna &amp; Dallas, 12 weeks).</strong></li>
+            <li><strong>Friday Night Lights (FNL) events.</strong></li>
+            <li><strong>Parent Nights (Tues/Thurs).</strong></li>
+            <li><strong>GAR Testing &amp; AthleteAI platform layer.</strong></li>
+          </ol>
+
+          <h3>3.2 Product 1 – StarPath Assessment™ (MVP)</h3>
+          <p><strong>Positioning:</strong> This is the first product almost every serious family should buy.</p>
+          <p><strong>Purpose:</strong></p>
+          <ul>
+            <li>Show the family where the athlete stands academically (GPA, credits, NCAA core).</li>
+            <li>Show where they stand athletically (GAR 0–100, strengths &amp; gaps).</li>
+            <li>Assign a star rating (0–5 Star) and level projection (D1/D2/NAIA/JUCO/EU).</li>
+            <li>Give a clear plan for the next 6–12 months.</li>
+          </ul>
+
+          <h3>3.3 Product 2 – StarPath System (Ongoing)</h3>
+          <div class="grid-2">
+            <div>
+              <h4>A. Full-Time Go4it Academy Student</h4>
+              <p><strong>Who:</strong> Athletes ready to let Go4it handle academics + development together.</p>
+              <p><strong>Includes:</strong></p>
+              <ul>
+                <li>Academic program via U.S. partner school-of-record.</li>
+                <li>Weekly academic coaching / check-ins.</li>
+                <li>StarPath dashboard for student &amp; parent.</li>
+                <li>Sport-specific training programs (soccer, American football, basketball).</li>
+                <li>NCAA tracking (courses &amp; GPA) within the StarPath system.</li>
+              </ul>
+              <p class="muted"><strong>Reference price (internal):</strong> ~$399/month (final pricing on website supersedes).</p>
+            </div>
+            <div>
+              <h4>B. StarPath Online (Keep Their School)</h4>
+              <p><strong>Who:</strong> Athletes who stay in their current school but need NCAA &amp; development support.</p>
+              <p><strong>Includes:</strong></p>
+              <ul>
+                <li>NCAA tracking and core course planning.</li>
+                <li>Academic planning and accountability.</li>
+                <li>StarPath dashboard + development recommendations.</li>
+              </ul>
+              <p class="muted"><strong>Reference range:</strong> ~$149–$199/month (to be finalized).</p>
+              <div class="quote">
+                Not every athlete has to change schools. StarPath Online lets us serve them powerfully and profitably
+                while they stay where they are.
+              </div>
+            </div>
+          </div>
+
+          <h3>3.4 Product 3 – 12-Week Residencies (Vienna &amp; Dallas)</h3>
+          <p><strong>Vienna Residency (Soccer):</strong></p>
+          <ul>
+            <li>12-week high-performance soccer + academics + culture.</li>
+            <li>Target: U.S.-based players coming to Europe.</li>
+            <li>Planned dates: ~Feb 2 – Apr 3, 2026.</li>
+          </ul>
+          <p><strong>Dallas Residency (Football &amp; Basketball):</strong></p>
+          <ul>
+            <li>12-week American football + AAU-style basketball.</li>
+            <li>Target: European/international athletes coming to the U.S.</li>
+            <li>Planned dates: ~July 3 – Sept 25, 2026 (including July 4th weekend).</li>
+          </ul>
+          <p><strong>Working Price:</strong> $10,000 USD per 12-week program (excluding flights and personal spending).</p>
+          <p class="muted"><strong>Non-negotiable rule:</strong> No residency without a StarPath Assessment first.</p>
+
+          <h3>3.5 Product 4 – Friday Night Lights (FNL)</h3>
+          <p>
+            Friday Night Lights events are a mix of high-energy training, combine-style testing,
+            and community building.
+          </p>
+          <ul>
+            <li>Gives local athletes exposure to Go4it culture.</li>
+            <li>Collects leads and baseline data (mini GAR + contact info).</li>
+            <li>Invites top fits to StarPath Assessment &amp; Parent Nights.</li>
+          </ul>
+          <p class="muted">
+            FNL is not framed as “make-or-break tryouts.” It’s a learning environment and front door to the ecosystem.
+          </p>
+
+          <h3>3.6 Product 5 – Parent Nights</h3>
+          <div class="grid-2">
+            <div>
+              <h4>Tuesday – Parent Info / Demo Night</h4>
+              <ul>
+                <li>Educate on NCAA rules, academic traps, international issues.</li>
+                <li>Explain StarPath and Go4it Academy.</li>
+                <li>Primary CTA: StarPath Assessment™.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Thursday – Parent Decision Night</h4>
+              <ul>
+                <li>Recap, share wins, answer deeper questions.</li>
+                <li>Discuss full options: StarPath System, school, and residencies.</li>
+                <li>Primary CTA: StarPath Assessment + enrollment where appropriate.</li>
+              </ul>
+            </div>
+          </div>
+
+          <h3>3.7 Platform Layer – GAR &amp; AthleteAI</h3>
+          <ul>
+            <li><strong>GAR Testing:</strong> Verified 0–100 Game Athletic Rating using structured drills.</li>
+            <li><strong>AthleteAI Platform:</strong> Internal software where:
+              <ul>
+                <li>StarPath dashboard lives.</li>
+                <li>Reports and plans are stored.</li>
+                <li>NCAA tracking and tasks can be managed.</li>
+              </ul>
+            </li>
+          </ul>
+        </section>
+
+        <!-- 4. STARPATH DEEP DIVE -->
+        <section class="section">
+          <div class="section-label">4 · STARPATH SYSTEM</div>
+          <h2>StarPath Deep Dive</h2>
+
+          <h3>4.1 Inputs → Processing → Outputs</h3>
+          <div class="grid-2">
+            <div>
+              <h4>Inputs</h4>
+              <ul>
+                <li>Transcripts / grade reports.</li>
+                <li>Current and past course lists.</li>
+                <li>Sport and primary position.</li>
+                <li>Anthropometrics (height, weight) and testing numbers.</li>
+                <li>Athlete goals (NCAA level, pro, Europe, etc.).</li>
+                <li>Behavior / routine info (sleep, practice, study habits).</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Processing</h4>
+              <ul>
+                <li>NCAA core mapping and GPA calculation.</li>
+                <li>Academic Readiness Index (ARI 0–100).</li>
+                <li>GAR Athletic Rating (0–100).</li>
+                <li>Star Rating (0–5 Star) based on ARI + GAR + habits.</li>
+                <li>NCAA level projection (D1/D2/D3/NAIA/JUCO/EU).</li>
+                <li>12-month action plan (academics, training, behavior).
