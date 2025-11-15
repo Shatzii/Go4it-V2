@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Go4it Academy · StarPath Launch Calendar (Nov 2025 – Jan 2026)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      padding: 0;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+      min-height: 100%;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #0B0F14, #101725);
+      border: 1px solid rgba(92,102,120,0.8);
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.94rem;
+      color: var(--muted);
+    }
+
+    .subline {
+      margin-top: 4px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .tag-pill {
+      font-size: 0.72rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.6);
+      background: rgba(0,212,255,0.08);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .week {
+      border-radius: 22px;
+      margin-bottom: 18px;
+      padding: 18px 20px 16px;
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 60%);
+      border: 1px solid rgba(92,102,120,0.7);
+      box-shadow: 0 0 22px rgba(0,0,0,0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .week::before {
+      content: "";
+      position: absolute;
+      inset: -45%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.12), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.09), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .week-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .week-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .week-dates {
+      font-size: 0.86rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .week-theme {
+      font-size: 0.95rem;
+      color: var(--accent2);
+      margin: 2px 0 6px;
+      font-weight: 600;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .block-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--mid);
+      margin-bottom: 4px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.1em;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    li { margin-bottom: 0.18em; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+
+    .pill {
+      font-size: 0.76rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.6);
+      background: rgba(0,212,255,0.08);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .day-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .day-card {
+      border-radius: 14px;
+      padding: 8px 9px;
+      background: rgba(11,15,24,0.95);
+      border: 1px solid rgba(92,102,120,0.85);
+      font-size: 0.84rem;
+    }
+
+    .day-title {
+      font-size: 0.84rem;
+      font-weight: 650;
+      margin-bottom: 4px;
+      color: var(--light);
+    }
+
+    .time {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent2);
+    }
+
+    .mini {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .metrics {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .metrics strong {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    footer {
+      margin-top: 28px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(92,102,120,0.7);
+      font-size: 0.78rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding: 16px 12px 48px;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .day-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .week-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+    }
+
+    @media print {
+      html, body {
+        background: #000;
+      }
+      body {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .page {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <h1 id="main-title">Go4it Academy · StarPath Launch Calendar</h1>
+      <p id="subtitle">From Nov 15, 2025 → Jan 11, 2026 · Building to Spring Semester Launch</p>
+      <div class="subline">
+        Weekly operating rhythm baked in: Monday Onboarding · Tuesday Info Night · Wednesday Media · Thursday Decision Night · Friday Systems · Weekend Deep Work.
+      </div>
+      <div class="tag-row">
+        <span class="tag-pill">StarPath Assessments</span>
+        <span class="tag-pill">Parent Nights (EU &amp; USA)</span>
+        <span class="tag-pill">Spring 2026 Launch</span>
+        <span class="tag-pill">Residency Pipeline</span>
+      </div>
+    </header>
+
+    <!-- Week 1: Launch Reset (starting weekend of Nov 15) -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 1 · Reset &amp; Build the Funnel</div>
+          <div class="week-dates">Nov 15–21, 2025</div>
+        </div>
+        <div class="week-theme">Clean slate, StarPath front-and-center, systems locked.</div>
+        <div class="row">
+          <div>
+            <div class="block-label">Primary Focus</div>
+            <ul>
+              <li>Finalize StarPath landing page &amp; enrollment flow on go4itsports.org.</li>
+              <li>Set up Parent Night Zoom links (EU 12 PM CST, USA 7 PM CST) for Tue/Thu.</li>
+              <li>Publish the StarPath Assessment flyer and intake form as PDFs.</li>
+              <li>Define personal DM rhythm: 50–75 athlete/parent DMs per day on Instagram.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Daily Rhythm (This Week)</div>
+            <div class="pill-row">
+              <span class="pill">Launch Prep</span>
+              <span class="pill">DM Sprints</span>
+              <span class="pill">Parent Night Setup</span>
+            </div>
+            <div class="day-grid">
+              <div class="day-card">
+                <div class="day-title">Sat–Sun (Nov 15–16)</div>
+                <div class="time">Design &amp; upload assets</div>
+                <div class="mini">Fix copy, test forms, record quick 60s “What is StarPath?” video.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Monday (Nov 17)</div>
+                <div class="time">Onboarding Day</div>
+                <div class="mini">Onboard first test families, walk through StarPath dashboard.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Tue &amp; Thu</div>
+                <div class="time">Parent Nights Go Live</div>
+                <div class="mini">Run beta Info Night (Tue) &amp; Decision Night (Thu).</div>
+              </div>
+            </div>
+            <div class="metrics">
+              Target: <strong>10 StarPath Assessment calls booked</strong> · <strong>30+ Parent Night RSVPs</strong> · StarPath page fully live.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Week 2 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 2 · StarPath Assessment Push</div>
+          <div class="week-dates">Nov 22–30, 2025</div>
+        </div>
+        <div class="week-theme">Every conversation points to the $199 StarPath Assessment.</div>
+        <div class="row">
+          <div>
+            <div class="block-label">Primary Focus</div>
+            <ul>
+              <li>Run two full Parent Night cycles with clear StarPath offer &amp; CTA.</li>
+              <li>Post daily content (reels + carousels) explaining StarPath in simple language.</li>
+              <li>Start StarPath “Highlight Reels” – 1–2 athletes you assess this week.</li>
+              <li>Tag every new family in CRM as: <em>Lead → Assessment → StarPath</em>.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Weekly Execution</div>
+            <div class="pill-row">
+              <span class="pill">Parent Nights</span>
+              <span class="pill">StarPath Explainers</span>
+              <span class="pill">Highlight Athletes</span>
+            </div>
+            <div class="day-grid">
+              <div class="day-card">
+                <div class="day-title">Monday</div>
+                <div class="time">Onboarding + Follow-ups</div>
+                <div class="mini">Onboard new families from last week; send reminders for Tue.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Tuesday</div>
+                <div class="time">Info Night (EU &amp; USA)</div>
+                <div class="mini">Teach NCAA basics, StarPath overview, pitch assessment.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Wednesday</div>
+                <div class="time">Media Day</div>
+                <div class="mini">Film 1 podcast episode + 3 reels focused on “Know Your Numbers”.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Thursday</div>
+                <div class="time">Decision Night</div>
+                <div class="mini">Walk parents through “What happens after the Assessment?”.</div>
+              </div>
+            </div>
+            <div class="metrics">
+              Target: <strong>15–20 StarPath Assessments sold</strong> · <strong>50+ RSVPs</strong> · At least <strong>2 athlete case studies</strong> started.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Week 3 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 3 · Proof &amp; Social Proof</div>
+          <div class="week-dates">Dec 1–7, 2025</div>
+        </div>
+        <div class="week-theme">Show real StarPath results, not just promises.</div>
+        <div class="row">
+          <div>
+            <div class="block-label">Primary Focus</div>
+            <ul>
+              <li>Turn completed StarPath reports into anonymized success stories.</li>
+              <li>Film testimonial-style clips: “Before StarPath vs. After StarPath clarity.”</li>
+              <li>Introduce Spring 2026 online semester as the “next step” after StarPath.</li>
+              <li>Clarify message: <strong>Residency is invitation-only; StarPath is for everyone.</strong></li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Weekly Execution</div>
+            <div class="pill-row">
+              <span class="pill">Testimonials</span>
+              <span class="pill">Case Studies</span>
+              <span class="pill">Spring Teaser</span>
+            </div>
+            <div class="day-grid">
+              <div class="day-card">
+                <div class="day-title">Mon / Fri</div>
+                <div class="time">Report Days</div>
+                <div class="mini">Deliver StarPath PDFs, schedule follow-up calls.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Tue &amp; Thu</div>
+                <div class="time">Parent Nights</div>
+                <div class="mini">Add “Spring 2026 Class Launch” slide with waitlist link.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Wed</div>
+                <div class="time">Media Day</div>
+                <div class="mini">Reels: “3 things every NCAA coach checks first” + study clips.</div>
+              </div>
+            </div>
+            <div class="metrics">
+              Target: <strong>20–25 Assessments total</strong> (cumulative) · <strong>10+ Spring interest forms</strong> · <strong>5 high-quality testimonials</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Week 4 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 4 · Friday Night Lights &amp; Residency Tease</div>
+          <div class="week-dates">Dec 8–14, 2025</div>
+        </div>
+        <div class="week-theme">Use events as vibes + top-of-funnel, assessments as filter, residencies as invite-only.</div>
+        <div class="row">
+          <div>
+            <div class="block-label">Primary Focus</div>
+            <ul>
+              <li>Announce 2026 Vienna &amp; Dallas 12-week residencies as “next-level” opportunities.</li>
+              <li>Clarify: <em>Residency = invite-only based on StarPath + coach fit</em>.</li>
+              <li>Promote Friday Night Lights (Denver, Dallas, Vienna) as training &amp; culture events.</li>
+              <li>Build residency interest list from StarPath athletes &amp; FNL attendees.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Weekly Execution</div>
+            <div class="pill-row">
+              <span class="pill">Residency Teaser</span>
+              <span class="pill">FNL Announce</span>
+              <span class="pill">Culture Content</span>
+            </div>
+            <div class="day-grid">
+              <div class="day-card">
+                <div class="day-title">Mon</div>
+                <div class="time">Residency Page Live</div>
+                <div class="mini">Launch simple info page for Vienna &amp; Dallas.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Wed</div>
+                <div class="time">Media Day</div>
+                <div class="mini">Reels: “What a 12-week residency looks like.”</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Thu</div>
+                <div class="time">Decision Night</div>
+                <div class="mini">Explain how StarPath scores influence residency invites.</div>
+              </div>
+            </div>
+            <div class="metrics">
+              Target: <strong>30+ athletes on Residency waitlist</strong> · <strong>FNL interest from 3+ clubs/teams</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Week 5 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 5 · Holiday Sprint &amp; Webinar</div>
+          <div class="week-dates">Dec 15–21, 2025</div>
+        </div>
+        <div class="week-theme">Run one big 25-minute webinar to recap everything for late-deciders.</div>
+        <div class="row">
+          <div>
+            <div class="block-label">Primary Focus</div>
+            <ul>
+              <li>Host StarPath + Spring Launch webinar (recorded and clipped for social).</li>
+              <li>Bundle: StarPath Assessment + Spring 2026 priority spot.</li>
+              <li>Push final round of Parent Nights before holiday slowdown.</li>
+              <li>Lock in January Parent Night schedule &amp; reminder automations.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Weekly Execution</div>
+            <div class="pill-row">
+              <span class="pill">Webinar</span>
+              <span class="pill">Bundle Offer</span>
+              <span class="pill">Clipped Content</span>
+            </div>
+            <div class="day-grid">
+              <div class="day-card">
+                <div class="day-title">Mon–Tue</div>
+                <div class="time">Webinar Promotion</div>
+                <div class="mini">DM + email existing list, promote on socials.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Wed</div>
+                <div class="time">Webinar Day</div>
+                <div class="mini">Live 25-min presentation + Q&amp;A, record for replay.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Thu–Fri</div>
+                <div class="time">Follow-up</div>
+                <div class="mini">Send replay, limited-time bundle for StarPath + Spring.</div>
+              </div>
+            </div>
+            <div class="metrics">
+              Target: <strong>30+ webinar registrants</strong> · <strong>10+ bundle sales</strong> · content for <strong>10+ short clips</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Week 6 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 6 · Holiday Nurture &amp; Light Touch</div>
+          <div class="week-dates">Dec 22–31, 2025</div>
+        </div>
+        <div class="week-theme">Low-pressure value, keep families warm while they travel &amp; reset.</div>
+        <div class="row">
+          <div>
+            <div class="block-label">Primary Focus</div>
+            <ul>
+              <li>Send “Holiday Check-in” emails with free NCAA checklists &amp; grade trackers.</li>
+              <li>Post softer content: gratitude, stories, “Where our athletes are headed next.”</li>
+              <li>Quietly book StarPath Assessments for January start dates.</li>
+              <li>Map out January–March DM lists (clubs, schools, coaches).</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Weekly Execution</div>
+            <div class="pill-row">
+              <span class="pill">Nurture</span>
+              <span class="pill">Storytelling</span>
+              <span class="pill">January Setup</span>
+            </div>
+            <div class="day-grid">
+              <div class="day-card">
+                <div class="day-title">Dec 23–24</div>
+                <div class="time">Holiday Emails</div>
+                <div class="mini">Send checklists &amp; “We’re in your corner” messages.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Dec 27–30</div>
+                <div class="time">Quiet Booking</div>
+                <div class="mini">Invite families to secure January StarPath slots.</div>
+              </div>
+            </div>
+            <div class="metrics">
+              Target: <strong>Keep unsubscribe rate &lt; 2%</strong> · <strong>Book 10+ January assessments</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Week 7 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 7 · Spring 2026 Launch Push</div>
+          <div class="week-dates">Jan 1–11, 2026</div>
+        </div>
+        <div class="week-theme">“New Year, Clear Path” – convert StarPath families into Spring students.</div>
+        <div class="row">
+          <div>
+            <div class="block-label">Primary Focus</div>
+            <ul>
+              <li>Flip Parent Nights to Spring 2026 enrollment mode (while keeping StarPath front door).</li>
+              <li>Offer: Apply your StarPath fee toward Spring tuition for full-time students.</li>
+              <li>Lock first cohort numbers for Spring online program.</li>
+              <li>Identify 10–15 top candidates for Vienna &amp; Dallas residencies.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Weekly Execution</div>
+            <div class="pill-row">
+              <span class="pill">New Year Campaign</span>
+              <span class="pill">Enrollment Calls</span>
+              <span class="pill">Residency Shortlist</span>
+            </div>
+            <div class="day-grid">
+              <div class="day-card">
+                <div class="day-title">Jan 1–3</div>
+                <div class="time">New Year Kickoff</div>
+                <div class="mini">Post “New Year, Clear Path” video, email list with Spring details.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Mon–Fri</div>
+                <div class="time">Daily Sales Block</div>
+                <div class="mini">60–90 min per day of direct enrollment &amp; scholarship calls.</div>
+              </div>
+              <div class="day-card">
+                <div class="day-title">Tue &amp; Thu</div>
+                <div class="time">Parent Nights</div>
+                <div class="mini">Major focus on “What Spring at Go4it looks like week-by-week.”</div>
+              </div>
+            </div>
+            <div class="metrics">
+              Target: <strong>First 20–30 Spring 2026 students committed</strong> · <strong>Residency shortlist created</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>Go4it Academy · Train Here. Qualify Anywhere. · StarPath System™ for global student-athletes.</span>
+      <span>info@go4itsports.org · +1-303-970-4655 · go4itsports.org</span>
+    </footer>
+  </main>
+</body>
+</html>

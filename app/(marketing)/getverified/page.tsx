@@ -100,28 +100,28 @@ export default async function GetVerifiedPage() {
             </h2>
             <div className="grid md:grid-cols-4 gap-8">
               {[
-                {
-                  step: "1",
-                  title: "Register",
-                  description: "Choose your city and time slot. $99 base.",
-                },
-                {
-                  step: "2",
-                  title: "Check In",
-                  description: "Arrive 15 min early. Get your athlete ID.",
-                },
-                {
-                  step: "3",
-                  title: "Test",
-                  description: "40yd, vertical, agility, strength. 45-60 min.",
-                },
-                {
-                  step: "4",
-                  title: "Results",
-                  description:
-                    "Instant GAR score + percentiles. Add $299 NCAA audit.",
-                },
-              ].map((item) => (
+                  {
+                    step: "1",
+                    title: "Register",
+                    description: "Choose your city and time slot. $99 base.",
+                  },
+                  {
+                    step: "2",
+                    title: "Check In",
+                    description: "Arrive 15 min early. Get your athlete ID.",
+                  },
+                  {
+                    step: "3",
+                    title: "Test",
+                    description: "40yd, vertical, agility, strength. 45-60 min.",
+                  },
+                  {
+                    step: "4",
+                    title: "Results",
+                    description:
+                      "Instant GAR score + percentiles. Add $299 NCAA audit.",
+                  },
+                ].map((item: { step: string; title: string; description: string }) => (
                 <div key={item.step} className="text-center">
                   <div className="w-16 h-16 bg-[#00D4FF] rounded-full flex items-center justify-center text-[#0B0F14] text-2xl font-bold mx-auto mb-4">
                     {item.step}
@@ -285,7 +285,7 @@ export default async function GetVerifiedPage() {
                   q: "Can I add the audit later?",
                   a: "Yes, but you'll save time by bundling at the event. We can pull your results into your audit report instantly.",
                 },
-              ].map((faq, i) => (
+              ].map((faq: { q: string; a: string }, i: number) => (
                 <details
                   key={i}
                   className="bg-[#0f1419] border border-[#1a1f26] rounded-lg p-6"

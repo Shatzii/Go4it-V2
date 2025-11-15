@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>StarPath Assessment — Ad + Filmstrip</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Player-card StarPath ad flyer with action+academics filmstrip, offer stack, and NCAA-clean CTAs.">
+<style>
+:root{ --bg:#0B0F14; --ink:#E6EAF0; --soft:#9BA4BC; --foil1:#00D4FF; --foil2:#27E36A; --line:#1E2837;
+       --play:url('https://dummyimage.com/800x600/0B0F14/ffffff&text=MATCH+PLAY');
+       --train:url('https://dummyimage.com/800x600/0B0F14/ffffff&text=TRAINING');
+       --study:url('https://dummyimage.com/800x600/0B0F14/ffffff&text=STUDY+HALL'); }
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;padding:20px;background:radial-gradient(140% 120% at 100% 0,rgba(0,212,255,.08),transparent 40%),#0B0F14;color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.page{position:relative}
+.card-wrap{max-width:860px;margin:0 auto}
+.card{position:relative;border-radius:26px;padding:16px;border:1px solid rgba(0,212,255,.35);
+  background:radial-gradient(120% 90% at 0 0,rgba(0,212,255,.15),transparent 60%),
+             radial-gradient(120% 90% at 100% 100%,rgba(39,227,106,.12),transparent 60%),
+             #0B0F14;
+  box-shadow:0 28px 70px rgba(0,0,0,.6), 0 0 40px rgba(0,212,255,.18);
+}
+.header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.brand{font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:#9BA4BC}
+.tag{font-size:.72rem;text-transform:uppercase;letter-spacing:.16em;padding:4px 8px;border-radius:999px;
+  border:1px solid rgba(39,227,106,.9);background:rgba(39,227,106,.12);color:#BDF4D2;font-weight:800}
+.title{font-size:1.6rem;font-weight:900;letter-spacing:.04em;margin:2px 0 0}
+.subtitle{font-size:1rem;color:#bfe2ff;margin-top:2px;text-transform:uppercase;letter-spacing:.12em}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;margin-top:10px}
+.photo{position:relative;border-radius:18px;overflow:hidden;min-height:420px;
+  background:linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.15)),var(--photo, url('https://dummyimage.com/1200x1500/0B0F14/ffffff&text=ADD+ATHLETE+PHOTO+HERE')) center/cover no-repeat;
+  border:1px solid var(--line)}
+.flag{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);
+  padding:6px 10px;border-radius:10px;font-size:.72rem}
+.right{display:flex;flex-direction:column;gap:12px}
+.block{border:1px solid var(--line);border-radius:16px;padding:12px;background:#0A101A}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:.9rem;margin:4px 0}
+.kv label{color:#9FB3D1}
+.list{margin:4px 0 0 0;padding-left:18px;font-size:.92rem;color:#D8E5F8}
+.list li{margin:4px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cta{margin-top:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{background:var(--foil2);color:#031;text-decoration:none;font-weight:900;padding:12px 16px;border-radius:12px}
+.links a{color:#bfead0;text-decoration:underline}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.qr{border:1px dashed var(--line);border-radius:12px;padding:10px;text-align:center;font-size:.8rem;color:#9FB0C8}
+.qr .sq{width:68px;height:68px;border-radius:8px;border:1px solid var(--line);margin:6px auto;background:#151C28}
+.notes{border:1px dashed var(--line);border-radius:12px;padding:10px;font-size:.88rem;color:#A5B0C8;background:#07101A}
+.footer{margin-top:10px;font-size:.75rem;color:#8AA0B5;border-top:1px solid var(--line);padding-top:8px}
+.help{position:absolute;right:12px;top:12px;font-size:.72rem;color:#8aa0b5}
+.kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0d1520;padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
+.badgelite{display:inline-block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid rgba(0,212,255,.6);color:#aee9ff;background:rgba(0,212,255,.08)}
+.small{font-size:.82rem;color:#BFD0EE}
+.scoregrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.score-card{border:1px solid var(--line);border-radius:16px;padding:10px;background:#07101A}
+.score-title{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:#aee9ff;margin-bottom:6px}
+.overall{display:flex;align-items:center;gap:12px}
+.bigscore{font-size:2.2rem;font-weight:900;color:#fff}
+.stars{font-size:1.1rem;letter-spacing:2px;color:#27E36A}
+.micro{font-size:.8rem;color:#AAB4D0}
+.bar{height:6px;background:#162032;border-radius:999px;overflow:hidden;margin-top:2px}
+.fill{height:100%;background:linear-gradient(90deg,#27E36A,#00D4FF)}
+.session{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.pill{border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:.78rem;color:#C8D2F0;background:#06101A}
+
+.offer{display:grid;grid-template-columns:1.2fr 1fr;gap:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:.72rem;color:#cfe0ee;background:#081018}
+.scale{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.scale .chip{opacity:.9}
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.q{font-weight:700;color:#eaf2ff}
+.a{color:#cfe0ee}
+.risk{font-size:.78rem;color:#b7c6dc}
+
+/* Filmstrip */
+.filmstrip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:8px 0}
+.tile{position:relative;height:120px;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+      background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,.15)), var(--img) center/cover no-repeat;}
+.tile .label{position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.15);
+             padding:4px 8px;border-radius:10px;font-size:.72rem}
+@page{size:A4;margin:12mm}.page{width:210mm;min-height:297mm}
+@media print{ body{background:#fff} }
+</style>
+<script>
+// Autofill via URL params
+(function(){
+  const p=new URLSearchParams(location.search);
+  const txt=(id,def)=>{const el=document.getElementById(id); if(el) el.textContent=p.get(id)||def;};
+  const set=(sel,attr,key)=>{const el=document.querySelector(sel); if(el){const v=p.get(key); if(v) el.setAttribute(attr,v);}}
+  // Defaults (4★ look)
+  txt('city','Vienna');
+  txt('score','82'); txt('stars','★★★★☆'); txt('micro','Same-day 0–100 & 1–5★');
+  const GAR={speed:80,power:78,agility:84,cognition:79,mindset:85};
+  ['speed','power','agility','cognition','mindset'].forEach(k=>{
+    const v=Math.max(0,Math.min(100, Number(p.get(k)??GAR[k])));
+    const el=document.getElementById(k+'_fill'); if(el){ el.style.width=v+'%'; }
+  });
+  // photo + cal
+  const photo=p.get('photo'); if(photo){ document.documentElement.style.setProperty('--photo',`url('${photo}')`); }
+  // filmstrip images
+  const play=p.get('play'); if(play){ document.documentElement.style.setProperty('--play',`url('${play}')`); }
+  const train=p.get('train'); if(train){ document.documentElement.style.setProperty('--train',`url('${train}')`); }
+  const study=p.get('study'); if(study){ document.documentElement.style.setProperty('--study',`url('${study}')`); }
+  set('.btn','href','cal'); set('.links a[href^="#cal"]','href','cal');
+})();
+</script>
+</head>
+<body>
+<div class="page">
+  <div class="help">Tip: Add filmstrip images with ?play=...&train=...&study=...  <span class="kbd">Ctrl/Cmd+P</span></div>
+  <div class="card-wrap">
+    <div class="card">
+
+      <div class="header">
+        <div>
+          <div class="brand">GO4IT SPORTS ACADEMY</div>
+          <div class="title">EARN YOUR STARS.</div>
+          <div class="subtitle">StarPath Assessment — Verified. Rated. Ready.</div>
+        </div>
+        <div class="tag">OFFICIAL ASSESSMENT</div>
+      </div>
+
+      <div class="hero">
+        <div class="photo"><div class="flag">Add athlete photo here</div></div>
+        <div class="right">
+
+          <div class="scoregrid">
+            <div class="score-card">
+              <div class="score-title">Overall StarPath Score</div>
+              <div class="overall">
+                <div class="bigscore" id="score">82</div>
+                <div>
+                  <div class="stars" id="stars">★★★★☆</div>
+                  <div class="micro" id="micro">Same-day 0–100 & 1–5★</div>
+                </div>
+              </div>
+            </div>
+            <div class="score-card">
+              <div class="score-title">GAR™ Metrics</div>
+              <div class="kv"><label>Speed</label></div><div class="bar"><div class="fill" id="speed_fill" style="width:80%"></div></div>
+              <div class="kv"><label>Power</label></div><div class="bar"><div class="fill" id="power_fill" style="width:78%"></div></div>
+              <div class="kv"><label>Agility</label></div><div class="bar"><div class="fill" id="agility_fill" style="width:84%"></div></div>
+              <div class="kv"><label>Cognition</label></div><div class="bar"><div class="fill" id="cognition_fill" style="width:79%"></div></div>
+              <div class="kv"><label>Mindset</label></div><div class="bar"><div class="fill" id="mindset_fill" style="width:85%"></div></div>
+            </div>
+          </div>
+
+          <!-- NEW FILMSTRIP -->
+          <div class="filmstrip">
+            <div class="tile" style="--img:var(--play)"><div class="label">Match Play</div></div>
+            <div class="tile" style="--img:var(--train)"><div class="label">Training</div></div>
+            <div class="tile" style="--img:var(--study)"><div class="label">Study Hall</div></div>
+          </div>
+
+          <!-- OFFER STACK + AD MODULES -->
+          <div class="block">
+            <div class="badgelite">StarPath Assessment — Full Verification Pack</div>
+            <div class="offer">
+              <div>
+                <ul class="list">
+                  <li>Same-day STAR Report (Overall 0–100 & 1–5★)</li>
+                  <li>GAR™ breakdown: Speed • Power • Agility • Cognition • Mindset</li>
+                  <li>Film notes & benchmarks</li>
+                  <li>Two-week plan (field + gym)</li>
+                  <li>NCAA readiness snapshot (core credits %, rigor band, GPA band)</li>
+                  <li>Next steps checklist (what to do this month)</li>
+                </ul>
+              </div>
+              <div>
+                <div class="badgelite">Who it’s for</div>
+                <ul class="list">
+                  <li>Athletes who want numbers, not opinions</li>
+                  <li>A plan they can act on tonight</li>
+                  <li>NCAA-clean guidance parents trust</li>
+                </ul>
+                <div class="badgelite" style="margin-top:8px">Outcome</div>
+                <div class="small">Walk out with your numbers, film notes, and the next two weeks mapped. Parents leave with NCAA clarity.</div>
+              </div>
+            </div>
+            <div class="chips" style="margin-top:8px">
+              <div class="chip">Used in EU & U.S. sessions</div>
+              <div class="chip">Parent-first language</div>
+              <div class="chip">Verification, not hype</div>
+            </div>
+            <div class="scale">
+              <div class="chip">1★ Emerging</div>
+              <div class="chip">2★ Developing</div>
+              <div class="chip">3★ Competitive</div>
+              <div class="chip"><strong>4★ Advanced</strong></div>
+              <div class="chip">5★ Elite</div>
+              <div class="small">Your score converts to stars so coaches and parents can read it fast.</div>
+            </div>
+          </div>
+
+          <div class="block">
+            <div class="badgelite">Micro-FAQ</div>
+            <div class="faq">
+              <div>
+                <div class="q">Is this recruiting?</div>
+                <div class="a">No. Verification, not guarantees. We give you numbers and a plan.</div>
+              </div>
+              <div>
+                <div class="q">Will I know where I stand?</div>
+                <div class="a">Yes. You’ll see a 0–100 score, 1–5★ rating, and the next two weeks mapped.</div>
+              </div>
+            </div>
+            <div class="risk" style="margin-top:6px">Easy reschedule window. Life happens—move your session if needed.</div>
+          </div>
+
+          <div class="session">
+            <div class="pill">~90 MINUTES</div>
+            <div class="pill">EU &amp; U.S. SESSIONS</div>
+            <div class="pill">LIMITED SEATS PER BLOCK</div>
+            <div class="pill">BONUS THIS BLOCK: Parent Night pass included</div>
+          </div>
+
+          <div class="cta">
+            <a class="btn" href="#cal">BOOK STARPATH</a>
+            <div class="links"><a href="#cal">Booking link</a></div>
+            <div class="qr"><div class="sq"></div>Scan to book</div>
+          </div>
+
+          <div class="bottom">
+            <div class="notes">No hype. No guarantees. We measure, we coach, we hand you a plan.</div>
+            <div class="block" style="text-align:right">
+              <div class="badgelite">City</div>
+              <div class="small" id="city">Vienna</div>
+            </div>
+          </div>
+
+          <div class="footer">
+            Friday Night Lights — Run It Up. · go4itsports.org<br>
+            <span style="opacity:.9">Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
