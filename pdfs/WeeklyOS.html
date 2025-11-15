@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · Weekly Operating System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-main:#05070B;
+      --bg-card:#0B0F14;
+      --bg-soft:#111722;
+      --accent:#00D4FF;
+      --accent2:#27E36A;
+      --danger:#FF4D6A;
+      --text-main:#E6EAF0;
+      --text-soft:#9BA4BC;
+      --border-soft:#1E2837;
+      --border-strong:#2C3749;
+      --chip-bg:rgba(0,212,255,0.12);
+      --chip-border:rgba(0,212,255,0.9);
+    }
+
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#172033 0,#05070B 48%,#000000 100%);
+      color:var(--text-main);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .page-wrap {
+      max-width:1040px;
+      margin:24px auto 40px;
+      padding:0 14px 24px;
+    }
+
+    .document {
+      background:linear-gradient(150deg,#05070B,#05070B 50%,#050910);
+      border-radius:22px;
+      border:1px solid rgba(0,212,255,0.25);
+      box-shadow:
+        0 28px 90px rgba(0,0,0,0.85),
+        0 0 60px rgba(0,212,255,0.10);
+      overflow:hidden;
+    }
+
+    /* HEADER */
+    .doc-header {
+      padding:22px 20px 18px;
+      border-bottom:1px solid var(--border-strong);
+      background:
+        radial-gradient(circle at top left,rgba(0,212,255,0.25),transparent 60%),
+        radial-gradient(circle at top right,rgba(39,227,106,0.20),transparent 60%),
+        #05070B;
+    }
+
+    .header-top {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+    }
+
+    .title-block { max-width:70%; }
+
+    .brand-tag {
+      font-size:0.74rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:#9BA4BC;
+      margin-bottom:4px;
+    }
+
+    .main-title {
+      font-size:1.7rem;
+      font-weight:900;
+      letter-spacing:0.16em;
+      text-transform:uppercase;
+      color:#FFFFFF;
+      margin-bottom:4px;
+    }
+
+    .subtitle {
+      font-size:0.88rem;
+      color:#D5DDF2;
+      max-width:460px;
+      line-height:1.5;
+    }
+
+    .label-block {
+      text-align:right;
+      font-size:0.8rem;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:#B9C4DC;
+    }
+    .label-block strong {
+      display:block;
+      font-size:0.9rem;
+      color:#FFFFFF;
+      margin-bottom:4px;
+    }
+
+    .chip-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:12px;
+    }
+    .chip {
+      border-radius:999px;
+      padding:3px 9px 4px;
+      border:1px solid var(--chip-border);
+      font-size:0.7rem;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      color:#E6EAF0;
+      background:var(--chip-bg);
+      backdrop-filter:blur(8px);
+    }
+
+    /* BODY */
+    .doc-body {
+      padding:18px 18px 22px;
+    }
+
+    h1,h2,h3,h4 {
+      margin:0;
+      font-family:inherit;
+    }
+
+    h2 {
+      font-size:1.0rem;
+      margin:10px 0 4px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      color:#E8EDF9;
+    }
+
+    h3 {
+      font-size:0.96rem;
+      margin:4px 0 2px;
+      font-weight:650;
+      color:#F2F5FF;
+    }
+
+    p {
+      margin:3px 0 7px;
+      font-size:0.87rem;
+      line-height:1.6;
+      color:var(--text-soft);
+    }
+
+    .section-label {
+      font-size:0.74rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:#7C88A3;
+      margin-bottom:2px;
+    }
+
+    .section {
+      padding:10px 0 12px;
+      border-bottom:1px solid var(--border-soft);
+    }
+    .section:last-of-type {
+      border-bottom:none;
+      padding-bottom:0;
+    }
+
+    .muted {
+      font-size:0.8rem;
+      color:#848FA9;
+    }
+
+    .week-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px 14px;
+      margin-top:8px;
+    }
+
+    .day-card {
+      background:radial-gradient(circle at top,rgba(0,212,255,0.1),#05070B 55%);
+      border-radius:14px;
+      border:1px solid var(--border-soft);
+      padding:9px 10px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .day-card.alt {
+      background:radial-gradient(circle at top,rgba(39,227,106,0.08),#05070B 55%);
+    }
+
+    .day-header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:6px;
+      margin-bottom:4px;
+    }
+
+    .day-title {
+      font-size:0.94rem;
+      font-weight:700;
+      letter-spacing:0.08em;
+      text-transform:uppercase;
+      color:#FFFFFF;
+    }
+    .day-icon {
+      font-size:1.1rem;
+    }
+
+    .day-sub {
+      font-size:0.78rem;
+      color:#A5B0C8;
+      margin-bottom:4px;
+    }
+
+    ul {
+      margin:2px 0 4px 1rem;
+      padding-left:0;
+      font-size:0.85rem;
+      line-height:1.5;
+      color:var(--text-soft);
+    }
+
+    .pill-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+      margin-top:3px;
+    }
+    .pill {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:1px 7px 2px;
+      font-size:0.7rem;
+      text-transform:uppercase;
+      letter-spacing:0.11em;
+      color:#DCE4FF;
+      background:#111722;
+    }
+    .pill.green { border-color:rgba(39,227,106,0.9); color:var(--accent2); }
+    .pill.blue  { border-color:rgba(0,212,255,0.9); color:var(--accent); }
+
+    .kpi-box {
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      background:#050910;
+      padding:8px 9px;
+      margin-top:6px;
+      font-size:0.84rem;
+    }
+
+    .kpi-tags {
+      margin-top:3px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px;
+    }
+    .kpi-tag {
+      border-radius:8px;
+      border:1px solid var(--border-soft);
+      padding:2px 7px;
+      font-size:0.75rem;
+      color:#C8D3F0;
+      background:#0B101B;
+    }
+
+    .score-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
+      font-size:0.8rem;
+    }
+
+    .score-chip {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:2px 8px;
+      background:#050910;
+      color:#C8D3F0;
+    }
+    .score-chip strong { color:var(--accent); }
+
+    @media (max-width:768px){
+      .title-block{max-width:100%;}
+      .header-top{flex-direction:column;align-items:flex-start;}
+      .doc-body{padding:14px 12px 18px;}
+      .week-grid{grid-template-columns:1fr;}
+      .document{border-radius:18px;}
+    }
+
+    @media print {
+      body{background:#000000;}
+      .page-wrap{max-width:100%;margin:0;padding:0;}
+      .document{border-radius:0;border:none;box-shadow:none;}
+      .doc-header,.document{ -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    }
+
+    .footer-bar {
+      margin-top:14px;
+      padding-top:8px;
+      border-top:1px solid var(--border-strong);
+      font-size:0.76rem;
+      color:#A0A8BA;
+      background:#05070B;
+      padding:8px 18px 10px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .footer-bar span{display:block;}
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="document">
+      <!-- HEADER -->
+      <header class="doc-header">
+        <div class="header-top">
+          <div class="title-block">
+            <div class="brand-tag">Go4it Academy · StarPath System™</div>
+            <div class="main-title">Weekly Operating System</div>
+            <p class="subtitle">
+              One rhythm that keeps the whole StarPath universe in sync — Parent Nights, assessments,
+              content, residencies, and school enrollments. Dark-mode, player-card energy, but for
+              how we run the week.
+            </p>
+          </div>
+          <div class="label-block">
+            <strong>GLOBAL CADENCE</strong>
+            Effective: Nov 2025 → Ongoing<br />
+            Denver · Vienna · Online
+          </div>
+        </div>
+        <div class="chip-row">
+          <span class="chip">StarPath Assessments</span>
+          <span class="chip">Parent Nights</span>
+          <span class="chip">Media &amp; Brand</span>
+          <span class="chip">Residency Pipeline</span>
+          <span class="chip">School Enrollment</span>
+        </div>
+      </header>
+
+      <!-- BODY -->
+      <main class="doc-body">
+        <section class="section">
+          <div class="section-label">0 · PURPOSE</div>
+          <h2>Why This Weekly OS Exists</h2>
+          <p>
+            This is the master rhythm for Go4it Academy and StarPath. If a task doesn’t fit into this
+            operating system, it’s probably a distraction. Every week should move three things:
+          </p>
+          <ul>
+            <li>More families understand their path via StarPath Assessment.</li>
+            <li>More athletes stay on track via StarPath / school / residencies.</li>
+            <li>The brand gets clearer and louder through content and relationships.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <div class="section-label">1 · WEEK AT A GLANCE</div>
+          <h2>Daily Focus · StarPath Player-Card Style</h2>
+          <div class="week-grid">
+            <!-- MONDAY -->
+            <div class="day-card">
+              <div class="day-header">
+                <div>
+                  <div class="day-title">MONDAY · ONBOARDING DAY</div>
+                  <div class="day-sub">🧭 Welcome new families · Activate StarPath · Set weekly goals</div>
+                </div>
+                <div class="day-icon">🧭</div>
+              </div>
+              <p><strong>Sessions:</strong> 12 PM (EU) · 7 PM (USA) CST</p>
+              <ul>
+                <li>Run new student / family onboarding calls.</li>
+                <li>Walk through StarPath login and dashboard basics.</li>
+                <li>Schedule each family’s StarPath Assessment review.</li>
+                <li>Assign 1–3 clear academic + training goals for the week.</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill blue">Goal: 3–5 new families onboarded</span>
+                <span class="pill">Focus: clarity &amp; calm</span>
+              </div>
+            </div>
+
+            <!-- TUESDAY -->
+            <div class="day-card alt">
+              <div class="day-header">
+                <div>
+                  <div class="day-title">TUESDAY · PARENT INFO NIGHT</div>
+                  <div class="day-sub">🎓 Teach · Explain NCAA &amp; StarPath · Invite to Assessment</div>
+                </div>
+                <div class="day-icon">🎓</div>
+              </div>
+              <p><strong>Sessions:</strong> 12 PM (EU) · 7 PM (USA) CST</p>
+              <ul>
+                <li>Run Info / Demo Night: NCAA basics, StarPath system, school overview.</li>
+                <li>Show sample StarPath card + report to make it real.</li>
+                <li>Answer top parent questions live (keep a running FAQ).</li>
+                <li>Invite families to book the StarPath Assessment as the first step.</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill green">Target: ≥ 25% of attendees book assessment</span>
+                <span class="pill">Tone: teacher / guide</span>
+              </div>
+            </div>
+
+            <!-- WEDNESDAY -->
+            <div class="day-card">
+              <div class="day-header">
+                <div>
+                  <div class="day-title">WEDNESDAY · MEDIA &amp; CONTENT</div>
+                  <div class="day-sub">🎥 Record once · Distribute everywhere</div>
+                </div>
+                <div class="day-icon">🎥</div>
+              </div>
+              <p><strong>Blocks:</strong> 12 PM (EU-facing) · 7 PM (US-facing)</p>
+              <ul>
+                <li>Record 1 main episode (webinar / podcast / deep-dive).</li>
+                <li>Film 3–5 short clips (Reels / TikTok / Shorts) answering real parent questions.</li>
+                <li>Capture 1 parent or athlete story / testimonial each week.</li>
+                <li>Upload files to the content system for editing and scheduling.</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill blue">Non-negotiable: No admin this day</span>
+                <span class="pill">Identity: face of the brand</span>
+              </div>
+            </div>
+
+            <!-- THURSDAY -->
+            <div class="day-card alt">
+              <div class="day-header">
+                <div>
+                  <div class="day-title">THURSDAY · DECISION NIGHT</div>
+                  <div class="day-sub">🏁 Turn interest into StarPath subs &amp; enrollments</div>
+                </div>
+                <div class="day-icon">🏁</div>
+              </div>
+              <p><strong>Sessions:</strong> 12 PM (EU) · 7 PM (USA) CST</p>
+              <ul>
+                <li>Short recap of Tuesday (5 minutes max).</li>
+                <li>Show 1–2 case studies: StarPath → clarity → next step.</li>
+                <li>Walk through “How to join StarPath / school / residencies.”</li>
+                <li>Make a clear, specific call-to-action with limited spots.</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill green">Target: ≥ 50% of warm families decide</span>
+                <span class="pill">Tone: confident / direct</span>
+              </div>
+            </div>
+
+            <!-- FRIDAY -->
+            <div class="day-card">
+              <div class="day-header">
+                <div>
+                  <div class="day-title">FRIDAY · SYSTEMS &amp; SCALE</div>
+                  <div class="day-sub">⚙️ Review numbers · Fix bottlenecks · Plan next week</div>
+                </div>
+                <div class="day-icon">⚙️</div>
+              </div>
+              <ul>
+                <li>Check weekly scoreboard: leads → RSVPs → attendees → assessments → enrollments.</li>
+                <li>Audit automations: email, SMS, calendar links, StarPath flows.</li>
+                <li>Fix one major bottleneck (no more than one big change per week).</li>
+                <li>Record a short “Founder Friday” recap for internal or future team use.</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill blue">Focus: systems, not fire-fighting</span>
+                <span class="pill">Rule: no new projects until review is done</span>
+              </div>
+            </div>
+
+            <!-- WEEKEND -->
+            <div class="day-card alt">
+              <div class="day-header">
+                <div>
+                  <div class="day-title">SAT · SUN · DEEP WORK &amp; RECOVERY</div>
+                  <div class="day-sub">🧠 Build the long-term · Protect your energy</div>
+                </div>
+                <div class="day-icon">🧘‍♂️</div>
+              </div>
+              <ul>
+                <li>Training / gym / movement to keep the athlete in you alive.</li>
+                <li>1–2 hours of deep learning (school ops, NCAA rules, sales, or leadership).</li>
+                <li>Optional: long-form creative work when it feels good, not forced.</li>
+                <li>No outbound sales or new project launches on weekends.</li>
+              </ul>
+              <div class="pill-row">
+                <span class="pill green">Rule: No outreach. Only creation &amp; reflection.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-label">2 · SCOREBOARD &amp; KPIS</div>
+          <h2>Weekly Scoreboard Targets</h2>
+          <p>
+            Think of this like a StarPath card for the business. These are your core stats
+            to check every Friday.
+          </p>
+          <div class="kpi-box">
+            <h3>Core Metrics</h3>
+            <div class="kpi-tags">
+              <span class="kpi-tag"><strong>Leads:</strong> 150+ new contacts / week</span>
+              <span class="kpi-tag"><strong>Parent Night RSVPs:</strong> 50–75 / week</span>
+              <span class="kpi-tag"><strong>Attendance:</strong> 60–70% of RSVPs</span>
+              <span class="kpi-tag"><strong>StarPath Assessments:</strong> 10+ sold / week</span>
+              <span class="kpi-tag"><strong>StarPath Subscriptions:</strong> 5–10 new / week</span>
+              <span class="kpi-tag"><strong>Content:</strong> 5–7 pieces posted / week</span>
+              <span class="kpi-tag"><strong>Revenue:</strong> $2.5K–$4.5K per week</span>
+            </div>
+          </div>
+          <div class="kpi-box">
+            <h3>Founder Personal Health Metrics</h3>
+            <p class="muted">Your own StarPath as a CEO:</p>
+            <div class="score-row">
+              <span class="score-chip"><strong>Focus:</strong> 10–15 deep-work hours / week</span>
+              <span class="score-chip"><strong>Calls:</strong> 10–15 real parent conversations</span>
+              <span class="score-chip"><strong>Content:</strong> 1 long-form + 3–5 clips</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-label">3 · AUTOMATION LAYER</div>
+          <h2>Always-On Automation Flow</h2>
+          <p>
+            Automation should support this weekly OS, not replace it. High-level flow:
+          </p>
+          <ul>
+            <li><strong>RSVP →</strong> confirmation email + SMS with Tuesday/Thursday Zoom links.</li>
+            <li><strong>Attended Tuesday →</strong> StarPath Assessment offer &amp; booking link.</li>
+            <li><strong>Booked Assessment →</strong> reminders + intake form + file upload.</li>
+            <li><strong>Assessment Complete →</strong> AI report + 20-minute review call + StarPath invite.</li>
+            <li><strong>Joined StarPath / School →</strong> 30-day plan, LMS access, Parent Night reminders.</li>
+            <li><strong>Missed Parent Night →</strong> automatic invite to next week’s session.</li>
+          </ul>
+        </section>
+      </main>
+
+      <footer class="footer-bar">
+        <span>
+          Go4it Academy · Train Here. Qualify Anywhere.<br />
+          StarPath System™ · Weekly Operating System
+        </span>
+        <span>
+          🌐 go4itsports.org · 📧 info@go4itsports.org · 📞 303-970-4655<br />
+          HQ: Denver (USA) · Vienna (Austria)
+        </span>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>
