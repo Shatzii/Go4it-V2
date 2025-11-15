@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · Weekly Operating System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0B0F14;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --mid: #5C6678;
+      --border: #CAD3E2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+    }
+
+    .poster {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px 20px;
+    }
+
+    .header {
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #0B0F14, #151C26);
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+
+    .header-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .header-sub {
+      font-size: 0.93rem;
+      color: #D8E0F2;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 0.8rem;
+    }
+    .tag {
+      border-radius: 999px;
+      padding: 2px 10px;
+      border: 1px solid rgba(0,212,255,0.5);
+      color: #E6EAF0;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    .day-card {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #F8FAFF;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+    }
+
+    .day-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .time-row {
+      font-size: 0.78rem;
+      color: #5C6678;
+      margin-bottom: 4px;
+    }
+
+    .label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #5C6678;
+      margin-bottom: 2px;
+    }
+
+    ul {
+      margin: 4px 0 6px;
+      padding-left: 1.1rem;
+      font-size: 0.86rem;
+      color: #333A48;
+    }
+
+    li { margin-bottom: 2px; }
+
+    .band {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      margin-top: 10px;
+      font-size: 0.86rem;
+    }
+
+    .band-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 4px;
+    }
+    .pill {
+      font-size: 0.78rem;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid #CAD3E2;
+      background: #F5F7FB;
+      color: #111722;
+    }
+
+    .footer {
+      margin-top: 14px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: #5C6678;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .page {
+        max-width: 100%;
+        padding: 12mm;
+      }
+      .header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="poster">
+      <div class="header">
+        <div class="header-title">GO4IT ACADEMY</div>
+        <div class="header-sub">Weekly Operating System · Parent Nights · StarPath · Media · Systems</div>
+        <div class="tag-row">
+          <span class="tag">Mon Onboarding</span>
+          <span class="tag">Tue Info Night</span>
+          <span class="tag">Wed Media</span>
+          <span class="tag">Thu Decision Night</span>
+          <span class="tag">Fri Systems</span>
+          <span class="tag">Weekend Deep Work</span>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="day-card">
+          <div class="day-title">🧭 Monday — Onboarding Day</div>
+          <div class="label">Purpose</div>
+          <ul>
+            <li>Welcome new families and athletes into the Go4it ecosystem.</li>
+            <li>Activate StarPath accounts and set first-week goals.</li>
+          </ul>
+          <div class="label">Key Actions</div>
+          <ul>
+            <li>Global onboarding calls (EU &amp; USA time slots).</li>
+            <li>StarPath login walkthrough &amp; goal setting.</li>
+            <li>Schedule or confirm StarPath Assessments.</li>
+            <li>Set reminders for Tuesday Parent Info Night.</li>
+          </ul>
+        </div>
+
+        <div class="day-card">
+          <div class="day-title">🎓 Tuesday — Parent Info Night</div>
+          <div class="time-row">Sessions: 12 PM CST (EU) · 7 PM CST (USA)</div>
+          <div class="label">Purpose</div>
+          <ul>
+            <li>Educate parents on NCAA rules, grades, and pathways.</li>
+            <li>Show how StarPath + Go4it Academy support their athlete.</li>
+          </ul>
+          <div class="label">Flow</div>
+          <ul>
+            <li>Go4it overview &amp; your story.</li>
+            <li>StarPath System: academic + athletic + behavior.</li>
+            <li>NCAA basics (core courses, GPA, eligibility).</li>
+            <li>Offer: StarPath Assessment™ as next step.</li>
+          </ul>
+        </div>
+
+        <div class="day-card">
+          <div class="day-title">🎥 Wednesday — Media &amp; Content Day</div>
+          <div class="label">Purpose</div>
+          <ul>
+            <li>Capture all weekly content in one focused block.</li>
+            <li>Fuel social media, ads, and Parent Nights.</li>
+          </ul>
+          <div class="label">Outputs</div>
+          <ul>
+            <li>1 podcast or long-form video.</li>
+            <li>3–5 reels/shorts (training, NCAA, mindset).</li>
+            <li>1 parent/athlete testimonial clip.</li>
+            <li>1 clear educational post (StarPath / eligibility).</li>
+          </ul>
+        </div>
+
+        <div class="day-card">
+          <div class="day-title">🏁 Thursday — Parent Decision Night</div>
+          <div class="time-row">Sessions: 12 PM CST (EU) · 7 PM CST (USA)</div>
+          <div class="label">Purpose</div>
+          <ul>
+            <li>Convert interested families into StarPath, school, or residency.</li>
+          </ul>
+          <div class="label">Flow</div>
+          <ul>
+            <li>5-minute recap of Tuesday.</li>
+            <li>Share 1 success story or case study.</li>
+            <li>Walk through “How to join StarPath / Go4it.”</li>
+            <li>Live Q&amp;A; support families to take action on the call.</li>
+          </ul>
+        </div>
+
+        <div class="day-card">
+          <div class="day-title">⚙️ Friday — Systems &amp; Scoreboard</div>
+          <div class="label">Purpose</div>
+          <ul>
+            <li>Review the week, fix bottlenecks, and set up next week to win.</li>
+          </ul>
+          <div class="label">Focus</div>
+          <ul>
+            <li>Audit &amp; StarPath sales.</li>
+            <li>RSVP &amp; attendance % for Parent Nights.</li>
+            <li>Content performance (views, saves, shares).</li>
+            <li>Email/SMS automation health.</li>
+          </ul>
+          <div class="label">Founder Actions</div>
+          <ul>
+            <li>Update KPI dashboard.</li>
+            <li>Fix one system issue.</li>
+            <li>Record short “Founder Friday” update.</li>
+          </ul>
+        </div>
+
+        <div class="day-card">
+          <div class="day-title">🧠 Sat/Sun — Deep Work &amp; Recovery</div>
+          <div class="label">Purpose</div>
+          <ul>
+            <li>Recharge and build long-term assets.</li>
+          </ul>
+          <div class="label">Options</div>
+          <ul>
+            <li>Design curriculum or StarPath upgrades.</li>
+            <li>Film or write long-form content.</li>
+            <li>Gym, health, reflection, and next-week planning.</li>
+          </ul>
+          <p style="font-size:0.8rem;color:#5C6678;margin-top:4px;">
+            Founder rule: <strong>No outreach. No pressure. Only creation and reflection.</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="band">
+        <div class="band-title">🔁 Automation &amp; Weekly Metrics</div>
+        <div class="label">Automation Flow</div>
+        <ul>
+          <li>RSVP → Confirmation email &amp; SMS with Zoom link.</li>
+          <li>Attended Tuesday → StarPath Assessment follow-up.</li>
+          <li>Attended Thursday → StarPath / enrollment CTA.</li>
+          <li>Completed Assessment → report + invite to school/residency.</li>
+          <li>Missed Parent Night → automatic re-invite to next week.</li>
+          <li>Wednesday media → upload → AI edit → scheduled posts.</li>
+        </ul>
+        <div class="label">Weekly Scoreboard Targets</div>
+        <div class="pill-row">
+          <span class="pill">150+ DMs/day (athletes &amp; parents)</span>
+          <span class="pill">50–75 Parent Night RSVPs</span>
+          <span class="pill">60–70% attendance</span>
+          <span class="pill">10+ StarPath Assessments</span>
+          <span class="pill">5–10 StarPath subs</span>
+          <span class="pill">5–7 content pieces</span>
+          <span class="pill">$2.5K–$4.5K weekly revenue</span>
+        </div>
+      </div>
+
+      <div class="footer">
+        Go4it Academy · Train Here. Qualify Anywhere. · NCAA &amp; international student-athlete development.<br />
+        Truth-in-Marketing: Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

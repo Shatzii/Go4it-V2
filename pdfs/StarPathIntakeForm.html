@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · StarPath Assessment Intake Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-main:#05070B;
+      --bg-card:#0B0F14;
+      --bg-soft:#111722;
+      --text-main:#E6EAF0;
+      --text-soft:#9BA4BC;
+      --accent:#00D4FF;
+      --accent2:#27E36A;
+      --border-soft:#1E2837;
+      --border-strong:#2C3749;
+      --chip-bg:rgba(0,212,255,0.1);
+      --chip-border:rgba(0,212,255,0.7);
+    }
+
+    * { box-sizing:border-box; }
+
+    body {
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:radial-gradient(circle at top,#151C26 0,#05070B 48%,#000000 100%);
+      color:var(--text-main);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .page-wrap {
+      max-width:960px;
+      margin:24px auto 40px;
+      padding:0 16px 24px;
+    }
+
+    .document {
+      background:var(--bg-card);
+      border-radius:16px;
+      border:1px solid var(--border-strong);
+      box-shadow:0 28px 80px rgba(0,0,0,0.65);
+      overflow:hidden;
+    }
+
+    /* HEADER */
+    .doc-header {
+      background:linear-gradient(135deg,#05070B,#101722);
+      color:#FFFFFF;
+      padding:22px 28px 20px;
+      border-bottom:3px solid var(--accent);
+    }
+
+    .doc-header-top {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .brand-block { max-width:70%; }
+
+    .brand-name {
+      font-size:2rem;
+      font-weight:900;
+      letter-spacing:0.24em;
+      text-transform:uppercase;
+      margin-bottom:4px;
+    }
+
+    .brand-tagline {
+      font-size:0.98rem;
+      color:#D8E0F2;
+      margin-bottom:6px;
+    }
+
+    .brand-meta {
+      font-size:0.82rem;
+      color:#9FAAC3;
+      line-height:1.4;
+    }
+
+    .doc-label {
+      text-align:right;
+      font-size:0.8rem;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      color:#B9C4DC;
+    }
+
+    .doc-label strong {
+      display:block;
+      font-size:0.9rem;
+      color:#FFFFFF;
+      margin-bottom:4px;
+    }
+
+    .chip-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:10px;
+    }
+
+    .chip {
+      border-radius:999px;
+      padding:3px 10px;
+      border:1px solid var(--chip-border);
+      font-size:0.72rem;
+      text-transform:uppercase;
+      letter-spacing:0.12em;
+      color:#E6EAF0;
+      background:var(--chip-bg);
+    }
+
+    /* BODY */
+    .doc-body {
+      padding:20px 26px 24px;
+    }
+
+    h1,h2,h3 {
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+
+    h1 {
+      font-size:1.6rem;
+      margin:10px 0 10px;
+      font-weight:800;
+      color:var(--text-main);
+    }
+
+    h2 {
+      font-size:1rem;
+      margin:16px 0 6px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:0.16em;
+      color:#E8EDF9;
+    }
+
+    h3 {
+      font-size:0.9rem;
+      margin:8px 0 4px;
+      font-weight:650;
+      color:#F2F5FF;
+    }
+
+    p {
+      margin:4px 0 8px;
+      font-size:0.9rem;
+      line-height:1.6;
+      color:var(--text-soft);
+    }
+
+    .section {
+      padding:12px 0 14px;
+      border-bottom:1px solid var(--border-soft);
+    }
+    .section:last-of-type {
+      border-bottom:none;
+      padding-bottom:0;
+    }
+
+    .section-label {
+      font-size:0.76rem;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      color:#7C88A3;
+      margin-bottom:2px;
+    }
+
+    .muted {
+      font-size:0.82rem;
+      color:#7E88A4;
+    }
+
+    /* form layout */
+    .field-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px 16px;
+      margin-top:6px;
+    }
+
+    .field-full {
+      margin-top:6px;
+    }
+
+    label {
+      display:block;
+      font-size:0.78rem;
+      text-transform:uppercase;
+      letter-spacing:0.14em;
+      color:#A9B3D1;
+      margin-bottom:3px;
+    }
+
+    .field-box {
+      border-radius:10px;
+      border:1px solid var(--border-soft);
+      background:#050914;
+      padding:6px 8px;
+      min-height:22px;
+      font-size:0.9rem;
+      color:var(--text-main);
+    }
+
+    .field-line {
+      border-bottom:1px dotted var(--border-soft);
+      margin-top:14px;
+    }
+
+    .pill-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:4px;
+    }
+
+    .pill {
+      border-radius:999px;
+      border:1px solid var(--border-soft);
+      padding:2px 8px;
+      font-size:0.76rem;
+      text-transform:uppercase;
+      letter-spacing:0.11em;
+      color:#DCE4FF;
+      background:#141B28;
+    }
+
+    ul {
+      margin:4px 0 8px 1.1rem;
+      padding-left:0;
+      font-size:0.9rem;
+      line-height:1.5;
+      color:var(--text-soft);
+    }
+
+    @media (max-width:768px){
+      .brand-block{max-width:100%;}
+      .doc-header-top{flex-direction:column;align-items:flex-start;}
+      .doc-body{padding:16px 18px 20px;}
+      .field-grid{grid-template-columns:1fr;}
+    }
+
+    @media print {
+      body{background:#000000;}
+      .page-wrap{max-width:100%;margin:0;padding:0;}
+      .document{border-radius:0;border:none;box-shadow:none;}
+      .doc-header,.document{ -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    }
+
+    .footer-bar {
+      margin-top:16px;
+      padding-top:10px;
+      border-top:1px solid var(--border-strong);
+      font-size:0.78rem;
+      color:#A0A8BA;
+      background:#05070B;
+      padding:10px 28px 12px;
+      display:flex;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .footer-bar span{display:block;}
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+    <div class="document">
+      <!-- HEADER -->
+      <header class="doc-header">
+        <div class="doc-header-top">
+          <div class="brand-block">
+            <div class="brand-name">GO4IT ACADEMY</div>
+            <div class="brand-tagline">Train Here. Qualify Anywhere.</div>
+            <div class="brand-meta">
+              StarPath Assessment™ · Athlete Intake Form<br />
+              Academic &amp; Athletic Readiness · NCAA-Aware Planning
+            </div>
+          </div>
+          <div class="doc-label">
+            <strong>INTAKE FORM</strong>
+            For Parents &amp; Athletes<br />
+            Version 1.0 · Nov 2025
+          </div>
+        </div>
+        <div class="chip-row">
+          <span class="chip">StarPath Assessment™</span>
+          <span class="chip">Transcript Intake</span>
+          <span class="chip">Athletic Profile</span>
+        </div>
+      </header>
+
+      <!-- BODY -->
+      <main class="doc-body">
+        <!-- INTRO -->
+        <section class="section">
+          <div class="section-label">0 · HOW TO USE THIS FORM</div>
+          <h1>StarPath Assessment – Athlete &amp; Family Intake</h1>
+          <p>
+            Please complete this intake as accurately as possible. This information, together with your official
+            transcripts and testing data, allows Go4it Academy to build a clear StarPath report and action plan.
+          </p>
+          <p class="muted">
+            <strong>What to attach with this form:</strong>
+          </p>
+          <ul>
+            <li>Latest <strong>official or unofficial transcript</strong> (PDF or clear photos).</li>
+            <li>Current class schedule.</li>
+            <li>Any SAT/ACT or national exam scores (if applicable).</li>
+            <li>Links to game film or highlight video (if available).</li>
+          </ul>
+        </section>
+
+        <!-- 1. ATHLETE INFO -->
+        <section class="section">
+          <div class="section-label">1 · ATHLETE INFORMATION</div>
+          <h2>Athlete Details</h2>
+
+          <div class="field-grid">
+            <div>
+              <label>Athlete Full Name</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Preferred Name</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Date of Birth (DD/MM/YYYY)</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Current Age</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Primary Sport</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Secondary Sport (if any)</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Primary Position</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Secondary Position</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+          </div>
+
+          <div class="field-grid" style="margin-top:8px;">
+            <div>
+              <label>Graduation Year (HS)</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Current Grade / Form</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Current School Name</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>City &amp; Country</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. FAMILY / CONTACT -->
+        <section class="section">
+          <div class="section-label">2 · FAMILY &amp; CONTACT</div>
+          <h2>Parent / Guardian Contact</h2>
+
+          <div class="field-grid">
+            <div>
+              <label>Parent / Guardian Name</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Relationship to Athlete</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Email Address</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>WhatsApp / Mobile</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+          </div>
+
+          <div class="field-grid" style="margin-top:8px;">
+            <div>
+              <label>Preferred Contact Method</label>
+              <div class="field-box">&nbsp;</div>
+              <p class="muted">Options: Email · WhatsApp · SMS · Phone call.</p>
+            </div>
+            <div>
+              <label>Best Time to Reach You</label>
+              <div class="field-box">&nbsp;</div>
+              <p class="muted">Please include time zone.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. ACADEMIC HISTORY -->
+        <section class="section">
+          <div class="section-label">3 · ACADEMIC HISTORY</div>
+          <h2>Grades, Courses &amp; Schools</h2>
+          <p>
+            This section helps us calculate your Academic Readiness Index (ARI) and check NCAA / college pathways.
+          </p>
+
+          <div class="field-grid">
+            <div>
+              <label>Current Overall GPA / Average</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Grading System (4.0, %, 1–5, etc.)</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Strongest Academic Subjects</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Toughest Academic Subjects</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+          </div>
+
+          <div class="field-full">
+            <label>List all high schools or secondary schools attended (with dates):</label>
+            <div class="field-box" style="min-height:52px;">&nbsp;</div>
+          </div>
+
+          <div class="field-full">
+            <label>Have you ever repeated a grade or skipped a grade?</label>
+            <div class="field-box">&nbsp;</div>
+          </div>
+
+          <div class="field-full">
+            <label>Have you already taken any standardized exams (SAT, ACT, GCSE, Abitur, Matura, etc.)?</label>
+            <div class="field-box" style="min-height:40px;">&nbsp;</div>
+          </div>
+
+          <p class="muted">
+            Please ensure you attach your most recent transcript. If you are an international student, include any
+            official translations if available.
+          </p>
+        </section>
+
+        <!-- 4. ATHLETIC PROFILE -->
+        <section class="section">
+          <div class="section-label">4 · ATHLETIC PROFILE &amp; TESTING</div>
+          <h2>Performance &amp; Competition Level</h2>
+
+          <div class="field-grid">
+            <div>
+              <label>Club / Team Name</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Coach Name &amp; Contact</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Height</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Weight</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+          </div>
+
+          <div class="field-grid" style="margin-top:8px;">
+            <div>
+              <label>Key Measurables (40yd / 30m, Vert, Pro Agility, etc.)</label>
+              <div class="field-box" style="min-height:40px;">&nbsp;</div>
+            </div>
+            <div>
+              <label>Recent Injuries or Medical Considerations</label>
+              <div class="field-box" style="min-height:40px;">&nbsp;</div>
+            </div>
+          </div>
+
+          <div class="field-full">
+            <label>Highest level you have competed at (club, national team, varsity, etc.):</label>
+            <div class="field-box">&nbsp;</div>
+          </div>
+
+          <div class="field-full">
+            <label>Link(s) to highlight video or game film (YouTube, Hudl, etc.):</label>
+            <div class="field-box" style="min-height:40px;">&nbsp;</div>
+          </div>
+        </section>
+
+        <!-- 5. GOALS -->
+        <section class="section">
+          <div class="section-label">5 · GOALS &amp; PATHWAY</div>
+          <h2>Your Targets</h2>
+
+          <div class="field-full">
+            <label>What is your dream outcome as a student-athlete?</label>
+            <div class="field-box" style="min-height:40px;">&nbsp;</div>
+          </div>
+
+          <div class="field-full">
+            <label>Which levels are you open to? (D1, D2, D3, NAIA, JUCO, Europe, etc.)</label>
+            <div class="field-box">&nbsp;</div>
+          </div>
+
+          <div class="field-full">
+            <label>What is your biggest question or concern about the NCAA / college process?</label>
+            <div class="field-box" style="min-height:40px;">&nbsp;</div>
+          </div>
+
+          <div class="field-full">
+            <label>Over the next 12 months, what are your top 3 priorities?</label>
+            <div class="field-box" style="min-height:52px;">&nbsp;</div>
+          </div>
+        </section>
+
+        <!-- 6. PERMISSIONS -->
+        <section class="section">
+          <div class="section-label">6 · CONSENT &amp; NEXT STEPS</div>
+          <h2>Permissions &amp; Acknowledgements</h2>
+          <p class="muted">
+            Please read and sign. For athletes under 18, a parent/guardian signature is required.
+          </p>
+
+          <ul>
+            <li>
+              I understand that the StarPath Assessment™ is an educational and planning service and does
+              <strong>not</strong> guarantee NCAA eligibility, scholarships, or professional contracts.
+            </li>
+            <li>
+              I understand that Go4it Academy does not provide legal, immigration, or visa advice, and that our
+              recommendations are based on the information we receive from the family.
+            </li>
+            <li>
+              I consent to Go4it Academy reviewing the academic and athletic information we provide in order to
+              prepare our StarPath report.
+            </li>
+          </ul>
+
+          <div class="field-grid" style="margin-top:8px;">
+            <div>
+              <label>Athlete Signature / Name</label>
+              <div class="field-box" style="min-height:26px;">&nbsp;</div>
+            </div>
+            <div>
+              <label>Date</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+            <div>
+              <label>Parent / Guardian Signature</label>
+              <div class="field-box" style="min-height:26px;">&nbsp;</div>
+            </div>
+            <div>
+              <label>Date</label>
+              <div class="field-box">&nbsp;</div>
+            </div>
+          </div>
+
+          <h3 style="margin-top:14px;">Submitting Your Intake</h3>
+          <p class="muted">
+            Email this completed form and your documents to:
+          </p>
+          <div class="pill-row">
+            <span class="pill">📧 info@go4itsports.org</span>
+            <span class="pill">🌐 go4itsports.org</span>
+            <span class="pill">📞 303-970-4655</span>
+          </div>
+          <p class="muted" style="margin-top:6px;">
+            Subject line suggestion: <strong>“StarPath Intake – [Athlete Name] – [Grad Year]”</strong>.
+          </p>
+        </section>
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="footer-bar">
+        <span>
+          Go4it Academy · Train Here. Qualify Anywhere.<br />
+          StarPath System™ · NCAA-aware student-athlete development.
+        </span>
+        <span>
+          🌐 go4itsports.org · 📧 info@go4itsports.org · 📞 303-970-4655<br />
+          HQ: Denver (USA) · Vienna (Austria)
+        </span>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

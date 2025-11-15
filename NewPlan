@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · Launch Calendar (Nov 2025 – Jan 2026)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #0B0F14, #101725);
+      border: 1px solid rgba(92,102,120,0.8);
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: 1.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-weight: 800;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.94rem;
+      color: var(--muted);
+    }
+
+    .week {
+      border-radius: 22px;
+      margin-bottom: 16px;
+      padding: 18px 20px 16px;
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 60%);
+      border: 1px solid rgba(92,102,120,0.7);
+      box-shadow: 0 0 22px rgba(0,0,0,0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .week::before {
+      content: "";
+      position: absolute;
+      inset: -45%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.12), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.09), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .week-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .week-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .week-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .week-dates {
+      font-size: 0.86rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .week-theme {
+      font-size: 0.95rem;
+      color: var(--accent2);
+      margin: 2px 0 6px;
+      font-weight: 600;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .block-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--mid);
+      margin-bottom: 4px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 1.1em;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    li { margin-bottom: 0.18em; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+    .pill {
+      font-size: 0.76rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.6);
+      background: rgba(0,212,255,0.08);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .day-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .day-card {
+      border-radius: 14px;
+      padding: 8px 9px;
+      background: rgba(11,15,24,0.95);
+      border: 1px solid rgba(92,102,120,0.85);
+      font-size: 0.84rem;
+    }
+
+    .day-title {
+      font-size: 0.84rem;
+      font-weight: 650;
+      margin-bottom: 4px;
+      color: var(--light);
+    }
+
+    .time {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent2);
+      display: block;
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .row { grid-template-columns: 1fr; }
+      .day-grid { grid-template-columns: 1fr; }
+      header h1 { font-size: 1.4rem; }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000;
+      }
+      .page {
+        max-width: 100%;
+        padding: 8mm;
+      }
+      header, .week {
+        box-shadow: none;
+        background: #111722;
+        color: #E6EAF0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .week { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Go4it Academy · Launch Calendar</h1>
+      <p>
+        Weekly operator view from late November 2025 through Launch Week (Jan 5–11, 2026).<br />
+        Core goals: grow StarPath Assessments, fill Parent Nights, and launch Spring ’26 semester with momentum.
+      </p>
+    </header>
+
+    <!-- WEEK 1 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 1 · Denver FNL + StarPath Push</div>
+          <div class="week-dates">Nov 17–23, 2025</div>
+        </div>
+        <div class="week-theme">Theme: Launch Friday Night Lights in Denver & turn athletes into StarPath leads.</div>
+        <div class="pill-row">
+          <span class="pill">Denver FNL</span>
+          <span class="pill">StarPath Awareness</span>
+          <span class="pill">Content Capture</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="block-label">Core Focus</div>
+            <ul>
+              <li>Run the first <strong>Friday Night Lights (Denver)</strong> combine/training event (Nov 21–23 window).</li>
+              <li>Capture high-quality video and photo content of drills, energy, and your coaching.</li>
+              <li>Convert attendees into <strong>StarPath Assessments</strong> and upcoming Parent Night RSVPs.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Targets</div>
+            <ul>
+              <li>150–200 Instagram DMs/day (athletes + parents).</li>
+              <li>50+ Denver FNL registrations.</li>
+              <li>15+ StarPath Assessment buyers within 7 days after FNL.</li>
+              <li>30+ Parent Night RSVPs for the following week.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-label" style="margin-top:8px;">Key Actions</div>
+        <ul>
+          <li>Finalize field/venue logistics and safety waivers.</li>
+          <li>Print/share simple FNL + StarPath flyers with QR codes.</li>
+          <li>Film a short recap video during/after FNL: “What is Friday Night Lights x StarPath?”</li>
+          <li>Tag athletes in stories and posts to boost reposts and DMs.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WEEK 2 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 2 · Follow-Up & Thanksgiving Content</div>
+          <div class="week-dates">Nov 24–30, 2025</div>
+        </div>
+        <div class="week-theme">Theme: Squeeze all value out of Denver FNL + build trust with parents.</div>
+        <div class="pill-row">
+          <span class="pill">Follow-Up</span>
+          <span class="pill">Parent Nights</span>
+          <span class="pill">Gratitude Content</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="block-label">Core Focus</div>
+            <ul>
+              <li>Follow up with every Denver FNL athlete and parent.</li>
+              <li>Position the <strong>StarPath Assessment</strong> as the logical “next step.”</li>
+              <li>Create Thanksgiving content around gratitude, family, and eligibility.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Targets</div>
+            <ul>
+              <li>10–15 StarPath Assessments from Denver FNL follow-up.</li>
+              <li>50+ new IG leads from Denver tags and shares.</li>
+              <li>Two Parent Nights focused on “Understanding your FNL results & next steps.”</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-label" style="margin-top:8px;">Key Actions</div>
+        <ul>
+          <li>Send personal recap messages to parents with a short reflection and CTA.</li>
+          <li>Post 3–5 reels from Denver FNL (drills, vibes, your talk).</li>
+          <li>Record one StarPath explainer reel using Denver clips as background.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WEEK 3 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 3 · Dallas FNL Push</div>
+          <div class="week-dates">Dec 1–7, 2025</div>
+        </div>
+        <div class="week-theme">Theme: Use Denver proof to fill Dallas FNL & sell StarPath to US athletes.</div>
+        <div class="pill-row">
+          <span class="pill">Dallas FNL</span>
+          <span class="pill">Texas Focus</span>
+          <span class="pill">StarPath Sales</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="block-label">Core Focus</div>
+            <ul>
+              <li>Promote and fill <strong>Dallas FNL</strong> as the next big stop.</li>
+              <li>Use Denver footage to show vibe and professionalism.</li>
+              <li>Double down on outreach to Texas/Oklahoma athletes and coaches.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Targets</div>
+            <ul>
+              <li>75+ Dallas FNL registrations.</li>
+              <li>200+ DMs/day targeted to Texas & neighboring states.</li>
+              <li>10+ StarPath Assessments from broader US (non-event leads).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-label" style="margin-top:8px;">Key Actions</div>
+        <ul>
+          <li>Run “Train Under the Lights in Dallas” campaign using reels and stories.</li>
+          <li>If possible, boost a key FNL highlight reel to Dallas audiences.</li>
+          <li>Parent Nights themed around US HS athletes and NCAA path.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WEEK 4 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 4 · Dallas FNL & Immediate Conversion</div>
+          <div class="week-dates">Dec 8–14, 2025</div>
+        </div>
+        <div class="week-theme">Theme: Run Dallas FNL & quickly convert families into StarPath.</div>
+        <div class="pill-row">
+          <span class="pill">Dallas Event</span>
+          <span class="pill">StarPath Offers</span>
+          <span class="pill">Parent Follow-Up</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="block-label">Core Focus</div>
+            <ul>
+              <li>Deliver a fun, high-energy Dallas FNL experience (training + combine + community).</li>
+              <li>Capture elite content: speed, skills, 1v1s, your talks.</li>
+              <li>Convert Dallas FNL participants into StarPath Assessment buyers and Parent Nights.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Targets</div>
+            <ul>
+              <li>15–25 StarPath Assessments from Dallas over 7–10 days.</li>
+              <li>50+ Parent Night RSVPs across EU + US time slots.</li>
+              <li>3–5 Dallas families seriously interested in residencies (future).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-label" style="margin-top:8px;">Key Actions</div>
+        <ul>
+          <li>On-field: explain why StarPath is the real next step (not hype, just clarity).</li>
+          <li>Send a same-day recap message to all parents and athletes with link to StarPath.</li>
+          <li>Post “Dallas FNL Highlights” and tag heavily to spark shares.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WEEK 5 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 5 · Vienna FNL Push</div>
+          <div class="week-dates">Dec 15–21, 2025</div>
+        </div>
+        <div class="week-theme">Theme: Turn Europe on to FNL + StarPath + NCAA pathway.</div>
+        <div class="pill-row">
+          <span class="pill">Vienna FNL</span>
+          <span class="pill">Europe Focus</span>
+          <span class="pill">NCAA Education</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="block-label">Core Focus</div>
+            <ul>
+              <li>Promote <strong>Vienna FNL</strong> as the European flagship event.</li>
+              <li>Speak directly to European families about US opportunities and NCAA rules.</li>
+              <li>Use Denver & Dallas footage to show global reach and vibe.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Targets</div>
+            <ul>
+              <li>50–75 Vienna FNL registrations.</li>
+              <li>150+ DMs/day aimed at Austria, Germany, UK, Italy, France, etc.</li>
+              <li>10+ international StarPath Assessments (even if they can’t attend FNL).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-label" style="margin-top:8px;">Key Actions</div>
+        <ul>
+          <li>Post content about “Europe to NCAA” using your story and success cases.</li>
+          <li>Run Parent Nights optimized for time zones and international examples.</li>
+          <li>Lean into your Vienna history and credibility coaching in Europe.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WEEK 6 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 6 · Vienna FNL & Holiday Wave</div>
+          <div class="week-dates">Dec 22–28, 2025</div>
+        </div>
+        <div class="week-theme">Theme: Run Vienna FNL and use holidays to sell StarPath for 2026.</div>
+        <div class="pill-row">
+          <span class="pill">Vienna Event</span>
+          <span class="pill">Holiday Campaign</span>
+          <span class="pill">2026 Positioning</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="block-label">Core Focus</div>
+            <ul>
+              <li>Deliver an exciting, community-based Vienna FNL event.</li>
+              <li>Use Christmas/New Year energy: “Give your athlete a real shot in 2026.”</li>
+              <li>Push StarPath Assessments as the recommended holiday investment.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Targets</div>
+            <ul>
+              <li>15–20 StarPath Assessments from Vienna FNL follow-up.</li>
+              <li>50+ global StarPath leads queued for January.</li>
+              <li>A short-list of top EU athletes earmarked for Vienna & Dallas residencies.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-label" style="margin-top:8px;">Key Actions</div>
+        <ul>
+          <li>Film Vienna content: city shots, training, your coaching in multiple languages if possible.</li>
+          <li>Create “Holiday StarPath” posts and stories aimed at parents.</li>
+          <li>Offer limited-time StarPath slots for families to lock in before Jan 1.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WEEK 7 -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 7 · New Year StarPath Surge</div>
+          <div class="week-dates">Dec 29, 2025 – Jan 4, 2026</div>
+        </div>
+        <div class="week-theme">Theme: “New Year, New StarPath” and prepare for Jan 5 semester launch.</div>
+        <div class="pill-row">
+          <span class="pill">New Year Push</span>
+          <span class="pill">StarPath Sales</span>
+          <span class="pill">Launch Prep</span>
+        </div>
+        <div class="row">
+          <div>
+            <div class="block-label">Core Focus</div>
+            <ul>
+              <li>Run a New Year campaign: “Get your athlete’s 2026 gameplan.”</li>
+              <li>Finalize rosters for full-time Go4it Academy students starting Jan 5.</li>
+              <li>Lock in Vienna residency roster (Feb start) and Dallas residency pipeline.</li>
+            </ul>
+          </div>
+          <div>
+            <div class="block-label">Targets</div>
+            <ul>
+              <li>25+ StarPath Assessments this week.</li>
+              <li>10–15 full-time students ready for Spring ’26 start.</li>
+              <li>10+ accepted athletes for Vienna Residency.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="block-label" style="margin-top:8px;">Key Actions</div>
+        <ul>
+          <li>Publish “2026 StarPath Roadmap” reel and pin it.</li>
+          <li>Parent Night theme: “2026 Family Strategy for Student-Athletes.”</li>
+          <li>Finalize scripts & assets for Launch Week (Jan 5–11).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- WEEK 8: LAUNCH WEEK -->
+    <section class="week">
+      <div class="week-inner">
+        <div class="week-header">
+          <div class="week-title">Week 8 · Launch Week · Spring ’26 Semester</div>
+          <div class="week-dates">Jan 5–11, 2026</div>
+        </div>
+        <div class="week-theme">Theme: Official start of Go4it Academy Spring ’26 + StarPath rhythm.</div>
+        <div class="pill-row">
+          <span class="pill">Launch</span>
+          <span class="pill">Parent Nights</span>
+          <span class="pill">Content Engine</span>
+        </div>
+
+        <div class="block-label">Daily Structure Overview</div>
+        <p class="note">
+          Monday: New student onboarding & StarPath check-ins.<br />
+          Tuesday: Parent Info Nights (EU + US).<br />
+          Wednesday: Filming & content day.<br />
+          Thursday: Parent Decision Nights (EU + US).<br />
+          Friday: Systems, KPIs, and StarPath reporting.<br />
+          Weekend: Deep work, planning, recovery.
+        </p>
+
+        <div class="day-grid">
+          <!-- Monday -->
+          <div class="day-card">
+            <div class="day-title">Monday · Onboard & Setup</div>
+            <span class="time">9:00–10:00</span>
+            <div>Founder prep: review student & StarPath rosters, confirm LMS + dashboards.</div>
+            <span class="time">10:00–12:00</span>
+            <div>Global onboarding Zoom: welcome, explain system, show dashboards and weekly rhythm.</div>
+            <span class="time">1:00–2:30</span>
+            <div>Individual StarPath check-ins (top priority athletes).</div>
+            <span class="time">2:30–3:30</span>
+            <div>IG DM block (reconnect with warm leads, invite to Parent Night).</div>
+            <span class="time">3:30–5:00</span>
+            <div>Record “Welcome to Spring ’26” + StarPath explainer content.</div>
+          </div>
+
+          <!-- Tuesday -->
+          <div class="day-card">
+            <div class="day-title">Tuesday · Parent Info Night</div>
+            <span class="time">8:30–9:30</span>
+            <div>Check slides, links, SMS/email reminders for Parent Nights.</div>
+            <span class="time">9:30–11:00</span>
+            <div>IG DM block focused on Parent Night invites for EU + US families.</div>
+            <span class="time">11:30–12:30</span>
+            <div>EU Parent Info Night (Zoom): story, StarPath, school, residencies, Q&amp;A.</div>
+            <span class="time">1:00–2:00</span>
+            <div>Follow-up messages & replay links to EU parents.</div>
+            <span class="time">3:00–4:00</span>
+            <div>IG DM block to push US Parent Night attendance.</div>
+            <span class="time">7:00–8:00</span>
+            <div>US Parent Info Night with clear StarPath CTA.</div>
+          </div>
+
+          <!-- Wednesday -->
+          <div class="day-card">
+            <div class="day-title">Wednesday · Media & Content</div>
+            <span class="time">9:00–10:00</span>
+            <div>Plan 5–7 pieces of content (podcast, reels, StarPath stories).</div>
+            <span class="time">10:00–12:00</span>
+            <div>Film EU-focused content (Europe → NCAA, Vienna Residency, StarPath for internationals).</div>
+            <span class="time">12:00–12:30</span>
+            <div>Post first reel of the day (NCAA clarity / StarPath).</div>
+            <span class="time">1:00–2:30</span>
+            <div>Film US-focused content (FNL, StarPath, school flow).</div>
+            <span class="time">3:00–4:00</span>
+            <div>IG DM block sending new content to leads and coaches.</div>
+          </div>
+
+          <!-- Thursday -->
+          <div class="day-card">
+            <div class="day-title">Thursday · Decision Night</div>
+            <span class="time">9:00–10:30</span>
+            <div>Follow-up with all Tuesday attendees, push StarPath & enrollment decisions.</div>
+            <span class="time">11:00–12:00</span>
+            <div>EU Decision Night: recap, show how to join StarPath, clear next steps.</div>
+            <span class="time">2:00–3:30</span>
+            <div>IG DM block for final US Decision Night invites and questions.</div>
+            <span class="time">7:00–8:00</span>
+            <div>US Decision Night: enrollment & StarPath commitment focus.</div>
+          </div>
+
+          <!-- Friday -->
+          <div class="day-card">
+            <div class="day-title">Friday · Systems & Scoreboard</div>
+            <span class="time">9:00–10:00</span>
+            <div>Weekly review: assessments sold, enrollments, RSVPs, content performance.</div>
+            <span class="time">10:00–11:30</span>
+            <div>Fix one bottleneck (offers, link clarity, automation, DM script, etc.).</div>
+            <span class="time">11:30–12:00</span>
+            <div>Post “Founder Friday” recap reel.</div>
+            <span class="time">1:00–2:00</span>
+            <div>Finalize and send several StarPath reports.</div>
+            <span class="time">2:00–3:00</span>
+            <div>IG DM block to close the week: check in on warm leads who haven’t moved.</div>
+          </div>
+
+          <!-- Weekend -->
+          <div class="day-card">
+            <div class="day-title">Weekend · Deep Work & Reset</div>
+            <span class="time">Saturday · Flexible</span>
+            <div>Write or film long-form assets, refine curriculum, plan podcast + content series.</div>
+            <span class="time">Sunday · Flexible</span>
+            <div>Reflect on the week, set 3 main goals for next week, outline key topics for content & Parent Nights.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

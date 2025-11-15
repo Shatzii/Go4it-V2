@@ -1,23 +1,61 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-// Block or short-circuit admin/marketing routes when FEATURE_MARKETING !== 'true'
-export function middleware(req: NextRequest) {
-  const url = req.nextUrl.clone();
-  const pathname = url.pathname;
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/getverified(.*)',
+  '/academy(.*)',
+  '/login(.*)',
+  '/register(.*)',
+  '/api/public(.*)',
+  '/api/webhook(.*)',
+  '/api/health(.*)',
+])
 
-  const adminPaths = ['/admin', '/dashboard', '/studio', '/marketing'];
-  const isAdmin = adminPaths.some(p => pathname.startsWith(p));
+const isAdminRoute = createRouteMatcher([
+  '/admin(.*)',
+])
 
-  const featureMarketing = process.env.FEATURE_MARKETING === 'true';
-  if (isAdmin && !featureMarketing) {
-    // Return 404-like response for admin routes when feature disabled
-    return new NextResponse('Not Found', { status: 404 });
+const isTeacherRoute = createRouteMatcher([
+  '/teacher(.*)',
+])
+
+export default clerkMiddleware(async (auth, request) => {
+  const hasClerkKeys =
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY &&
+    !process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.includes('YOUR_KEY_HERE') &&
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY.length > 20
+
+  if (!hasClerkKeys) {
+    // Local testing mode - allow all public routes
+    return
   }
 
-  return NextResponse.next();
-}
+  // Protect all non-public routes
+  if (!isPublicRoute(request)) {
+    await auth.protect()
+  }
+
+  // Teacher routes: require role 'teacher' or 'admin'
+  if (isTeacherRoute(request)) {
+    await auth.protect((has) => {
+      return has({ role: 'teacher' }) || has({ role: 'admin' })
+    })
+  }
+
+  // Admin routes: require org admin
+  if (isAdminRoute(request)) {
+    await auth.protect((has) => {
+      return has({ role: 'org:admin' }) || has({ permission: 'org:admin:access' }) || has({ role: 'admin' })
+    })
+  }
+})
 
 export const config = {
-  matcher: ['/admin/:path*', '/dashboard/:path*', '/studio/:path*', '/marketing/:path*'],
-};
+  matcher: [
+    // Skip Next.js internals and all static files
+    '/((?!_next|[^?]*\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
+}

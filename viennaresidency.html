@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · Vienna 12-Week Residency (Soccer)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0B0F14;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --mid: #5C6678;
+      --border: #CAD3E2;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+    }
+
+    .flyer {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px 18px;
+    }
+
+    .header {
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #0B0F14, #151C26);
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .header-sub {
+      font-size: 0.95rem;
+      color: #D8E0F2;
+      margin-top: 2px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+      font-size: 0.78rem;
+    }
+    .badge {
+      border-radius: 999px;
+      padding: 3px 9px;
+      border: 1px solid rgba(0,212,255,0.6);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin: 12px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #111722;
+    }
+
+    h3 {
+      font-size: 1.0rem;
+      margin: 8px 0 4px;
+      color: #111722;
+    }
+
+    p {
+      margin: 4px 0 6px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #333A48;
+    }
+
+    ul {
+      margin: 4px 0 8px;
+      padding-left: 1.1rem;
+      font-size: 0.9rem;
+      color: #333A48;
+    }
+
+    li { margin-bottom: 3px; }
+
+    .columns {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 8px;
+    }
+
+    .highlight-box {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #F8FAFF;
+      padding: 10px 12px;
+      font-size: 0.88rem;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .pill {
+      font-size: 0.78rem;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid #CAD3E2;
+      background: #F5F7FB;
+      color: #111722;
+    }
+
+    .qr-placeholder {
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px dashed #B0BACB;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #5C6678;
+    }
+
+    .contact-block {
+      margin-top: 10px;
+      font-size: 0.86rem;
+      line-height: 1.4;
+      color: #222938;
+    }
+
+    .footer {
+      margin-top: 14px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: #5C6678;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 720px) {
+      .columns { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .page {
+        max-width: 100%;
+        padding: 12mm;
+      }
+      .header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="flyer">
+      <div class="header">
+        <div class="header-title">VIENNA 12-WEEK RESIDENCY</div>
+        <div class="header-sub">Go4it Academy · European Soccer Residency · Spring 2026</div>
+        <div class="badge-row">
+          <span class="badge">U.S. Student-Athletes</span>
+          <span class="badge">Vienna, Austria</span>
+          <span class="badge">12 Weeks · Soccer</span>
+          <span class="badge">StarPath Required</span>
+        </div>
+      </div>
+
+      <h2>Program Overview</h2>
+      <p>
+        The Go4it Academy Vienna Residency is a **12-week high-performance soccer and education experience**
+        in Vienna, Austria. Designed primarily for **U.S.-based players**, it combines European-style training,
+        academic structure, and cultural exposure built on top of the StarPath System.
+      </p>
+
+      <h3>Dates &amp; Investment</h3>
+      <ul>
+        <li><strong>Proposed Dates:</strong> February 2 – April 3, 2026 (12 weeks)</li>
+        <li><strong>Location:</strong> Vienna, Austria</li>
+        <li><strong>Program Fee:</strong> $10,000 USD (does not include flights or personal spending)</li>
+      </ul>
+
+      <div class="columns">
+        <div>
+          <h3>What’s Included</h3>
+          <ul>
+            <li>High-level soccer training (4–6 days per week).</li>
+            <li>Technical, tactical, and game-intelligence development.</li>
+            <li>Strength &amp; conditioning sessions designed for footballers.</li>
+            <li>Video analysis and feedback sessions.</li>
+            <li>Structured study blocks &amp; academic support (online coursework).</li>
+            <li>StarPath tracking (academic + athletic) throughout the residency.</li>
+            <li>Cultural experiences in Vienna (historic city, matches, local life).</li>
+          </ul>
+
+          <h3>Ideal Athlete</h3>
+          <ul>
+            <li>Serious soccer player (approx. 15–19 years old).</li>
+            <li>Committed to both academics and football.</li>
+            <li>Curious about European football culture and pathways.</li>
+            <li>Willing to live and train in an international environment.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="highlight-box">
+            <h3>StarPath First · Residency Second</h3>
+            <p>
+              All Vienna Residency candidates must first complete a **StarPath Assessment™**.
+              This ensures:
+            </p>
+            <ul>
+              <li>Your academics are on track for your goals.</li>
+              <li>Your athletic level and needs are clearly understood.</li>
+              <li>The residency is the right step for your development.</li>
+            </ul>
+
+            <h3>Application Process</h3>
+            <ul>
+              <li>1) Complete StarPath Assessment.</li>
+              <li>2) Residency interest call with athlete &amp; family.</li>
+              <li>3) Formal application &amp; review.</li>
+              <li>4) Acceptance and deposit to secure spot.</li>
+            </ul>
+
+            <div class="pill-row">
+              <span class="pill">Limited spots</span>
+              <span class="pill">Training + academics</span>
+              <span class="pill">NCAA-minded</span>
+            </div>
+
+            <div class="qr-placeholder">
+              QR CODE HERE<br />
+              (Link to Vienna Residency interest form)
+            </div>
+
+            <div class="contact-block">
+              <strong>Go4it Academy · Vienna Residency</strong><br />
+              🌐 go4itsports.org<br />
+              📧 info@go4itsports.org<br />
+              📞 303-970-4655<br />
+              HQ: Denver, USA · Vienna, Austria
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        Go4it Academy · Train Here. Qualify Anywhere. · NCAA &amp; international student-athlete development.<br />
+        Truth-in-Marketing: Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

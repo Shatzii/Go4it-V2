@@ -14,6 +14,8 @@ FILES=(
   "weeklyOS.html"
   "viennaresidency.html"
   "DallasResidency.html"
+  "docs/CompanyManual.html"
+  "docs/sales&marketingscripts.html"
 )
 
 if ! command -v wkhtmltopdf >/dev/null 2>&1; then
@@ -27,7 +29,10 @@ for f in "${FILES[@]}"; do
     echo "Warning: source file not found: $SRC — skipping"
     continue
   fi
-  OUT="$OUT_DIR/${f%.*}.pdf"
+  # Use basename so output files don't include directories
+  base=$(basename "$f")
+  base_noext="${base%.*}"
+  OUT="$OUT_DIR/$base_noext.pdf"
   echo "Converting $f → ${OUT##*/}"
   wkhtmltopdf --enable-local-file-access "$SRC" "$OUT"
 done

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Academy · Spring 2026 Launch Flyer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0B0F14;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --mid: #5C6678;
+      --border: #CAD3E2;
+      --header-bg: #0B0F14;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 24px 24px 40px;
+    }
+
+    .flyer {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px 18px;
+    }
+
+    .flyer-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border-radius: 10px;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, #0B0F14, #151C26);
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .flyer-header-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .flyer-header-sub {
+      font-size: 0.95rem;
+      color: #D8E0F2;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .badge {
+      font-size: 0.74rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      border-radius: 999px;
+      padding: 3px 10px;
+      border: 1px solid rgba(0,212,255,0.6);
+      background: rgba(0,212,255,0.12);
+      color: #E6EAF0;
+      font-weight: 600;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin: 14px 0 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #111722;
+    }
+
+    h3 {
+      font-size: 1.0rem;
+      margin: 10px 0 4px;
+      color: #111722;
+    }
+
+    p {
+      margin: 4px 0 6px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #333A48;
+    }
+
+    ul {
+      margin: 4px 0 8px;
+      padding-left: 1.1rem;
+      font-size: 0.9rem;
+      color: #333A48;
+    }
+
+    li { margin-bottom: 3px; }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 4px 0 8px;
+    }
+    .pill {
+      font-size: 0.8rem;
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #F5F7FB;
+      color: #111722;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 18px;
+      margin-top: 8px;
+    }
+
+    .highlight-box {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #F8FAFF;
+      padding: 10px 12px;
+    }
+
+    .highlight-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .contact-block {
+      margin-top: 10px;
+      font-size: 0.86rem;
+      line-height: 1.4;
+      color: #222938;
+    }
+
+    .qr-placeholder {
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px dashed #B0BACB;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #5C6678;
+    }
+
+    .footer-bar {
+      margin-top: 16px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: #5C6678;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 720px) {
+      .columns { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .page {
+        max-width: 100%;
+        padding: 15mm;
+      }
+      .flyer-header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="flyer">
+      <div class="flyer-header">
+        <div class="flyer-header-title">GO4IT ACADEMY</div>
+        <div class="flyer-header-sub">Spring 2026 · Official Online Academy Launch</div>
+        <div class="badge-row">
+          <span class="badge">Train Here. Qualify Anywhere.</span>
+          <span class="badge">NCAA-minded · International-friendly</span>
+        </div>
+      </div>
+
+      <h2>School Built for Student-Athletes</h2>
+      <p>
+        Go4it Academy is a flexible homeschool / online-friendly academy designed around
+        **serious student-athletes**. We combine accredited academics, NCAA guidance, and
+        sport-specific development into one integrated system.
+      </p>
+
+      <h3>What Students Get</h3>
+      <ul>
+        <li><strong>NCAA-approved coursework</strong> through U.S. school-of-record partners.</li>
+        <li><strong>Weekly academic coaching</strong> and study structure.</li>
+        <li><strong>StarPath tracking</strong> – academic, athletic, and behavior all in one place.</li>
+        <li><strong>Sport-specific training plans</strong> (soccer, American football, basketball).</li>
+        <li><strong>Eligibility &amp; recruiting guidance</strong> for NCAA, NAIA, JUCO, and EU options.</li>
+        <li><strong>Regular parent communication</strong> and progress reports.</li>
+      </ul>
+
+      <div class="pill-row">
+        <span class="pill">Full-Time Online Students</span>
+        <span class="pill">Public School StarPath Track</span>
+        <span class="pill">International Athletes</span>
+        <span class="pill">Residency Path (Vienna &amp; Dallas)</span>
+      </div>
+
+      <div class="columns">
+        <div>
+          <h3>Who We Serve</h3>
+          <ul>
+            <li>High school student-athletes (approx. ages 13–19).</li>
+            <li>Families balancing club, travel, or elite academies with school.</li>
+            <li>International students exploring U.S. or EU university options.</li>
+            <li>Homeschool and online students who need a sport-aware structure.</li>
+          </ul>
+
+          <h3>2026 Pathways</h3>
+          <ul>
+            <li><strong>Full-Time Go4it Academy Student:</strong> complete academic + athletic integration.</li>
+            <li><strong>StarPath Online Track:</strong> stay at current school, we handle eligibility + planning.</li>
+            <li><strong>Residency Programs:</strong> Vienna (soccer) and Dallas (football/basketball) – 12-week intensive experiences built on top of StarPath.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="highlight-box">
+            <div class="highlight-title">How to Get Started</div>
+            <p class="cta-text">
+              All families start with a **StarPath Assessment™**. This gives you a
+              clear read on:
+            </p>
+            <ul>
+              <li>Current academic standing (GPA, credits, NCAA core).</li>
+              <li>Sport readiness level and development needs.</li>
+              <li>Best-fit pathways (full-time school, online track, residency, or local plan).</li>
+            </ul>
+            <p>
+              After the assessment, we discuss whether Go4it Academy is the right home
+              for your student-athlete in Spring 2026 and beyond.
+            </p>
+
+            <h3>Enroll for Spring 2026</h3>
+            <p>
+              Semester Start: <strong>January 2026</strong><br />
+              Limited spaces for full-time and StarPath Online students.
+            </p>
+
+            <div class="qr-placeholder">
+              QR CODE HERE<br />
+              (Link to Go4it Academy Spring 2026 Interest / Application Form)
+            </div>
+
+            <div class="contact-block">
+              <strong>Go4it Academy · Global Student-Athlete Development</strong><br />
+              🌐 go4itsports.org<br />
+              📧 info@go4itsports.org<br />
+              📞 303-970-4655<br />
+              IG: @go4itacademy
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bar">
+        Go4it Academy · Train Here. Qualify Anywhere. · NCAA &amp; international student-athlete development.<br />
+        Truth-in-Marketing: Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.
+      </div>
+    </div>
+  </div>
+</body>
+</html>

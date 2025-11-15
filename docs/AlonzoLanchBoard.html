@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Go4it • Alonzo Launch Dashboard</title>
+<style>
+  :root{
+    --charcoal:#0B0F14;
+    --cyan:#00D4FF;
+    --green:#27E36A;
+    --mid:#5C6678;
+    --light:#E6EAF0;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--charcoal);color:var(--white);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  a{color:var(--cyan);text-decoration:none}
+  .wrap{max-width:1100px;margin:auto;padding:24px}
+  header{
+    background:linear-gradient(120deg, rgba(0,212,255,.15), rgba(39,227,106,.08));
+    border:1px solid rgba(230,234,240,.15);
+    border-radius:16px;padding:20px 22px;margin-bottom:16px
+  }
+  .brand{
+    display:flex;align-items:center;gap:14px;margin-bottom:6px
+  }
+  .pill{display:inline-block;background:var(--green);color:var(--charcoal);font-weight:700;padding:4px 10px;border-radius:20px;margin-left:8px}
+  .sub{color:var(--light)}
+  h1{margin:4px 0 6px;font-size:28px;letter-spacing:.5px}
+  h2{font-size:20px;margin:18px 0 8px}
+  h3{font-size:16px;margin:10px 0 6px;color:var(--cyan)}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card{
+    background:#0d1219;border:1px solid rgba(230,234,240,.12);border-radius:14px;padding:14px 14px 12px
+  }
+  .muted{color:#cfd6e3}
+  .small{font-size:12px;color:#c9cfdb}
+  .input, textarea, select{
+    width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(230,234,240,.2);
+    background:#0f1520;color:var(--white);outline:none
+  }
+  textarea{min-height:88px;resize:vertical}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{
+    appearance:none;border:none;border-radius:10px;background:var(--cyan);color:var(--charcoal);font-weight:800;
+    padding:10px 14px;cursor:pointer
+  }
+  .btn.secondary{background:transparent;color:var(--cyan);border:1px solid var(--cyan)}
+  .badge{background:#121a25;border:1px solid rgba(230,234,240,.12);padding:6px 10px;border-radius:999px}
+  .kpi{font-size:28px;font-weight:800}
+  .target{color:var(--cyan);font-size:12px}
+  .bar{height:10px;background:#121a25;border:1px solid rgba(230,234,240,.12);border-radius:999px;overflow:hidden}
+  .bar>span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--cyan))}
+  .checklist label{display:flex;align-items:center;gap:8px;margin:6px 0}
+  .checklist input[type="checkbox"]{width:18px;height:18px;accent-color:var(--green);cursor:pointer}
+  table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:10px}
+  th,td{padding:10px 12px;border-bottom:1px solid rgba(230,234,240,.1)}
+  thead th{background:#0f1622;color:#dce3ef;text-align:left;position:sticky;top:0}
+  tfoot td{background:#0f1622;font-weight:700}
+  .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0f1622;border:1px solid rgba(230,234,240,.2);padding:2px 6px;border-radius:6px}
+  .note{border-left:4px solid var(--cyan);padding-left:10px;margin:8px 0;color:#c9cfdb}
+  .section-title{display:flex;align-items:center;gap:8px}
+  .section-title .dot{width:10px;height:10px;border-radius:50%;background:var(--cyan)}
+  .footer{margin:20px 0 0;color:#9aa6b6;font-size:11px;line-height:1.35}
+  /* Print */
+  @media print{
+    .btn,.row.actions, .sticky{display:none!important}
+    body{background:#fff;color:#000}
+    .card{border-color:#999}
+    header{border-color:#999;background:#fff}
+    .footer{color:#000}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div>
+          <div class="row" style="gap:8px;align-items:baseline">
+            <strong style="font-size:18px;letter-spacing:.6px">GO4IT SPORTS ACADEMY</strong>
+            <span class="pill">Verified. Prepared. Placed.</span>
+          </div>
+          <div class="sub small">Director: <strong>Alonzo Barrett</strong> • HQ: Denver (USA) | Vienna (AT) • Contact: invest@go4itsports.org • +1-205-434-4005</div>
+        </div>
+      </div>
+      <h1>Alonzo — Launch Control (CET)</h1>
+      <div class="row" style="gap:8px">
+        <span class="badge">Goal: <b>200 contacts/day</b></span>
+        <span class="badge">Primary Start: <b>Mon Jan 26, 2026</b></span>
+        <span class="badge">Secondary: <b>Feb 9</b> • Final add: <b>Feb 23</b></span>
+      </div>
+    </header>
+
+    <!-- Top Priorities -->
+    <div class="grid g3">
+      <div class="card">
+        <div class="section-title"><span class="dot"></span><h2 style="margin:0">Today’s Top 3 Wins</h2></div>
+        <ol style="margin:8px 0 0 18px">
+          <li><input class="input" placeholder="Win #1 — e.g., 200 contacts logged"/></li>
+          <li><input class="input" placeholder="Win #2 — e.g., 2 reels posted"/></li>
+          <li><input class="input" placeholder="Win #3 — e.g., fix bottleneck X"/></li>
+        </ol>
+        <div class="note small">Rule: SLA repair before outreach. Every convo ends with one CTA: <b>Start StarPath ($249, credited)</b> or <b>RSVP Parent Night</b>.</div>
+      </div>
+      <div class="card">
+        <h2 style="margin:0 0 6px">Counters & Progress</h2>
+        <div class="grid">
+          <div>
+            <div class="row" style="justify-content:space-between">
+              <span class="small">New contacts (target 200)</span><span class="target" id="c_cnt_lbl">0/200</span>
+            </div>
+            <div class="bar"><span id="c_cnt"></span></div>
+          </div>
+          <div>
+            <div class="row" style="justify-content:space-between">
+              <span class="small">Replies (target 60)</span><span class="target" id="c_rep_lbl">0/60</span>
+            </div>
+            <div class="bar"><span id="c_rep"></span></div>
+          </div>
+          <div>
+            <div class="row" style="justify-content:space-between">
+              <span class="small">StarPath purchases (target 11)</span><span class="target" id="c_sp_lbl">0/11</span>
+            </div>
+            <div class="bar"><span id="c_sp"></span></div>
+          </div>
+          <div>
+            <div class="row" style="justify-content:space-between">
+              <span class="small">Parent Night RSVPs (target 15)</span><span class="target" id="c_rsvp_lbl">0/15</span>
+            </div>
+            <div class="bar"><span id="c_rsvp"></span></div>
+          </div>
+          <div>
+            <div class="row" style="justify-content:space-between">
+              <span class="small">Deposits (goal 3+ when offers out)</span><span class="target" id="c_dep_lbl">0/3</span>
+            </div>
+            <div class="bar"><span id="c_dep"></span></div>
+          </div>
+        </div>
+        <div class="row" style="gap:8px;margin-top:10px">
+          <input id="in_cnt" class="input" type="number" min="0" placeholder="Contacts"/>
+          <input id="in_rep" class="input" type="number" min="0" placeholder="Replies"/>
+          <input id="in_sp"  class="input" type="number" min="0" placeholder="StarPaths"/>
+          <input id="in_rsvp" class="input" type="number" min="0" placeholder="PN RSVPs"/>
+          <input id="in_dep" class="input" type="number" min="0" placeholder="Deposits"/>
+        </div>
+      </div>
+      <div class="card">
+        <h2 style="margin:0 0 6px">Bottleneck Card (ICE)</h2>
+        <label class="small">Describe the single biggest constraint this week</label>
+        <textarea placeholder="Example: Replies below 25% on athlete DMs; opener too long; missing proof reel."></textarea>
+        <div class="grid g3">
+          <div><label class="small">Impact (1–10)</label><input class="input" type="number" min="1" max="10" value="8" id="impact"></div>
+          <div><label class="small">Confidence (1–10)</label><input class="input" type="number" min="1" max="10" value="7" id="confidence"></div>
+          <div><label class="small">Ease (1–10)</label><input class="input" type="number" min="1" max="10" value="6" id="ease"></div>
+        </div>
+        <div class="row" style="justify-content:space-between;margin-top:6px">
+          <span class="small">ICE Score: <span id="iceScore" class="kbd">—</span></span>
+          <button class="btn secondary" id="calcIce">Calculate</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Sprints -->
+    <div class="card" style="margin-top:16px">
+      <div class="section-title"><span class="dot"></span><h2 style="margin:0">Daily Sprints (CET)</h2></div>
+      <div class="grid g2">
+        <div class="checklist">
+          <h3>Morning</h3>
+          <label><input type="checkbox"> 05:55–06:15 Center & plan (3-line focus)</label>
+          <label><input type="checkbox"> 06:15–07:00 Personal SSA (record 10s clip)</label>
+          <label><input type="checkbox"> 07:00–07:30 Sprint 0: Prep saved replies & lists</label>
+          <label><input type="checkbox"> 07:30–08:15 Sprint 1: Warm leads (30)</label>
+          <label><input type="checkbox"> 09:00–10:00 Deep work: reports/QC & offers</label>
+          <label><input type="checkbox"> 10:00–11:30 Sprint 2: EU athletes (60)</label>
+        </div>
+        <div class="checklist">
+          <h3>Afternoon & Evening</h3>
+          <label><input type="checkbox"> 12:00–12:45 Parent Info (Tue EU) / Ops block</label>
+          <label><input type="checkbox"> 13:00–14:00 Ops & hiring (UEFA-B/GK/fields)</label>
+          <label><input type="checkbox"> 14:00–15:00 Sprint 3: Parents & coaches (40)</label>
+          <label><input type="checkbox"> 15:00–16:00 Content block: 1 reel + 1 post</label>
+          <label><input type="checkbox"> 18:30–19:15 Sprint 4: Offers & nudges (30)</label>
+          <label><input type="checkbox"> 21:00–22:30 Sprint 5: US prime (40)</label>
+        </div>
+      </div>
+      <div class="note small">Live sessions: Tue = Parent Info (EU noon & US evening). Thu = Decision Night (US).</div>
+    </div>
+
+    <!-- Weekly OS -->
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h2 style="margin:0 0 6px">Weekly Operating System</h2>
+        <div class="checklist">
+          <label><input type="checkbox"> <b>Mon — Onboard & List Build:</b> process StarPaths; two fresh target lists; 200 touches; post “This week” reel.</label>
+          <label><input type="checkbox"> <b>Tue — Parent Info:</b> AM push RSVPs; run EU noon & US evening sessions; link-drops in 30m.</label>
+          <label><input type="checkbox"> <b>Wed — Media & Proof:</b> 2 reels (GAR + academic map); 200 touches (athlete-heavy); QC 5 reports.</label>
+          <label><input type="checkbox"> <b>Thu — Decision Night:</b> answer objections AM; run event; issue offers in 48h.</label>
+          <label><input type="checkbox"> <b>Fri — Systems & Scoreboard:</b> last-call/deposits; pick 1 bottleneck (ICE); book refs/fields.</label>
+          <label><input type="checkbox"> <b>Sat — Event/Blitz:</b> run combine/ID Night or follow-up blitz; film TAT ≤48h.</label>
+          <label><input type="checkbox"> <b>Sun — Light + Planning:</b> 200 light touches; finalize decks & ops for week.</label>
+        </div>
+      </div>
+      <div class="card">
+        <h2 style="margin:0 0 6px">Residency & Ops Quick-Checks</h2>
+        <div class="checklist">
+          <label><input type="checkbox"> Vienna evening fields locked (Mon–Fri 18:00–20:00)</label>
+          <label><input type="checkbox"> Two Saturday showcase slots booked (Weeks 6 & 12)</label>
+          <label><input type="checkbox"> Two club friendlies penciled (Weeks 4 & 10)</label>
+          <label><input type="checkbox"> UEFA-B lead signed (6–8 hrs/wk)</label>
+          <label><input type="checkbox"> GK specialist scheduled (1×/wk)</label>
+          <label><input type="checkbox"> Ops/Video hired; film upload ≤48h tested</label>
+          <label><input type="checkbox"> Stripe: StarPath credit to month one tested</label>
+          <label><input type="checkbox"> W4/W8/W12 proctor calendar published</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- DM scripts -->
+    <div class="card" style="margin-top:16px">
+      <div class="section-title"><span class="dot"></span><h2 style="margin:0">Saved Replies (copy-ready)</h2></div>
+      <div class="grid g3">
+        <div>
+          <h3>Athlete (EN)</h3>
+          <textarea>Saw your training in Vienna—clean touches. We run StarPath ($249, credited): 7-day pro eval + GAR metrics + NCAA plan + coach packet. Club-friendly. Want the info?</textarea>
+        </div>
+        <div>
+          <h3>Athlete (DE)</h3>
+          <textarea>Starke Technik! Wir bieten StarPath (249$): 7-Tage Pro-Bewertung + GAR-Werte + NCAA-Plan + Coach-Packet. Vereinsfreundlich. Infos schicken?</textarea>
+        </div>
+        <div>
+          <h3>Parent (EN)</h3>
+          <textarea>We help EU families verify where their athlete stands for U.S. college: 7-day StarPath ($249, credited) → report + academic map + film notes. Seats are limited for Jan. Want the details?</textarea>
+        </div>
+      </div>
+      <div class="grid g3" style="margin-top:10px">
+        <div>
+          <h3>Coach/Club</h3>
+          <textarea>We’re a club-friendly performance school in Vienna. We verify players (GAR + academic map) and keep them with their clubs. Can we host a Parent Night for your families (free) and send the summary?</textarea>
+        </div>
+        <div>
+          <h3>Nudge (D+2)</h3>
+          <textarea>Quick bump—first 25 this week get a free 30-min Zoom. Link?</textarea>
+        </div>
+        <div>
+          <h3>Last-call (D+5)</h3>
+          <textarea>We’ll release your 7-day hold tonight. If you want the credit to month one, start StarPath here: go4itsports.org/start</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scoreboard -->
+    <div class="card" style="margin-top:16px">
+      <div class="section-title"><span class="dot"></span><h2 style="margin:0">Weekly Scoreboard (auto-sum)</h2></div>
+      <table id="score">
+        <thead>
+          <tr><th>Day</th><th>Contacts</th><th>Replies</th><th>StarPaths</th><th>PN RSVPs</th><th>Deposits</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mon</td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable></td></tr>
+          <tr><td>Tue</td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable></td></tr>
+          <tr><td>Wed</td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable></td></tr>
+          <tr><td>Thu</td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable></td></tr>
+          <tr><td>Fri</td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable></td></tr>
+          <tr><td>Sat</td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable></td></tr>
+          <tr><td>Sun</td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable class="num"></td><td contenteditable></td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td><b>Total</b></td>
+              <td id="t_contacts">0</td>
+              <td id="t_replies">0</td>
+              <td id="t_starpaths">0</td>
+              <td id="t_rsvps">0</td>
+              <td id="t_deposits">0</td>
+              <td></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="row actions" style="margin-top:10px;gap:8px">
+        <button class="btn" onclick="window.print()">Print / Save PDF</button>
+        <button class="btn secondary" id="resetAll">Reset All</button>
+      </div>
+    </div>
+
+    <!-- Sources -->
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h2 style="margin:0 0 6px">Lead Sources Checklist</h2>
+        <div class="checklist">
+          <label><input type="checkbox"> IG place pages (city + academy/club/facility)</label>
+          <label><input type="checkbox"> Hashtags: #Wien #Nachwuchs #U17 #U19 #ÖFB #futsal #soccertraining #americanfootballEU #viennafootball #basketballvienna #recruiting</label>
+          <label><input type="checkbox"> Followers/likers of local clubs/tournaments</label>
+          <label><input type="checkbox"> Story poll taps & reel commenters</label>
+          <label><input type="checkbox"> FB parent groups (Vienna International Parents, Expat Families Vienna)</label>
+          <label><input type="checkbox"> LinkedIn coaches (Academy Director, Head of Youth, AD)</label>
+          <label><input type="checkbox"> Referrals (WhatsApp intros)</label>
+        </div>
+      </div>
+      <div class="card">
+        <h2 style="margin:0 0 6px">Notes</h2>
+        <textarea placeholder="Meeting notes, promising athletes, coach intros, reminders…"></textarea>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div><b>Truth-in-Marketing (required on academic/eligibility docs):</b> “Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local education registration. We do not provide immigration or legal advice.”</div>
+      <div style="margin-top:6px">Palette: Charcoal #0B0F14 • Cyan #00D4FF • Green #27E36A • Mid-gray #5C6678 • Light #E6EAF0</div>
+    </div>
+  </div>
+
+<script>
+  // Progress bars
+  const targets = { cnt:200, rep:60, sp:11, rsvp:15, dep:3 };
+  const map = [
+    ['cnt','in_cnt','c_cnt','c_cnt_lbl',targets.cnt],
+    ['rep','in_rep','c_rep','c_rep_lbl',targets.rep],
+    ['sp','in_sp','c_sp','c_sp_lbl',targets.sp],
+    ['rsvp','in_rsvp','c_rsvp','c_rsvp_lbl',targets.rsvp],
+    ['dep','in_dep','c_dep','c_dep_lbl',targets.dep],
+  ];
+  function updateBars(){
+    map.forEach(([key,inId,barId,lblId,target])=>{
+      const v = Math.max(0, parseInt(localStorage.getItem(inId) || document.getElementById(inId).value || 0));
+      const pct = Math.min(100, Math.round((v/target)*100));
+      document.getElementById(barId).style.width = pct + '%';
+      document.getElementById(lblId).textContent = `${v}/${target}`;
+    });
+  }
+  map.forEach(([_,inId])=>{
+    const el = document.getElementById(inId);
+    if(localStorage.getItem(inId)) el.value = localStorage.getItem(inId);
+    el.addEventListener('input',e=>{ localStorage.setItem(inId, e.target.value); updateBars(); });
+  });
+  updateBars();
+
+  // ICE calculator
+  function calcICE(){
+    const i = +document.getElementById('impact').value||0;
+    const c = +document.getElementById('confidence').value||0;
+    const e = +document.getElementById('ease').value||0;
+    const score = i*c*e;
+    document.getElementById('iceScore').textContent = score.toFixed(0);
+  }
+  document.getElementById('calcIce').addEventListener('click', calcICE);
+
+  // Weekly scoreboard auto-sum
+  function sumColumn(idx){
+    let sum = 0;
+    document.querySelectorAll('#score tbody tr').forEach(row=>{
+      const cell = row.querySelectorAll('.num')[idx];
+      const val = parseFloat(cell.textContent.trim())||0;
+      sum += val;
+    });
+    return sum;
+  }
+  function updateTotals(){
+    const totals = ['t_contacts','t_replies','t_starpaths','t_rsvps','t_deposits'];
+    totals.forEach((id, i)=> document.getElementById(id).textContent = sumColumn(i).toFixed(0));
+  }
+  document.querySelectorAll('#score .num').forEach(cell=>{
+    cell.addEventListener('input', updateTotals);
+  });
+
+  // Reset all
+  document.getElementById('resetAll').addEventListener('click', ()=>{
+    if(!confirm('Reset all counters and scoreboard?')) return;
+    map.forEach(([_,inId])=>{ localStorage.removeItem(inId); document.getElementById(inId).value=''; });
+    document.querySelectorAll('#score .num').forEach(c=>c.textContent='');
+    updateBars(); updateTotals(); document.getElementById('iceScore').textContent='—';
+  });
+</script>
+</body>
+</html>

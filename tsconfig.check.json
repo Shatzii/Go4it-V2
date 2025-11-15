@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
+    "shared/**/*.ts",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "app/**/*.d.ts",
+    "types/**/*.d.ts",
+    "next-env.d.ts"
+  ]
+}
