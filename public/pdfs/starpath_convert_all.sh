@@ -21,10 +21,12 @@ FILES=(
   "starpath_complete_syllabus_colorado_branded.html"
   "starpath_delivery_silver_steady_online.html"
   "Go4it_Vienna_Spring2026_Syllabi.html"
+  "Go4it_Vienna_Spring2026_Syllabi (1).html"
   "ISL_Vienna_Global_Residency.html"
   "Go4it_About_Us_School_Admin_v3.html"
   "Go4it_Vienna_Residency_StarPath_Spring2026.html"
   "living_is_learning_starpath.html"
+  "AcademyHandbook.html"
 )
 
 cd "$(dirname "$0")"
