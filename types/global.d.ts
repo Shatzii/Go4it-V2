@@ -5,11 +5,9 @@ declare module '@tensorflow/tfjs-node';
 declare module '@tensorflow-models/pose-detection';
 declare module '@tensorflow-models/*';
 declare module 'winston';
-declare module 'puppeteer';
 declare module '@playwright/test';
 declare module '@jest/globals';
 declare module 'canvas';
-declare module 'puppeteer-core';
 declare module 'sharp';
 declare module 'opencv4nodejs';
 

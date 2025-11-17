@@ -4,14 +4,35 @@
     "skipLibCheck": true,
     "incremental": true
   },
+  "include": [
+    "next-env.d.ts",
+    "app/go4it-academy/**/*",
+    "app/starpath/**/*",
+    "app/events/**/*",
+    "app/camp-registration/**/*",
+    "app/checkout/**/*",
+    "app/enrollment-portal/**/*",
+    "app/parent-night/**/*",
+    "app/friday-night-lights/**/*",
+    "app/pricing/**/*",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "lib/enrollments.ts",
+    "lib/content.ts",
+    "scripts/**/*.ts",
+    "types/**/*.d.ts"
+  ],
   "exclude": [
     "node_modules",
+    ".next",
+    "archive_removed_code",
+    "archive_removed_media",
     "**/demo/**",
     "app/test-video-analysis/**",
     "components/ai-coach/**",
     "app/api/ai-coach/**",
     "app/ai-*",
-    "scripts/**",
-    "archive_removed_media/**"
+    "scripts/**"
   ]
 }
+    "components/ai-coach/**",
