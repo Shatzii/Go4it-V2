@@ -1,0 +1,85 @@
+/* StarPath print stylesheet — preserves dark backgrounds and neon accents for wkhtmltopdf */
+* {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-adjust: exact !important;
+}
+
+:root {
+  --bg: #05070b;
+  --bg-soft: #05070b;
+  --panel: #0B0F14;
+  --accent: #00D4FF;
+  --accent2: #27E36A;
+  --accent3: #FFB347;
+  --light: #E6EAF0;
+  --muted: #9CA6BA;
+  --border-soft: #1E2837;
+}
+
+html {
+  background-color: #05070b !important;
+  background: #05070b !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #05070b !important;
+  background: #05070b !important;
+  color: #E6EAF0 !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  background-color: #05070b !important;
+  background: #05070b !important;
+}
+
+.panel {
+  background-color: #0B0F14 !important;
+  background: #0B0F14 !important;
+  border-radius: 18px;
+  border: 1px solid rgba(92,102,120,0.85);
+}
+
+header {
+  background-color: #0B0F14 !important;
+  background: #0B0F14 !important;
+  border-color: #1E2837 !important;
+}
+
+a, .highlight {
+  color: #00D4FF !important;
+}
+
+@media print {
+  html, body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background: #05070b !important;
+    color: #E6EAF0 !important;
+  }
+
+  .panel {
+    background: #05070b !important;
+    border-color: #1E2837 !important;
+  }
+
+  header {
+    background: #0B0F14 !important;
+    border-color: rgba(92,102,120,0.85) !important;
+  }
+
+  a, .highlight {
+    color: #00D4FF !important;
+  }
+
+  .tag-pill, .badge, .mini-pill-accent, .mini-pill-success {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* End StarPath print stylesheet */
