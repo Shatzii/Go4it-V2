@@ -1,7 +1,6 @@
 language = "bash"
-run = "bash .replit/run.sh"
-modules = ["nodejs-20", "postgresql-16", "python-3.11", "web"]
 run = "npm run dev"
+modules = ["nodejs-20", "postgresql-16", "python-3.11", "web"]
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist", ".next", ".cache", "build", "coverage", "logs", "backups"]
 
 [nix]
@@ -9,8 +8,8 @@ channel = "stable-24_05"
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["sh", "-c", "rm -rf .next node_modules/.cache && npm ci --prefer-offline --no-audit && bash scripts/build-replit.sh"]
-run = ["sh", "-c", "npm run start:production"]
+build = ["sh", "-c", "rm -rf .next node_modules/.cache && npm install --include=dev && bash scripts/build-replit.sh"]
+run = ["sh", "-c", "node .next/standalone/server.js"]
 ignorePorts = false
 
 [env]
