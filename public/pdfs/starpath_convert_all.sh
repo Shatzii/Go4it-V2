@@ -30,10 +30,11 @@ FILES=(
 )
 
 cd "$(dirname "$0")"
+mkdir -p starpath-academy
 
 for f in "${FILES[@]}"; do
   if [ -f "$f" ]; then
-    out="${f%.html}_StarPath.pdf"
+    out="starpath-academy/${f%.html}_StarPath.pdf"
     echo "Converting $f -> $out"
     # Try with QT_QPA_PLATFORM=offscreen if default fails in headless env
     if ! $WKHTMLTOPDF "${FLAGS[@]}" "$f" "$out"; then
