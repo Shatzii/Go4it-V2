@@ -5,6 +5,7 @@ import { useState } from "react";
 export default function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Array<{ text: string; isUser: boolean }>>([
     { text: "Hi! Welcome to Go4it Sports Academy. How can I help you today?", isUser: false }
   ]);
@@ -22,10 +23,18 @@ export default function ChatWidget() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage })
+        body: JSON.stringify({ 
+          message: userMessage,
+          threadId: threadId 
+        })
       });
 
       const data = await response.json();
+      
+      // Store thread ID for conversation continuity
+      if (data.threadId && !threadId) {
+        setThreadId(data.threadId);
+      }
       
       // Add bot response
       setMessages(prev => [...prev, { text: data.response || data.error || "Sorry, I couldn't process that.", isUser: false }]);

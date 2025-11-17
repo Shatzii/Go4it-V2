@@ -1,15 +1,17 @@
 import { NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
-// Initialize Anthropic client
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
+// Initialize OpenAI client with Assistant
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || '',
 });
+
+const ASSISTANT_ID = 'asst_7BwbQ2C2Rv2HIEEsQlRnDXUJ';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { message, context } = body;
+    const { message, threadId } = body;
 
     if (!message) {
       return NextResponse.json(
@@ -18,77 +20,74 @@ export async function POST(request: Request) {
       );
     }
 
-    // System prompt for Go4it landing page chat
-    const systemPrompt = `You are a helpful assistant for Go4it Sports Academy, an online-first NCAA readiness school. 
-
-Key information:
-- We offer full-time online education with NCAA pathway support
-- GAR™ (Go4it Athletic Rating) verification system for athletes
-- Three enrollment paths: Full-time, Supplemental courses, and Monitoring-only
-- StarPath: Our AI-powered enrollment management system
-- Locations: Denver, Vienna, Dallas, Mérida (MX)
-- Contact: info@go4itsports.org, USA: +1-303-970-4655, EU: +43 650 564 4236
-
-Services:
-- AI-powered video analysis with 12 Ollama models
-- 48-hour transcript audits
-- GetVerified™ Combines (in-person GAR testing events)
-- College recruiting hub
-- Daily 3-hour studio sessions
-- NCAA eligibility tracking
-
-Be friendly, enthusiastic, and helpful. Keep responses concise (2-3 sentences max). 
-If asked about pricing or detailed enrollment, direct them to apply at /apply or contact us directly.`;
-
-    // Use Ollama for local chat (free) or fallback to Anthropic
-    let response;
-    
-    try {
-      // Try Ollama first (local, free)
-      const ollamaResponse = await fetch(process.env.OLLAMA_BASE_URL + '/api/chat' || 'http://localhost:11434/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'llama3.2',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: message }
-          ],
-          stream: false
-        })
-      });
-
-      if (ollamaResponse.ok) {
-        const data = await ollamaResponse.json();
-        response = data.message.content;
-      } else {
-        throw new Error('Ollama not available');
-      }
-    } catch (ollamaError) {
-      // Fallback to Anthropic if Ollama fails
-      if (process.env.ANTHROPIC_API_KEY) {
-        const anthropicResponse = await anthropic.messages.create({
-          model: 'claude-3-haiku-20240307',
-          max_tokens: 300,
-          system: systemPrompt,
-          messages: [
-            { role: 'user', content: message }
-          ]
-        });
-
-        response = anthropicResponse.content[0].type === 'text' 
-          ? anthropicResponse.content[0].text 
-          : 'I apologize, I encountered an error. Please contact us directly.';
-      } else {
-        // No AI available, provide helpful static response
-        response = getStaticResponse(message);
-      }
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { 
+          response: getStaticResponse(message),
+          error: 'OpenAI API key not configured'
+        },
+        { status: 200 }
+      );
     }
 
-    return NextResponse.json({
-      response,
-      timestamp: new Date().toISOString()
-    });
+    try {
+      // Create or use existing thread
+      let currentThreadId = threadId;
+      if (!currentThreadId) {
+        const thread = await openai.beta.threads.create();
+        currentThreadId = thread.id;
+      }
+
+      // Add user message to thread
+      await openai.beta.threads.messages.create(currentThreadId, {
+        role: 'user',
+        content: message
+      });
+
+      // Run the assistant
+      const run = await openai.beta.threads.runs.create(currentThreadId, {
+        assistant_id: ASSISTANT_ID
+      });
+
+      // Poll for completion
+      let runStatus = await openai.beta.threads.runs.retrieve(currentThreadId, run.id);
+      let attempts = 0;
+      while (runStatus.status !== 'completed' && attempts < 30) {
+        if (runStatus.status === 'failed' || runStatus.status === 'cancelled' || runStatus.status === 'expired') {
+          throw new Error(`Run ${runStatus.status}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        runStatus = await openai.beta.threads.runs.retrieve(currentThreadId, run.id);
+        attempts++;
+      }
+
+      if (runStatus.status !== 'completed') {
+        throw new Error('Assistant response timeout');
+      }
+
+      // Get the assistant's response
+      const messages = await openai.beta.threads.messages.list(currentThreadId);
+      const lastMessage = messages.data[0];
+      
+      let response = 'I apologize, I encountered an error. Please contact us directly.';
+      if (lastMessage.role === 'assistant' && lastMessage.content[0].type === 'text') {
+        response = lastMessage.content[0].text.value;
+      }
+
+      return NextResponse.json({
+        response,
+        threadId: currentThreadId,
+        timestamp: new Date().toISOString()
+      });
+
+    } catch (aiError) {
+      console.error('OpenAI Assistant error:', aiError);
+      return NextResponse.json({
+        response: getStaticResponse(message),
+        error: 'AI assistant unavailable, using fallback response',
+        timestamp: new Date().toISOString()
+      });
+    }
 
   } catch (error) {
     console.error('Chat API error:', error);
