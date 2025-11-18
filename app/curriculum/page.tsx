@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { StarPathPageShell, StarPathPanel, StarPathBadge, StarPathSection, StarPathGrid } from "@/components/starpath";
+import { StarPathPageShell, StarPathPanel, StarPathBadge, StarPathSection, StarPathGrid, WeeklyLessonModules, AIGuidanceChat } from "@/components/starpath";
 import { BookOpen, Brain, Globe, Trophy, CheckCircle, Download, Play } from "lucide-react";
 
 export default function CurriculumPage() {
@@ -341,6 +341,13 @@ export default function CurriculumPage() {
         </div>
       </section>
 
+      {/* Weekly Lesson Modules */}
+      <section className="py-16 px-4 bg-gradient-to-b from-gray-900 to-black">
+        <div className="container mx-auto">
+          <WeeklyLessonModules />
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-b from-black to-amber-900/10">
         <div className="container mx-auto text-center">
@@ -402,6 +409,9 @@ export default function CurriculumPage() {
           </div>
         </div>
       </footer>
+
+      {/* AI Chat Assistant */}
+      <AIGuidanceChat />
     </StarPathPageShell>
   );
 }
