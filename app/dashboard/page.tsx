@@ -22,6 +22,9 @@ import {
   Zap,
   ArrowRight,
   Smartphone,
+  Play,
+  Download,
+  Globe,
 } from 'lucide-react';
 import ClientOnly from '@/components/ClientOnly';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -30,6 +33,7 @@ import OnboardingManager from '@/components/onboarding/OnboardingManager';
 import OnboardingTrigger from '@/components/onboarding/OnboardingTrigger';
 import { TodayTiles } from '@/components/dashboard/Tiles';
 import { flags } from '@/lib/flags';
+import { StarPathPanel, StarPathBadge, StarPathSection } from '@/components/starpath';
 
 function DashboardComponent() {
   const { user } = useUser();
@@ -121,38 +125,41 @@ function DashboardComponent() {
 
   return (
     <ClientOnly>
-      <div className="min-h-screen bg-slate-900 text-white">
+      <div className="min-h-screen starpath-bg text-white">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="mb-8" data-onboarding="dashboard-header">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Athletic Dashboard</h1>
-                <p className="text-slate-400">Track your athletic and academic progress</p>
+                <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-amber-500 to-amber-300 bg-clip-text text-transparent">
+                  StarPath Dashboard
+                </h1>
+                <p className="text-gray-400">Track your training, credits, and NCAA progress</p>
               </div>
-              <OnboardingTrigger
-                flowId="dashboard"
-                variant="button"
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
-              />
+              <div className="flex gap-3">
+                <a href="/curriculum" className="bg-amber-500 hover:bg-amber-400 text-black px-6 py-3 rounded-lg font-bold transition">
+                  View Curriculum
+                </a>
+                <OnboardingTrigger
+                  flowId="dashboard"
+                  variant="button"
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700"
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-2 mt-3">
-              <Badge variant="outline" className="text-green-400 border-green-400">
+            <div className="flex items-center gap-2 mt-4">
+              <StarPathBadge variant="green">
                 <Brain className="w-3 h-3 mr-1" />
                 AI Enhanced
-              </Badge>
-              <Badge variant="outline" className="text-blue-400 border-blue-400">
+              </StarPathBadge>
+              <StarPathBadge variant="blue">
                 <Activity className="w-3 h-3 mr-1" />
                 Real-time Analytics
-              </Badge>
-              <Button
-                size="sm"
-                onClick={() => (window.location.href = '/starpath')}
-                className="ml-4"
-              >
-                View StarPath
-              </Button>
+              </StarPathBadge>
+              <StarPathBadge variant="warm">
+                NCAA Compliant
+              </StarPathBadge>
             </div>
           </div>
 
@@ -165,53 +172,219 @@ function DashboardComponent() {
 
           {/* StarPath Quick Overview */}
           <div className="mb-8" data-onboarding="starpath-progress">
-            <Card className="bg-gradient-to-r from-slate-800 to-slate-700 border-slate-600">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/20 rounded-lg">
-                    <Star className="w-6 h-6 text-primary" />
-                  </div>
+            <StarPathPanel>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <Star className="w-8 h-8 text-amber-500" />
                   <div>
-                    <div className="text-white">StarPath Progress</div>
-                    <div className="text-slate-400 text-sm font-normal">Level 3 • 2,450 XP</div>
-                  </div>
-                  <div className="ml-auto">
-                    <Button
-                      className="bg-primary hover:bg-primary/90"
-                      onClick={() => (window.location.href = '/starpath')}
-                    >
-                      View Full StarPath
-                    </Button>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-300 text-sm">Overall Progress</span>
-                      <span className="text-primary text-sm font-medium">82%</span>
-                    </div>
-                    <Progress value={82} className="h-2" />
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-400">4</div>
-                    <div className="text-slate-400 text-sm">Technical Level</div>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-blue-400">3</div>
-                    <div className="text-slate-400 text-sm">Physical Level</div>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-purple-400">7</div>
-                    <div className="text-slate-400 text-sm">Achievements</div>
+                    <div className="text-2xl font-bold text-white">StarPath Progress</div>
+                    <div className="text-gray-400">12-Week Accelerator • Week 3</div>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <a href="/curriculum" className="bg-amber-500 hover:bg-amber-400 text-black px-6 py-3 rounded-lg font-bold transition">
+                  View Full Curriculum
+                </a>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-300">NCAA Credits Earned</span>
+                    <span className="text-amber-500 font-bold">3.5 / 12</span>
+                  </div>
+                  <Progress value={29} className="h-3 bg-gray-800" />
+                </div>
+
+                <div className="text-center border-l border-amber-500/20 pl-4">
+                  <div className="text-3xl font-bold text-green-400">A1</div>
+                  <div className="text-gray-400 text-sm">German Level</div>
+                </div>
+
+                <div className="text-center border-l border-amber-500/20 pl-4">
+                  <div className="text-3xl font-bold text-blue-400">4.2</div>
+                  <div className="text-gray-400 text-sm">GPA Average</div>
+                </div>
+
+                <div className="text-center border-l border-amber-500/20 pl-4">
+                  <div className="text-3xl font-bold text-purple-400">87%</div>
+                  <div className="text-gray-400 text-sm">HDR Score</div>
+                </div>
+              </div>
+            </StarPathPanel>
+          </div>
+
+          {/* AI Assistant Quick Commands */}
+          <div className="mb-8">
+            <StarPathPanel>
+              <div className="flex items-center gap-3 mb-6">
+                <Brain className="w-8 h-8 text-amber-500" />
+                <div>
+                  <h3 className="text-2xl font-bold text-white">AI Assistant</h3>
+                  <p className="text-gray-400">Self-hosted • 100% private • No cloud</p>
+                </div>
+              </div>
+              
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <button className="starpath-panel hover:scale-105 transition-transform p-4 text-left">
+                  <Play className="w-5 h-5 text-amber-500 mb-2" />
+                  <div className="font-mono text-sm text-gray-400 mb-1">/week-plan</div>
+                  <div className="text-xs text-gray-500">Generate weekly curriculum</div>
+                </button>
+                
+                <button className="starpath-panel hover:scale-105 transition-transform p-4 text-left">
+                  <Globe className="w-5 h-5 text-blue-400 mb-2" />
+                  <div className="font-mono text-sm text-gray-400 mb-1">/german-lesson</div>
+                  <div className="text-xs text-gray-500">Create German activity</div>
+                </button>
+                
+                <button className="starpath-panel hover:scale-105 transition-transform p-4 text-left">
+                  <Trophy className="w-5 h-5 text-green-400 mb-2" />
+                  <div className="font-mono text-sm text-gray-400 mb-1">/credit-map</div>
+                  <div className="text-xs text-gray-500">Map training to credits</div>
+                </button>
+                
+                <button className="starpath-panel hover:scale-105 transition-transform p-4 text-left">
+                  <CheckCircle className="w-5 h-5 text-purple-400 mb-2" />
+                  <div className="font-mono text-sm text-gray-400 mb-1">/assessment</div>
+                  <div className="text-xs text-gray-500">Create assessments</div>
+                </button>
+              </div>
+              
+              <div className="mt-6 bg-black/50 border border-amber-500/30 p-4 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-sm text-gray-400 mb-1">AI Status</div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                      <span className="text-white font-medium">Ollama Llama 3.2 (3B) - Ready</span>
+                    </div>
+                  </div>
+                  <a href="#" className="text-amber-500 hover:text-amber-400 text-sm font-medium">
+                    Setup Guide →
+                  </a>
+                </div>
+              </div>
+            </StarPathPanel>
+          </div>
+
+          {/* Credit Tracking */}
+          <div className="mb-8">
+            <h2 className="starpath-section-title mb-6">NCAA Credit Breakdown</h2>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <StarPathPanel>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-3xl">🔬</div>
+                  <div>
+                    <div className="text-sm text-gray-400">SCI-401</div>
+                    <div className="font-bold text-white">Human Performance Biology</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-400 text-sm">Progress</span>
+                  <span className="text-amber-500 font-bold">0.75 / 1.0</span>
+                </div>
+                <Progress value={75} className="h-2 mb-4 bg-gray-800" />
+                <div className="flex gap-2">
+                  <StarPathBadge variant="green">NCAA ✓</StarPathBadge>
+                  <StarPathBadge variant="blue">In Progress</StarPathBadge>
+                </div>
+              </StarPathPanel>
+
+              <StarPathPanel>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-3xl">📊</div>
+                  <div>
+                    <div className="text-sm text-gray-400">MATH-401</div>
+                    <div className="font-bold text-white">Performance Analytics</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-400 text-sm">Progress</span>
+                  <span className="text-amber-500 font-bold">0.50 / 1.0</span>
+                </div>
+                <Progress value={50} className="h-2 mb-4 bg-gray-800" />
+                <div className="flex gap-2">
+                  <StarPathBadge variant="green">NCAA ✓</StarPathBadge>
+                  <StarPathBadge variant="blue">In Progress</StarPathBadge>
+                </div>
+              </StarPathPanel>
+
+              <StarPathPanel>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-3xl">📚</div>
+                  <div>
+                    <div className="text-sm text-gray-400">ELA-401</div>
+                    <div className="font-bold text-white">Athletic Literature</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-400 text-sm">Progress</span>
+                  <span className="text-amber-500 font-bold">1.0 / 1.0</span>
+                </div>
+                <Progress value={100} className="h-2 mb-4 bg-gray-800" />
+                <div className="flex gap-2">
+                  <StarPathBadge variant="green">NCAA ✓</StarPathBadge>
+                  <StarPathBadge variant="green">Complete</StarPathBadge>
+                </div>
+              </StarPathPanel>
+
+              <StarPathPanel>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-3xl">🌍</div>
+                  <div>
+                    <div className="text-sm text-gray-400">SOCSCI-401</div>
+                    <div className="font-bold text-white">Leadership & Culture</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-400 text-sm">Progress</span>
+                  <span className="text-amber-500 font-bold">0.25 / 1.0</span>
+                </div>
+                <Progress value={25} className="h-2 mb-4 bg-gray-800" />
+                <div className="flex gap-2">
+                  <StarPathBadge variant="green">NCAA ✓</StarPathBadge>
+                  <StarPathBadge variant="blue">In Progress</StarPathBadge>
+                </div>
+              </StarPathPanel>
+
+              <StarPathPanel>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-3xl">🇩🇪</div>
+                  <div>
+                    <div className="text-sm text-gray-400">LANG-401</div>
+                    <div className="font-bold text-white">German Language</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-400 text-sm">Progress</span>
+                  <span className="text-amber-500 font-bold">1.0 / 1.0</span>
+                </div>
+                <Progress value={100} className="h-2 mb-4 bg-gray-800" />
+                <div className="flex gap-2">
+                  <StarPathBadge variant="green">NCAA ✓</StarPathBadge>
+                  <StarPathBadge variant="green">Complete</StarPathBadge>
+                </div>
+              </StarPathPanel>
+
+              <StarPathPanel>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="text-3xl">⭐</div>
+                  <div>
+                    <div className="text-sm text-gray-400">HDR-401</div>
+                    <div className="font-bold text-white">Human Development Record</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-gray-400 text-sm">Progress</span>
+                  <span className="text-amber-500 font-bold">0.00 / 1.0</span>
+                </div>
+                <Progress value={0} className="h-2 mb-4 bg-gray-800" />
+                <div className="flex gap-2">
+                  <StarPathBadge variant="green">NCAA ✓</StarPathBadge>
+                  <StarPathBadge variant="warm">Not Started</StarPathBadge>
+                </div>
+              </StarPathPanel>
+            </div>
           </div>
 
           {/* Stats Grid - Single Row */}
