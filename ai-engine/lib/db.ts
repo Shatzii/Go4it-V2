@@ -3,21 +3,35 @@ import { sql } from 'drizzle-orm';
 import Database from 'better-sqlite3';
 import * as schema from './schema';
 
-if (!process.env.DATABASE_URL) {
-  process.env.DATABASE_URL = 'file:./go4it-os.db';
+// Skip database initialization during build phase
+const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build' || 
+                    process.env.NODE_ENV === 'production' && !process.env.DATABASE_URL;
+
+let db: ReturnType<typeof drizzle>;
+
+if (!isBuildTime) {
+  // Use SQLite for development only
+  const dbPath = process.env.DATABASE_URL?.replace('file:', '').replace(/^\/+/, '') || './go4it-os.db';
+  
+  try {
+    const sqlite = new Database(dbPath);
+    sqlite.pragma('journal_mode = WAL');
+    
+    db = drizzle(sqlite, {
+      schema,
+      logger: process.env.NODE_ENV === 'development',
+    });
+  } catch (error) {
+    console.warn('SQLite database initialization skipped during build:', error);
+    // Create a mock db object for build time
+    db = null as any;
+  }
+} else {
+  console.log('Database initialization skipped during build phase');
+  db = null as any;
 }
 
-// Extract the file path from the DATABASE_URL
-const dbPath = process.env.DATABASE_URL.replace('file:', '').replace(/^\/+/, '');
-
-// Create SQLite database connection
-const sqlite = new Database(dbPath);
-sqlite.pragma('journal_mode = WAL');
-
-export const db = drizzle(sqlite, {
-  schema,
-  logger: process.env.NODE_ENV === 'development',
-});
+export { db };
 
 // Export schema for convenience
 export * from './schema';

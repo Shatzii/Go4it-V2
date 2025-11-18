@@ -4,7 +4,14 @@ import { recruitingTimeline } from '@/ai-engine/lib/schema';
 import { eq, asc, and } from 'drizzle-orm';
 import { logger } from '@/lib/logger';
 
+// Skip during build phase
+const isBuildTime = process.env.NEXT_PHASE === 'phase-production-build';
+
 export async function GET(request: NextRequest) {
+  if (isBuildTime || !db) {
+    return NextResponse.json({ success: false, error: 'Database unavailable during build' }, { status: 503 });
+  }
+  
   try {
     const searchParams = request.nextUrl.searchParams;
     const userId = searchParams.get('userId');
@@ -44,6 +51,10 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  if (isBuildTime || !db) {
+    return NextResponse.json({ success: false, error: 'Database unavailable during build' }, { status: 503 });
+  }
+  
   try {
     const body = await request.json();
     const {
