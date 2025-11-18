@@ -5,6 +5,10 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Disable static optimization globally to prevent Clerk prerendering issues
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+
 export const metadata: Metadata = {
   title: 'Go4it Academy',
   description: 'Get Verified - AI-powered athletic development and recruitment platform for student athletes',
