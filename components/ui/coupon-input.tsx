@@ -8,6 +8,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Check, X, Percent, Gift, Star } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
 
+// Disable static generation
+export const dynamic = 'force-dynamic';
+
 interface CouponInputProps {
   onCouponApplied?: (coupon: any) => void;
   planId?: string;

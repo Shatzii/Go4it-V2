@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { CouponInput, CouponShowcase } from '@/components/ui/coupon-input';
+import { CouponShowcase } from '@/components/ui/coupon-input';
 import {
   Gift,
   Percent,
@@ -20,6 +21,12 @@ import {
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
+
+// Lazy load CouponInput to avoid SSR issues with Clerk
+const CouponInput = dynamic(
+  () => import('@/components/ui/coupon-input').then(mod => ({ default: mod.CouponInput })),
+  { ssr: false }
+);
 
 export default function CouponsPage() {
   const [coupons, setCoupons] = useState([]);
