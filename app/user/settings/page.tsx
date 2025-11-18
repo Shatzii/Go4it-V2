@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import ProfilePictureUpload from '../../../components/ProfilePictureUpload';
 import { useUser } from '@clerk/nextjs';
 
+export const dynamic = 'force-dynamic';
+
 export default function UserSettings() {
   const { user } = useUser();
   const [profileImageUrl, setProfileImageUrl] = useState(user?.imageUrl || null);

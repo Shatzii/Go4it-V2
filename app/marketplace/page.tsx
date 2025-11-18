@@ -9,6 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Star, ShoppingCart, User, Clock, BookOpen, Filter, Search, TrendingUp, Award } from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
 
+export const dynamic = 'force-dynamic';
+
 interface CourseItem {
   id: string
   title: string

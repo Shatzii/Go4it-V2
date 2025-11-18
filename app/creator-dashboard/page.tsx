@@ -11,6 +11,8 @@ import { DollarSign, BookOpen, Users, TrendingUp, Plus, Edit, Eye, BarChart3, Ca
 import { useUser } from '@clerk/nextjs'
 import { useToast } from '@/hooks/use-toast'
 
+export const dynamic = 'force-dynamic';
+
 interface CreatorCourse {
   id: string
   title: string

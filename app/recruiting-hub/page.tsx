@@ -9,6 +9,8 @@ import CommunicationLog from './components/CommunicationLog';
 import { useRecruitingData } from './hooks/useRecruitingData';
 import { useUser } from '@clerk/nextjs';
 
+export const dynamic = 'force-dynamic';
+
 export default function RecruitingHub() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const { user } = useUser();

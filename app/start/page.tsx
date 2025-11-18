@@ -7,6 +7,8 @@ import PlanPicker from './PlanPicker';
 import ResultPanel from '@/app/components/ResultPanel';
 import { v4 as uuid } from 'uuid';
 
+export const dynamic = 'force-dynamic';
+
 export default function StartPage() {
   const { user } = useUser();
   const [step, setStep] = useState(1);
