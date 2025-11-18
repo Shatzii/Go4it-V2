@@ -1202,31 +1202,6 @@ export const tasks = pgTable('tasks', {
   updatedAt: timestamp('updated_at').defaultNow()
 });
 
-// Task Dependencies Table
-export const taskDependencies = pgTable('task_dependencies', {
-  id: serial('id').primaryKey(),
-  taskId: integer('task_id').notNull(),
-  dependsOnTaskId: integer('depends_on_task_id').notNull(),
-  createdAt: timestamp('created_at').defaultNow()
-});
+// Duplicate definitions removed - already defined earlier in file
+// taskDependencies, timeEntries, activityLog are defined at lines 88, 102, 71
 
-// Time Entries Table
-export const timeEntries = pgTable('time_entries', {
-  id: serial('id').primaryKey(),
-  taskId: integer('task_id'),
-  userId: text('user_id').notNull(),
-  duration: integer('duration').notNull(),
-  description: text('description'),
-  createdAt: timestamp('created_at').defaultNow()
-});
-
-// Activity Log Table
-export const activityLog = pgTable('activity_log', {
-  id: serial('id').primaryKey(),
-  userId: text('user_id').notNull(),
-  action: text('action').notNull(),
-  entityType: text('entity_type'),
-  entityId: text('entity_id'),
-  metadata: text('metadata'),
-  createdAt: timestamp('created_at').defaultNow()
-});
