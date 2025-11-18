@@ -14,10 +14,10 @@ export default function SimpleLandingPage() {
         <div className="container mx-auto px-4 py-4">
           <nav className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="Go4it Sports Academy" className="h-10 w-10 object-contain" />
+              <img src="/logo.png" alt="Go4it Sports Academy" className="h-12 w-12" />
               <div>
-                <div className="text-xl md:text-2xl font-bold text-white">Go4it Sports Academy™</div>
-                <div className="text-xs md:text-sm text-amber-500">+ StarPath Accelerator™</div>
+                <div className="text-2xl font-bold text-white">Go4it Sports Academy™</div>
+                <div className="text-sm text-amber-500">+ StarPath Accelerator™</div>
               </div>
             </div>
             <div className="hidden md:flex gap-6 items-center">
