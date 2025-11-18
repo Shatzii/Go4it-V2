@@ -1,0 +1,777 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StarPath Human Development Record™ · Integrated Curriculum Layer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --accent3: #FFB347;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+      --border-soft: #1E2837;
+      --error: #ff4b6a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%, #000 100%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+      padding: 18px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto 40px;
+      background: radial-gradient(circle at top left, #111827 0, #05070b 60%);
+      border-radius: 20px;
+      border: 1px solid rgba(92,102,120,0.9);
+      box-shadow: 0 0 40px rgba(0,0,0,0.85);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 22px 22px 18px;
+      background: linear-gradient(135deg, #0B0F14, #121A29 45%, #05070b 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.22), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.18), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 780px;
+      margin-bottom: 8px;
+    }
+
+    .contact-line {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+    }
+
+    .tag-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.7);
+      background: rgba(0,212,255,0.12);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .tag-pill-alt {
+      border-color: rgba(39,227,106,0.7);
+      background: rgba(39,227,106,0.12);
+      color: var(--accent2);
+    }
+
+    .content {
+      padding: 20px 22px 26px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin: 4px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(92,102,120,0.85);
+      color: var(--light);
+    }
+
+    h2.section-title {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin: 22px 2px 8px;
+    }
+
+    h3 {
+      font-size: 0.98rem;
+      color: var(--light);
+      margin: 10px 2px 4px;
+    }
+
+    h4 {
+      font-size: 0.92rem;
+      margin: 8px 2px 4px;
+      color: var(--light);
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--light);
+      margin: 4px 2px 8px;
+    }
+
+    ul {
+      margin: 4px 0 8px 1.1em;
+      padding: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 70%);
+      border-radius: 16px;
+      border: 1px solid rgba(92,102,120,0.85);
+      padding: 12px 14px 13px;
+      box-shadow: 0 0 24px rgba(0,0,0,0.8);
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.06), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.05), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .panel-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .panel-tag {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin: 8px 0 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.85);
+      background: rgba(0,212,255,0.12);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .badge-alt {
+      border-color: rgba(39,227,106,0.85);
+      background: rgba(39,227,106,0.12);
+      color: var(--accent2);
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .code-block {
+      background: #050910;
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(92,102,120,0.7);
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      color: var(--light);
+      margin: 6px 0 8px;
+    }
+
+    footer {
+      margin-top: 10px;
+      padding: 12px 18px 16px;
+      border-top: 1px solid rgba(92,102,120,0.9);
+      background: #020617;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    footer p {
+      margin-bottom: 4px;
+    }
+
+    footer .truth {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 10px;
+      }
+      .page {
+        border-radius: 14px;
+      }
+      header {
+        padding: 18px 16px 14px;
+      }
+      .content {
+        padding: 18px 14px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="header-inner">
+        <div class="eyebrow">Go4it Sports Academy · StarPath Academy™</div>
+        <div class="logo">StarPath Human Development Record™</div>
+        <div class="subtitle">
+          Six-pillar human development system fully integrated into StarPath Accelerator Direction B — turning every day of training, learning, and living into verified academic and developmental evidence.
+        </div>
+        <div class="contact-line">
+          Denver (USA) · Vienna (AT) • pathways@starpathleague.org • info@go4itsports.org • invest@go4itsports.org
+        </div>
+        <div class="tag-row">
+          <span class="tag-pill">Residency · Day · Online</span>
+          <span class="tag-pill-alt">Six-Pillar Framework</span>
+          <span class="tag-pill">Human Development Record</span>
+          <span class="tag-pill-alt">Portfolio-Driven</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <h1>Human Development Record™ · Integrated Documentation Architecture</h1>
+
+      <!-- SECTION 1 · SYSTEM INTEGRATION -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">1 · Comprehensive System Integration</div>
+            <div class="panel-tag">Six Pillars · Three Tracks</div>
+          </div>
+          <p>The <span class="highlight">StarPath Human Development Record™</span> is the documentation backbone of Direction B. It ensures that every rep, reflection, and cultural moment is captured as part of a structured academic and developmental story.</p>
+          <p>Now fully embedded in all three program tracks:</p>
+          <ul>
+            <li><strong>Residency Program:</strong> Complete on-site immersion documentation across all six pillars.</li>
+            <li><strong>Day Program:</strong> Adapted documentation structure for commuting local students.</li>
+            <li><strong>Online Accelerator:</strong> Virtual-first tracking with mirrored templates and evidence types.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- PILLAR 1 · MENTAL & EMOTIONAL -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">2 · Pillar 1: Mental & Emotional Development</div>
+            <div class="panel-tag">Cognitive-Emotional Tracking</div>
+          </div>
+
+          <h3>Daily Cognitive-Emotional Performance Log</h3>
+          <p>Integrated into the morning routine (7:00–7:15 AM) for all tracks, with modified timing for online students across time zones.</p>
+
+          <h4>Digital Check-In Template</h4>
+          <div class="code-block">
+MENTAL READINESS ASSESSMENT  
+[ ] Sleep Quality: 1–10 (1=poor, 10=excellent)  
+[ ] Energy Level: 1–10  
+[ ] Mental Clarity: 1–10  
+[ ] Motivation: 1–10  
+[ ] Stress Level: 1–10 (1=calm, 10=overwhelmed)  
+
+TODAY'S MINDSET FOCUS:  
+[ ] Growth Challenge  
+[ ] Process Over Outcome  
+[ ] Team First  
+[ ] Resilience Building  
+          </div>
+
+          <h4>Post-Training Reflection</h4>
+          <ul>
+            <li>5-minute voice memo or written entry after training or academic block.</li>
+            <li>Guided prompts in German and/or English to reinforce dual-language learning.</li>
+            <li>Feeds into leadership, communication, and wellness coursework.</li>
+          </ul>
+
+          <h4>Evening Growth Reflection (8:00–8:15 PM)</h4>
+          <ul>
+            <li>Structured journal prompts in the digital portfolio.</li>
+            <li>Connects emotional experiences to academic concepts (psychology, health, leadership).</li>
+            <li>Creates time-stamped evidence for longitudinal growth analysis.</li>
+          </ul>
+
+          <h4>Academic Credit Mapping</h4>
+          <ul>
+            <li><strong>ELA-401:</strong> Writing sophistication, reflective depth, and narrative clarity.</li>
+            <li><strong>HE-401:</strong> Emotional intelligence and mental health literacy.</li>
+            <li><strong>LEAD-401 (or LGP equivalents):</strong> Leadership mindset and self-awareness.</li>
+            <li><strong>SOC-401:</strong> Social-emotional learning in group and cultural contexts.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- PILLAR 2 · PHYSICAL DEVELOPMENT -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">3 · Pillar 2: Physical Development</div>
+            <div class="panel-tag">GAR™ & Performance Data</div>
+          </div>
+
+          <h3>Morning Metrics (7:15–7:30 AM)</h3>
+          <ul>
+            <li>Resting heart rate and HRV via wearables.</li>
+            <li>Wellness questionnaire (sleep, soreness, readiness).</li>
+            <li>Hydration status and fueling check.</li>
+            <li>Body readiness snapshot for coaches and support staff.</li>
+          </ul>
+
+          <h3>Training Session Integration</h3>
+          <ul>
+            <li>GPS and performance data auto-capture during sessions (where available).</li>
+            <li>RPE (Rate of Perceived Exertion) logged after each training block.</li>
+            <li>Short video clips captured for technical moments and key drills.</li>
+            <li>Coach feedback recorded, time-stamped, and linked to sessions.</li>
+          </ul>
+
+          <h3>Weekly Physical Assessment (Fridays)</h3>
+          <ul>
+            <li>Movement competency screen (recorded video).</li>
+            <li>Sport-specific technical benchmark testing.</li>
+            <li>Recovery status evaluation (fatigue, soreness trends).</li>
+            <li>Progress photo documentation where appropriate.</li>
+          </ul>
+
+          <h4>Academic Credit Mapping</h4>
+          <ul>
+            <li><strong>SCI-401:</strong> Physiological adaptation and training response evidence.</li>
+            <li><strong>MATH-401:</strong> Quantitative analysis of performance trends.</li>
+            <li><strong>HE-401:</strong> Wellness, recovery, and lifestyle science.</li>
+            <li><strong>EXP-402:</strong> Training-as-science practicum portfolio.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- PILLAR 3 · NUTRITION & RECOVERY -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">4 · Pillar 3: Nutrition & Recovery</div>
+            <div class="panel-tag">Living Laboratory</div>
+          </div>
+
+          <h3>Meal Documentation Protocol</h3>
+          <ul>
+            <li>Photo before eating with short description in German and/or English.</li>
+            <li>Progressive macronutrient understanding over the term.</li>
+            <li>Cultural food exploration and reflection.</li>
+            <li>Local market and shopping education built into cultural labs.</li>
+          </ul>
+
+          <h4>Daily Nutrition Log Template</h4>
+          <div class="code-block">
+BREAKFAST: [Photo] + German/English description  
+- Energy connection: How will this fuel my training?  
+- Cultural note: Austrian/European food element  
+
+LUNCH: [Photo] + Language practice  
+- Recovery focus: How does this support adaptation?  
+- Local ingredient learning  
+
+DINNER: [Photo] + Reflection  
+- Performance preparation: Tomorrow's training focus  
+- Cultural comparison: Differences from home cuisine  
+          </div>
+
+          <h3>Recovery Tracking</h3>
+          <ul>
+            <li>Sleep duration and quality (wearables + self-report).</li>
+            <li>Active recovery: walks, yoga, mobility, pool sessions.</li>
+            <li>Hydration tracking across the day.</li>
+            <li>Stress management practices (breathing, journaling, mindfulness).</li>
+          </ul>
+
+          <h4>Academic Credit Mapping</h4>
+          <ul>
+            <li><strong>SCI-401:</strong> Nutritional and recovery biochemistry applications.</li>
+            <li><strong>HE-401:</strong> Lifestyle and wellness implementation.</li>
+            <li><strong>SOC-401:</strong> Cultural analyses of food and eating habits.</li>
+            <li><strong>WL-401:</strong> Food and market-based language acquisition.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- PILLAR 4 · MECHANICS & TECHNICAL -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">5 · Pillar 4: Mechanics & Technical Evolution</div>
+            <div class="panel-tag">StarPath Mechanics Timeline™</div>
+          </div>
+
+          <h3>Monthly Technical Assessment (Week 1 Each Month)</h3>
+          <ul>
+            <li>Comprehensive video analysis sessions for each athlete.</li>
+            <li>Sport-specific technical benchmarks and standardized tests.</li>
+            <li>Biomechanical efficiency metrics (angles, tempo, rhythm).</li>
+            <li>Coach vs. self-assessment comparison to build self-awareness.</li>
+          </ul>
+
+          <h3>Weekly Mechanics Focus Rhythm</h3>
+          <div class="code-block">
+Monday: Technical theme introduction  
+Tue–Thu: Deliberate practice with specific drills  
+Friday: Progress video capture and review  
+Weekend: Game application analysis (where applicable)  
+          </div>
+
+          <h3>Athlete Self-Analysis Protocol</h3>
+          <ul>
+            <li>Video review using annotation tools and checklists.</li>
+            <li>Identification of technical wins and focus areas.</li>
+            <li>Short written or spoken plan for the next week.</li>
+            <li>Connection to performance outcomes and stats.</li>
+          </ul>
+
+          <h4>Sport-Specific Implementation Examples</h4>
+          <ul>
+            <li><strong>Football QB:</strong> drops, throwing motion, footwork, decision speed.</li>
+            <li><strong>Soccer:</strong> striking, first touch, movement off ball, tactical reads.</li>
+            <li><strong>Basketball:</strong> shooting form, defensive footwork, IQ and spacing.</li>
+          </ul>
+
+          <h4>Academic Credit Mapping</h4>
+          <ul>
+            <li><strong>SCI-401:</strong> Biomechanical and anatomical principles.</li>
+            <li><strong>MATH-401:</strong> Quantification of efficiency, frequency, and outcomes.</li>
+            <li><strong>EXP-402:</strong> Technical mastery and skill acquisition portfolio.</li>
+            <li><strong>CS-401:</strong> Use of video and analysis technology tools.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- PILLAR 5 · CULTURAL & EXPERIENTIAL -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">6 · Pillar 5: Cultural & Experiential Immersion</div>
+            <div class="panel-tag">Language-Integrated Culture</div>
+          </div>
+
+          <h3>Daily Cultural Tasks</h3>
+          <h4>Morning Commute (7:45–8:00 AM)</h4>
+          <ul>
+            <li>Navigation using target language (German, optionally English for internationals).</li>
+            <li>Cultural observations recorded in quick notes.</li>
+            <li>Prompted interactions with locals where appropriate.</li>
+          </ul>
+
+          <h4>Cultural Site Visits (13:00–16:00)</h4>
+          <ul>
+            <li>Pre-visit language and content preparation.</li>
+            <li>On-site tasks: questions, observations, interactions.</li>
+            <li>Post-visit reflections connecting culture, history, and sports.</li>
+          </ul>
+
+          <h4>Evening Cultural Synthesis (18:30–19:00)</h4>
+          <ul>
+            <li>Short written or spoken summary of daily cultural learning.</li>
+            <li>Language progression documentation (new phrases, concepts).</li>
+            <li>Cross-cultural comparisons with home environment.</li>
+          </ul>
+
+          <h3>Weekly Cultural Deep Dive (Fridays)</h3>
+          <ul>
+            <li>Thematic cultural exploration (e.g., coffee house culture, fan culture).</li>
+            <li>Local expert or guest speaker interactions.</li>
+            <li>Community engagement or service projects.</li>
+            <li>Structured reflection and connection writing.</li>
+          </ul>
+
+          <h4>Academic Credit Mapping</h4>
+          <ul>
+            <li><strong>WL-401:</strong> Real-world language practice and functional proficiency.</li>
+            <li><strong>SOC-401:</strong> Cultural anthropology and social systems.</li>
+            <li><strong>HIST-401:</strong> Historical context derived from place-based learning.</li>
+            <li><strong>EXP-401:</strong> Cultural immersion and global citizenship evidence.</li>
+            <li><strong>ELA-401:</strong> Reflective and analytical writing about culture.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- PILLAR 6 · CAPSTONE -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">7 · Pillar 6: Global Scholar-Athlete Capstone</div>
+            <div class="panel-tag">Portfolio-Driven Outcomes</div>
+          </div>
+
+          <h3>Progressive 12-Week Build</h3>
+          <h4>Weeks 1–3 · Foundation Phase</h4>
+          <ul>
+            <li>Baseline assessments across all six pillars.</li>
+            <li>Goal setting and pathway planning (academic + athletic).</li>
+            <li>Initial skill, language, and cultural readiness documentation.</li>
+          </ul>
+
+          <h4>Weeks 4–8 · Development Phase</h4>
+          <ul>
+            <li>Continuous evidence collection mapped to standards.</li>
+            <li>Skill acquisition and adaptation tracking.</li>
+            <li>Cultural and academic integration deepening.</li>
+          </ul>
+
+          <h4>Weeks 9–12 · Mastery Phase</h4>
+          <ul>
+            <li>Portfolio synthesis and refinement using best evidence.</li>
+            <li>Growth narrative construction across all pillars.</li>
+            <li>Future planning integrated into final presentations.</li>
+          </ul>
+
+          <h3>Capstone Portfolio Sections</h3>
+          <ul>
+            <li><strong>Personal Growth Narrative:</strong> mindset, emotional intelligence, leadership.</li>
+            <li><strong>Athletic Development Archive:</strong> metrics, technical evolution, competition synthesis.</li>
+            <li><strong>Academic Achievement Portfolio:</strong> projects, research, language work, critical thinking.</li>
+            <li><strong>Global Citizenship Development:</strong> cultural adaptation, language acquisition, service.</li>
+            <li><strong>Future Pathway Plan:</strong> college prep, recruiting profile, personal roadmap.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- DAILY WORKFLOW -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">8 · Daily Documentation Workflow</div>
+            <div class="panel-tag">Embedded in Direction B Schedule</div>
+          </div>
+
+          <h3>Morning Block (7:00–8:00)</h3>
+          <div class="code-block">
+7:00–7:15 · Mental readiness assessment  
+7:15–7:30 · Physical metrics documentation  
+7:30–7:45 · Nutrition planning + language practice  
+7:45–8:00 · Cultural commute observations  
+          </div>
+
+          <h3>Training & Academic Integration</h3>
+          <ul>
+            <li><strong>Pre-session:</strong> intention setting and focus goals.</li>
+            <li><strong>During:</strong> automatic data capture and quick notes.</li>
+            <li><strong>Post-session:</strong> reflection and learning link.</li>
+            <li><strong>Academic blocks:</strong> ongoing connections to lived evidence.</li>
+          </ul>
+
+          <h3>Evening Synthesis (18:00–20:00)</h3>
+          <div class="code-block">
+18:00–18:30 · Evidence organization  
+18:30–19:00 · Cultural learning summary  
+19:00–19:30 · Portfolio building  
+19:30–20:00 · Planning and preparation for tomorrow  
+          </div>
+        </div>
+      </section>
+
+      <!-- DIGITAL PLATFORM · NOTION -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">9 · Digital Platform Integration</div>
+            <div class="panel-tag">Notion Workspace Architecture</div>
+          </div>
+
+          <h3>Main Dashboard</h3>
+          <ul>
+            <li>Daily check-in templates for all six pillars.</li>
+            <li>Visual progress trackers (graphs, timelines, Kanban).</li>
+            <li>Credit accumulation and standards alignment status.</li>
+            <li>Weekly goal setting and review panel.</li>
+          </ul>
+
+          <h3>Course-Specific Sections</h3>
+          <ul>
+            <li>Evidence templates for each course (SCI-401, MATH-401, etc.).</li>
+            <li>Assignment submission and feedback spaces.</li>
+            <li>Teacher comments and rubric-linked evaluations.</li>
+            <li>Peer collaboration areas for group work.</li>
+          </ul>
+
+          <h3>Development Tracking</h3>
+          <ul>
+            <li>Mental/emotional progression timelines.</li>
+            <li>Physical performance dashboards (charts, tables).</li>
+            <li>Technical skill acquisition maps.</li>
+            <li>Cultural adaptation and language journey logs.</li>
+          </ul>
+
+          <h3>Portfolio Builder</h3>
+          <ul>
+            <li>Dedicated workspace for capstone assembly.</li>
+            <li>College and recruiting materials organizer.</li>
+            <li>Story-driven narrative templates.</li>
+            <li>Export-friendly layouts (PDF/webpage) for sharing.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ACADEMIC ALIGNMENT & IMPLEMENTATION -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">10 · Academic Alignment & Implementation Roadmap</div>
+            <div class="panel-tag">Credit Mapping · Launch Plan</div>
+          </div>
+
+          <h3>Comprehensive Standards Mapping</h3>
+          <p>Each pillar feeds multiple courses so that lived experience and training become academically legible and credit-bearing.</p>
+          <ul>
+            <li><strong>Mental Development:</strong> ELA-401, HE-401, SOC-401, Leadership modules.</li>
+            <li><strong>Physical Development:</strong> SCI-401, MATH-401, HE-401, EXP-402.</li>
+            <li><strong>Nutrition & Recovery:</strong> SCI-401, HE-401, SOC-401, WL-401.</li>
+            <li><strong>Technical Evolution:</strong> SCI-401, MATH-401, EXP-402, CS-401.</li>
+            <li><strong>Cultural Immersion:</strong> WL-401, SOC-401, HIST-401, EXP-401, ELA-401.</li>
+          </ul>
+
+          <h3>Implementation Roadmap (Target: January 15 Launch)</h3>
+          <h4>Week 1 · System Setup</h4>
+          <ul>
+            <li>Build Notion templates for all six pillars.</li>
+            <li>Train staff on documentation flow and responsibilities.</li>
+            <li>Connect wearables and data capture tools.</li>
+            <li>Finalize daily workflow maps for each track.</li>
+          </ul>
+
+          <h4>Week 2 · Student Onboarding</h4>
+          <ul>
+            <li>Orientation to the Human Development Record™.</li>
+            <li>Practice runs of morning and evening routines.</li>
+            <li>Baseline assessments in all six pillars.</li>
+            <li>Portfolio skeleton creation for each student.</li>
+          </ul>
+
+          <h4>Week 3 · Full Integration</h4>
+          <ul>
+            <li>Launch full documentation flow.</li>
+            <li>Begin consistent portfolio building.</li>
+            <li>QA checks on evidence quality and completeness.</li>
+            <li>Progress monitoring systems activated.</li>
+          </ul>
+
+          <h3>Success Assurance & Quality Control</h3>
+          <ul>
+            <li><strong>Daily:</strong> completion checks, quick quality scans, support flags.</li>
+            <li><strong>Weekly:</strong> portfolio progress reviews, standards checks, coaching adjustments.</li>
+            <li><strong>Monthly:</strong> comprehensive development assessment and future-planning updates.</li>
+          </ul>
+
+          <p class="code-block">
+The StarPath Human Development Record™ turns daily life into academic credit,  
+and daily effort into a visible, trackable pathway from where athletes are  
+to where they want to be.  
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p><strong>Go4it Sports Academy · StarPath Academy™</strong> · Denver (USA) · Vienna (AT)</p>
+      <p>info@go4itsports.org • invest@go4itsports.org • pathways@starpathleague.org</p>
+      <p class="truth">
+        Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S.
+        school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit.
+        No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local
+        education registration. We do not provide immigration or legal advice.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,698 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Go4it Sports Academy · StarPath Academy™ · Parent Overview</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --accent3: #FFB347;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+      --border-soft: #1E2837;
+      --error: #ff4b6a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%, #000 100%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+      padding: 18px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto 40px;
+      background: radial-gradient(circle at top left, #111827 0, #05070b 60%);
+      border-radius: 20px;
+      border: 1px solid rgba(92,102,120,0.9);
+      box-shadow: 0 0 40px rgba(0,0,0,0.85);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 22px 22px 18px;
+      background: linear-gradient(135deg, #0B0F14, #121A29 45%, #05070b 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.22), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.18), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 760px;
+      margin-bottom: 8px;
+    }
+
+    .contact-line {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+    }
+
+    .tag-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.7);
+      background: rgba(0,212,255,0.12);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .tag-pill-alt {
+      border-color: rgba(39,227,106,0.7);
+      background: rgba(39,227,106,0.12);
+      color: var(--accent2);
+    }
+
+    .content {
+      padding: 20px 22px 26px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin: 4px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(92,102,120,0.85);
+      color: var(--light);
+    }
+
+    h2.section-title {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin: 22px 2px 8px;
+    }
+
+    h3 {
+      font-size: 0.98rem;
+      color: var(--light);
+      margin: 10px 2px 4px;
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--light);
+      margin: 4px 2px 8px;
+    }
+
+    ul {
+      margin: 4px 0 8px 1.1em;
+      padding: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 70%);
+      border-radius: 16px;
+      border: 1px solid rgba(92,102,120,0.85);
+      padding: 12px 14px 13px;
+      box-shadow: 0 0 24px rgba(0,0,0,0.8);
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.06), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.05), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .panel-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .panel-tag {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin: 8px 0 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.85);
+      background: rgba(0,212,255,0.12);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .badge-alt {
+      border-color: rgba(39,227,106,0.85);
+      background: rgba(39,227,106,0.12);
+      color: var(--accent2);
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .faq-item {
+      border-top: 1px solid rgba(92,102,120,0.5);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    .faq-q {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .code-block {
+      background: #050910;
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(92,102,120,0.7);
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      color: var(--light);
+      margin: 6px 0 8px;
+    }
+
+    footer {
+      margin-top: 10px;
+      padding: 12px 18px 16px;
+      border-top: 1px solid rgba(92,102,120,0.9);
+      background: #020617;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    footer p {
+      margin-bottom: 4px;
+    }
+
+    footer .truth {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 10px;
+      }
+      .page {
+        border-radius: 14px;
+      }
+      header {
+        padding: 18px 16px 14px;
+      }
+      .content {
+        padding: 18px 14px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="header-inner">
+        <div class="eyebrow">Go4it Sports Academy · StarPath Academy™</div>
+        <div class="logo">Parent Overview · 2025–2026</div>
+        <div class="subtitle">
+          A complete education + sport system for serious student-athletes and families who want clear answers on academics, eligibility, and global opportunities — from elementary foundations to post-graduate pathways.
+        </div>
+        <div class="contact-line">
+          Denver (USA) · Vienna (AT) • info@go4itsports.org • invest@go4itsports.org • pathways@starpathleague.org
+        </div>
+        <div class="tag-row">
+          <span class="tag-pill">Ages 6–22</span>
+          <span class="tag-pill">NCAA-Informed</span>
+          <span class="tag-pill-alt">Colorado Standards Aligned</span>
+          <span class="tag-pill-alt">In-Person & Online</span>
+          <span class="tag-pill">Vienna Immersion Residency</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <h1>Go4it Academy · Who We Are & How It Works</h1>
+
+      <!-- SECTION 1 · WHO WE ARE -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">1 · Who We Are</div>
+            <div class="panel-tag">Mission · Vision · What Go4it Is / Is Not</div>
+          </div>
+          <p><span class="highlight">Go4it Sports Academy</span> is a global training and education system for serious student-athletes. We connect local fields to college and pro opportunities through a verified <strong>StarPath Academy™</strong> pathway that blends academics, athletic development, and character growth.</p>
+
+          <h3>Our Mission</h3>
+          <p>To provide a <strong>verified academic pathway</strong> and <strong>elite athletic development</strong> for student-athletes who want NCAA or professional opportunities without sacrificing education, character, or eligibility.</p>
+
+          <h3>Our Vision</h3>
+          <p>To become the most trusted international pathway from local fields to college and professional locker rooms — with <strong>Denver & Vienna</strong> as dual hubs connecting the U.S. and Europe.</p>
+
+          <h3>What Go4it Academy <em>Is</em></h3>
+          <ul>
+            <li>A homeschool learning provider with American teachers and U.S. school-of-record partners.</li>
+            <li>An NCAA-informed pathway with transcript audits, core course planning, and eligibility guidance.</li>
+            <li>A high-performance training environment for soccer, American football, and select sports.</li>
+            <li>A data-driven development system (StarPath) that tracks progress across <strong>academics, athletics, and behavior</strong>.</li>
+          </ul>
+
+          <h3>What Go4it Academy is <em>Not</em></h3>
+          <ul>
+            <li>We do <strong>not</strong> guarantee scholarships, contracts, or specific recruiting outcomes.</li>
+            <li>We do <strong>not</strong> replace immigration, visa, or legal counsel.</li>
+            <li>We do <strong>not</strong> promise admission to any specific college or professional club.</li>
+          </ul>
+
+          <p class="code-block">
+StarPath Assessment™ = Transcript + GAR Testing + behavior  
+ARI (Academic Rigor Index) = NCAA progress & core rigor  
+GAR (Game Athletic Rating) = Performance data from testing & video  
+Behavior / Leadership Score = Habits, effort, and culture fit  
+Star Rating (0–5★) = Combined profile that updates as students grow
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 2 · THE COMPLETE PATHWAY -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">2 · Complete StarPath Educational Journey</div>
+            <div class="panel-tag">Ages 6–22 · One Coherent System</div>
+          </div>
+          <p>StarPath Academy™ is a complete, aligned pathway from early elementary through post-graduate study. Families can enter at any phase and still remain on track for graduation and NCAA eligibility.</p>
+
+          <div class="columns">
+            <div>
+              <h3><span class="badge">Phase 0</span> Early Beginners Foundation™ (Ages 6–10)</h3>
+              <ul>
+                <li>Colorado Standards-aligned literacy and numeracy foundations.</li>
+                <li>Movement literacy and playful athletic development.</li>
+                <li>Early executive function: routines, checklists, planning.</li>
+                <li>Global awareness and safe digital citizenship.</li>
+                <li>Mode: In-Person (Denver/Vienna), Online, or Hybrid.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge">Phase 1</span> StarPath Pioneer Program™ (Ages 11–14)</h3>
+              <ul>
+                <li>Advanced middle school academics (ELA, Math, Science, Social Studies).</li>
+                <li>World languages (German/Spanish), global studies, and STEM integration.</li>
+                <li>Digital portfolio launch and early high school credit opportunities.</li>
+                <li>Aligned to Colorado Academic Standards and NCAA-ready rigor.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge">Phase 2</span> High School Accelerator (Ages 14–18)</h3>
+              <ul>
+                <li>Full high school academics (online, hybrid, or partner schools).</li>
+                <li>Two 12-week European residencies delivering <strong>3.0 NCAA credits each</strong>.</li>
+                <li>GAR™ Testing, film analysis, and AthleteAI integration.</li>
+                <li>Transcript audits and NCAA core course alignment.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="columns">
+            <div>
+              <h3><span class="badge">Phase 3</span> Global Bridge Program™ (Ages 17–19)</h3>
+              <ul>
+                <li>≈12 college-level credits in International Relations, German B1/B2, Digital Business, and Leadership.</li>
+                <li>Senior-year alternative with European professional exposure.</li>
+                <li>Designed to enhance university applications and gap-year value.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge">Phase 4</span> Post-Graduate AA Program™ (Ages 18–22)</h3>
+              <ul>
+                <li>60-credit Associate of Arts degree (sports management, business, media specializations).</li>
+                <li>Internships with European clubs and organizations.</li>
+                <li>Direct pathways into university or sport/business careers.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge badge-alt">Neurodivergent</span> NeuroFlex™ & ND Specialization</h3>
+              <ul>
+                <li>Supports for ADHD/ADD, ASD, dyslexia, processing challenges, and 2E students.</li>
+                <li>Multi-format content (text, audio, video, diagrams) and multi-path assessments.</li>
+                <li>Executive function coaching, sensory-aware schedules, and movement integration.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 · IN-PERSON, ONLINE & SILVER STEADY™ -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">3 · How We Deliver School</div>
+            <div class="panel-tag">In-Person · Online · Silver Steady™</div>
+          </div>
+          <p>Every family can choose the mode that fits their life, without losing academic quality or eligibility.</p>
+
+          <div class="columns">
+            <div>
+              <h3><span class="badge">In-Person Hubs</span> Denver & Vienna</h3>
+              <ul>
+                <li>Elementary & middle school Pioneer Academy.</li>
+                <li>On-field training daily with European methodology.</li>
+                <li>In-person academic blocks following Colorado Standards.</li>
+                <li>Local community, mentors, and high-touch supervision.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge">Online Academy</span> Full Virtual Pathway</h3>
+              <ul>
+                <li>3–4 hours of live instruction per day (by phase).</li>
+                <li>Recorded sessions for catch-up and travel seasons.</li>
+                <li>Virtual STEM labs, global modules, and world languages.</li>
+                <li>Weekly 1:1 academic coaching and study hall support.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge badge-alt">Silver Steady™</span> 100% Online, No Travel</h3>
+              <ul>
+                <li>End-to-end pathway from Early Beginners through AA degree, fully online.</li>
+                <li>NCAA-informed course design and qualified instructor oversight.</li>
+                <li>Colorado alignment for core academic readiness.</li>
+                <li>Perfect for families who cannot travel but still want a global, sport-driven pathway.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 · VIENNA IMMERSION RESIDENCY -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">4 · Vienna Immersion Residency™</div>
+            <div class="panel-tag">Spring 2026 · NCAA Credits · Central Europe</div>
+          </div>
+          <p>The Vienna Immersion Residency™ is a 12-week program where Vienna and Central Europe become the classroom. Students earn NCAA-approved credits while training with European methodology and living like college athletes with age-appropriate guardrails.</p>
+
+          <div class="columns">
+            <div>
+              <h3>Academic Courses (Sample, Spring 2026)</h3>
+              <ul>
+                <li>German A2 Immersion (1.0 NCAA World Language credit).</li>
+                <li>Global Sports Sociology (1.0 NCAA Social Science credit).</li>
+                <li>StarPath Success Lab (0.5 NCAA Elective).</li>
+                <li>Applied Sports Performance Theory (0.5 NCAA Elective).</li>
+              </ul>
+              <p class="code-block">
+Each 1.0 credit = 180+ hours  
+Each 0.5 credit = 90+ hours  
+Includes formal class, fieldwork, and supervised independent learning.
+              </p>
+            </div>
+            <div>
+              <h3>Daily Life & Training</h3>
+              <ul>
+                <li>Morning language blocks integrated with training commands and daily life.</li>
+                <li>Academic classes in the early day, training and film in the afternoon.</li>
+                <li>Evening Success Lab and performance theory — building habits, not just skills.</li>
+                <li>Weekend cultural experiences and regional trips (e.g., Austria, Germany, Hungary, Switzerland).</li>
+              </ul>
+              <p><span class="highlight">Goal:</span> Live like a college athlete with support and structure appropriate to your age.</p>
+            </div>
+            <div>
+              <h3>Safety, Supervision & Rules (For Parents)</h3>
+              <ul>
+                <li>House rules: respect for host families, curfew, no drugs/alcohol/vaping or weapons of any kind.</li>
+                <li>Curfew and room checks may be enforced depending on age and site.</li>
+                <li>Attendance expectations for academics, training, and StarPath checkpoints.</li>
+                <li>Clear conduct ladder: coaching → warning → suspension → removal if necessary.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5 · NCAA, COLORADO & COMPLIANCE -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">5 · NCAA, Colorado Standards & Compliance</div>
+            <div class="panel-tag">Protecting Options · No False Promises</div>
+          </div>
+
+          <h3>NCAA Core Concepts</h3>
+          <ul>
+            <li><strong>Core Courses:</strong> NCAA-approved English, math, science, social studies, and world languages.</li>
+            <li><strong>Core GPA:</strong> GPA calculated only from approved core courses.</li>
+            <li><strong>Amateurism:</strong> No pay-for-play or professional contracts while maintaining eligibility.</li>
+            <li><strong>Sliding Scale:</strong> Balance between GPA and test scores (when required) for Division I/II.</li>
+          </ul>
+
+          <h3>How Go4it Supports NCAA Readiness</h3>
+          <ul>
+            <li>Transcript audits and StarPath reports that highlight NCAA core status.</li>
+            <li>Course sequencing recommendations aligned with NCAA guidelines.</li>
+            <li>Partnership with U.S. school-of-records for official credit and transcripts (until Fall 2026).</li>
+            <li>Documentation of hours, assessments, and rigor for all residency and online courses.</li>
+          </ul>
+
+          <h3>Colorado Academic Alignment</h3>
+          <p>Our syllabus system is explicitly mapped to <strong>Colorado Academic Standards (CAS)</strong> across ELA, Math, Science, Social Studies, World Languages, Computer Science, and PWR (Postsecondary and Workforce Readiness). This provides a stable anchor for families who may transition back to traditional schools.</p>
+
+          <p class="code-block">
+We protect options.  
+We do not promise outcomes.  
+That means: verified academics, clear records, and honest guidance.
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 6 · WHAT FAMILIES NEED TO KNOW / DO -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">6 · What Parents Need to Know & Prepare</div>
+            <div class="panel-tag">Enrollment · Documents · Day-to-Day</div>
+          </div>
+
+          <h3>Before Enrollment</h3>
+          <ul>
+            <li>Clarify your child’s current school status (traditional, homeschool, international, etc.).</li>
+            <li>Gather current transcripts and report cards (translated if international).</li>
+            <li>Complete a StarPath Assessment™ (academic + athletic intake).</li>
+            <li>Review our Academy Handbook, Code of Conduct, and Travel/Residency policies.</li>
+          </ul>
+
+          <h3>For Full-Time or Residency Students</h3>
+          <ul>
+            <li>Student passport (for international residencies, valid 6+ months beyond travel dates).</li>
+            <li>Medical forms, insurance information, and emergency contacts.</li>
+            <li>Signed parent agreements and conduct expectations.</li>
+            <li>Device suitable for online work: laptop with reliable internet access.</li>
+          </ul>
+
+          <h3>Academic & Training Expectations</h3>
+          <ul>
+            <li>Students are expected to log into classes or attend sessions <strong>five days per week</strong>.</li>
+            <li>Training is a privilege: academic standards and behavior shape playing time and opportunities.</li>
+            <li>We expect honest effort, respectful behavior, and communication when issues arise.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 7 · FAQ FOR PARENTS -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">7 · Parent FAQ</div>
+            <div class="panel-tag">Most Common Questions Answered</div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q">Is Go4it a “real school” or just training?</div>
+            <p>Go4it is a <strong>homeschool learning provider</strong> with American teachers. We partner with accredited U.S. schools-of-record to issue credits and official transcripts until Fall 2026. Our curriculum is college-prep, NCAA-informed, and aligned with Colorado standards.</p>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q">Can my child return to a traditional school later?</div>
+            <p>Yes. Because our courses are aligned with Colorado standards and backed by U.S. school-of-record partners, students can typically transition back into traditional schools. Final placement always depends on the receiving school’s policies, but we design for portability and clarity.</p>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q">Will this help with college recruiting?</div>
+            <p>We cannot guarantee scholarships or offers. What we <strong>do</strong> provide is: verified academic records, NCAA core alignment, high-level film and testing, international experience, and a professional environment that college coaches recognize and respect.</p>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q">How do you support neurodivergent students?</div>
+            <p>Through our NeuroDivergent Curriculum Converter™, NeuroFlex™ system, and ND Specialization track, we adjust <strong>how</strong> content is delivered and demonstrated (multi-format, multi-path assessments, executive function coaching) without lowering expectations or rigor.</p>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q">Can we do this fully online if we can’t travel?</div>
+            <p>Yes. The <strong>Silver Steady™</strong> pathway allows families to stay in their home country while completing the entire StarPath journey online, from early elementary to post-graduate AA — with NCAA-informed design and Colorado academic alignment.</p>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q">How do we start?</div>
+            <p>Step 1: Schedule a StarPath consultation. Step 2: Submit transcripts and complete the intake form. Step 3: Receive a personalized education + sport roadmap for your child. Step 4: Enroll in the appropriate phase (Early Beginners, Pioneer, Accelerator, Bridge, AA).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8 · CONTACT & NEXT STEPS -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">8 · Contact & Next Steps</div>
+            <div class="panel-tag">Let’s Build Your Child’s StarPath</div>
+          </div>
+          <p>If you’ve made it this far, you’re the kind of family we built this system for: deliberate, long-term focused, and serious about both education and sport.</p>
+
+          <div class="columns">
+            <div>
+              <h3>Talk With Us</h3>
+              <ul>
+                <li>Email: <strong>invest@go4itsports.org</strong> (program & investment)</li>
+                <li>Email: <strong>pathways@starpathleague.org</strong> (admissions & pathways)</li>
+                <li>HQ: Denver (USA) · Vienna (AT)</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Suggested First Call Topics</h3>
+              <ul>
+                <li>Your child’s age, sport, and current school situation.</li>
+                <li>Your dream outcomes: college, pro, international opportunities.</li>
+                <li>Constraints: travel, finances, neurodivergent needs, time zones.</li>
+                <li>Which phases and modes (in-person, online, Silver Steady™) fit best.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>What You’ll Receive</h3>
+              <ul>
+                <li>A clear written pathway recommendation.</li>
+                <li>Program fit (yes/no/maybe with modifications).</li>
+                <li>Tuition framework and scholarship windows.</li>
+                <li>Residency timelines and application steps (if applicable).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p><strong>Go4it Sports Academy · StarPath Academy™</strong> · Denver (USA) · Vienna (AT)</p>
+      <p>info@go4itsports.org • invest@go4itsports.org • pathways@starpathleague.org</p>
+      <p class="truth">
+        Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S.
+        school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit.
+        No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local
+        education registration. We do not provide immigration or legal advice.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

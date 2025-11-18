@@ -1,0 +1,768 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StarPath Accelerator™ · Direction B · Complete Curriculum & Syllabus</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --accent3: #FFB347;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+      --border-soft: #1E2837;
+      --error: #ff4b6a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%, #000 100%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+      padding: 18px;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto 40px;
+      background: radial-gradient(circle at top left, #111827 0, #05070b 60%);
+      border-radius: 20px;
+      border: 1px solid rgba(92,102,120,0.9);
+      box-shadow: 0 0 40px rgba(0,0,0,0.85);
+      overflow: hidden;
+    }
+
+    header {
+      padding: 22px 22px 18px;
+      background: linear-gradient(135deg, #0B0F14, #121A29 45%, #05070b 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.22), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.18), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+
+    .logo {
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      max-width: 780px;
+      margin-bottom: 8px;
+    }
+
+    .contact-line {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.78rem;
+    }
+
+    .tag-pill {
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.7);
+      background: rgba(0,212,255,0.12);
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    .tag-pill-alt {
+      border-color: rgba(39,227,106,0.7);
+      background: rgba(39,227,106,0.12);
+      color: var(--accent2);
+    }
+
+    .content {
+      padding: 20px 22px 26px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin: 4px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(92,102,120,0.85);
+      color: var(--light);
+    }
+
+    h2.section-title {
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin: 22px 2px 8px;
+    }
+
+    h3 {
+      font-size: 0.98rem;
+      color: var(--light);
+      margin: 10px 2px 4px;
+    }
+
+    h4 {
+      font-size: 0.92rem;
+      margin: 8px 2px 4px;
+      color: var(--light);
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--light);
+      margin: 4px 2px 8px;
+    }
+
+    ul {
+      margin: 4px 0 8px 1.1em;
+      padding: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 70%);
+      border-radius: 16px;
+      border: 1px solid rgba(92,102,120,0.85);
+      padding: 12px 14px 13px;
+      box-shadow: 0 0 24px rgba(0,0,0,0.8);
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.06), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.05), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .panel-title {
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .panel-tag {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+      margin: 8px 0 4px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.85);
+      background: rgba(0,212,255,0.12);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-right: 6px;
+    }
+
+    .badge-alt {
+      border-color: rgba(39,227,106,0.85);
+      background: rgba(39,227,106,0.12);
+      color: var(--accent2);
+    }
+
+    .highlight {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .code-block {
+      background: #050910;
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(92,102,120,0.7);
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      color: var(--light);
+      margin: 6px 0 8px;
+    }
+
+    footer {
+      margin-top: 10px;
+      padding: 12px 18px 16px;
+      border-top: 1px solid rgba(92,102,120,0.9);
+      background: #020617;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    footer p {
+      margin-bottom: 4px;
+    }
+
+    footer .truth {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+
+    @media (max-width: 780px) {
+      body {
+        padding: 10px;
+      }
+      .page {
+        border-radius: 14px;
+      }
+      header {
+        padding: 18px 16px 14px;
+      }
+      .content {
+        padding: 18px 14px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="header-inner">
+        <div class="eyebrow">Go4it Sports Academy · StarPath Academy™</div>
+        <div class="logo">StarPath Accelerator™ · Direction B</div>
+        <div class="subtitle">
+          Training-as-Curriculum · Language-Integrated · Global-Ready · NCAA-Informed. A complete 12–credit residency,
+          8–credit day program, and 10–credit online accelerator — all built around bilingual, performance-driven learning.
+        </div>
+        <div class="contact-line">
+          Denver (USA) · Vienna (AT) • pathways@starpathleague.org • info@go4itsports.org • invest@go4itsports.org
+        </div>
+        <div class="tag-row">
+          <span class="tag-pill">Residency · Day · Online</span>
+          <span class="tag-pill-alt">NCAA-Informed</span>
+          <span class="tag-pill">German & English Immersion</span>
+          <span class="tag-pill-alt">Training-as-Curriculum</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <h1>StarPath Accelerator™ · Complete Curriculum & Syllabus</h1>
+
+      <!-- SECTION 1 · PROGRAM ARCHITECTURE -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">1 · Updated Program Architecture</div>
+            <div class="panel-tag">Three Tracks · One System</div>
+          </div>
+          <p>StarPath Accelerator™ is built as a flexible yet unified system. Every track shares the same academic core, language integration, and performance principles — with different delivery modes and credit loads.</p>
+
+          <div class="columns">
+            <div>
+              <h3><span class="badge">Track 1</span> Residency Program</h3>
+              <p><strong>Credits:</strong> 12.0 · <strong>Tuition:</strong> $28,000 · <strong>Format:</strong> Full Immersion</p>
+              <ul>
+                <li>For U.S. & international students who live on-site in Vienna for 12 weeks.</li>
+                <li>Full daily integration of academics, training, language, and cultural immersion.</li>
+                <li>Best fit for athletes ready to live like college students with structured support.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge">Track 2</span> Day Program</h3>
+              <p><strong>Credits:</strong> 8.0 · <strong>Tuition:</strong> €7,500 · <strong>Format:</strong> Local Day Integration</p>
+              <ul>
+                <li>For Vienna/EU local students who commute daily.</li>
+                <li>Full participation in training, language, and cultural labs.</li>
+                <li>Schedule built around local school obligations where needed.</li>
+              </ul>
+            </div>
+            <div>
+              <h3><span class="badge">Track 3</span> Online Accelerator</h3>
+              <p><strong>Credits:</strong> 10.0 · <strong>Tuition:</strong> $15,000 · <strong>Format:</strong> Global Virtual Immersion</p>
+              <ul>
+                <li>For global athletes who cannot travel but want the same curriculum.</li>
+                <li>Virtual language immersion, performance science, and global studies.</li>
+                <li>Integrated with remote training, video analysis, and digital portfolios.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2 · DUAL LANGUAGE FRAMEWORK -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">2 · Dual-Language Immersion Framework</div>
+            <div class="panel-tag">Train in German · Learn in English · Live in Both</div>
+          </div>
+          <p class="code-block">
+"TRAIN IN GERMAN. LEARN IN ENGLISH. LIVE IN BOTH."
+          </p>
+          <p>The core innovation of Direction B is simple: language is not a separate class — it is woven into training, daily life, and reflection. Every athlete becomes a dual-language learner through authentic use, not worksheets.</p>
+
+          <div class="columns">
+            <div>
+              <h3>U.S. Students Earn</h3>
+              <ul>
+                <li><strong>German Language Immersion A1–A2 (1.0 Cr)</strong> — German embedded in training, meals, and excursions.</li>
+                <li><strong>English Literacy Through Performance (1.0 Cr)</strong> — reading, writing, and communication built around sport and leadership.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>International Students Earn</h3>
+              <ul>
+                <li><strong>English Language Development (1.0 Cr)</strong> — academic and athletic English for global opportunities.</li>
+                <li><strong>German Immersion Credit (1.0 Cr)</strong> — practical German for life, school, and sport in Austria/EU.</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Day Program Students Choose</h3>
+              <ul>
+                <li><strong>Option A:</strong> German Immersion + English Literacy.</li>
+                <li><strong>Option B:</strong> Advanced German + Specialized Electives.</li>
+                <li>Schedule adapted to fit local schooling while maintaining rigor.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3 · DAILY LANGUAGE-INTEGRATED SCHEDULE -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">3 · Daily Language-Integrated Schedule</div>
+            <div class="panel-tag">Residency Program · Sample Day</div>
+          </div>
+          <p>Below is a sample residency day to show how training, language, and academics blend into one continuous curriculum.</p>
+
+          <div class="code-block">
+7:00–8:00 · German Immersion Launch  
+- Morning routine conducted in German  
+- Daily vocabulary focus (10 sport-specific terms)  
+- Cultural context for the day's theme  
+- Evidence: Audio recordings, vocabulary journals  
+
+8:00–10:00 · Performance Science in German  
+- Strength training with German commands  
+- Speed drills using spatial vocabulary  
+- Data collection with bilingual documentation  
+- Evidence: Video sessions, command response tracking  
+
+10:00–12:00 · English Literacy & Leadership  
+- Book discussions in English  
+- Reflection writing with language support  
+- Leadership communication practice  
+- Evidence: Written work, discussion recordings  
+
+13:00–16:00 · Cultural Laboratory  
+- Site visits with language tasks  
+- Real-world German application  
+- Cultural analysis in both languages  
+- Evidence: Task completion, cultural journals  
+
+16:00–18:00 · Technical Training Integration  
+- Sport-specific skill development  
+- Bilingual tactical instruction  
+- Film analysis with dual-language commentary  
+- Evidence: Skill videos, tactical understanding  
+
+18:00–20:00 · Portfolio Synthesis  
+- Daily evidence organization  
+- Cross-language reflection  
+- Progress documentation  
+- Evidence: Digital portfolio updates  
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4 · 12-CREDIT RESIDENCY CATALOG -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">4 · Residency Program · 12-Credit Catalog</div>
+            <div class="panel-tag">Course Codes · Credits · Descriptions</div>
+          </div>
+
+          <h3 class="highlight">Language Core · 2.0 Credits</h3>
+          <h4>WL-401: German Language Immersion A1–A2 (1.0 Cr)</h4>
+          <p>German is integrated directly into training sessions, meals, transportation, and cultural excursions. Approximately 30% of athletic instruction occurs in German, with progressive complexity and practical focus.</p>
+          <ul>
+            <li>Outcomes: A1–A2 proficiency, sport-specific vocabulary, real-world task confidence.</li>
+            <li>Evidence: Spoken command responses, task completion videos, vocabulary tracking.</li>
+          </ul>
+
+          <h4>ELA-401: Performance Communication (1.0 Cr) · U.S. Students</h4>
+          <p>English reading, writing, and speaking built around performance — film breakdowns, leadership scenarios, and reflective analysis of training and competition.</p>
+
+          <h4>ELA-402: English Language Development (1.0 Cr) · International Students</h4>
+          <p>For multilingual students needing academic and athletic English development. Emphasis on practical, sport-anchored communication and academic literacy.</p>
+
+          <h3 class="highlight">Science & Analytics Core · 3.0 Credits</h3>
+          <h4>SCI-401: Human Performance Biology (1.0 Cr)</h4>
+          <p>Training sessions become living laboratories. Students learn anatomy, physiology, and biomechanics through their own movement, testing, and performance.</p>
+
+          <h4>MATH-401: Applied Sports Analytics (1.0 Cr)</h4>
+          <p>Performance data (speed, power, GPS metrics, game stats) becomes the raw material for studying algebra, functions, statistics, and data visualization.</p>
+
+          <h4>HE-401: Nutrition & Recovery Science (1.0 Cr)</h4>
+          <p>Sleep, hydration, fueling, and recovery tracked and analyzed like a science project — with real consequences for daily performance.</p>
+
+          <h3 class="highlight">Global Studies Core · 3.0 Credits</h3>
+          <h4>SOC-401: Global Sports Sociology (1.0 Cr)</h4>
+          <p>Compares European and American sports systems: culture, community, economics, and identity.</p>
+
+          <h4>HIST-401: Austrian & EU Systems (1.0 Cr)</h4>
+          <p>Uses Vienna and Central Europe as primary sources. Site visits and cultural labs become history class.</p>
+
+          <h4>CS-401: Digital Portfolio & Data Literacy (1.0 Cr)</h4>
+          <p>Students learn to treat their own development as a dataset — building a digital portfolio that integrates film, metrics, reflections, and artifacts.</p>
+
+          <h3 class="highlight">Experiential Portfolio · 4.0 Credits</h3>
+          <h4>EXP-401: Cultural Immersion Portfolio (1.0 Cr)</h4>
+          <p>Language and cultural evidence across 12 weeks, curated into a coherent narrative.</p>
+
+          <h4>EXP-402: Training-as-Science Practicum (1.0 Cr)</h4>
+          <p>Every training session treated as an experiment: plan, test, measure, adjust, reflect.</p>
+
+          <h4>EXP-403: Leadership & Community Engagement (1.0 Cr)</h4>
+          <p>Real projects that serve teammates, host communities, and younger athletes.</p>
+
+          <h4>EXP-404: Global Scholar-Athlete Capstone (1.0 Cr)</h4>
+          <p>Final synthesis showing growth as a scholar, athlete, and global citizen — in two languages where possible.</p>
+        </div>
+      </section>
+
+      <!-- SECTION 5 · DAY PROGRAM · 8 CREDITS -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">5 · Day Program Architecture</div>
+            <div class="panel-tag">Local Vienna/EU Students · 8 Credits</div>
+          </div>
+          <p>The Day Program mirrors the residency framework but adapts for commuting students. It is designed to blend with local schooling while preserving the StarPath rigor.</p>
+
+          <h3>Language Tracks (Choose One)</h3>
+          <h4>Track A · German Speakers Improving English</h4>
+          <ul>
+            <li><strong>ELA-402: English Language Development (1.0 Cr)</strong></li>
+            <li><strong>WL-402: Advanced German Communication (1.0 Cr)</strong></li>
+          </ul>
+
+          <h4>Track B · English Speakers Learning German</h4>
+          <ul>
+            <li><strong>WL-401: German Language Immersion (1.0 Cr)</strong></li>
+            <li><strong>ELA-401: Performance Communication (1.0 Cr)</strong></li>
+          </ul>
+
+          <h3>Additional Core Courses (6 Credits Pool)</h3>
+          <ul>
+            <li>SCI-401: Human Performance Biology</li>
+            <li>MATH-401: Applied Sports Analytics</li>
+            <li>SOC-401: Global Sports Sociology</li>
+            <li>HE-401: Nutrition & Recovery Science</li>
+            <li>EXP-402: Training-as-Science Practicum</li>
+            <li>EXP-404: Global Scholar-Athlete Capstone</li>
+          </ul>
+
+          <h3>Schedule Adaptation</h3>
+          <p class="code-block">
+08:00–18:00 · Daily Programme  
+- Includes lunch and all local excursions  
+- Full participation in training and cultural activities  
+- Digital portfolio development woven into the day  
+- Weekend competition travel optional (sport-dependent)  
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 6 · ONLINE ACCELERATOR · 10 CREDITS -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">6 · Online Accelerator Enhancements</div>
+            <div class="panel-tag">Global Virtual Immersion · 10 Credits</div>
+          </div>
+          <p>The Online Accelerator brings Direction B to athletes worldwide. Language immersion, cultural labs, and performance science all transition to a virtual-first format.</p>
+
+          <h3>Virtual Language Integration</h3>
+          <ul>
+            <li>German A1–A2 Online Immersion.</li>
+            <li>English Language Development for international athletes.</li>
+            <li>Bilingual Performance Communication for leadership and media.</li>
+          </ul>
+
+          <h3>Virtual Cultural Immersion</h3>
+          <ul>
+            <li>Live-streamed Vienna cultural sites and walking tours.</li>
+            <li>Virtual museum visits with German-speaking guides and English scaffolding.</li>
+            <li>Online language exchange with EU students.</li>
+            <li>Digital cultural comparison and reflection projects.</li>
+          </ul>
+
+          <h3>Training & Portfolio Integration</h3>
+          <ul>
+            <li>Remote training sessions with data tracking (wearables, timing, reps).</li>
+            <li>Video uploads analyzed with bilingual commentary.</li>
+            <li>Virtual leadership circles held in German or English.</li>
+            <li>Central digital portfolio documenting language, performance, and growth.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 7 · ASSESSMENT & DOCUMENTATION -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">7 · Assessment & Documentation</div>
+            <div class="panel-tag">Language · Academics · Performance</div>
+          </div>
+
+          <h3>Language Proficiency Tracking</h3>
+          <h4>German Immersion Evidence</h4>
+          <ul>
+            <li>Daily command response videos during training.</li>
+            <li>Recorded real-world task completion (ordering food, navigating transit).</li>
+            <li>Vocabulary acquisition logs and quizzes.</li>
+            <li>Documented cultural interactions and reflections.</li>
+            <li>Progression from simple to complex syntax over 12 weeks.</li>
+          </ul>
+
+          <h4>English Literacy Evidence</h4>
+          <ul>
+            <li>Writing samples demonstrating growth in structure and vocabulary.</li>
+            <li>Reading comprehension in sport, leadership, and global topics.</li>
+            <li>Oral communication recordings (presentations, debates, reflections).</li>
+            <li>Cross-curricular application in science, history, and sociology tasks.</li>
+          </ul>
+
+          <h3>Unified Portfolio System</h3>
+          <p class="code-block">
+Digital Platform Features:  
+- Language progression dashboards  
+- Bilingual evidence folders  
+- Automated credit tracking & reports  
+- College-ready presentation modes  
+
+Physical Portfolio Components:  
+- Printed artifacts and certificates  
+- Cultural immersion documentation  
+- Performance testing reports  
+- Growth narrative essays  
+          </p>
+        </div>
+      </section>
+
+      <!-- SECTION 8 · GLOBAL STANDARDS & NCAA -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">8 · Global Standards Alignment</div>
+            <div class="panel-tag">CEFR · TOEFL/IELTS · NCAA-Informed</div>
+          </div>
+
+          <h3>Language Credentialing</h3>
+          <h4>German Certification</h4>
+          <ul>
+            <li>Prepares students for Goethe Institute A1–A2 examinations.</li>
+            <li>Aligned with the Common European Framework of Reference (CEFR).</li>
+            <li>Sports and daily life vocabulary embedded from day one.</li>
+          </ul>
+
+          <h4>English Certification</h4>
+          <ul>
+            <li>Builds toward readiness for TOEFL/IELTS if needed.</li>
+            <li>Focus on academic English in sports and leadership contexts.</li>
+            <li>Emphasizes writing and speaking skills needed for universities.</li>
+          </ul>
+
+          <h3>NCAA & Accreditation Compliance</h3>
+          <ul>
+            <li>Qualified instructors in all language and core subjects.</li>
+            <li>Documented instructional hours for each credit.</li>
+            <li>Multiple, valid assessment methods (projects, exams, portfolios).</li>
+            <li>Course designs grounded in credit-hour and standards alignment.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 9 · SCALABILITY & PARTNERSHIPS -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">9 · Program Scalability & Partnerships</div>
+            <div class="panel-tag">EU Schools · Global Online · University Pathways</div>
+          </div>
+
+          <h3>EU School Partnerships</h3>
+          <ul>
+            <li>Day program integration with existing school timetables.</li>
+            <li>After-school language and performance academies.</li>
+            <li>Teacher exchange, joint PD, and shared facilities.</li>
+          </ul>
+
+          <h3>Global Online Expansion</h3>
+          <ul>
+            <li>Hybrid language immersion modules across time zones.</li>
+            <li>International student project exchanges.</li>
+            <li>Virtual sister-school relationships built around StarPath themes.</li>
+          </ul>
+
+          <h3>University Pathways</h3>
+          <ul>
+            <li>Dual enrollment potential where local regulations allow.</li>
+            <li>Language and core credits designed for transfer discussion.</li>
+            <li>Portfolios tailored for scholarship and admissions conversations.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- SECTION 10 · SUCCESS METRICS & VALUE -->
+      <section class="panel">
+        <div class="panel-inner">
+          <div class="panel-header">
+            <div class="panel-title">10 · Success Metrics & Value Proposition</div>
+            <div class="panel-tag">What Parents & Athletes Can Expect</div>
+          </div>
+
+          <h3>Language Acquisition Targets (12 Weeks)</h3>
+          <ul>
+            <li>200+ sport-specific German vocabulary terms.</li>
+            <li>A1 to A2 progression on CEFR scale where appropriate.</li>
+            <li>≈85% comprehension of training commands in German.</li>
+            <li>Independent completion of real-world tasks (ordering food, directions, etc.).</li>
+          </ul>
+
+          <h3>Comprehensive Success Measures</h3>
+          <h4>Academic Excellence</h4>
+          <ul>
+            <li>Efficient credit accumulation within a 12-week term.</li>
+            <li>Portfolio quality, depth, and clarity.</li>
+            <li>Evidence of cross-curricular integration in work samples.</li>
+          </ul>
+
+          <h4>Athletic Development</h4>
+          <ul>
+            <li>Improved performance metrics (speed, strength, conditioning, decision-making).</li>
+            <li>Increased tactical understanding via bilingual instruction.</li>
+            <li>Competition readiness and professionalism in training habits.</li>
+          </ul>
+
+          <h4>Personal Growth</h4>
+          <ul>
+            <li>Leadership behaviors demonstrated in group settings.</li>
+            <li>Cultural competence and global perspective.</li>
+            <li>Executive function: planning, reflection, follow-through.</li>
+          </ul>
+
+          <h3>Parent Communication Highlights</h3>
+          <div class="code-block">
+For U.S. Families:  
+"Your child returns fluent in foundational German, with a semester of NCAA-informed credits, elite athletic development, and a global perspective that stands out in college admissions."  
+
+For International Families:  
+"Your child masters English through sport, gains American-style credits, develops German skills, and builds a portfolio that opens doors to global universities."  
+
+For EU Families:  
+"Your child accesses world-class training while improving English, earning credits, and gaining an international edge without leaving Europe."  
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p><strong>Go4it Sports Academy · StarPath Academy™</strong> · Denver (USA) · Vienna (AT)</p>
+      <p>info@go4itsports.org • invest@go4itsports.org • pathways@starpathleague.org</p>
+      <p class="truth">
+        Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S.
+        school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit.
+        No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local
+        education registration. We do not provide immigration or legal advice.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

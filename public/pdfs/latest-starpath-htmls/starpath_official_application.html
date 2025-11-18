@@ -1,0 +1,449 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StarPath Academy™ · Official Application</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --accent3: #FFB347;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+      --border-soft: #1E2837;
+      --error: #ff4b6a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%, #000 100%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+      padding: 18px;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto 40px;
+      background: radial-gradient(circle at top left, #111827 0, #05070b 60%);
+      border-radius: 20px;
+      border: 1px solid rgba(92,102,120,0.9);
+      box-shadow: 0 0 40px rgba(0,0,0,0.85);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(135deg, #0B0F14, #121A29 45%, #05070b 100%);
+      position: relative;
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid rgba(92,102,120,0.7);
+    }
+    header::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.18), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.16), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .header-inner { position: relative; z-index: 1; }
+    .eyebrow {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--accent2);
+      margin-bottom: 4px;
+    }
+    .logo-main {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .logo-sub {
+      font-size: 0.82rem;
+      color: var(--muted);
+      max-width: 620px;
+    }
+    .content {
+      padding: 20px 22px 24px;
+    }
+    h1 {
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(92,102,120,0.8);
+      padding-bottom: 6px;
+    }
+    p {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--light);
+      margin-bottom: 8px;
+    }
+    form {
+      margin-top: 12px;
+    }
+    fieldset {
+      border: 1px solid rgba(92,102,120,0.9);
+      border-radius: 14px;
+      padding: 12px 14px 14px;
+      margin-bottom: 14px;
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 80%);
+    }
+    legend {
+      padding: 0 6px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--accent);
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 2px;
+      color: var(--muted);
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 6px 7px;
+      border-radius: 8px;
+      border: 1px solid rgba(92,102,120,0.9);
+      background: rgba(5,9,16,0.96);
+      color: var(--light);
+      font-size: 0.86rem;
+    }
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    .help {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .checkbox-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 4px 0 4px;
+    }
+    .checkbox-row label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-transform: none;
+      letter-spacing: 0;
+      font-size: 0.85rem;
+      color: var(--light);
+    }
+    input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+    }
+    .submit-row {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    button[type="submit"] {
+      padding: 7px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.9);
+      background: rgba(0,212,255,0.12);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      cursor: pointer;
+    }
+    .note {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    footer {
+      padding: 12px 18px 16px;
+      border-top: 1px solid rgba(92,102,120,0.9);
+      background: #020617;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    footer p { margin-bottom: 4px; }
+    footer .truth {
+      margin-top: 6px;
+      font-size: 0.72rem;
+      line-height: 1.4;
+    }
+    @media (max-width: 720px) {
+      body { padding: 10px; }
+      .page { border-radius: 14px; }
+      header { padding: 18px 14px 14px; }
+      .content { padding: 18px 14px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="header-inner">
+        <div class="eyebrow">Official Application · StarPath Academy™ · Go4it Sports Academy</div>
+        <div class="logo-main">StarPath Accelerator™ · Vienna & Online</div>
+        <div class="logo-sub">
+          Please complete this application with accurate information. This form is used to place students into the Vienna Residency, Day Scholar Program, or Online Accelerator.
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <h1>Student-Athlete Application</h1>
+      <p><strong>Note:</strong> Submitting this application does not guarantee admission. Our team will review all information and schedule a Blueprint Call with your family and/or club.</p>
+
+      <form action="#" method="post">
+        <fieldset>
+          <legend>Section 1 · Student Information</legend>
+          <div class="field-row">
+            <div>
+              <label for="student_name">Student Full Name</label>
+              <input id="student_name" name="student_name" type="text" required />
+            </div>
+            <div>
+              <label for="dob">Date of Birth</label>
+              <input id="dob" name="dob" type="date" required />
+            </div>
+            <div>
+              <label for="gender">Gender (optional)</label>
+              <input id="gender" name="gender" type="text" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="citizenship">Citizenship</label>
+              <input id="citizenship" name="citizenship" type="text" />
+            </div>
+            <div>
+              <label for="current_grade">Current Grade / Year Level</label>
+              <input id="current_grade" name="current_grade" type="text" />
+            </div>
+            <div>
+              <label for="home_language">Primary Home Language</label>
+              <input id="home_language" name="home_language" type="text" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Section 2 · Family & Contact</legend>
+          <div class="field-row">
+            <div>
+              <label for="parent_name">Parent/Guardian Name</label>
+              <input id="parent_name" name="parent_name" type="text" required />
+            </div>
+            <div>
+              <label for="parent_email">Parent/Guardian Email</label>
+              <input id="parent_email" name="parent_email" type="email" required />
+            </div>
+            <div>
+              <label for="parent_phone">Parent/Guardian Phone (incl. country code)</label>
+              <input id="parent_phone" name="parent_phone" type="tel" required />
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="home_address">Home Address</label>
+              <input id="home_address" name="home_address" type="text" />
+            </div>
+            <div>
+              <label for="city_country">City & Country</label>
+              <input id="city_country" name="city_country" type="text" />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Section 3 · Academic Background</legend>
+          <div class="field-row">
+            <div>
+              <label for="current_school">Current School Name</label>
+              <input id="current_school" name="current_school" type="text" />
+            </div>
+            <div>
+              <label for="school_type">School Type (public, private, homeschool, etc.)</label>
+              <input id="school_type" name="school_type" type="text" />
+            </div>
+            <div>
+              <label for="gpa">Current GPA / Grade Average (if known)</label>
+              <input id="gpa" name="gpa" type="text" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="curriculum">Curriculum / System (US, IB, UK, Austrian, etc.)</label>
+              <input id="curriculum" name="curriculum" type="text" />
+            </div>
+            <div>
+              <label for="graduation_year">Expected High School Graduation Year</label>
+              <input id="graduation_year" name="graduation_year" type="text" />
+            </div>
+          </div>
+          <div>
+            <label for="academic_notes">Academic Notes (strengths, challenges, accommodations, IEP/504, etc.)</label>
+            <textarea id="academic_notes" name="academic_notes"></textarea>
+            <div class="help">You may share links to transcripts or documents; our team will request official copies later.</div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Section 4 · Athletic Profile</legend>
+          <div class="field-row">
+            <div>
+              <label for="primary_sport">Primary Sport</label>
+              <input id="primary_sport" name="primary_sport" type="text" required />
+            </div>
+            <div>
+              <label for="position_role">Position / Role</label>
+              <input id="position_role" name="position_role" type="text" />
+            </div>
+            <div>
+              <label for="dominant_hand_foot">Dominant Hand/Foot</label>
+              <input id="dominant_hand_foot" name="dominant_hand_foot" type="text" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="current_club">Current Club / Team</label>
+              <input id="current_club" name="current_club" type="text" />
+            </div>
+            <div>
+              <label for="coach_name">Head Coach Name</label>
+              <input id="coach_name" name="coach_name" type="text" />
+            </div>
+            <div>
+              <label for="coach_email">Head Coach Email</label>
+              <input id="coach_email" name="coach_email" type="email" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="competition_level">Current Competition Level (club, academy, national, etc.)</label>
+              <input id="competition_level" name="competition_level" type="text" />
+            </div>
+            <div>
+              <label for="years_experience">Years of Experience in Primary Sport</label>
+              <input id="years_experience" name="years_experience" type="text" />
+            </div>
+          </div>
+          <div>
+            <label for="athletic_goals">Athletic Goals (college, pro, national team, etc.)</label>
+            <textarea id="athletic_goals" name="athletic_goals"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Section 5 · Program Selection & Timing</legend>
+          <div>
+            <label>Which program(s) are you applying for?</label>
+            <div class="checkbox-row">
+              <label><input type="checkbox" name="programs" value="vienna_residency" /> Vienna Global Residency</label>
+              <label><input type="checkbox" name="programs" value="vienna_day" /> Vienna Day Scholar Program</label>
+              <label><input type="checkbox" name="programs" value="online_accelerator" /> StarPath Online Accelerator</label>
+              <label><input type="checkbox" name="programs" value="isl_events" /> ISL League & Combines</label>
+            </div>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="preferred_term">Preferred Start Term (e.g., Spring 2026)</label>
+              <input id="preferred_term" name="preferred_term" type="text" />
+            </div>
+            <div>
+              <label for="length_interest">Length of Participation Interest</label>
+              <select id="length_interest" name="length_interest">
+                <option value="">Select...</option>
+                <option value="single_term">Single term (12 weeks or less)</option>
+                <option value="year_long">Full academic year</option>
+                <option value="multi_year">Multi-year pathway</option>
+                <option value="undecided">Undecided / need guidance</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="pathway_goals">What are your main goals with StarPath (academic, athletic, language, global exposure)?</label>
+            <textarea id="pathway_goals" name="pathway_goals"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Section 6 · Health, Safety & Support</legend>
+          <div class="field-row">
+            <div>
+              <label for="medical_conditions">Relevant Medical Conditions (if any)</label>
+              <textarea id="medical_conditions" name="medical_conditions"></textarea>
+            </div>
+            <div>
+              <label for="learning_support">Learning / Neurodivergent Support Needs (if any)</label>
+              <textarea id="learning_support" name="learning_support"></textarea>
+              <div class="help">Example: ADHD, dyslexia, autism, anxiety, executive function support.</div>
+            </div>
+          </div>
+          <div>
+            <label for="dietary">Dietary Restrictions or Preferences</label>
+            <textarea id="dietary" name="dietary"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Section 7 · Consent & Declaration</legend>
+          <p class="note">
+            By submitting this application, you confirm that the information provided is accurate to the best of your knowledge.
+            Our team will contact you using the details above to discuss next steps, including documentation, tuition, and placement.
+          </p>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="consent_parent" required /> I am the parent/guardian or have permission to submit this application.</label>
+          </div>
+          <div class="checkbox-row">
+            <label><input type="checkbox" name="consent_contact" required /> I agree that Go4it/StarPath may contact us regarding this application.</label>
+          </div>
+        </fieldset>
+
+        <div class="submit-row">
+          <button type="submit">Submit Application</button>
+          <span class="note">After submission, our team will reach out by email to schedule a Blueprint Call.</span>
+        </div>
+      </form>
+    </div>
+
+    <footer>
+      <p><strong>Go4it Sports Academy · StarPath Academy™ · International StarPath League (ISL)</strong></p>
+      <p>info@go4itsports.org · pathways@starpathleague.org · global@starpathleague.org</p>
+      <p class="truth">
+        Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. 
+        school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. 
+        No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local 
+        education registration. We do not provide immigration or legal advice.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

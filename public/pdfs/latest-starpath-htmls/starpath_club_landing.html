@@ -1,0 +1,910 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StarPath x Clubs · International Development & Documentation Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --accent3: #FFB347;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+      --border-soft: #1E2837;
+      --error: #ff4b6a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%, #000 100%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto 40px;
+      background: radial-gradient(circle at top left, #111827 0, #05070b 60%);
+      border-radius: 20px;
+      border: 1px solid rgba(92,102,120,0.9);
+      box-shadow: 0 0 40px rgba(0,0,0,0.85);
+      overflow: hidden;
+    }
+
+    header.site-header {
+      background: linear-gradient(135deg, #0B0F14, #121A29 45%, #05070b 100%);
+      position: relative;
+      padding: 14px 22px 12px;
+      border-bottom: 1px solid rgba(92,102,120,0.7);
+    }
+
+    header.site-header::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.18), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.16), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent2);
+    }
+
+    .logo-main {
+      font-size: 1.2rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .logo-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    nav.main-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    nav.main-nav a {
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    nav.main-nav a:hover {
+      border-color: rgba(0,212,255,0.8);
+      background: rgba(0,212,255,0.1);
+      color: var(--accent);
+    }
+
+    .hero {
+      position: relative;
+      padding: 22px 22px 24px;
+      background: radial-gradient(circle at top, #111827 0, #05070b 65%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .hero-title {
+      font-size: 1.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin-bottom: 10px;
+    }
+
+    .hero-kicker {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      max-width: 540px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .hero-tag {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.7);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(0,212,255,0.08);
+      white-space: nowrap;
+    }
+
+    .hero-tag.alt {
+      border-color: rgba(39,227,106,0.8);
+      color: var(--accent2);
+      background: rgba(39,227,106,0.1);
+    }
+
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.9);
+      background: rgba(0,212,255,0.12);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      border-color: rgba(92,102,120,0.9);
+      background: rgba(11,15,20,0.9);
+      color: var(--light);
+    }
+
+    .btn span.icon {
+      font-size: 0.9rem;
+    }
+
+    .hero-right {
+      border-radius: 16px;
+      border: 1px solid rgba(92,102,120,0.9);
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 75%);
+      padding: 12px 14px 10px;
+      box-shadow: 0 0 26px rgba(0,0,0,0.85);
+    }
+
+    .hero-right h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .hero-right p {
+      font-size: 0.86rem;
+      margin-bottom: 6px;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .metric {
+      font-size: 0.8rem;
+      padding: 6px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(92,102,120,0.9);
+      background: rgba(5,9,16,0.95);
+    }
+
+    .metric span.label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 1px;
+    }
+
+    .section {
+      padding: 20px 22px 18px;
+      border-top: 1px solid rgba(92,102,120,0.4);
+    }
+
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 1.02rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .section-kicker {
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 70%);
+      border-radius: 16px;
+      border: 1px solid rgba(92,102,120,0.85);
+      padding: 12px 14px 13px;
+      box-shadow: 0 0 24px rgba(0,0,0,0.8);
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.06), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.05), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .panel-tag {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--light);
+      margin-bottom: 6px;
+    }
+
+    ul {
+      margin: 4px 0 6px 1.1em;
+      padding: 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.9);
+      background: rgba(0,212,255,0.1);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .pill.alt {
+      border-color: rgba(39,227,106,0.9);
+      color: var(--accent2);
+      background: rgba(39,227,106,0.12);
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .code-block {
+      background: #050910;
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(92,102,120,0.7);
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      color: var(--light);
+      margin-top: 4px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .list-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    footer.site-footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid rgba(92,102,120,0.9);
+      background: #020617;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    footer.site-footer p {
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+    }
+
+    footer.site-footer .truth {
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      header.site-header {
+        padding: 12px 14px 8px;
+      }
+      .hero, .section {
+        padding: 18px 14px 16px;
+      }
+      .page {
+        border-radius: 14px;
+        margin: 0 8px 24px;
+      }
+      nav.main-nav {
+        gap: 6px;
+      }
+      nav.main-nav a {
+        padding: 4px 7px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand-block">
+          <div class="eyebrow">Go4it Sports Academy · StarPath Academy™</div>
+          <div class="logo-main">StarPath x Clubs & Academies</div>
+          <div class="logo-sub">International StarPath League (ISL) · Development Hub & Academic Pathway</div>
+        </div>
+        <nav class="main-nav">
+          <a href="#why">Why Partner</a>
+          <a href="#models">Partnership Models</a>
+          <a href="#development">Development & Data</a>
+          <a href="#pathways">Player Pathways</a>
+          <a href="#ops">Implementation</a>
+          <a href="#contact">Talk to Us</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-title">Global Pathways for Your Best Players</div>
+          <p class="hero-kicker">
+            StarPath Academy™ and the International StarPath League (ISL) give your club a ready-made global development,
+            documentation, and education pathway — without you having to build a school.
+          </p>
+          <div class="hero-tags">
+            <span class="hero-tag">European Methodology</span>
+            <span class="hero-tag alt">NCAA-Informed Academics</span>
+            <span class="hero-tag">Dual-Language Immersion</span>
+            <span class="hero-tag alt">Verified Development Data</span>
+          </div>
+          <p class="hero-kicker">
+            You keep your culture and training identity. We plug in the global education, dual-language, and Human Development
+            Record™ system that turns every season into a documented, globally legible story for each athlete.
+          </p>
+          <div class="hero-cta-row">
+            <a href="#contact" class="btn"><span class="icon">⬤</span><span>Book a Club Strategy Call</span></a>
+            <a href="#models" class="btn secondary"><span class="icon">◎</span><span>View Partnership Models</span></a>
+          </div>
+        </div>
+        <div class="hero-right">
+          <h3>What Your Club Gains</h3>
+          <p>Three big problems solved in one integrated system:</p>
+          <div class="hero-metrics">
+            <div class="metric">
+              <span class="label">1 · Verified Development</span>
+              Objective documentation of physical, technical, mental, and academic growth via the StarPath Human Development Record™.
+            </div>
+            <div class="metric">
+              <span class="label">2 · Global Pathways</span>
+              Clear routes into U.S. college, EU academies, and international schools — with academics handled by Go4it/StarPath.
+            </div>
+            <div class="metric">
+              <span class="label">3 · Parent Confidence</span>
+              Transparent reporting that shows families: “Your club is not just playing games — it’s building futures.”
+            </div>
+            <div class="metric">
+              <span class="label">4 · Recruitment & Retention</span>
+              A premium differentiator that attracts ambitious players and keeps them in your ecosystem longer.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WHY PARTNER -->
+    <section id="why" class="section">
+      <div class="section-header">
+        <div class="section-title">Why Clubs Partner with StarPath</div>
+        <p class="section-kicker">
+          You’re already doing the football/basketball/soccer work. We add the global education, documentation, and pathway architecture around it.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">The Problems We Solve for Technical Directors</div>
+            <div class="panel-tag">Reality of Modern Player Pathways</div>
+          </div>
+          <div class="columns">
+            <div>
+              <span class="pill">Without StarPath</span>
+              <ul>
+                <li>Families ask about U.S. college or EU academies and you have to say, “We can’t advise on school.”</li>
+                <li>No unified system for tracking development beyond coach notes and scattered video.</li>
+                <li>Players disappear to agents, trial tours, or random prep schools with no long-term plan.</li>
+                <li>Academic risk and eligibility confusion for international moves.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">With StarPath</span>
+              <ul>
+                <li>You offer a trusted academic + athletic pathway built with NCAA-informed, Colorado-aligned curriculum.</li>
+                <li>Every high-potential player has a Human Development Record™ with physical, technical, mental, and academic data.</li>
+                <li>Residency in Vienna, Online Accelerator, and ISL events become extensions of your own pathway — not competition.</li>
+                <li>You stay the football/basketball/soccer expert. We handle school architecture and global planning.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PARTNERSHIP MODELS -->
+    <section id="models" class="section">
+      <div class="section-header">
+        <div class="section-title">Partnership Models</div>
+        <p class="section-kicker">
+          Start small with a few players — or fully integrate StarPath as your club’s official education and global pathway partner.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Model 1 · Player Pathway Partner</div>
+            <div class="panel-tag">Send Players · Keep the Relationship</div>
+          </div>
+          <div class="columns">
+            <div>
+              <span class="pill">How It Works</span>
+              <ul>
+                <li>You nominate 3–20 players per year for Vienna Residency or Online Accelerator.</li>
+                <li>We co-design each player’s academic + athletic plan with you.</li>
+                <li>Athletes participate in StarPath while remaining branded as your club players.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">What You Get</span>
+              <ul>
+                <li>Full access to each athlete’s Human Development Record™.</li>
+                <li>Regular reports you can share with families and internal staff.</li>
+                <li>Priority access to ISL combines and showcases for your players.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Why Clubs Choose This</span>
+              <ul>
+                <li>No upfront build — plug into an existing system.</li>
+                <li>Retains alignment with your training philosophy.</li>
+                <li>Acts as an “elite lane” for your most ambitious players.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Model 2 · StarPath Academy Inside Your Club</div>
+            <div class="panel-tag">On-Site Education Overlay</div>
+          </div>
+          <div class="columns">
+            <div>
+              <span class="pill">How It Works</span>
+              <ul>
+                <li>We implement StarPath curriculum and HDR workflow into your daily schedule.</li>
+                <li>Morning or afternoon blocks become “StarPath Academy” at your facility or online.</li>
+                <li>Local teachers + StarPath academic staff ensure compliance and quality.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">What You Get</span>
+              <ul>
+                <li>A branded academic program for your academy players.</li>
+                <li>Pathways into U.S. college and European education systems.</li>
+                <li>Ability to pitch parents: “Your child doesn’t have to choose between school and sport.”</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Ideal For</span>
+              <ul>
+                <li>Top academies wanting full-time players during the day.</li>
+                <li>Clubs competing with boarding schools and international academies.</li>
+                <li>Organizations ready to own a global pathway brand.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Model 3 · ISL League & Development Hub</div>
+            <div class="panel-tag">Events · Combines · Data Layer</div>
+          </div>
+          <p>Plug into the International StarPath League (ISL) as a competitive and development layer around your existing season.</p>
+          <div class="columns">
+            <div>
+              <span class="pill">What ISL Provides</span>
+              <ul>
+                <li>Structured combines and showcases with standardized testing (GAR™ and StarPath metrics).</li>
+                <li>Shared data infrastructure for your club and StarPath scouts.</li>
+                <li>Event-based opportunities in Vienna, Europe, and the U.S.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">How It Integrates</span>
+              <ul>
+                <li>Your players attend ISL events and/or StarPath camps.</li>
+                <li>All results feed into each athlete’s Human Development Record™.</li>
+                <li>Data can be shared with colleges, federations, or pro clubs with consent.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Optional Add-Ons</span>
+              <ul>
+                <li>Custom combines hosted at your facility.</li>
+                <li>Co-branded development reports for parents.</li>
+                <li>Coach education sessions on global pathways.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">You choose the depth of integration. ISL can be an event, a data layer, or a full development partner.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DEVELOPMENT & DATA -->
+    <section id="development" class="section">
+      <div class="section-header">
+        <div class="section-title">Development & Documentation</div>
+        <p class="section-kicker">
+          The StarPath Human Development Record™ turns your daily work with players into a long-term development asset — for you, families, and recruiters.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Six-Pillar Human Development Record™</div>
+            <div class="panel-tag">Holistic · Measurable · NCAA-Informed</div>
+          </div>
+          <div class="grid-3">
+            <div>
+              <span class="pill">Physical & Performance</span>
+              <ul>
+                <li>Testing, GPS (where available), HRV, movement screen results.</li>
+                <li>Training load and readiness tracking.</li>
+                <li>Injury history and return-to-play documentation.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Technical & Tactical</span>
+              <ul>
+                <li>Mechanics timelines by position (QB, striker, guard, etc.).</li>
+                <li>Video clips with coach and player annotations.</li>
+                <li>Decision-making and game intelligence notes.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Mental & Emotional</span>
+              <ul>
+                <li>Mindset journals and reflection prompts.</li>
+                <li>Stress and confidence tracking over the season.</li>
+                <li>Leadership behaviors documented with real examples.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Nutrition & Recovery</span>
+              <ul>
+                <li>Sleep, hydration, and recovery habits.</li>
+                <li>Meal documentation during camps or residencies.</li>
+                <li>Education modules on fueling for performance.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Academic & Language</span>
+              <ul>
+                <li>Coursework tied to sport (analytics, media, leadership).</li>
+                <li>German/English language immersion documentation.</li>
+                <li>Credit mapping via U.S. school-of-record partners.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Global Scholar-Athlete Portfolio</span>
+              <ul>
+                <li>Recruiting-ready profile with video, stats, and academics.</li>
+                <li>Cultural immersion, language progress, leadership evidence.</li>
+                <li>Narrative that explains who the athlete is — not just what they did.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">
+            You control what data you want, how often you receive reports, and who they’re shared with.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLAYER PATHWAYS -->
+    <section id="pathways" class="section">
+      <div class="section-header">
+        <div class="section-title">Player Pathways You Can Offer</div>
+        <p class="section-kicker">
+          Every ambitious player asks: “What’s my path?” With StarPath and ISL, your club can answer that clearly — at different ages and levels.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Examples of Player Journeys</div>
+            <div class="panel-tag">From Your Club to the World</div>
+          </div>
+          <div class="grid-3">
+            <div>
+              <span class="pill">Path A · U.S. College Pathway</span>
+              <ul>
+                <li>Age 14–16: Train at your club, join Online Accelerator.</li>
+                <li>Age 16–18: Vienna Residency or Global Bridge semester.</li>
+                <li>Outcome: NCAA-eligible portfolio with academics, language, and metrics.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Path B · European Professional Focus</span>
+              <ul>
+                <li>Age 15–17: Integrated StarPath curriculum in your club.</li>
+                <li>Age 17–19: Vienna Residency + ISL events and training.</li>
+                <li>Outcome: Exposure to EU clubs with full academic backup plan.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Path C · Dual-Track (College + Pro)</span>
+              <ul>
+                <li>Age 13–15: StarPath Pioneer academic foundations.</li>
+                <li>Age 15–18: Your club + StarPath modules + ISL events.</li>
+                <li>Outcome: Real options — NAIA/NCAA, EU clubs, or both.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">
+            We help you design “club-branded pathways” that use StarPath infrastructure — not replace your identity.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- OPERATIONS / IMPLEMENTATION -->
+    <section id="ops" class="section">
+      <div class="section-header">
+        <div class="section-title">Implementation for Clubs</div>
+        <p class="section-kicker">
+          Clear, low-friction steps to get started. No need to rebuild your season or calendar — we wrap around it.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Starter Implementation Plan</div>
+            <div class="panel-tag">Simple · Phased · Customizable</div>
+          </div>
+          <div class="grid-3">
+            <div>
+              <span class="pill">Phase 1 · Discovery</span>
+              <ul>
+                <li>Strategic call with leadership and technical director.</li>
+                <li>Review age groups, calendar, and current development system.</li>
+                <li>Choose initial model: Player Pathway, Academy Overlay, or ISL-first.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Phase 2 · Pilot Group</span>
+              <ul>
+                <li>Select 5–20 players for initial StarPath integration.</li>
+                <li>Provide baseline data and club context.</li>
+                <li>Run 1–2 cycles (term/season) with full HDR documentation.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Phase 3 · Scale & Brand</span>
+              <ul>
+                <li>Expand to more teams or age groups based on results.</li>
+                <li>Co-create a “Club x StarPath” branded pathway page.</li>
+                <li>Host ISL events or StarPath camps at your facility.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">
+            You stay in control of football/basketball/soccer operations. We quietly handle curriculum, documentation, and global architecture.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="section">
+      <div class="section-header">
+        <div class="section-title">Talk to the StarPath Team</div>
+        <p class="section-kicker">
+          One 45-minute strategy call is usually enough to design a pilot that fits your budget, calendar, and ambitions.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="columns">
+            <div>
+              <span class="list-label">For Clubs & Academies</span>
+              <ul>
+                <li>Email: <strong>global@starpathleague.org</strong></li>
+                <li>CC: <strong>invest@go4itsports.org</strong> for strategic projects.</li>
+                <li>Subject line suggestion: <em>“Club Partnership Inquiry – [Club Name]”</em></li>
+              </ul>
+            </div>
+            <div>
+              <span class="list-label">Helpful to Include</span>
+              <ul>
+                <li>Number of players you’re considering for a pathway (per year).</li>
+                <li>Age ranges and current competition level.</li>
+                <li>Whether you prefer Residency, Online, ISL events, or all three.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="list-label">What You Can Expect</span>
+              <ul>
+                <li>Assessment of fit (we’ll be honest if it’s not).</li>
+                <li>1–2 clear starting options with cost ranges.</li>
+                <li>A draft timeline for a pilot group or event.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">
+            StarPath x Clubs: You develop the player. We build the pathway and prove the progress.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <p><strong>Go4it Sports Academy · StarPath Academy™ · International StarPath League (ISL)</strong></p>
+      <p>Denver (USA) · Vienna (AT) • info@go4itsports.org • global@starpathleague.org • invest@go4itsports.org</p>
+      <p class="truth">
+        Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. 
+        school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. 
+        No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local 
+        education registration. We do not provide immigration or legal advice.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,925 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>StarPath Academy™ · Go4it Sports Academy · Official Program Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #05070b;
+      --panel: #0B0F14;
+      --panel-soft: #111722;
+      --accent: #00D4FF;
+      --accent2: #27E36A;
+      --accent3: #FFB347;
+      --mid: #5C6678;
+      --light: #E6EAF0;
+      --muted: #9CA6BA;
+      --border-soft: #1E2837;
+      --error: #ff4b6a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #151C26 0, #05070b 55%, #000 100%);
+      color: var(--light);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      background: radial-gradient(circle at top left, #111827 0, #05070b 60%);
+      border-radius: 20px;
+      border: 1px solid rgba(92,102,120,0.9);
+      box-shadow: 0 0 40px rgba(0,0,0,0.85);
+      overflow: hidden;
+    }
+
+    header.site-header {
+      background: linear-gradient(135deg, #0B0F14, #121A29 45%, #05070b 100%);
+      position: relative;
+      padding: 14px 22px 10px;
+      border-bottom: 1px solid rgba(92,102,120,0.7);
+    }
+
+    header.site-header::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.18), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.16), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent2);
+    }
+
+    .logo-main {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .logo-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    nav.main-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    nav.main-nav a {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      color: var(--muted);
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+
+    nav.main-nav a:hover {
+      border-color: rgba(0,212,255,0.8);
+      background: rgba(0,212,255,0.1);
+      color: var(--accent);
+    }
+
+    .hero {
+      position: relative;
+      padding: 24px 22px 26px;
+      background: radial-gradient(circle at top, #111827 0, #05070b 65%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .hero-title {
+      font-size: 1.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      margin-bottom: 10px;
+    }
+
+    .hero-kicker {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      max-width: 520px;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .hero-tag {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.7);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(0,212,255,0.08);
+      white-space: nowrap;
+    }
+
+    .hero-tag.alt {
+      border-color: rgba(39,227,106,0.8);
+      color: var(--accent2);
+      background: rgba(39,227,106,0.1);
+    }
+
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.9);
+      background: rgba(0,212,255,0.12);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      border-color: rgba(92,102,120,0.9);
+      background: rgba(11,15,20,0.9);
+      color: var(--light);
+    }
+
+    .btn span.icon {
+      font-size: 0.9rem;
+    }
+
+    .hero-right {
+      border-radius: 16px;
+      border: 1px solid rgba(92,102,120,0.9);
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 75%);
+      padding: 12px 14px 10px;
+      box-shadow: 0 0 26px rgba(0,0,0,0.85);
+    }
+
+    .hero-right h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .pillars-grid div {
+      font-size: 0.8rem;
+      padding: 6px 8px;
+      border-radius: 10px;
+      border: 1px solid rgba(92,102,120,0.9);
+      background: rgba(5,9,16,0.95);
+    }
+
+    .section {
+      padding: 22px 22px 18px;
+      border-top: 1px solid rgba(92,102,120,0.4);
+    }
+
+    .section-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .section-title {
+      font-size: 1.05rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .section-kicker {
+      font-size: 0.85rem;
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, #151C26 0, #05070b 70%);
+      border-radius: 16px;
+      border: 1px solid rgba(92,102,120,0.85);
+      padding: 12px 14px 13px;
+      box-shadow: 0 0 24px rgba(0,0,0,0.8);
+      margin-bottom: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(0,212,255,0.06), transparent 60%),
+        radial-gradient(circle at 100% 0%, rgba(39,227,106,0.05), transparent 60%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+
+    .panel-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+    }
+
+    .panel-tag {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--light);
+      margin-bottom: 6px;
+    }
+
+    ul {
+      margin: 4px 0 6px 1.1em;
+      padding: 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,212,255,0.9);
+      background: rgba(0,212,255,0.1);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .pill.alt {
+      border-color: rgba(39,227,106,0.9);
+      color: var(--accent2);
+      background: rgba(39,227,106,0.12);
+    }
+
+    .badge {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .code-block {
+      background: #050910;
+      border-radius: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(92,102,120,0.7);
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      color: var(--light);
+      margin-top: 4px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .list-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+
+    footer.site-footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid rgba(92,102,120,0.9);
+      background: #020617;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    footer.site-footer p {
+      margin-bottom: 4px;
+      font-size: 0.78rem;
+    }
+
+    footer.site-footer .truth {
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 860px) {
+      .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      header.site-header {
+        padding: 12px 14px 8px;
+      }
+      .hero, .section {
+        padding: 18px 14px 16px;
+      }
+      .page {
+        border-radius: 14px;
+        margin: 0 8px 24px;
+      }
+      nav.main-nav {
+        gap: 6px;
+      }
+      nav.main-nav a {
+        padding: 4px 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <!-- TOP HEADER & NAV -->
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="brand-block">
+          <div class="eyebrow">Go4it Sports Academy · StarPath Academy™</div>
+          <div class="logo-main">StarPath Accelerator™</div>
+          <div class="logo-sub">Vienna & Online · NCAA-Informed Global Scholar-Athlete Pathway</div>
+        </div>
+        <nav class="main-nav">
+          <a href="#home">Home</a>
+          <a href="#residency">Vienna Residency</a>
+          <a href="#online">Online Accelerator</a>
+          <a href="#isl">ISL League</a>
+          <a href="#pathways">Pathways</a>
+          <a href="#admissions">Admissions</a>
+          <a href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- HERO / HOME -->
+    <section id="home" class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-title">Train Here. Learn Everywhere.</div>
+          <p class="hero-kicker">
+            StarPath Academy™ combines NCAA-informed academics, European training methodology, and dual-language immersion
+            into one integrated pathway — in Vienna, across Europe, and online worldwide.
+          </p>
+          <div class="hero-tags">
+            <span class="hero-tag">Vienna Global Residency</span>
+            <span class="hero-tag alt">Day Scholar Program</span>
+            <span class="hero-tag">Online Accelerator</span>
+            <span class="hero-tag alt">ISL Development Hub</span>
+          </div>
+          <p class="hero-kicker">
+            Built by Go4it Sports Academy, the StarPath Accelerator™ and Human Development Record™ turn every training
+            session, cultural experience, and reflection into academic credit and recruiting-ready documentation.
+          </p>
+          <div class="hero-cta-row">
+            <a href="#admissions" class="btn"><span class="icon">⬤</span><span>Apply for Vienna Residency</span></a>
+            <a href="#online" class="btn secondary"><span class="icon">◎</span><span>Explore Online & Hybrid</span></a>
+          </div>
+        </div>
+        <div class="hero-right">
+          <h3>StarPath Human Development Record™</h3>
+          <p class="badge">Six-Pillar Experiential Learning Framework</p>
+          <div class="pillars-grid">
+            <div><strong>Mental & Emotional</strong><br/>Mindset, resilience, leadership reflections.</div>
+            <div><strong>Physical & Performance</strong><br/>GAR™ metrics, HRV, testing, training load.</div>
+            <div><strong>Nutrition & Recovery</strong><br/>Meals, sleep, recovery journaling.</div>
+            <div><strong>Mechanics & Technical</strong><br/>Technique timelines, film, annotations.</div>
+            <div><strong>Cultural Immersion</strong><br/>Vienna, EU systems, language in action.</div>
+            <div><strong>Scholar-Athlete Capstone</strong><br/>Global portfolio & recruiting package.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESIDENCY SECTION -->
+    <section id="residency" class="section">
+      <div class="section-header">
+        <div class="section-title">Vienna Global Residency</div>
+        <p class="section-kicker">
+          12-week, 12-credit immersion in Vienna — where training, academics, and culture merge into one bilingual, global-ready experience.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Program Snapshot</div>
+            <div class="panel-tag">Residency · Boarding · Dual-Language</div>
+          </div>
+          <div class="columns">
+            <div>
+              <span class="pill">Who It’s For</span>
+              <ul>
+                <li>Grade 9–12 and post-grads seeking global experience.</li>
+                <li>Athletes aiming at U.S. college, EU clubs, or both.</li>
+                <li>Families wanting verified academics + elite training.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">What You Earn</span>
+              <ul>
+                <li>Up to 12 U.S. high school / dual-enrollment credits (via partner school-of-record).</li>
+                <li>Documented German A1–A2 progression (CEFR-aligned).</li>
+                <li>StarPath Global Scholar-Athlete Portfolio™.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">What It Includes</span>
+              <ul>
+                <li>Housing, meals (board), daily transport, supervision.</li>
+                <li>Training, academic instruction, cultural itineraries.</li>
+                <li>Human Development Record™ integration across all pillars.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Daily Language-Integrated Schedule</div>
+            <div class="panel-tag">Train in German · Learn in English · Live in Both</div>
+          </div>
+          <p>The Vienna Residency uses language as a training tool — not just a classroom subject.</p>
+          <div class="code-block">
+07:00–08:00 · Morning Block  
+- Mental readiness index (sleep, clarity, stress)  
+- Physical metrics (HR, HRV, soreness)  
+- Breakfast documentation + language practice  
+- Cultural commute observations (German in action)  
+
+09:00–12:00 · Performance & Science  
+- On-field training with German commands  
+- Performance science modules (biology, analytics)  
+- Live data capture into Human Development Record™  
+
+12:30–15:30 · Academic Block  
+- Global studies, language, digital media  
+- Writing and communication using daily evidence  
+- Project-based, NCAA-informed coursework  
+
+16:00–18:00 · Technical & Tactical  
+- Sport-specific mechanics and decision-making  
+- Film analysis with dual-language commentary  
+- Mechanics timeline updates and coach feedback  
+
+18:30–20:00 · Cultural & Portfolio  
+- Cultural experiences across Vienna and EU themes  
+- Evening reflection in German/English  
+- Portfolio synthesis and next-day planning  
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Day Scholar Program · Local Vienna / EU Students</div>
+            <div class="panel-tag">Non-Boarding · 8–12 Credits</div>
+          </div>
+          <p>The Day Program mirrors the Residency framework for local and EU students who commute from home.</p>
+          <div class="columns">
+            <div>
+              <span class="pill">Language Tracks</span>
+              <ul>
+                <li><strong>Track A:</strong> German native speakers improving English.</li>
+                <li><strong>Track B:</strong> English speakers learning German.</li>
+                <li>All students document bilingual progress via HDR.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Schedule</span>
+              <ul>
+                <li>Approx. 08:00–18:00 daily (flexible for school partners).</li>
+                <li>Includes training, academic block, cultural labs, portfolio time.</li>
+                <li>Weekend competition optional through ISL or partner clubs.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Integration with Local Schools</span>
+              <ul>
+                <li>Aligns around existing Austrian/German timetables.</li>
+                <li>Can function as a “Global Academy” overlay.</li>
+                <li>Compatible with club / academy schedules.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ONLINE ACCELERATOR SECTION -->
+    <section id="online" class="section">
+      <div class="section-header">
+        <div class="section-title">StarPath Online Accelerator</div>
+        <p class="section-kicker">
+          For athletes who can’t reach Vienna yet — but want the same curriculum, documentation, and global-ready outcomes.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Virtual Pathway · 10 Credits</div>
+            <div class="panel-tag">Global · Synchronous & Asynchronous Blend</div>
+          </div>
+          <div class="columns">
+            <div>
+              <span class="pill">Core Components</span>
+              <ul>
+                <li>Language: German A1–A2 or English development.</li>
+                <li>Performance science and analytics with home training.</li>
+                <li>Global studies and digital media tied to athlete context.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Virtual Immersion</span>
+              <ul>
+                <li>Live-streamed walks and visits across Vienna.</li>
+                <li>Virtual museum and cultural tours with language tasks.</li>
+                <li>Online language exchange with EU athletes and peers.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Online HDR Integration</span>
+              <ul>
+                <li>Daily logs inside Notion-based Human Development Record™.</li>
+                <li>Upload of training clips and wearable data where available.</li>
+                <li>Same six-pillar framework as on-site students.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ISL LEAGUE & DEVELOPMENT HUB -->
+    <section id="isl" class="section">
+      <div class="section-header">
+        <div class="section-title">ISL · International StarPath League</div>
+        <p class="section-kicker">
+          The competition and development hub wrapped around StarPath Academy — connecting clubs, academies, and schools to a unified documentation and exposure ecosystem.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Development Hub for Clubs & Academies</div>
+            <div class="panel-tag">League · Combines · Data Layer</div>
+          </div>
+          <div class="columns">
+            <div>
+              <span class="pill">For Clubs & Teams</span>
+              <ul>
+                <li>Connect your top players into StarPath Residency or Online Accelerator.</li>
+                <li>Receive Human Development Record™ reports as part of their growth.</li>
+                <li>Use HDR data for internal IDPs (Individual Development Plans).</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">For Federations & Schools</span>
+              <ul>
+                <li>Run “StarPath-powered” development cohorts in your region.</li>
+                <li>Align local training with global academic pathways.</li>
+                <li>Offer dual-language, dual-system readiness without building from scratch.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">ISL Competitive Layer</span>
+              <ul>
+                <li>Structured combines and events across Europe and the U.S.</li>
+                <li>Shared metrics and film that live in the HDR for each athlete.</li>
+                <li>Pathway visibility for U.S. colleges and EU professional clubs.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">
+            ISL transforms league play and training into a documented, globally legible development story for every athlete.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PATHWAYS SECTION -->
+    <section id="pathways" class="section">
+      <div class="section-header">
+        <div class="section-title">Complete StarPath Pathway</div>
+        <p class="section-kicker">
+          From early foundations to post-graduate professional prep — a single, coherent academic + athletic + global pathway.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Phase Map · Age 6 through 22</div>
+            <div class="panel-tag">Elementary · Middle · High School · Post-Grad</div>
+          </div>
+          <div class="grid-3">
+            <div>
+              <span class="pill">Phase 0 · Elementary Foundations (6–10)</span>
+              <p>Early Beginners Foundation™ accelerators:</p>
+              <ul>
+                <li>Literacy and numeracy fundamentals.</li>
+                <li>Play-based global awareness and basic German/Spanish.</li>
+                <li>Movement skills and positive relationship with sport.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Phase 1 · Middle School · StarPath Pioneer (11–14)</span>
+              <ul>
+                <li>Advanced reading, writing, math, and science.</li>
+                <li>Intro to coding, digital portfolio, global issues.</li>
+                <li>Athletic foundations and readiness for high school acceleration.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Phase 2 · High School Acceleration (14–18)</span>
+              <ul>
+                <li>Two 12-week residencies (9th & 11th) or online equivalents.</li>
+                <li>German + global studies + digital media + leadership.</li>
+                <li>NCAA-informed core courses and documented academics.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Phase 3 · Global Bridge (17–19)</span>
+              <ul>
+                <li>Senior-year alternative featuring college-level work.</li>
+                <li>Language certification, global relations, digital business.</li>
+                <li>Enhanced university and scholarship positioning.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Phase 4 · Post-Graduate AA (18–22)</span>
+              <ul>
+                <li>Associate degree combined with professional internships.</li>
+                <li>Sports management, analytics, media, and governance.</li>
+                <li>Direct career pathways or transfer into 4-year degrees.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Neurodivergent & Custom Pathways</span>
+              <ul>
+                <li>Adapted curriculum and pacing via Neurodivergent Converter.</li>
+                <li>Multiple modes of evidence: video, audio, visual, written.</li>
+                <li>Executive function scaffolds built into the HDR workflow.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMISSIONS SECTION -->
+    <section id="admissions" class="section">
+      <div class="section-header">
+        <div class="section-title">Admissions & Readiness</div>
+        <p class="section-kicker">
+          Clear steps for parents, athletes, clubs, and schools to plug into StarPath Residency, Day, or Online programs.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Who Thrives in StarPath</div>
+            <div class="panel-tag">Fit · Expectations · Commitments</div>
+          </div>
+          <div class="columns">
+            <div>
+              <span class="list-label">Ideal Student Profile</span>
+              <ul>
+                <li>Curious, coachable, and open to new cultures.</li>
+                <li>Serious about school and sport in equal measure.</li>
+                <li>Ready to live like a college student with support.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="list-label">Family Commitments</span>
+              <ul>
+                <li>Alignment with homeschool / school-of-record partnership.</li>
+                <li>Willingness to support travel, transitions, and logistics.</li>
+                <li>Understanding of NCAA amateurism and eligibility rules.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="list-label">Club & School Partners</span>
+              <ul>
+                <li>Desire to create long-term pathways, not one-off tours.</li>
+                <li>Openness to aligning training with documentation systems.</li>
+                <li>Vision for global opportunities for their top players.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="panel-title-row">
+            <div class="panel-title">Application Steps · Parents & Athletes</div>
+            <div class="panel-tag">Vienna Residency · Day · Online</div>
+          </div>
+          <div class="grid-3">
+            <div>
+              <span class="pill">Step 1 · Inquiry</span>
+              <ul>
+                <li>Submit online interest form (Residency, Day, or Online).</li>
+                <li>Share current school, sport, and graduation timeline.</li>
+                <li>Clubs/schools can inquire for group placements.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Step 2 · Blueprint Call</span>
+              <ul>
+                <li>30–45 minute call with Go4it / StarPath advisor.</li>
+                <li>Clarify academic status, goals, and eligibility.</li>
+                <li>Confirm best track: Residency, Day, or Online.</li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">Step 3 · Documentation & Placement</span>
+              <ul>
+                <li>Upload transcripts and coach references.</li>
+                <li>Review tuition, housing, and travel details.</li>
+                <li>Confirm start date and onboarding timeline.</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">
+            Every student receives a personalized pathway plan before departure — aligning school-of-record, NCAA considerations, and StarPath modules.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT / CTA -->
+    <section id="contact" class="section">
+      <div class="section-header">
+        <div class="section-title">Talk to the StarPath Team</div>
+        <p class="section-kicker">
+          Whether you’re a parent, coach, club director, or school leader — we’ll help you map the right StarPath entry point.
+        </p>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="columns">
+            <div>
+              <span class="pill">Parents & Families</span>
+              <ul>
+                <li>Email: <strong>pathways@starpathleague.org</strong></li>
+                <li>Go4it Office: <strong>info@go4itsports.org</strong></li>
+                <li>Phone (US): <strong>+1-205-434-4005</strong></li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill alt">Clubs, Academies & Schools</span>
+              <ul>
+                <li>Partnerships: <strong>global@starpathleague.org</strong></li>
+                <li>Investment & strategic projects: <strong>invest@go4itsports.org</strong></li>
+              </ul>
+            </div>
+            <div>
+              <span class="pill">What to Include</span>
+              <ul>
+                <li>Number of athletes and age ranges.</li>
+                <li>Preferred program (Residency, Day, Online, ISL).</li>
+                <li>Desired start term (Spring, Summer, Fall).</li>
+              </ul>
+            </div>
+          </div>
+          <p class="badge">
+            StarPath Academy™ · “For athletes who know the world is bigger than one system.”
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <p><strong>Go4it Sports Academy · StarPath Academy™ · International StarPath League (ISL)</strong></p>
+      <p>Denver (USA) · Vienna (AT) • info@go4itsports.org • pathways@starpathleague.org • invest@go4itsports.org</p>
+      <p class="truth">
+        Go4it is a homeschool learning provider with American teachers. Credits and official transcripts are issued via U.S. 
+        school-of-record partners until Fall 2026. Athlete OS and GAR Testing are non-academic and do not grant credit. 
+        No recruiting guarantees. NCAA amateurism and FIFA/FA rules respected. Families remain responsible for local 
+        education registration. We do not provide immigration or legal advice.
+      </p>
+    </footer>
+  </main>
+</body>
+</html>
