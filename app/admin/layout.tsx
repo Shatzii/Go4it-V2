@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { BarChart3, Users, FileText, Gift, Database, Shield, LogOut } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const handleLogout = () => {
     // Clear admin authentication
