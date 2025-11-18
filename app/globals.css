@@ -1,7 +1,10 @@
-/* Tailwind CSS loaded via CDN - see layout.tsx */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Go4It BlueGlow Brand System */
-:root {
+@layer base {
+  :root {
   /* Core tokens */
   --blueglow-cyan: #00ffff; /* Electric Cyan */
   --blueglow-black: #000000; /* Jet Black */
@@ -26,6 +29,9 @@ html, body {
   background-color: var(--surface-base);
   color: var(--blueglow-white);
 }
+}
+
+@layer utilities {
 
 .brand-bg { background-color: var(--surface-base); }
 .brand-fg { color: var(--blueglow-white); }
@@ -123,3 +129,4 @@ svg.icon-blueglow, svg .icon-blueglow {
 .animate-progress { animation: progressFill 2s ease-out forwards; }
 .hover-lift { transition: all 0.3s ease; }
 .hover-lift:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35); }
+}
