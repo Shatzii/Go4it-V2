@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireRole } from '../../../../lib/auth';
+import { requireRole } from '@/lib/auth';
 import { clerkClient } from '@clerk/nextjs/server';
 import fs from 'fs/promises';
 import path from 'path';
