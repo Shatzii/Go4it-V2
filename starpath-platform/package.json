@@ -1,0 +1,19 @@
+{
+  "name": "starpath-platform",
+  "version": "1.0.0",
+  "description": "Go4it Sports Academy · Powered by StarPath Accelerator",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd packages/backend && npm run dev",
+    "frontend:dev": "cd packages/frontend && npm run dev",
+    "build": "cd packages/frontend && npm run build",
+    "start": "cd packages/backend && npm start",
+    "install:all": "npm install && cd packages/backend && npm install && cd ../frontend && npm install && cd ../shared && npm install"
+  },
+  "keywords": ["starpath", "go4it", "sports", "academy", "ncaa"],
+  "author": "Go4it Sports Academy",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
