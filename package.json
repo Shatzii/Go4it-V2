@@ -4,7 +4,8 @@
   "description": "Go4It OS - Complete Sports Platform with Enterprise Features",
   "main": "index.js",
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 -p 5000",
+    "dev": "next dev -H 0.0.0.0 -p 3000",
+    "dev:replit": "next dev -H 0.0.0.0 -p 5000",
     "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
     "build:production": "cross-env NODE_ENV=production SKIP_TYPE_CHECK=true NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "node server.js",

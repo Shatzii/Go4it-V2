@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import ChatWidget from "./components/ChatWidget";
+import { useState, Suspense } from "react";
+import dynamic from "next/dynamic";
+
+const ChatWidget = dynamic(() => import("./components/ChatWidget"), {
+  ssr: false,
+  loading: () => null
+});
 
 export default function SimpleLandingPage() {
   const [activeFeature, setActiveFeature] = useState("gap-year");
   
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white" suppressHydrationWarning>
       {/* Header */}
       <header className="bg-black border-b border-amber-500/30">
         <div className="container mx-auto px-4 py-4">
