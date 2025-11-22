@@ -100,6 +100,11 @@ html, body {
   text-shadow: var(--glow-1), var(--glow-2), var(--glow-3);
 }
 
+.glow-text-green {
+  color: #10b981;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.7), 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
 .glow-border, .neon-border {
   border: 1.5px solid var(--border-cyan);
   box-shadow: var(--drop-soft), var(--drop-strong);
