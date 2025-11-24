@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload type-check logs (always)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: type-check-logs
           path: type-check.log
@@ -89,14 +89,14 @@ jobs:
           du -sh .next >> build.log 2>&1 || true
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: next-build
           path: .next
 
       - name: Upload build logs (always)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: build-logs
           path: build.log
