@@ -77,11 +77,6 @@ export default function SimpleLandingPage() {
                   <a href="#assessment" className="btn-blueglow-outline flex-1 text-center">
                     Start Assessment
                   </a>
-            </div>
-            
-            <div className="bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/30 p-8 rounded-lg">
-              <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-bold mb-3 text-amber-400">College Recruiting Portfolio</h3>
                   <a href="#call" className="btn-blueglow-outline flex-1 text-center">
                     Book a Call
                   </a>
@@ -236,17 +231,6 @@ export default function SimpleLandingPage() {
                 Enroll Online
               </a>
             </div>
-
-            {/* Day Program */}
-            <div className="bg-gradient-to-b from-amber-500/10 to-black border-2 border-amber-500/50 p-8 rounded-2xl hover:scale-105 transition-transform">
-              <div className="text-center mb-6">
-                <div className="text-5xl mb-4">🌆</div>
-                <h3 className="text-3xl font-bold mb-2 text-amber-400">StarPath Day Program</h3>
-                <div className="text-white text-xl font-semibold mb-4">
-                  Vienna Local Athletes
-                </div>
-              </div>
-              
           </div>
         </div>
       </section>
