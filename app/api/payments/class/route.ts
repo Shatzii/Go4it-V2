@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2025-07-30.basil',
-});
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2023-08-16' }) : null;
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 export async function POST(request: NextRequest) {
   try {
+    if (!stripe) {
+      return NextResponse.json(
+        { success: false, error: 'Stripe secret not configured' },
+        { status: 500 },
+      );
+    }
+
     const data = await request.json();
     const { classId, className, coach, price, userId, userEmail, userPhone, userName } = data;
 
@@ -63,6 +66,13 @@ export async function POST(request: NextRequest) {
 // Handle successful payments and class enrollment
 export async function PATCH(request: NextRequest) {
   try {
+    if (!stripe) {
+      return NextResponse.json(
+        { success: false, error: 'Stripe secret not configured' },
+        { status: 500 },
+      );
+    }
+
     const data = await request.json();
     const { paymentIntentId, classId, userId } = data;
 
@@ -84,7 +94,7 @@ export async function PATCH(request: NextRequest) {
       classId,
       userId,
       accessGranted: true,
-      streamUrl: `${process.env.NEXT_PUBLIC_APP_URL}/stream/${classId}`,
+      streamUrl: `${appUrl}/stream/${classId}`,
       joinInstructions:
         'You will receive an email with join instructions 15 minutes before class starts.',
       refundPolicy: 'Full refund available up to 2 hours before class start time.',

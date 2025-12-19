@@ -2,7 +2,9 @@ import { NextRequest } from 'next/server';
 import Stripe from 'stripe';
 import fs from 'fs/promises';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2023-08-16' });
+const stripeSecret = process.env.STRIPE_SECRET_KEY || '';
+const stripe = stripeSecret ? new Stripe(stripeSecret, { apiVersion: '2023-08-16' }) : null;
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
 async function loadPriceMap(): Promise<Record<string, string | number>> {
   try {
@@ -19,6 +21,8 @@ async function loadPriceMap(): Promise<Record<string, string | number>> {
 }
 
 export async function POST(req: NextRequest) {
+  if (!stripe) return Response.json({ error: 'Stripe secret not configured' }, { status: 500 });
+
   const body = await req.json();
   const { productId, email, userId, enrollmentId } = body;
   if (!productId) return Response.json({ error: 'Missing productId' }, { status: 400 });
@@ -54,8 +58,8 @@ export async function POST(req: NextRequest) {
       enrollmentId: String(enrollmentId || ''),
       productId: String(productId || ''),
     },
-    success_url: process.env.NEXT_PUBLIC_APP_URL + '/academy/enroll?success=1',
-    cancel_url: process.env.NEXT_PUBLIC_APP_URL + '/academy/enroll?cancel=1',
+    success_url: `${appUrl}/academy/enroll?success=1`,
+    cancel_url: `${appUrl}/academy/enroll?cancel=1`,
   });
 
   return Response.json({ url: session.url, id: session.id });

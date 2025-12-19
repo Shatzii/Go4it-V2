@@ -6,86 +6,24 @@ import { creditAudits } from '@/lib/db/schema/go4it_os';
 import { leads } from '@/lib/db/schema/funnel';
 import { eq } from 'drizzle-orm';
 import { sendOnboardingTransactional } from '@/lib/utils/listmonk-client';
+import { SUBSCRIPTION_TIERS, SubscriptionTier } from '@/lib/subscription-tiers';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeSecret ? new Stripe(stripeSecret) : null;
+
+function requireStripe(): Stripe {
+  if (!stripe) {
+    throw new Error('Stripe not configured');
+  }
+  return stripe;
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
-// Stripe Price IDs for different subscription tiers
-const STRIPE_PRICE_IDS = {
-  starter: process.env.STRIPE_STARTER_PRICE_ID || 'price_starter_monthly',
-  pro: process.env.STRIPE_PRO_PRICE_ID || 'price_pro_monthly',
-  elite: process.env.STRIPE_ELITE_PRICE_ID || 'price_elite_monthly',
-};
-
-export interface SubscriptionTier {
-  id: string;
-  name: string;
-  price: number;
-  interval: 'month' | 'year';
-  features: string[];
-  stripePriceId: string;
-  popular?: boolean;
-}
-
-export const SUBSCRIPTION_TIERS: Record<string, SubscriptionTier> = {
-  starter: {
-    id: 'starter',
-    name: 'Starter',
-    price: 29.99,
-    interval: 'month',
-    stripePriceId: STRIPE_PRICE_IDS.starter,
-    features: [
-      'Basic GAR Analysis',
-      'Social Media Integration (3 accounts)',
-      'Basic Performance Tracking',
-      'Community Access',
-      'Mobile App Access',
-    ],
-  },
-  pro: {
-    id: 'pro',
-    name: 'Pro',
-    price: 79.99,
-    interval: 'month',
-    stripePriceId: STRIPE_PRICE_IDS.pro,
-    popular: true,
-    features: [
-      'Advanced GAR Analysis',
-      'Unlimited Social Media Accounts',
-      'AI Coaching & Recommendations',
-      'StarPath Progression System',
-      'Prospect Discovery Tools',
-      'Advanced Analytics',
-      'Priority Support',
-    ],
-  },
-  elite: {
-    id: 'elite',
-    name: 'Elite',
-    price: 149.99,
-    interval: 'month',
-    stripePriceId: STRIPE_PRICE_IDS.elite,
-    features: [
-      'Everything in Pro',
-      'Personal AI Coach',
-      'Advanced Recruitment Automation',
-      'Custom Training Plans',
-      'Team Management Tools',
-      'White-label Options',
-      'Dedicated Account Manager',
-      '1-on-1 Strategy Sessions',
-    ],
-  },
-};
 
 export class StripeIntegration {
   // Create Stripe customer
   async createCustomer(userId: string, email: string, name?: string): Promise<Stripe.Customer> {
     try {
-      const customer = await stripe.customers.create({
+      const client = requireStripe();
+      const customer = await client.customers.create({
         email,
         name: name || undefined,
         metadata: {
@@ -144,6 +82,7 @@ export class StripeIntegration {
     customerId: string;
   }> {
     try {
+      const client = requireStripe();
       const tierConfig = SUBSCRIPTION_TIERS[tier];
       if (!tierConfig) {
         throw new Error(`Invalid subscription tier: ${tier}`);
@@ -159,7 +98,7 @@ export class StripeIntegration {
       }
 
       // Create subscription
-      const subscription = await stripe.subscriptions.create({
+      const subscription = await client.subscriptions.create({
         customer: customerId,
         items: [
           {
@@ -218,6 +157,7 @@ export class StripeIntegration {
   // Update subscription tier
   async updateSubscriptionTier(userId: string, newTier: string): Promise<void> {
     try {
+      const client = requireStripe();
       const newTierConfig = SUBSCRIPTION_TIERS[newTier];
       if (!newTierConfig) {
         throw new Error(`Invalid subscription tier: ${newTier}`);
@@ -229,11 +169,11 @@ export class StripeIntegration {
       }
 
       // Update Stripe subscription
-      const stripeSubscription = await stripe.subscriptions.retrieve(
+      const stripeSubscription = await client.subscriptions.retrieve(
         subscription.stripeSubscriptionId,
       );
 
-      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+      await client.subscriptions.update(subscription.stripeSubscriptionId, {
         items: [
           {
             id: stripeSubscription.items.data[0].id,
@@ -267,6 +207,7 @@ export class StripeIntegration {
   // Cancel subscription
   async cancelSubscription(userId: string, cancelImmediately: boolean = false): Promise<void> {
     try {
+      const client = requireStripe();
       const subscription = await databaseStorage.getSubscription(userId);
       if (!subscription) {
         throw new Error('No subscription found for user');
@@ -274,7 +215,7 @@ export class StripeIntegration {
 
       if (cancelImmediately) {
         // Cancel immediately
-        await stripe.subscriptions.cancel(subscription.stripeSubscriptionId);
+        await client.subscriptions.cancel(subscription.stripeSubscriptionId);
 
         await databaseStorage.updateSubscription(subscription.stripeSubscriptionId, {
           status: 'canceled',
@@ -282,7 +223,7 @@ export class StripeIntegration {
         });
       } else {
         // Cancel at period end
-        await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+        await client.subscriptions.update(subscription.stripeSubscriptionId, {
           cancel_at_period_end: true,
         });
 
@@ -308,9 +249,10 @@ export class StripeIntegration {
     }
 
     let event: Stripe.Event;
+    const client = requireStripe();
 
     try {
-      event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+      event = client.webhooks.constructEvent(payload, signature, webhookSecret);
     } catch (error) {
       console.error('Webhook signature verification failed:', error);
       throw new Error('Invalid signature');
@@ -423,7 +365,8 @@ export class StripeIntegration {
     console.log(`Payment succeeded for invoice ${invoice.id}`);
 
     if (invoice.subscription) {
-      const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+      const client = requireStripe();
+      const subscription = await client.subscriptions.retrieve(invoice.subscription as string);
       await this.handleSubscriptionUpdated(subscription);
     }
   }
